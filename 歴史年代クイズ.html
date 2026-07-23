@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>歴史年代表100 クイズ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --washi: #efe8d8;
+    --sumi: #2b2b2b;
+    --sumi-soft: #4a4a45;
+    --aizome: #2c4a6e;
+    --aizome-deep: #1c324c;
+    --shuiro: #b5451c;
+    --kincha: #a9781f;
+    --moss: #5f6f4e;
+    --line: rgba(43,43,43,0.16);
+    --card-shadow: 0 18px 40px rgba(43,30,10,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top left, rgba(169,120,31,0.10), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(44,74,110,0.10), transparent 55%),
+      var(--washi);
+    font-family: "Noto Sans JP", sans-serif;
+    color: var(--sumi);
+    min-height:100vh;
+    padding: 28px 16px 60px;
+  }
+  .wrap{ max-width: 720px; margin: 0 auto; }
+
+  header{ text-align:center; margin-bottom: 22px; }
+  .eyebrow{ font-size: 12px; letter-spacing: 0.35em; color: var(--kincha); font-weight:700; }
+  h1{
+    font-family: "Shippori Mincho", serif;
+    font-weight: 800;
+    font-size: clamp(24px, 6vw, 34px);
+    margin: 6px 0 4px;
+    letter-spacing: 0.04em;
+  }
+  .sub{ font-size: 13px; color: var(--sumi-soft); }
+
+  .account-bar{
+    display:flex; justify-content:center; align-items:center; gap:10px;
+    margin-top: 10px; font-size: 13px; color: var(--sumi-soft);
+  }
+  .account-bar .name-pill{
+    font-family: "Shippori Mincho", serif;
+    font-weight:700;
+    color: var(--aizome-deep);
+    background: rgba(44,74,110,0.08);
+    padding: 3px 12px;
+    border-radius: 20px;
+  }
+  .switch-link{
+    font-size:12px; color: var(--shuiro); background:none; border:none;
+    text-decoration:underline; cursor:pointer; font-family:inherit;
+  }
+
+  .timeline-map{ margin: 18px auto 0; max-width: 640px; position: relative; height: 34px; }
+  .timeline-map .rail{
+    position:absolute; left:0; right:0; top:16px; height:2px;
+    background: linear-gradient(90deg, var(--aizome), var(--kincha) 50%, var(--shuiro));
+    opacity:0.35;
+  }
+  .timeline-map .dot{
+    position:absolute; top:11px; width:6px; height:6px; border-radius:50%;
+    background: var(--sumi); opacity:0.18; transform: translateX(-50%); transition: all .25s ease;
+  }
+  .timeline-map .dot.done{ background: var(--moss); opacity:0.55; }
+  .timeline-map .dot.current{
+    width:12px; height:12px; top:8px; background: var(--shuiro); opacity:1;
+    box-shadow: 0 0 0 4px rgba(181,69,28,0.18);
+  }
+  .timeline-map .era-label{ position:absolute; top:-4px; font-size:10px; color: var(--sumi-soft); transform: translateX(-50%); white-space:nowrap; }
+
+  .card{
+    background: #faf6ec; border: 1px solid var(--line); border-radius: 4px;
+    box-shadow: var(--card-shadow); padding: 30px 26px 26px; margin-top: 26px; position: relative;
+  }
+  .card::before{
+    content:""; position:absolute; left:14px; right:14px; top:8px; bottom:8px;
+    border: 1px solid rgba(169,120,31,0.28); border-radius: 2px; pointer-events:none;
+  }
+  .center-card{ text-align:center; }
+
+  /* ---- Login ---- */
+  .avatar-grid{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0 6px;
+  }
+  .avatar-btn{
+    font-family:"Shippori Mincho", serif;
+    font-size: 22px; font-weight:800;
+    padding: 26px 8px;
+    border-radius: 4px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    cursor:pointer;
+    color: var(--aizome-deep);
+    transition: all .12s ease;
+  }
+  .avatar-btn:hover{ border-color: var(--aizome); background: #f2f1ea; transform: translateY(-2px); }
+  .avatar-btn .kana{ display:block; font-size:11px; color: var(--sumi-soft); font-weight:500; margin-top:6px; font-family:"Noto Sans JP",sans-serif; letter-spacing:0.1em; }
+
+  /* ---- Home / dashboard ---- */
+  .stat-grid{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(76px,1fr)); gap:10px; margin: 18px 0 22px;
+  }
+  .stat-box{
+    background:#fff; border:1px solid var(--line); border-radius:3px; padding: 14px 8px;
+  }
+  .stat-box .num{ font-family:"Shippori Mincho", serif; font-size:26px; font-weight:800; color: var(--aizome-deep); }
+  .stat-box .label{ font-size:11px; color: var(--sumi-soft); margin-top:2px; }
+
+  .weak-list{ text-align:left; margin-top: 10px; }
+  .weak-list h3{
+    font-family:"Shippori Mincho", serif; font-size:15px; color: var(--sumi);
+    border-bottom: 1px solid var(--line); padding-bottom:6px; margin-bottom:10px;
+  }
+  .weak-row{
+    display:flex; justify-content:space-between; gap:10px;
+    font-size:13px; padding: 7px 0; border-bottom: 1px dashed var(--line);
+  }
+  .weak-row .wi{ flex:1; }
+  .weak-row .wy{ color: var(--aizome-deep); font-weight:700; white-space:nowrap; }
+  .weak-row .wp{ width:70px; text-align:right; font-weight:700; white-space:nowrap; }
+  .weak-row .wp.low{ color: var(--shuiro); }
+  .weak-row .wp.mid{ color: var(--kincha); }
+  .weak-row .wp.high{ color: var(--moss); }
+
+  .btn-row{ display:flex; flex-direction:column; gap:10px; margin-top: 8px; }
+
+  .star-btn{
+    border: 1.5px solid var(--line);
+    background: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height:1;
+    padding: 9px 12px;
+    color: var(--kincha);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family: "Noto Sans JP", sans-serif;
+    transition: all .12s ease;
+  }
+  .star-btn:hover{ border-color: var(--kincha); background: rgba(169,120,31,0.08); }
+  .star-btn.active{ background: rgba(169,120,31,0.14); border-color: var(--kincha); color: var(--kincha); font-weight:700; }
+  .star-btn .lbl{ font-size:12px; }
+
+  .search-btn{
+    border: 1.5px solid var(--line);
+    background: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 15px;
+    line-height:1;
+    padding: 9px 10px;
+    color: var(--aizome-deep);
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-family: "Noto Sans JP", sans-serif;
+    transition: all .12s ease;
+  }
+  .search-btn:hover{ border-color: var(--aizome); background: rgba(44,74,110,0.08); }
+  .search-btn .lbl{ font-size:12px; }
+  .review-item .search-btn{ position:absolute; top:8px; right:44px; padding: 5px 8px; font-size:14px; }
+
+  .top-actions{ display:flex; justify-content:flex-end; margin-bottom: 6px; }
+
+  .review-item{ position:relative; }
+  .review-item .star-btn{ position:absolute; top:8px; right:8px; padding: 5px 8px; font-size:15px; }
+
+  .fav-empty{ font-size:13px; color: var(--sumi-soft); padding: 20px 0; }
+
+  .mode-toggle{
+    display:flex; gap:8px; margin: 4px 0 16px; justify-content:center;
+  }
+  .mode-btn{
+    flex:1; max-width: 220px;
+    font-family: "Shippori Mincho", serif; font-size: 13.5px; font-weight:700;
+    padding: 10px 8px; border-radius: 3px; border: 1.5px solid var(--line);
+    background: #fff; color: var(--sumi-soft); cursor:pointer; transition: all .12s ease;
+  }
+  .mode-btn:hover{ border-color: var(--aizome); }
+  .mode-btn.active{ background: var(--aizome); border-color: var(--aizome); color: #faf6ec; }
+
+  .year-input-row{
+    display:flex; gap:10px; align-items:stretch; margin-top:4px;
+  }
+  .year-input{
+    flex:1;
+    font-family: "Shippori Mincho", serif;
+    font-size: 22px; font-weight:700; letter-spacing: 0.08em;
+    text-align:center;
+    padding: 12px 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 3px;
+    color: var(--aizome-deep);
+    background:#fff;
+  }
+  .year-input:focus{ outline:none; border-color: var(--aizome); }
+  .year-input.input-correct{ border-color: var(--moss); background: rgba(95,111,78,0.14); }
+  .year-input.input-wrong{ border-color: var(--shuiro); background: rgba(181,69,28,0.10); }
+  .year-input-suffix{
+    display:flex; align-items:center; font-family:"Shippori Mincho", serif;
+    font-size:16px; color: var(--sumi-soft);
+  }
+  .year-submit-btn{
+    font-family: "Shippori Mincho", serif; font-size: 15px; font-weight:700;
+    padding: 0 20px; border-radius: 3px; border:none; color:#faf6ec;
+    background: var(--shuiro); cursor:pointer;
+  }
+  .year-submit-btn:hover:not(:disabled){ background: var(--aizome-deep); }
+  .year-submit-btn:disabled{ opacity:0.5; cursor:default; }
+  .year-input-hint{ font-size:11.5px; color: var(--sumi-soft); margin-top:6px; }
+
+  .big-btn{
+    font-family: "Shippori Mincho", serif; font-size: 18px; font-weight: 800; letter-spacing: 0.1em;
+    padding: 16px 40px; border-radius: 3px; border: none; color: #faf6ec;
+    background: var(--shuiro); cursor: pointer; box-shadow: 0 8px 18px rgba(181,69,28,0.28);
+  }
+  .big-btn:hover{ background: var(--aizome-deep); box-shadow: 0 8px 18px rgba(44,74,110,0.28); }
+  .ghost-btn{
+    font-family: "Shippori Mincho", serif; font-size: 14px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 12px 20px; border-radius: 3px; border: 1.5px solid var(--aizome); color: var(--aizome-deep);
+    background: transparent; cursor:pointer;
+  }
+  .ghost-btn:hover{ background: rgba(44,74,110,0.08); }
+
+  /* ---- Quiz ---- */
+  .progress-row{ display:flex; justify-content:space-between; align-items:baseline; font-family:"Shippori Mincho", serif; margin-bottom: 18px; }
+  .progress-row .qnum{ font-size:15px; color: var(--sumi-soft); letter-spacing:0.05em; }
+  .progress-row .qnum b{ font-size:22px; color: var(--aizome-deep); }
+  .progress-row .score{ font-size:14px; color: var(--kincha); font-weight:600; }
+
+  .qtype-tag{ display:inline-block; font-size: 11px; letter-spacing: 0.12em; color: #fff; background: var(--aizome); padding: 3px 10px; border-radius: 2px; margin-bottom: 14px; }
+  .qtype-tag.era-to-event{ background: var(--shuiro); }
+
+  .question-text{
+    font-family: "Shippori Mincho", serif; font-size: clamp(19px, 5vw, 25px); font-weight: 600;
+    line-height: 1.55; color: var(--sumi); margin-bottom: 22px;
+  }
+  .question-text .year-big{ font-size: 1.3em; color: var(--aizome-deep); font-weight:800; letter-spacing:0.02em; }
+
+  .choices{ display:grid; gap: 10px; }
+  .choice-btn{
+    text-align:left; font-family: inherit; font-size: 16px; padding: 14px 16px; border-radius: 3px;
+    border: 1.5px solid var(--line); background: #fff; cursor:pointer; color: var(--sumi);
+    transition: all .12s ease; line-height:1.4;
+  }
+  .choice-btn:hover:not(:disabled){ border-color: var(--aizome); background: #f2f1ea; }
+  .choice-btn:disabled{ cursor:default; }
+  .choice-btn.correct{ border-color: var(--moss); background: rgba(95,111,78,0.14); font-weight:700; }
+  .choice-btn.wrong{ border-color: var(--shuiro); background: rgba(181,69,28,0.10); text-decoration: line-through; opacity:0.75; }
+
+  .feedback-box{ margin-top: 18px; padding: 14px 16px; border-left: 3px solid var(--kincha); background: rgba(169,120,31,0.08); font-size: 14px; line-height:1.7; display:none; }
+  .feedback-box.show{ display:block; }
+  .feedback-box .mnemonic{ font-family:"Shippori Mincho", serif; font-weight:600; color: var(--aizome-deep); }
+
+  .next-btn{
+    margin-top: 20px; display:none; width:100%; padding: 14px; font-family: "Shippori Mincho", serif;
+    font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: #faf6ec; background: var(--sumi);
+    border: none; border-radius: 3px; cursor:pointer;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ background: var(--aizome-deep); }
+
+  .result-score{ font-family:"Shippori Mincho", serif; font-size: 52px; font-weight: 800; color: var(--aizome-deep); margin: 8px 0 2px; }
+  .result-score span{ font-size: 22px; color: var(--sumi-soft); font-weight:500;}
+  .result-comment{ font-size:14px; color: var(--kincha); font-weight:600; margin-bottom: 22px;}
+
+  .review-list{ text-align:left; margin-top: 10px; display:grid; gap: 10px; }
+  .review-item{
+    border: 1px solid var(--line); border-left: 4px solid var(--shuiro); background:#fff;
+    padding: 10px 84px 10px 14px; border-radius: 2px; font-size: 13px; line-height:1.7;
+  }
+  .review-item.ok{ border-left-color: var(--moss); }
+  .review-item .ritem{ font-weight:700; }
+  .review-item .ryear{ color: var(--aizome-deep); font-weight:700; }
+
+  footer{ text-align:center; margin-top: 30px; font-size:11px; color: var(--sumi-soft); opacity:0.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">これだけは覚えたい</div>
+    <h1>歴史年代表100 クイズ</h1>
+    <div class="sub">239年〜2011年・全100項目／3回連続正解で復習不要に</div>
+    <div class="account-bar" id="accountBar" style="display:none;">
+      <span>ログイン中：</span><span class="name-pill" id="accountNamePill"></span>
+      <button class="switch-link" id="switchAccountBtn">アカウント切替</button>
+    </div>
+    <div class="timeline-map" id="timelineMap"></div>
+  </header>
+
+  <div id="app"></div>
+
+  <footer>早稲田アカデミー「歴史年代表100」より作成 ／ 成績はこの端末のブラウザに保存されます</footer>
+</div>
+
+<script>
+const DATA = [
+["邪馬台国の女王である卑弥呼が魏に使者を送る",239,"「親魏倭王」と 銅鏡100枚 ２つもサンキュー 魏にペコリ"],
+["百済から公に仏教が伝わる",538,"聖明王が 送ってくれた 百済の仏に ご参拝"],
+["冠位十二階が定められる",603,"能力なければ 役人なんて 無理さ 冠位十二階"],
+["憲法十七条が定められる",604,"心がまえを 守れと示し 無理押し 憲法十七条"],
+["小野妹子が遣隋使として隋に派遣される",607,"小野妹子に 煬帝怒る 無礼な手紙 遣隋使"],
+["中大兄皇子らが蘇我氏を滅ぼす",645,"入鹿切られて 自宅は燃える 蒸し殺されて 蘇我滅ぶ"],
+["白村江の戦いで唐・新羅連合軍に敗れる",663,"唐と新羅の 連合軍に ム、無残に負けた…… 白村江"],
+["壬申の乱が起こる",672,"下馬評どおり 大海人皇子 無難に勝った 壬申の乱"],
+["都が藤原京に移される",694,"大和三山 周囲を囲み 都に向くよ 藤原京"],
+["大宝律令が定められる",701,"唐に学んだ 律令政治 慣れて一歩は 大宝律令"],
+["都が平城京に移される",710,"青い瓦と 朱色の柱 なんときれいな 平城京"],
+["三世一身の法が定められる",723,"土地の私有は 認めたけれど なにさ、三代限りかい"],
+["墾田永年私財法が定められる",743,"墾田永年私財の法で 公地公民 もうなしさ"],
+["都が平安京に移される",794,"桓武天皇 ふたたび遷都 鳴くようぐいす 平安京"],
+["菅原道真が遣唐使の停止を天皇に進言する",894,"唐のおとろえ 道真指摘 白紙にもどす 遣唐使"],
+["藤原純友の乱が起こる",939,"瀬戸の海賊 取り締まらずに みちくさくって 純友の乱"],
+["藤原道長が摂政となる",1016,"摂関政治の 全盛時代 十色に輝く 道長、摂政"],
+["白河上皇が院政を始める",1086,"藤原氏ども おさえるために どうやろうか？ 白河院政"],
+["保元の乱が起こる",1156,"武士にチャンスだ 手柄をあげろ いいころ起こった 保元の乱"],
+["平治の乱が起こる",1159,"清盛・義朝 対決したが 平氏にいい語句 平治の乱"],
+["平清盛が太政大臣となる",1167,"武士で最初の 太政大臣 いいね無敵な 清盛さん"],
+["平氏が滅びる/源頼朝が全国に守護・地頭を置く",1185,"平氏滅亡 神器も海へ いい箱沈む 壇ノ浦"],
+["源頼朝が征夷大将軍となる",1192,"頼朝、征夷大将軍だ いい国つくろう 鎌倉殿"],
+["承久の乱が起こる",1221,"後鳥羽上皇 機を見計らい 人に不意打ち 承久の乱"],
+["御成敗式目が定められる",1232,"初の武家法 守らなければ 人、罪になる 御成敗"],
+["文永の役が起こる",1274,"火薬の音に 馬おどろいて 棒立ちになるよ 文永の役"],
+["弘安の役が起こる",1281,"暴風雨の後 元軍兵士 いっきに敗走 弘安の役"],
+["鎌倉幕府が滅びる",1333,"新田義貞 鎌倉攻めで 一味サンザン 北条氏"],
+["南北朝の内乱が始まる",1336,"南北朝の 対立となる 吉野の山まで いざ去ろう"],
+["南北朝が合一される/李氏によって朝鮮が建国される",1392,"足利義満 政権強化 いざ国まとめ 南北合一"],
+["正長の土一揆が起こる",1428,"正長以後は 借金ナシと 石にはっきり 刻み付け"],
+["応仁の乱が起こる",1467,"京の都は ああ焼け野原 人の世むなし 応仁の乱"],
+["山城の国一揆が起こる",1485,"国一揆なら 山城国 人よ団結 ８年後まで"],
+["加賀の一向一揆が起こる",1488,"強いぞ 加賀の一向一揆 石川県で はばきかす"],
+["鉄砲が伝来する",1543,"ポルトガル人 種子島着 以後予算を 鉄砲に"],
+["キリスト教が伝来する",1549,"ザビエルさんが 鹿児島に来て 以後よく広まる キリスト教"],
+["桶狭間の戦いが起こる",1560,"織田信長を あなどっていた 義元イチコロ 桶狭間"],
+["室町幕府が滅びる",1573,"織田信長に 追放されて 以後並の人 足利義昭"],
+["長篠の戦いが起こる",1575,"足軽が撃つ 鉄砲スゴイ！ 人こなごなか？ 長篠で"],
+["太閤検地が始まる/本能寺の変が起こる/天正遣欧使節が派遣される",1582,"名実ともに 荘園消えて 以後はニンマリ 太閤検地"],
+["刀狩令が出される",1588,"刀狩令 農民たちに 以後は刃物を 持たせない"],
+["豊臣秀吉が全国を統一する",1590,"豊臣秀吉 北条に勝ち 戦国おさめ 天下統一"],
+["文禄の役が起こる",1592,"明への案内 朝鮮拒否し 異国に出兵 文禄の役"],
+["慶長の役が起こる",1597,"豊臣政権 没落早め 以後苦難の 慶長の役"],
+["関ヶ原の戦いが起こる",1600,"天下分け目の 戦い起こる ヒーローオーオー 関ヶ原"],
+["徳川家康が征夷大将軍となる",1603,"家康 征夷大将軍だ 人群れさわぐ 江戸幕府"],
+["武家諸法度が定められる/大阪夏の陣が起こる",1615,"秀忠のころ 制定されて 異論以後ダメ 武家諸法度"],
+["参勤交代の制度が確立される/日本人の海外渡航・帰国が禁止される",1635,"江戸と領地を 大名行列 一路みごとな 参勤交代"],
+["島原・天草一揆が起こる",1637,"島原・天草一揆は失敗 疲労みなぎる キリシタン"],
+["享保の改革が始まる",1716,"享保の改革 吉宗開始 いい名広まる 米将軍"],
+["異国船打払令が出される",1825,"異国船には ズドンと撃つぞ 帰れ一発 ゴーホーム！"],
+["大塩平八郎の乱が起こる/モリソン号事件が起こる",1837,"私財なげうち 人々救う 人はみな知る 平八郎"],
+["ペリーが浦賀に来航する",1853,"浦賀に黒船 開国せまる いやでござんす ペリーさん"],
+["日米和親条約が結ばれる",1854,"次は神奈川 また来たペリー 一年は越し 和親条約"],
+["日米修好通商条約が結ばれる",1858,"日米修好通商条約 貿易やる子は 井伊・ハリス"],
+["大政奉還が行われる",1867,"大政奉還 ああ江戸幕府 一夜むなしく 崩れ去る"],
+["五か条の御誓文が出される/戊辰戦争が起こる",1868,"御誓文出て 新たな政治 ひとつやろうや 明治維新"],
+["版籍奉還が行われる",1869,"土地と人民 返せと言われ いやでむくれる 版籍奉還"],
+["廃藩置県が行われる",1871,"藩を廃止し 県置いたので ひとつも藩ない 廃藩置県"],
+["新橋－横浜間に鉄道が開業する/学制が発布される/富岡製糸場がつくられる",1872,"鉄道開業・学制・暦 文明開化と 言いはなつ"],
+["徴兵令が出される/地租改正が始められる",1873,"徴兵令と 地租改正で 人は涙の 兵と税"],
+["西南戦争が起こる/地租が軽減される（2.5%）",1877,"西郷隆盛 士族におされ いやな内乱 西南戦争"],
+["ノルマントン号事件が起こる",1886,"日本人を 見殺しにした 船長バカヤロ ノルマントン"],
+["大日本帝国憲法が発布される",1889,"明治天皇 憲法発布 東アジアで いち早く"],
+["第１回衆議院議員総選挙が行われる／第１回帝国議会が開かれる",1890,"第１回の 帝国議会 人はクレクレ 選挙権"],
+["日清戦争が始まる/領事裁判権（治外法権）の廃止に成功する",1894,"甲午農民戦争を 機に 人は苦しむ 日清戦争"],
+["下関条約が結ばれる/三国干渉が行われる",1895,"清に勝利し 条約結ぶ 下関から 飛躍へゴー！"],
+["日英同盟が結ばれる",1902,"イギリスだって ロシアが不安 遠くをにらみ 日英同盟"],
+["日露戦争が始まる",1904,"臥薪嘗胆 準備は万端 いくわよ 日露戦争よ"],
+["ポーツマス条約が結ばれる/日比谷焼き打ち事件が起こる",1905,"ルーズベルトが なかだちをして 遠くで行う ポーツマス"],
+["韓国併合が行われる",1910,"土地奪われて 日本を目指し 行く人多し 韓国併合"],
+["中国で辛亥革命が起こる/関税自主権の回復に成功する",1911,"辛亥革命 その必要を 孫文は説く 人々に"],
+["第一次世界大戦が始まる",1914,"戦車・毒ガス・飛行機使用 行く人死ぬぞ 第一次"],
+["ロシア革命が起こる",1917,"ロシア革命 寄る民衆に 得意な演説 レーニンさん"],
+["シベリア出兵が行われる/米騒動が起こる",1918,"米の買い占め 売り惜しみなど ひどくいやがり 米騒動"],
+["ベルサイユ条約が結ばれる",1919,"パリで条約 日本もチャンス 行く行くフランス ベルサイユ"],
+["関東大震災が起こる",1923,"関東地震で 虐殺も起き ひどく罪なる 大震災"],
+["普通選挙法の制定/治安維持法が定められる/ラジオ放送が始まる",1925,"男子限定 普選が実現 選挙行くんだ ２５歳"],
+["世界恐慌が起こる",1929,"街にあふれる 失業者たち ひどく憎むは 世界恐慌"],
+["満州事変が始まる",1931,"奉天郊外 柳条湖から いくさの一歩 満州事変"],
+["五・一五事件が起こる",1932,"話せばわかると 犬養毅 いくさに不安 五・一五"],
+["二・二六事件が起こる",1936,"東京中枢 軍人占拠 いくさ向かう日 二・二六"],
+["日中戦争が始まる",1937,"北京郊外 盧溝橋から いくさ長引く 日中戦争"],
+["国家総動員法が定められる",1938,"日中戦争 長引き始め いくさやばくて 総動員"],
+["第二次世界大戦が始まる",1939,"ポーランドには ドイツが侵攻 いくさが急に 始まった"],
+["太平洋戦争が始まる",1941,"陸軍マレーへ 海軍どこへ？ 行くよいっきに 真珠湾"],
+["ポツダム宣言を受け入れる",1945,"ポツダム宣言 受け入れを決め 行くよこれから 再出発"],
+["教育基本法が定められる",1947,"男女共学 個人の尊厳 教育しなさい 基本法"],
+["朝鮮戦争が始まる／警察予備隊がつくられる",1950,"アメリカ軍が 朝鮮に行き ひどくこまると 警察予備隊"],
+["サンフランシスコ平和条約/日米安全保障条約が結ばれる",1951,"サンフランシスコで アメリカ主導 ひどく強引 平和条約"],
+["自衛隊が発足する/第五福竜丸事件が起こる",1954,"保安隊から 組織を変えて 自衛隊員 行く行進"],
+["高度経済成長期が始まるころ/自由民主党が結成される",1955,"行くぞゴーゴー 重化学なのさ 高度経済成長期"],
+["日ソ共同宣言に調印する／日本が国際連合に加盟する",1956,"日ソ共同宣言調印 日本も行くころ 国連へ"],
+["東京オリンピックが開催される/東海道新幹線が開業する",1964,"東京五輪に 間に合わせろと ひと苦労して 新幹線"],
+["日韓基本条約が結ばれる",1965,"日韓基本条約結ぶ 取り組む御仁は 佐藤さん"],
+["日中共同声明に調印する/沖縄が返還される/札幌オリンピックが開催される",1972,"日中共同声明調印 孤児は遠くで 何思う"],
+["日中平和友好条約が結ばれる",1978,"日中平和友好条約 ビッグなやつだ 中国は"],
+["青函トンネルが開業する/瀬戸大橋が開業する",1988,"青函トンネル 鉄道専用 行くパパどこへ？ 北海道"],
+["阪神・淡路大震災が起こる",1995,"ひどく救護を 必要とした 阪神・淡路大震災"],
+["東日本大震災が起こる",2011,"にげおくれた 人々おそう 津波発生 大震災"]
+];
+
+const MIN_YEAR = 239, MAX_YEAR = 2011;
+const ACCOUNTS = ["音", "昂", "暁"];
+const STORAGE_KEY = "rekishi100_quiz_v1";
+
+// ---- storage ----
+function loadAllData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  const fresh = {};
+  ACCOUNTS.forEach(a=>{
+    fresh[a] = { items: {}, quizzesTaken: 0, totalCorrect: 0, totalAnswered: 0, favorites: {}, queue: [] };
+  });
+  return fresh;
+}
+function saveAllData(d){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }catch(e){}
+}
+let ALL_DATA = loadAllData();
+
+const MASTERY_THRESHOLD = 3;
+const WRONG_FLAG_THRESHOLD = 3;
+
+function getAccountStats(name){
+  if(!ALL_DATA[name]) ALL_DATA[name] = { items: {}, quizzesTaken: 0, totalCorrect: 0, totalAnswered: 0, favorites: {}, queue: [] };
+  if(!ALL_DATA[name].favorites) ALL_DATA[name].favorites = {};
+  if(!ALL_DATA[name].queue) ALL_DATA[name].queue = [];
+  return ALL_DATA[name];
+}
+
+function isMastered(stats, dataIdx){
+  const s = stats.items[dataIdx];
+  return !!s && s.correctStreak >= MASTERY_THRESHOLD;
+}
+function isFrequentlyWrong(stats, dataIdx){
+  const s = stats.items[dataIdx];
+  return !!s && s.wrongTotal >= WRONG_FLAG_THRESHOLD;
+}
+function masteredCount(stats){
+  let n = 0;
+  for(let i=0;i<DATA.length;i++) if(isMastered(stats, i)) n++;
+  return n;
+}
+function sourcePoolCount(stats){
+  return DATA.length - masteredCount(stats);
+}
+
+// Pulls the next batch of questions (up to 20) from the account's shuffled,
+// mastery-aware queue. The queue is a standing random order of all not-yet-
+// mastered items; it's consumed batch by batch across quiz sessions, and
+// reshuffled from the remaining un-mastered pool once exhausted, so every
+// item gets asked before any repeats happen.
+function nextQuizIndices(stats){
+  stats.queue = stats.queue.filter(idx => !isMastered(stats, idx));
+  const unmastered = [];
+  for(let i=0;i<DATA.length;i++) if(!isMastered(stats, i)) unmastered.push(i);
+  if(unmastered.length === 0) return [];
+
+  if(stats.queue.length === 0){
+    stats.queue = shuffle(unmastered);
+  }
+  const take = stats.queue.slice(0, Math.min(20, stats.queue.length));
+  stats.queue = stats.queue.slice(take.length);
+  saveAllData(ALL_DATA);
+  return take;
+}
+
+function isFavorite(name, dataIdx){
+  const stats = getAccountStats(name);
+  return !!stats.favorites[dataIdx];
+}
+function toggleFavorite(name, dataIdx){
+  const stats = getAccountStats(name);
+  if(stats.favorites[dataIdx]) delete stats.favorites[dataIdx];
+  else stats.favorites[dataIdx] = true;
+  saveAllData(ALL_DATA);
+  return !!stats.favorites[dataIdx];
+}
+
+// ---- helpers ----
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function pctPos(year){ return ((year - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100; }
+function openGoogleSearch(query){
+  window.open("https://www.google.com/search?q=" + encodeURIComponent(query), "_blank", "noopener");
+}
+
+let state = {
+  screen: "login", // login | home | quiz | result
+  account: null,
+  quizMode: "choice", // choice | input
+  questions: [],
+  qIndex: 0,
+  score: 0,
+  answered: false,
+  log: []
+};
+
+function buildQuestionsFromIndices(indices, forceType){
+  return indices.map(idx=>{
+    const [item, year, mnemonic] = DATA[idx];
+    const type = forceType || (Math.random() < 0.5 ? "event2year" : "year2event");
+    let choices, correctIdx;
+    if(type === "event2year"){
+      const distractYears = shuffle(DATA.filter((d,i)=>i!==idx).map(d=>d[1]));
+      const yrSet = new Set([year]);
+      const opts = [year];
+      for(const y of distractYears){
+        if(opts.length>=4) break;
+        if(!yrSet.has(y)){ yrSet.add(y); opts.push(y); }
+      }
+      const shuffled = shuffle(opts.map((y,i)=>({y, isCorrect:y===year})));
+      choices = shuffled.map(o=>String(o.y)+"年");
+      correctIdx = shuffled.findIndex(o=>o.isCorrect);
+    } else {
+      const distractItems = shuffle(DATA.filter((d,i)=>i!==idx).map(d=>d[0]));
+      const opts = [item, ...distractItems.slice(0,3)];
+      const shuffled = shuffle(opts.map(o=>({text:o, isCorrect:o===item})));
+      choices = shuffled.map(o=>o.text);
+      correctIdx = shuffled.findIndex(o=>o.isCorrect);
+    }
+    return {dataIdx: idx, item, year, mnemonic, type, choices, correctIdx};
+  });
+}
+
+// In "year input" mode there's no sensible way to type a full event
+// description, so every question is asked as event -> year (the child
+// types the year); in "choice" mode the type is randomized as before.
+function buildQuiz(account){
+  const stats = getAccountStats(account);
+  const chosen = nextQuizIndices(stats);
+  const forceType = state.quizMode === "input" ? "event2year" : null;
+  return buildQuestionsFromIndices(chosen, forceType);
+}
+
+// Rebuilds a quiz using the exact same set of items as the just-finished
+// quiz (fresh answer-choice shuffling and question-type randomization),
+// for extra drilling on a tricky batch without pulling new items.
+function buildRepeatQuiz(previousQuestions){
+  const indices = previousQuestions.map(q=>q.dataIdx);
+  const forceType = state.quizMode === "input" ? "event2year" : null;
+  return buildQuestionsFromIndices(shuffle(indices), forceType);
+}
+
+function render(){
+  const app = document.getElementById('app');
+  const accountBar = document.getElementById('accountBar');
+
+  if(state.screen === "login"){
+    accountBar.style.display = "none";
+    renderTimelineMap(null);
+    app.innerHTML = `
+      <div class="card center-card">
+        <div class="qtype-tag">アカウントを選んでね</div>
+        <div class="question-text">だれのクイズ？</div>
+        <div class="avatar-grid">
+          ${ACCOUNTS.map(a=>`<button class="avatar-btn" data-name="${a}">${a}<span class="kana">タップして開始</span></button>`).join("")}
+        </div>
+      </div>
+    `;
+    app.querySelectorAll('.avatar-btn').forEach(btn=>{
+      btn.onclick = ()=>{
+        state.account = btn.dataset.name;
+        state.screen = "home";
+        render();
+      };
+    });
+    return;
+  }
+
+  // From here on, account bar visible
+  accountBar.style.display = "flex";
+  document.getElementById('accountNamePill').textContent = state.account;
+  document.getElementById('switchAccountBtn').onclick = ()=>{
+    state.screen = "login";
+    state.account = null;
+    render();
+  };
+
+  if(state.screen === "home"){
+    renderTimelineMap(null);
+    const stats = getAccountStats(state.account);
+    const overallPct = stats.totalAnswered ? Math.round((stats.totalCorrect/stats.totalAnswered)*100) : 0;
+    const mastered = masteredCount(stats);
+    const sourcePool = DATA.length - mastered;
+    const nextBatchSize = Math.min(20, sourcePool);
+
+    // build per-item accuracy, only items with attempts, sorted worst first
+    const itemRows = Object.keys(stats.items).map(idx=>{
+      const s = stats.items[idx];
+      const pct = Math.round((s.correctTotal/s.attempts)*100);
+      return {idx: Number(idx), attempts:s.attempts, correctTotal:s.correctTotal, pct};
+    }).filter(r=>!isMastered(stats, r.idx)).sort((a,b)=>a.pct-b.pct).slice(0,8);
+
+    const weakHtml = itemRows.length ? itemRows.map(r=>{
+      const d = DATA[r.idx];
+      const cls = r.pct < 50 ? "low" : (r.pct < 80 ? "mid" : "high");
+      return `<div class="weak-row">
+        <div class="wi">${d[0]}</div>
+        <div class="wy">${d[1]}年</div>
+        <div class="wp ${cls}">${r.pct}%（${r.correctTotal}/${r.attempts}）</div>
+      </div>`;
+    }).join("") : `<div class="weak-row"><div class="wi">まだ記録がありません。クイズに挑戦してみよう！</div></div>`;
+
+    // items that have been wrong 3+ times (regardless of current mastery), sorted by most-wrong first
+    const wrongRows = Object.keys(stats.items).map(idx=>{
+      const s = stats.items[idx];
+      return {idx: Number(idx), wrongTotal: s.wrongTotal||0};
+    }).filter(r=>r.wrongTotal >= WRONG_FLAG_THRESHOLD).sort((a,b)=>b.wrongTotal-a.wrongTotal);
+
+    const wrongHtml = wrongRows.length ? wrongRows.map(r=>{
+      const d = DATA[r.idx];
+      return `<div class="weak-row">
+        <div class="wi">${d[0]}</div>
+        <div class="wy">${d[1]}年</div>
+        <div class="wp low">${r.wrongTotal}回ミス</div>
+      </div>`;
+    }).join("") : `<div class="weak-row"><div class="wi">3回以上まちがえた問題はまだありません。</div></div>`;
+
+    app.innerHTML = `
+      <div class="card center-card">
+        <div class="qtype-tag">${state.account} さんの成績</div>
+        <div class="question-text">${state.account} さん、ようこそ</div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="num">${stats.quizzesTaken}</div><div class="label">挑戦回数</div></div>
+          <div class="stat-box"><div class="num">${overallPct}%</div><div class="label">全体正解率</div></div>
+          <div class="stat-box"><div class="num">${sourcePool}</div><div class="label">出題元数</div></div>
+          <div class="stat-box"><div class="num">${mastered}</div><div class="label">復習不要数</div></div>
+        </div>
+        <div class="mode-toggle">
+          <button class="mode-btn ${state.quizMode==='choice' ? 'active' : ''}" id="modeChoiceBtn">選択形式（4択）</button>
+          <button class="mode-btn ${state.quizMode==='input' ? 'active' : ''}" id="modeInputBtn">年代入力形式（数字で回答）</button>
+        </div>
+        <div class="btn-row">
+          ${sourcePool > 0
+            ? `<button class="big-btn" id="startBtn">クイズをはじめる（${nextBatchSize}問）</button>`
+            : `<div class="result-comment" style="margin:0 0 4px;">🎉 全100問、3回連続正解して復習不要になりました！</div>`
+          }
+          <button class="ghost-btn" id="favBtn">★ お気に入りをみる（${Object.keys(stats.favorites).length}件）</button>
+        </div>
+        <div class="weak-list">
+          <h3>正解率が低い項目（要復習）</h3>
+          ${weakHtml}
+        </div>
+        <div class="weak-list">
+          <h3>よく間違える問題（3回以上ミス）</h3>
+          ${wrongHtml}
+        </div>
+      </div>
+    `;
+    document.getElementById('modeChoiceBtn').onclick = ()=>{
+      state.quizMode = "choice";
+      render();
+    };
+    document.getElementById('modeInputBtn').onclick = ()=>{
+      state.quizMode = "input";
+      render();
+    };
+    const startBtn = document.getElementById('startBtn');
+    if(startBtn){
+      startBtn.onclick = ()=>{
+        state.questions = buildQuiz(state.account);
+        state.qIndex = 0; state.score = 0; state.answered=false; state.log=[];
+        state.screen = "quiz";
+        render();
+      };
+    }
+    document.getElementById('favBtn').onclick = ()=>{
+      state.screen = "favorites";
+      render();
+    };
+    return;
+  }
+
+
+  if(state.screen === "favorites"){
+    renderTimelineMap(null);
+    const stats = getAccountStats(state.account);
+    const favIdxs = Object.keys(stats.favorites).map(Number).sort((a,b)=>DATA[a][1]-DATA[b][1]);
+    const listHtml = favIdxs.length ? favIdxs.map(idx=>{
+      const d = DATA[idx];
+      return `<div class="review-item ok">
+        <button class="search-btn" data-search="${d[0].replace(/"/g,'&quot;')}">🔍</button>
+        <button class="star-btn active" data-idx="${idx}">★</button>
+        <span class="ritem">${d[0]}</span> — <span class="ryear">${d[1]}年</span><br>
+        ${d[2]}
+      </div>`;
+    }).join("") : `<div class="fav-empty">まだお気に入りはありません。クイズ中に★ボタンで登録できます。</div>`;
+
+    app.innerHTML = `
+      <div class="card">
+        <div class="qtype-tag">${state.account} さんのお気に入り</div>
+        <div class="question-text">忘れそう・気になる問題</div>
+        <div class="review-list">${listHtml}</div>
+        <div class="btn-row">
+          <button class="ghost-btn" id="backHomeBtn">成績ページにもどる</button>
+        </div>
+      </div>
+    `;
+    app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
+      btn.onclick = ()=>{
+        toggleFavorite(state.account, Number(btn.dataset.idx));
+        render();
+      };
+    });
+    app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
+      btn.onclick = ()=> openGoogleSearch(btn.dataset.search);
+    });
+    document.getElementById('backHomeBtn').onclick = ()=>{
+      state.screen = "home";
+      render();
+    };
+    return;
+  }
+
+  if(state.screen === "quiz"){
+    const q = state.questions[state.qIndex];
+    renderTimelineMap(q.year);
+    const isEventQ = q.type === "event2year";
+    const useInput = state.quizMode === "input";
+    const stats = getAccountStats(state.account);
+    const freqWrong = isFrequentlyWrong(stats, q.dataIdx);
+    app.innerHTML = `
+      <div class="card">
+        <div class="progress-row">
+          <div class="qnum">第 <b>${state.qIndex+1}</b> / ${state.questions.length} 問</div>
+          <div class="score">正解 ${state.score} 問</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <div class="qtype-tag ${isEventQ ? '' : 'era-to-event'}" style="margin-bottom:0;">${isEventQ ? "出来事 → 年代" : "年代 → 出来事"}</div>
+            ${useInput ? `<div class="qtype-tag" style="background:var(--kincha); margin-bottom:0;">✎ 入力形式</div>` : ''}
+            ${freqWrong ? `<div class="qtype-tag" style="background:var(--shuiro); margin-bottom:0;">⚠️ よく間違える</div>` : ''}
+          </div>
+          <button class="star-btn ${isFavorite(state.account, q.dataIdx) ? 'active' : ''}" id="favToggleBtn">★ <span class="lbl">あとで見る</span></button>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+          <button class="search-btn" id="searchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
+        </div>
+        <div class="question-text" style="margin-top:14px;">
+          ${isEventQ ? q.item : `<span class="year-big">${q.year}年</span> に起こったことは？`}
+        </div>
+        ${useInput ? `
+          <div class="year-input-row">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="year-input" id="yearInput" placeholder="例：239 / 1868" autocomplete="off">
+            <span class="year-input-suffix">年</span>
+            <button class="year-submit-btn" id="yearSubmitBtn">こたえる</button>
+          </div>
+          <div class="year-input-hint">3桁・4桁どちらの年代でも、数字だけ入力してください</div>
+        ` : `<div class="choices" id="choices"></div>`}
+        <div class="feedback-box" id="feedback"></div>
+        <button class="next-btn" id="nextBtn">${state.qIndex===state.questions.length-1 ? "結果を見る" : "次の問題へ"}</button>
+      </div>
+    `;
+    if(useInput){
+      const inputEl = document.getElementById('yearInput');
+      const submitBtn = document.getElementById('yearSubmitBtn');
+      submitBtn.onclick = submitYearAnswer;
+      inputEl.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter') submitYearAnswer();
+      });
+      inputEl.focus();
+    } else {
+      const choicesEl = document.getElementById('choices');
+      q.choices.forEach((c, i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = c;
+        btn.onclick = ()=> selectAnswer(i);
+        choicesEl.appendChild(btn);
+      });
+    }
+    document.getElementById('nextBtn').onclick = nextQuestion;
+    document.getElementById('favToggleBtn').onclick = ()=>{
+      const nowFav = toggleFavorite(state.account, q.dataIdx);
+      const btn = document.getElementById('favToggleBtn');
+      btn.classList.toggle('active', nowFav);
+    };
+    document.getElementById('searchBtn').onclick = ()=>{
+      openGoogleSearch(q.item);
+    };
+    return;
+  }
+
+  if(state.screen === "result"){
+    renderTimelineMap(null, true);
+    const pct = Math.round((state.score/20)*100);
+    let comment;
+    if(pct===100) comment = "満点！歴史マスター認定です";
+    else if(pct>=80) comment = "あと少し！よく覚えています";
+    else if(pct>=50) comment = "半分以上正解！この調子で復習を";
+    else comment = "語呂合わせを見直してもう一度挑戦しよう";
+
+    const reviewHtml = state.log.map(l=>{
+      const nowMastered = isMastered(getAccountStats(state.account), l.dataIdx);
+      return `<div class="review-item ${l.correct ? 'ok' : ''}">
+        <button class="search-btn" data-search="${l.item.replace(/"/g,'&quot;')}">🔍</button>
+        <button class="star-btn ${isFavorite(state.account, l.dataIdx) ? 'active' : ''}" data-idx="${l.dataIdx}">★</button>
+        <span class="ritem">${l.item}</span> — <span class="ryear">${l.year}年</span> ${nowMastered ? '<span style="color:var(--moss);font-weight:700;">卒業！</span>' : ''}<br>
+        ${l.mnemonic}
+      </div>`;
+    }).join("");
+
+    const stats = getAccountStats(state.account);
+    const remaining = sourcePoolCount(stats);
+
+    app.innerHTML = `
+      <div class="card center-card">
+        <div class="qtype-tag">${state.account} さんの結果</div>
+        <div class="result-score">${state.score}<span> / ${state.questions.length} 問正解</span></div>
+        <div class="result-comment">${comment}</div>
+        <div class="btn-row">
+          <button class="big-btn" id="repeatSameBtn">今の${state.questions.length}問をもう一度</button>
+          ${remaining > 0
+            ? `<button class="ghost-btn" id="retryBtn">新しい問題に挑戦する</button>`
+            : `<div class="result-comment" style="margin:0 0 4px;">🎉 全100問、3回連続正解して復習不要になりました！</div>`
+          }
+          <button class="ghost-btn" id="homeBtn">成績ページにもどる</button>
+        </div>
+        <div class="review-list">${reviewHtml}</div>
+      </div>
+    `;
+    document.getElementById('repeatSameBtn').onclick = ()=>{
+      state.questions = buildRepeatQuiz(state.questions);
+      state.qIndex = 0; state.score = 0; state.answered=false; state.log=[];
+      state.screen = "quiz";
+      render();
+    };
+    const retryBtn = document.getElementById('retryBtn');
+    if(retryBtn){
+      retryBtn.onclick = ()=>{
+        state.questions = buildQuiz(state.account);
+        state.qIndex = 0; state.score = 0; state.answered=false; state.log=[];
+        state.screen = "quiz";
+        render();
+      };
+    }
+    document.getElementById('homeBtn').onclick = ()=>{
+      state.screen = "home";
+      render();
+    };
+    app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
+      btn.onclick = ()=>{
+        const nowFav = toggleFavorite(state.account, Number(btn.dataset.idx));
+        btn.classList.toggle('active', nowFav);
+      };
+    });
+    app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
+      btn.onclick = ()=> openGoogleSearch(btn.dataset.search);
+    });
+    return;
+  }
+}
+
+// Shared bookkeeping for both answer modes: updates score, the review log,
+// and the account's per-item mastery/wrong-count stats.
+function recordAnswer(correct){
+  state.answered = true;
+  const q = state.questions[state.qIndex];
+  if(correct) state.score++;
+  state.log.push({dataIdx:q.dataIdx, item:q.item, year:q.year, mnemonic:q.mnemonic, correct});
+
+  const stats = getAccountStats(state.account);
+  if(!stats.items[q.dataIdx]) stats.items[q.dataIdx] = {attempts:0, correctStreak:0, correctTotal:0, wrongTotal:0};
+  const itemStat = stats.items[q.dataIdx];
+  itemStat.attempts++;
+  if(correct){
+    itemStat.correctStreak++;
+    itemStat.correctTotal++;
+  } else {
+    itemStat.correctStreak = 0; // one miss clears the streak toward mastery
+    itemStat.wrongTotal++;
+  }
+  stats.totalAnswered++;
+  if(correct) stats.totalCorrect++;
+  saveAllData(ALL_DATA);
+  return q;
+}
+
+function showFeedback(correct, mnemonic, correctYear){
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show');
+  fb.innerHTML = `${correct ? "○ 正解！" : "× 残念、正解は " + correctYear + "年"}<br><span class="mnemonic">${mnemonic}</span>`;
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function selectAnswer(i){
+  if(state.answered) return;
+  const q = state.questions[state.qIndex];
+  const correct = i === q.correctIdx;
+  recordAnswer(correct);
+
+  const buttons = document.querySelectorAll('.choice-btn');
+  buttons.forEach((b, idx)=>{
+    b.disabled = true;
+    if(idx === q.correctIdx) b.classList.add('correct');
+    else if(idx === i) b.classList.add('wrong');
+  });
+
+  showFeedback(correct, q.mnemonic, q.year);
+}
+
+function submitYearAnswer(){
+  if(state.answered) return;
+  const q = state.questions[state.qIndex];
+  const inputEl = document.getElementById('yearInput');
+  const submitBtn = document.getElementById('yearSubmitBtn');
+  const raw = (inputEl.value || "").trim();
+  const val = parseInt(raw, 10);
+  const correct = !isNaN(val) && String(val) === raw.replace(/^0+(?=\d)/, "") && val === q.year;
+
+  recordAnswer(correct);
+
+  inputEl.disabled = true;
+  submitBtn.disabled = true;
+  inputEl.classList.add(correct ? 'input-correct' : 'input-wrong');
+  if(!correct){
+    inputEl.value = raw + "　→　正解: " + q.year;
+  }
+
+  showFeedback(correct, q.mnemonic, q.year);
+}
+
+function nextQuestion(){
+  if(state.qIndex >= state.questions.length-1){
+    const stats = getAccountStats(state.account);
+    stats.quizzesTaken++;
+    saveAllData(ALL_DATA);
+    state.screen = "result";
+    render();
+    return;
+  }
+  state.qIndex++;
+  state.answered = false;
+  render();
+}
+
+function renderTimelineMap(currentYear, done){
+  const map = document.getElementById('timelineMap');
+  let html = `<div class="rail"></div>`;
+  const labels = [
+    [239,"古代"],[710,"奈良"],[794,"平安"],[1192,"鎌倉"],[1336,"室町"],
+    [1603,"江戸"],[1868,"明治"],[1912,"大正〜昭和"],[1989,"平成〜"]
+  ];
+  labels.forEach(([y,label])=>{
+    html += `<div class="era-label" style="left:${pctPos(y)}%">${label}</div>`;
+  });
+  const answeredYears = done ? state.log.map(l=>l.year) : (state.screen==="quiz" ? state.questions.slice(0,state.qIndex).map(q=>q.year) : []);
+  DATA.forEach(d=>{
+    const y = d[1];
+    let cls = "dot";
+    if(currentYear && y===currentYear) cls += " current";
+    else if(answeredYears.includes(y)) cls += " done";
+    html += `<div class="${cls}" style="left:${pctPos(y)}%"></div>`;
+  });
+  map.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
