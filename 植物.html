@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>植物クイズ｜中学受験 理科</title>
+<style>
+  :root{
+    --paper:#F1F4EA; --paper2:#FBFCF7; --ink:#1E2A21; --ink60:#5A6A5C;
+    --line:#CBD6C0; --leaf:#3F7D53; --leafLt:#E3EEDF; --petal:#8C5A9E;
+    --seed:#B98A2E; --wrong:#B4483C; --wrongLt:#F7E6E3;
+    --serif:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+    --sans:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+       -webkit-text-size-adjust:100%;line-height:1.6}
+  #app{max-width:560px;margin:0 auto;padding:20px 16px 60px}
+  h1,h2{font-family:var(--serif);font-weight:600;margin:0}
+  button{font-family:var(--sans);cursor:pointer}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+  .panel{border:1px solid var(--line);border-radius:10px;background:var(--paper2);padding:16px}
+  .eyebrow{font-size:11px;letter-spacing:.18em;color:var(--ink60)}
+  .bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:var(--leaf);transition:width .35s ease}
+  .row{display:flex;align-items:center;gap:10px;width:100%;border:1px solid var(--line);
+       border-radius:8px;padding:10px 12px;text-align:left;background:transparent}
+  .box{width:14px;height:14px;border-radius:4px;flex:0 0 auto;border:2px solid var(--line);background:transparent}
+  .pill{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;background:transparent;color:var(--ink)}
+  .pill.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .primary{width:100%;padding:14px 0;border-radius:8px;border:none;background:var(--ink);
+           color:var(--paper);font-size:15px;letter-spacing:.08em}
+  .secondary{width:100%;padding:12px 0;border-radius:8px;border:1px solid var(--line);
+             background:transparent;color:var(--ink);font-size:14px}
+  .primary[disabled],.secondary[disabled]{opacity:.4;cursor:default}
+  .choice{display:flex;align-items:center;width:100%;text-align:left;border:1px solid var(--line);
+          border-radius:8px;padding:13px 14px;font-size:14.5px;line-height:1.5;background:transparent;color:var(--ink)}
+  .link{border:none;background:transparent;color:var(--ink60);font-size:12.5px}
+  .tag{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;letter-spacing:.06em;
+       background:var(--leafLt);color:var(--leaf)}
+  .stack{display:grid;gap:8px}
+  .nameinput{border:none;border-bottom:1px dashed var(--line);background:transparent;font-size:15px;
+             font-family:var(--serif);color:var(--ink);width:130px;padding:2px 0}
+  .num{font-variant-numeric:tabular-nums}
+  .find{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .find a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;
+          border:1px solid var(--line);border-radius:999px;padding:5px 11px;
+          color:var(--ink60);background:var(--paper2)}
+  .find a:hover{border-color:var(--leaf);color:var(--leaf)}
+  .find .kw{font-size:11px;color:var(--ink60);align-self:center;opacity:.8}
+  .mini{width:54px}
+  .mini .bar{height:4px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   中学受験 理科「植物」総合クイズ  ─ 単体HTML版
+   3人分アカウント / マスタリー / カテゴリ絞り込み / まちがい直し
+   ========================================================= */
+
+/* ---------- 1. 科データ ---------- */
+const FAMILIES = [
+ {key:"rashi",name:"マツ・スギの仲間",group:"裸子植物",ben:null,sex:"単性花",
+  parts:{petal:"0（花びらなし）",sepal:"0（がくなし）",stamen:"—",pistil:"—"},
+  note:"子房がなく、胚珠がむき出し。花びら・がくがない。",
+  members:["マツ","スギ","ヒノキ","イチョウ","ソテツ","モミ","ツガ","トウヒ","シラビソ","カラマツ"]},
+ {key:"ine",name:"イネ科",group:"単子葉類",ben:null,sex:"両性花（トウモロコシだけ単性花）",
+  parts:{petal:"0（花びらなし）",sepal:"0（がくなし）",stamen:"6",pistil:"1"},
+  note:"花びらもがくもない風媒花。トウモロコシはおしべ3本でお花・め花に分かれる。",
+  members:["イネ","ムギ","ススキ","タケ","ササ","エノコログサ","トウモロコシ","アワ","ヒエ"]},
+ {key:"yuri",name:"ユリ科",group:"単子葉類",ben:null,sex:"両性花",
+  parts:{petal:"3",sepal:"3",stamen:"6",pistil:"1"},
+  note:"花びら3枚とがく3枚が同じ形で、6枚の花びらに見える。",
+  members:["ユリ","チューリップ","カタクリ","ネギ","ニラ","ニンニク","ラッキョウ","タマネギ"]},
+ {key:"ayame",name:"アヤメ科",group:"単子葉類",ben:null,sex:"両性花",
+  parts:{petal:"3",sepal:"3",stamen:"3",pistil:"1"},
+  note:"ユリ科とよく似るが、おしべが3本なのが決め手。",
+  members:["アヤメ","ハナショウブ","カキツバタ","シャガ","グラジオラス","クロッカス"]},
+ {key:"aburana",name:"アブラナ科",group:"双子葉類",ben:"離弁花",sex:"両性花",
+  parts:{petal:"4",sepal:"4",stamen:"6",pistil:"1"},
+  note:"おしべ6本のうち4本が長く2本が短い。実は細長いさや。",
+  members:["アブラナ","ナズナ","ダイコン","カブ","キャベツ","ハクサイ","ブロッコリー","カリフラワー","ワサビ","イヌガラシ"]},
+ {key:"mame",name:"マメ科",group:"双子葉類",ben:"離弁花",sex:"両性花",
+  parts:{petal:"5",sepal:"5",stamen:"10",pistil:"1"},
+  note:"チョウの形の花（蝶形花）。根に根粒菌がつき、やせた土でも育つ。",
+  members:["エンドウ","ソラマメ","インゲンマメ","ダイズ","アズキ","シロツメクサ","レンゲソウ","クズ","フジ","スイートピー","ハギ"]},
+ {key:"bara",name:"バラ科",group:"双子葉類",ben:"離弁花",sex:"両性花",
+  parts:{petal:"5",sepal:"5",stamen:"多数（約30〜40本）",pistil:"1"},
+  note:"おしべが多数なのが特徴。実になる木が多い。",
+  members:["バラ","ウメ","モモ","サクラ","リンゴ","ナシ","イチゴ","ビワ"]},
+ {key:"uri",name:"ウリ科",group:"双子葉類",ben:"合弁花",sex:"単性花",
+  parts:{petal:"5",sepal:"5",stamen:"5（お花）",pistil:"1（め花）"},
+  note:"お花とめ花に分かれる単性花。め花のもとにふくらみ（子房）がある。",
+  members:["ヘチマ","キュウリ","スイカ","カボチャ","メロン","ヒョウタン","ユウガオ","ニガウリ"]},
+ {key:"nasu",name:"ナス科",group:"双子葉類",ben:"合弁花",sex:"両性花",
+  parts:{petal:"5",sepal:"5",stamen:"5",pistil:"1"},
+  note:"花びらが根元でくっつき、星形に開く。",
+  members:["ナス","トマト","ピーマン","ジャガイモ","トウガラシ","ホオズキ","タバコ"]},
+ {key:"hirugao",name:"ヒルガオ科",group:"双子葉類",ben:"合弁花",sex:"両性花",
+  parts:{petal:"5",sepal:"5",stamen:"5",pistil:"1"},
+  note:"花びらが完全につながってラッパ形。つぼみのうちに自家受粉する。",
+  members:["アサガオ","ヒルガオ","サツマイモ","ヨルガオ"]},
+ {key:"kiku",name:"キク科",group:"双子葉類",ben:"合弁花",sex:"両性花",
+  parts:{petal:"5（くっついて1枚に見える）",sepal:"なし（冠毛になる）",stamen:"5",pistil:"1"},
+  note:"小さな花がたくさん集まって1つの花に見える（頭状花）。",
+  members:["タンポポ","ヒマワリ","キク","コスモス","ハルジオン","ヒメジョオン","ヨモギ","マリーゴールド","アザミ","フジバカマ"]},
+ {key:"shiso",name:"シソ科",group:"双子葉類",ben:"合弁花",sex:"両性花",
+  parts:{petal:"5",sepal:"5",stamen:"4（2本長く2本短い）",pistil:"1"},
+  note:"茎の断面が四角く、よい香りをもつものが多い。",
+  members:["シソ","ヒメオドリコソウ","ホトケノザ","ミント","ラベンダー"]},
+ {key:"tsutsuji",name:"ツツジ科",group:"双子葉類",ben:"合弁花",sex:"両性花",
+  parts:{petal:"5",sepal:"5",stamen:"5（シャクナゲは10）",pistil:"1"},
+  note:"花びらが下半分でくっつく合弁花。",
+  members:["ツツジ","サツキ","シャクナゲ","アセビ"]}
+];
+const groupLabel = f => f.group==="裸子植物" ? "裸子植物"
+  : f.group==="単子葉類" ? "単子葉類" : "双子葉類・"+f.ben;
+const GROUP_CHOICES = ["裸子植物","単子葉類","双子葉類・離弁花","双子葉類・合弁花"];
+
+/* ---------- 2. 知識カード ---------- */
+const FACTS = [
+ ["受粉と実","花粉がめしべの先につくことを何といいますか。",["受粉","発芽","蒸散","光合成"],0,"めしべの先（柱頭）に花粉がつくことを受粉という。"],
+ ["受粉と実","受粉のあと、子房は何になりますか。",["果実","種子","花たく","がく"],0,"子房→果実、胚珠→種子。セットで覚える。"],
+ ["受粉と実","受粉のあと、胚珠は何になりますか。",["種子","果実","根","子葉"],0,"胚珠→種子。子房の中にある小さなつぶ。"],
+ ["受粉と実","おしべの先にある、花粉が入っている袋を何といいますか。",["やく","柱頭","子房","胚珠"],0,"おしべ＝やく＋花糸。めしべの先は柱頭。"],
+ ["受粉と実","こん虫が花粉を運ぶ花を何といいますか。",["虫媒花","風媒花","水媒花","鳥媒花"],0,"虫媒花は花が目立ち、みつがあり、花粉はねばりけがある。"],
+ ["受粉と実","次のうち風媒花はどれですか。",["マツ","アブラナ","ヘチマ","ヒマワリ"],0,"風媒花＝マツ・スギ・イネ・トウモロコシ・ススキ・ヨモギなど。"],
+ ["受粉と実","風媒花の花粉の特徴として正しいものはどれですか。",["軽くて量が多い","重くてねばりけがある","とげがある","みつを出す"],0,"風で運ぶので軽く、量が多い。花は地味でみつもない。"],
+ ["受粉と実","マツの花粉についている、風で飛びやすくするつくりは何ですか。",["空気ぶくろ","冠毛","とげ","油てん"],0,"マツの花粉には左右2つの空気ぶくろがある。"],
+ ["受粉と実","水の流れで受粉する水媒花の例はどれですか。",["クロモ","ツバキ","イネ","ヘチマ"],0,"クロモ・キンギョモなどの水草。"],
+ ["受粉と実","鳥が花粉を運ぶ花（鳥媒花）はどれですか。",["ツバキ","アブラナ","ススキ","エンドウ"],0,"ツバキ・サザンカはメジロなどが花粉を運ぶ。冬に咲く。"],
+ ["受粉と実","つぼみのうちに自分の花粉で受粉してしまう植物はどれですか。",["エンドウ","ヘチマ","カボチャ","マツ"],0,"エンドウ・イネ・アサガオは自家受粉。ヘチマは単性花なので不可。"],
+ ["受粉と実","ヘチマのめ花を見分ける手がかりはどれですか。",["花の下にふくらみ（子房）がある","花びらが多い","みつがない","がくがない"],0,"め花＝子房あり。お花＝子房なしで細い柄。"],
+ ["受粉と実","裸子植物の種子が「むき出し」なのはなぜですか。",["子房がないから","がくがないから","花びらがないから","おしべがないから"],0,"裸子植物＝胚珠がむき出し。被子植物＝胚珠が子房に包まれる。"],
+ ["受粉と実","ヘチマで受粉の実験をするとき、め花のつぼみに袋をかけるのはなぜですか。",["虫が運ぶ花粉で受粉しないようにするため","温度を上げるため","水をためるため","光を当てないため"],0,"調べたい条件以外をそろえるための対照実験。"],
+
+ ["体のつくり","単子葉類の葉脈はどれですか。",["平行脈","網状脈","放射脈","羽状脈"],0,"単子葉＝平行脈、双子葉＝網状脈。"],
+ ["体のつくり","双子葉類の根のようすはどれですか。",["主根と側根","ひげ根","気根","根がない"],0,"双子葉＝主根＋側根、単子葉＝ひげ根。"],
+ ["体のつくり","単子葉類のくきの断面で、維管束はどうなっていますか。",["ばらばらに散らばる","輪の形に並ぶ","中心に1本","外側にだけある"],0,"単子葉＝散在、双子葉＝輪状。だから双子葉は形成層で太くなれる。"],
+ ["体のつくり","根から吸い上げた水が通る管を何といいますか。",["道管","師管","気孔","維管束"],0,"道管＝水と肥料分の通り道。"],
+ ["体のつくり","葉でつくられた養分が通る管を何といいますか。",["師管","道管","根毛","孔辺細胞"],0,"師管＝養分（水にとけたもの）の通り道。"],
+ ["体のつくり","くきの断面で、道管があるのはどちら側ですか。",["内側","外側","上側","下側"],0,"内側が道管、外側が師管。葉では表側が道管。"],
+ ["体のつくり","気孔が多くあるのは葉のどこですか。",["裏側","表側","ふち","葉柄"],0,"気孔は葉の裏に多い。日光による水の蒸発を防ぐため。"],
+ ["体のつくり","気孔をとりかこむ2つの細胞を何といいますか。",["孔辺細胞","根毛","葉緑体","形成層"],0,"孔辺細胞が開閉して気孔の大きさを変える。"],
+ ["体のつくり","気孔から水が水蒸気となって出るはたらきを何といいますか。",["蒸散","呼吸","光合成","受粉"],0,"蒸散は水を吸い上げる力になり、体温調節もする。"],
+ ["体のつくり","蒸散がもっともさかんなのはいつですか。",["晴れた日の昼","くもりの日の昼","晴れた日の夜","雨の日の夜"],0,"光が強く気温が高く湿度が低いときにさかん。"],
+ ["体のつくり","根の先の近くに生えている細い毛を何といいますか。",["根毛","側根","根冠","ひげ根"],0,"根毛は表面積を大きくして水を吸いやすくする。"],
+ ["体のつくり","双子葉類のくきにあり、太くなるもとになる部分はどこですか。",["形成層","道管","師管","気孔"],0,"形成層は双子葉類だけにある。単子葉類は太くなれない。"],
+ ["体のつくり","単子葉類の子葉は何枚ですか。",["1枚","2枚","3枚","6枚"],0,"子葉1枚＝単子葉類、2枚＝双子葉類。"],
+
+ ["光合成と呼吸","光合成によってできるものの組み合わせはどれですか。",["デンプンと酸素","デンプンと二酸化炭素","水と酸素","水と二酸化炭素"],0,"二酸化炭素＋水 →（光）→ デンプン＋酸素。"],
+ ["光合成と呼吸","光合成に必要でないものはどれですか。",["酸素","光","水","二酸化炭素"],0,"必要なのは光・水・二酸化炭素。酸素は出るほう。"],
+ ["光合成と呼吸","デンプンがあるか調べる薬品はどれですか。",["ヨウ素液","石灰水","BTB液","リトマス紙"],0,"ヨウ素液は青むらさき色に変わる。"],
+ ["光合成と呼吸","光合成が行われるのは細胞の中のどこですか。",["葉緑体","気孔","道管","師管"],0,"緑色のつぶ＝葉緑体。だからふ入りの葉の白い部分では光合成できない。"],
+ ["光合成と呼吸","植物が呼吸をしているのはいつですか。",["昼も夜も一日中","昼だけ","夜だけ","冬だけ"],0,"呼吸は一日中。光合成は光があるときだけ。"],
+ ["光合成と呼吸","夜の植物が多く出す気体はどれですか。",["二酸化炭素","酸素","ちっ素","水素"],0,"夜は光合成をせず呼吸だけなので二酸化炭素を出す。"],
+ ["光合成と呼吸","二酸化炭素があるか調べるのに使うものはどれですか。",["石灰水","ヨウ素液","食塩水","エタノール"],0,"石灰水は二酸化炭素で白くにごる。"],
+ ["光合成と呼吸","光合成の実験で、前の日から植物を暗いところに置くのはなぜですか。",["葉の中のデンプンをなくしておくため","葉をやわらかくするため","水を減らすため","気孔を閉じるため"],0,"はじめからデンプンがあると結果がわからなくなる。"],
+ ["光合成と呼吸","葉を温めたエタノールにつけるのはなぜですか。",["緑色をぬいて色の変化を見やすくするため","デンプンをつくるため","消毒するため","葉をかためるため"],0,"エタノールは直接火にかけず、湯であたためる。"],
+
+ ["種子と発芽","種子の発芽に必要な3つの条件はどれですか。",["水・空気・適当な温度","水・光・肥料","光・空気・肥料","水・土・光"],0,"光と肥料は発芽には必要ない。"],
+ ["種子と発芽","発芽したあと、大きく成長するためにさらに必要なものはどれですか。",["光と肥料","水と空気","温度と土","二酸化炭素と土"],0,"発芽3条件＋光＋肥料＝成長の条件。"],
+ ["種子と発芽","インゲンマメの種子で、養分がたくわえられているのはどこですか。",["子葉","胚乳","はい","種皮"],0,"インゲンマメ・ダイズ・アサガオ・クリ＝無胚乳種子（子葉に養分）。"],
+ ["種子と発芽","胚乳に養分をたくわえる有胚乳種子はどれですか。",["トウモロコシ","インゲンマメ","ダイズ","アブラナ"],0,"有胚乳＝イネ・ムギ・トウモロコシ・カキ・オシロイバナ。"],
+ ["種子と発芽","種子の中の、芽や根になる部分を何といいますか。",["はい","胚乳","種皮","子葉"],0,"はい＝幼芽・幼根・子葉などのまとまり。"],
+
+ ["季節と七草","春の七草にふくまれないものはどれですか。",["ススキ","セリ","ナズナ","ホトケノザ"],0,"春の七草＝セリ・ナズナ・ゴギョウ・ハコベラ・ホトケノザ・スズナ・スズシロ。ススキは秋の七草。"],
+ ["季節と七草","春の七草の「スズシロ」は今の何ですか。",["ダイコン","カブ","ネギ","ゴボウ"],0,"スズナ＝カブ、スズシロ＝ダイコン。"],
+ ["季節と七草","秋の七草にふくまれるものはどれですか。",["クズ","セリ","ハコベラ","スズナ"],0,"秋の七草＝ハギ・ススキ・クズ・ナデシコ・オミナエシ・フジバカマ・キキョウ。"],
+ ["季節と七草","タンポポの冬ごしのすがたを何といいますか。",["ロゼット","球根","地下けい","種子"],0,"地面に葉を広げて寒さと風を防ぐ。ナズナ・ハルジオンも同じ。"],
+ ["季節と七草","チューリップが冬をこすすがたはどれですか。",["球根","ロゼット","種子","落葉"],0,"球根＝チューリップ・ユリ・ヒガンバナ。"],
+ ["季節と七草","ヘチマが冬をこすすがたはどれですか。",["種子","球根","ロゼット","地下けい"],0,"一年草（アサガオ・ヒマワリ・ヘチマ）は種子で冬をこす。"],
+ ["季節と七草","冬に花がさく植物はどれですか。",["ツバキ","アサガオ","ヒマワリ","コスモス"],0,"冬＝ツバキ・サザンカ・ウメ（早春）。"],
+ ["季節と七草","サクラ（ソメイヨシノ）の花のさき方として正しいものはどれですか。",["葉が出る前に花がさく","葉と同時にさく","葉が出たあとにさく","秋にさく"],0,"ソメイヨシノは花が先。花のあとに葉が出る。"],
+
+ ["食べる部分","リンゴやナシで、ふだん食べている部分はどこですか。",["花たく","子房","種子","がく"],0,"リンゴ・ナシ・イチゴは花たくが育った部分を食べる。"],
+ ["食べる部分","イチゴのつぶつぶの正体は何ですか。",["果実","種子","がく","花びら"],0,"赤い部分は花たく、つぶつぶ1つ1つが果実。"],
+ ["食べる部分","ジャガイモの食べる部分はどこですか。",["くき（地下けい）","根","実","葉"],0,"ジャガイモ＝くき、サツマイモ＝根。ここが定番の対比。"],
+ ["食べる部分","サツマイモの食べる部分はどこですか。",["根","くき","実","葉"],0,"サツマイモはヒルガオ科で、根が太ったもの。"],
+ ["食べる部分","タマネギの食べる部分はどこですか。",["葉","根","くき","実"],0,"タマネギは葉が重なったもの。下の平たい部分がくき。"],
+ ["食べる部分","レンコンの食べる部分はどこですか。",["地下けい","根","実","花たく"],0,"レンコンはハスの地下けい。あなは空気の通り道。"],
+ ["食べる部分","ダイコンの食べる部分はどこですか。",["根","くき","葉","実"],0,"ダイコンは主根が太ったもの。上のほうはくきも少し含む。"],
+
+ ["分類のきまり","単子葉類の花びらの数はふつうどうなりますか。",["3の倍数","4の倍数","5の倍数","決まっていない"],0,"単子葉＝3の倍数、双子葉＝4または5の倍数。"],
+ ["分類のきまり","「合弁花」とはどんな花ですか。",["花びらがくっついている花","花びらが1枚ずつ離れている花","花びらがない花","がくがない花"],0,"合弁花＝キク・ナス・ヒルガオ・シソ・ツツジ・ウリ科。"],
+ ["分類のきまり","お花とめ花に分かれている花を何といいますか。",["単性花","両性花","合弁花","離弁花"],0,"単性花＝ヘチマ・カボチャ・キュウリ・トウモロコシ・マツ・イチョウ。"],
+ ["分類のきまり","次のうち単性花はどれですか。",["カボチャ","アブラナ","サクラ","エンドウ"],0,"ウリ科は単性花。「ウリ・トウモロコシ・裸子植物」で覚える。"],
+ ["分類のきまり","タンポポの1つの花に見えるものの正体は何ですか。",["小さな花の集まり","1つの大きな花","がくが変化したもの","葉が変化したもの"],0,"キク科の頭状花。小さな花が100個以上集まる。"],
+ ["分類のきまり","タンポポの綿毛は、もともと何が変化したものですか。",["がく","花びら","おしべ","葉"],0,"がくが冠毛になり、風で種子を運ぶ。"],
+ ["分類のきまり","アブラナの実の形として正しいものはどれですか。",["細長いさや","まるい液果","からのついた木の実","羽のついた実"],0,"アブラナ科の実は細長いさや状。"],
+ ["分類のきまり","マメ科の根についていて、空気中のちっ素をとりこむものは何ですか。",["根粒菌","根毛","菌糸","葉緑体"],0,"根粒菌のおかげで、やせた土地でも育つ。"],
+ ["分類のきまり","イチョウやソテツのように、お花とめ花が別々の木につく性質を何といいますか。",["雌雄異株","雌雄同株","両性花","合弁花"],0,"イチョウ・ソテツは雌雄異株。ぎんなんがなるのはめ木だけ。"],
+ ["分類のきまり","シダ植物やコケ植物のふえ方はどれですか。",["胞子でふえる","種子でふえる","球根でふえる","受粉してふえる"],0,"シダ・コケは花がさかず胞子でふえる。"],
+ ["分類のきまり","コケ植物にないものはどれですか。",["維管束","葉のようなつくり","仮根","胞子のう"],0,"コケには根・くき・葉の区別も維管束もない。体全体で水を吸う。"]
+];
+
+/* ---------- 3. 問題バンク ---------- */
+const CATS = [
+ {id:"family",label:"科あて",color:"var(--leaf)"},
+ {id:"member",label:"なかまさがし",color:"var(--leaf)"},
+ {id:"group",label:"分類（単子葉・双子葉）",color:"var(--leaf)"},
+ {id:"sex",label:"単性花・両性花",color:"var(--petal)"},
+ {id:"parts",label:"花のつくりの数",color:"var(--petal)"},
+ {id:"受粉と実",label:"受粉と実",color:"var(--petal)"},
+ {id:"体のつくり",label:"葉・くき・根",color:"var(--seed)"},
+ {id:"光合成と呼吸",label:"光合成と呼吸",color:"var(--seed)"},
+ {id:"種子と発芽",label:"種子と発芽",color:"var(--seed)"},
+ {id:"季節と七草",label:"季節と七草",color:"var(--seed)"},
+ {id:"食べる部分",label:"食べる部分",color:"var(--seed)"},
+ {id:"分類のきまり",label:"分類のきまり",color:"var(--leaf)"}
+];
+const catOf = id => CATS.find(c=>c.id===id);
+
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function buildBank(){
+  const Q=[];
+  FAMILIES.forEach(f=>{
+    f.members.slice(0,6).forEach(m=>{
+      const others=shuffle(FAMILIES.filter(x=>x.key!==f.key)).slice(0,3).map(x=>x.name);
+      Q.push({id:"fam_"+f.key+"_"+m,cat:"family",prompt:"「"+m+"」は何のなかまですか。",
+        choices:shuffle([f.name].concat(others)),answers:[f.name],kw:m+" 花",
+        exp:m+" は "+f.name+"（"+groupLabel(f)+"）。"+f.note});
+    });
+  });
+  FAMILIES.forEach(f=>{
+    const correct=shuffle(f.members).slice(0,3);
+    const pool=[].concat.apply([],FAMILIES.filter(x=>x.key!==f.key).map(x=>x.members));
+    const wrong=shuffle(pool).slice(0,3);
+    Q.push({id:"mem_"+f.key,cat:"member",multi:true,
+      prompt:f.name+"の植物を すべて 選びなさい。",
+      choices:shuffle(correct.concat(wrong)),answers:correct,kw:f.name+" 植物",
+      exp:f.name+"："+f.members.join("・")});
+  });
+  FAMILIES.forEach(f=>{
+    Q.push({id:"grp_"+f.key,cat:"group",prompt:f.name+"は次のどれにあてはまりますか。",
+      choices:GROUP_CHOICES.slice(),answers:[groupLabel(f)],kw:f.name+" "+groupLabel(f),
+      exp:f.name+" → "+groupLabel(f)+"。"+f.note});
+    if(f.group!=="裸子植物"){
+      const m=f.members[0], tan=f.group==="単子葉類";
+      Q.push({id:"grp2_"+f.key,cat:"group",
+        prompt:"「"+m+"」の葉脈と根のようすの正しい組み合わせはどれですか。",
+        choices:shuffle(["平行脈・ひげ根","網状脈・主根と側根","平行脈・主根と側根","網状脈・ひげ根"]),
+        answers:[tan?"平行脈・ひげ根":"網状脈・主根と側根"],kw:(tan?"平行脈 ひげ根":"網状脈 主根 側根")+" 図",
+        exp:m+"は"+f.group+"。"+(tan?"単子葉類は 子葉1枚・平行脈・ひげ根・維管束は散在。":"双子葉類は 子葉2枚・網状脈・主根と側根・維管束は輪状。")});
+    }
+  });
+  FAMILIES.forEach(f=>{
+    const tansei=f.sex.indexOf("単性")===0;
+    Q.push({id:"sex_"+f.key,cat:"sex",
+      prompt:f.name+"（"+f.members[0]+"）の花は 単性花・両性花 のどちらですか。",
+      choices:["単性花","両性花"],answers:[tansei?"単性花":"両性花"],kw:f.members[0]+" "+(tansei?"お花 め花":"花のつくり"),
+      exp:f.name+" … "+f.sex+"。単性花のなかまは「ウリ科・トウモロコシ・裸子植物（マツ・イチョウ）」。"});
+  });
+  const PL={petal:"花びら",stamen:"おしべ"};
+  const pool=["0（花びらなし）","0（がくなし）","3","4","5","6","10","多数（約30〜40本）","5（お花）","4（2本長く2本短い）","5（シャクナゲは10）","5（くっついて1枚に見える）"];
+  FAMILIES.forEach(f=>{
+    ["petal","stamen"].forEach(p=>{
+      const ans=f.parts[p]; if(ans==="—")return;
+      const wrong=shuffle(pool.filter(x=>x!==ans)).slice(0,3);
+      Q.push({id:"part_"+f.key+"_"+p,cat:"parts",
+        prompt:f.name+"（"+f.members[0]+"）の花の "+PL[p]+" の数はいくつですか。",
+        choices:shuffle([ans].concat(wrong)),answers:[ans],kw:f.members[0]+" 花のつくり 図",
+        exp:f.name+"｜花びら "+f.parts.petal+"／がく "+f.parts.sepal+"／おしべ "+f.parts.stamen+"／めしべ "+f.parts.pistil});
+    });
+  });
+  FACTS.forEach((r,i)=>{
+    const ans=r[2][r[3]];
+    const bare=ans.replace(/（.*?）/g,"").trim();
+    // 答えが長い文のときは単元名で調べる
+    const kw=(bare.length<=8?bare:r[0])+" 理科 小学生";
+    Q.push({id:"fact_"+i,cat:r[0],prompt:r[1],choices:shuffle(r[2]),answers:[ans],kw:kw,exp:r[4]});
+  });
+  return Q;
+}
+
+/* ---------- 4. 保存 ---------- */
+const mem={};
+function sGet(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):(mem[k]??null);}catch(e){return mem[k]??null;}}
+function sSet(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+const KIDS=[{id:"k1",name:"1人目",mark:"🌱"},{id:"k2",name:"2人目",mark:"🌿"},{id:"k3",name:"3人目",mark:"🍀"}];
+const MAX_LV=5;
+
+/* ---------- 5. 状態 ---------- */
+const BANK=buildBank();
+const BYID={}; BANK.forEach(q=>BYID[q.id]=q);
+
+const S={
+  kid:null, names:sGet("plantq:names")||{}, prog:{},
+  screen:"home",
+  selCats:CATS.map(c=>c.id),
+  len:10, queue:[], idx:0, picked:[], judged:false, log:[]
+};
+function saveProg(){ if(S.kid) sSet("plantq:prog:"+S.kid,S.prog); }
+const kidName=id=>S.names[id]||KIDS.find(k=>k.id===id).name;
+
+/* ---------- 6. 出題ロジック ---------- */
+function makeQueue(mode){
+  let pool=BANK.filter(q=>S.selCats.indexOf(q.cat)>=0);
+  if(mode==="review"){
+    pool=pool.filter(q=>{const p=S.prog[q.id];return p&&p.ng>0&&p.lv<MAX_LV;});
+  }
+  const scored=pool.map(q=>{
+    const p=S.prog[q.id]||{lv:0,ng:0};
+    return {q,w:(MAX_LV+1-p.lv)*10+p.ng*6+Math.random()*9};
+  });
+  scored.sort((a,b)=>b.w-a.w);
+  const n=S.len===0?pool.length:Math.min(S.len,pool.length);
+  return scored.slice(0,n).map(s=>s.q);
+}
+function start(mode){
+  const q=makeQueue(mode); if(!q.length)return;
+  S.queue=q;S.idx=0;S.picked=[];S.judged=false;S.log=[];S.screen="quiz";render();
+}
+function isCorrect(){
+  const c=S.queue[S.idx];
+  return S.picked.length===c.answers.length && S.picked.every(p=>c.answers.indexOf(p)>=0);
+}
+function judge(){
+  if(!S.picked.length||S.judged)return;
+  const c=S.queue[S.idx], ok=isCorrect();
+  const p=S.prog[c.id]||{lv:0,ok:0,ng:0};
+  S.prog[c.id]= ok ? {lv:Math.min(MAX_LV,p.lv+1),ok:p.ok+1,ng:p.ng}
+                   : {lv:0,ok:p.ok,ng:p.ng+1};
+  saveProg(); S.log.push({id:c.id,ok:ok}); S.judged=true; render();
+}
+function next(){
+  if(S.idx+1>=S.queue.length){S.screen="result";}
+  else {S.idx++;S.picked=[];S.judged=false;}
+  render();
+}
+function reviewCount(){
+  return BANK.filter(q=>{
+    if(S.selCats.indexOf(q.cat)<0)return false;
+    const p=S.prog[q.id]; return p&&p.ng>0&&p.lv<MAX_LV;
+  }).length;
+}
+function catStat(id){
+  const qs=BANK.filter(q=>q.cat===id);
+  return {total:qs.length, mastered:qs.filter(q=>(S.prog[q.id]||{lv:0}).lv>=MAX_LV).length};
+}
+
+/* ---------- 7. 描画ヘルパ ---------- */
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const bar=(v,color,h)=>'<div class="bar" style="height:'+(h||6)+'px"><i style="width:'+Math.round(v*100)+'%;background:'+(color||"var(--leaf)")+'"></i></div>';
+const LEAF='<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3C10 3 3 9 3 17c0 1.6.3 3 .8 4.2l1.9-.8C5.2 19.4 5 18.3 5 17c0-1 .1-1.9.4-2.8C8 15.9 12.6 16 16 13 12.9 13.6 9.6 13 7 11.6 9.9 7.4 14.8 5 21 5v-2z" fill="var(--leaf)"/><path d="M21 3C15 6 9 11 4.5 20.6l1.8.8C10.5 13 16 8 21 3z" fill="var(--leaf)" opacity=".45"/></svg>';
+
+/* Googleで調べるリンク（画像／ふつうの検索） */
+function findLinks(q){
+  const kw=q.kw||q.prompt;
+  const e=encodeURIComponent(kw);
+  return '<div class="find">'+
+    '<a href="https://www.google.com/search?tbm=isch&q='+e+'" target="_blank" rel="noopener noreferrer">🖼 画像で見る</a>'+
+    '<a href="https://www.google.com/search?q='+e+'" target="_blank" rel="noopener noreferrer">🔍 Googleで調べる</a>'+
+    '<span class="kw">「'+esc(kw)+'」</span>'+
+  '</div>';
+}
+
+function render(){
+  if(!S.kid) return renderPick();
+  if(S.screen==="home") return renderHome();
+  if(S.screen==="quiz") return renderQuiz();
+  return renderResult();
+}
+
+/* --- アカウント選択 --- */
+function renderPick(){
+  app.innerHTML=
+  '<div style="text-align:center;padding:48px 0 24px">'+LEAF+
+    '<h1 style="font-size:34px;letter-spacing:.14em;margin:12px 0 6px">植物クイズ</h1>'+
+    '<p style="color:var(--ink60);font-size:13px;letter-spacing:.08em;margin:0">中学受験 理科 ／ 分類・花のつくり・光合成・種子・季節</p>'+
+  '</div>'+
+  '<p style="text-align:center;color:var(--ink60);font-size:13px;margin:0 0 14px">だれが学習しますか</p>'+
+  '<div class="stack" style="max-width:420px;margin:0 auto">'+
+  KIDS.map(k=>
+    '<div class="row" style="background:var(--paper2);padding:14px 16px">'+
+      '<span style="font-size:24px">'+k.mark+'</span>'+
+      '<input class="nameinput" data-name="'+k.id+'" value="'+esc(S.names[k.id]||k.name)+'" aria-label="名前">'+
+      '<button class="link" data-go="'+k.id+'" style="margin-left:auto;color:var(--leaf);font-size:13px">はじめる →</button>'+
+    '</div>').join("")+
+  '</div>';
+  app.querySelectorAll("[data-name]").forEach(el=>{
+    el.addEventListener("input",e=>{S.names[el.dataset.name]=e.target.value;sSet("plantq:names",S.names);});
+  });
+  app.querySelectorAll("[data-go]").forEach(el=>{
+    el.addEventListener("click",()=>{
+      S.kid=el.dataset.go; S.prog=sGet("plantq:prog:"+S.kid)||{}; S.screen="home"; render();
+    });
+  });
+}
+
+/* --- ホーム --- */
+function renderHome(){
+  const mastered=BANK.filter(q=>(S.prog[q.id]||{lv:0}).lv>=MAX_LV).length;
+  const rc=reviewCount();
+  app.innerHTML=
+  header()+
+  '<section class="panel">'+
+    '<div style="display:flex;align-items:baseline;justify-content:space-between">'+
+      '<span class="eyebrow">おぼえた問題</span>'+
+      '<span style="font-family:var(--serif);font-size:26px">'+mastered+
+        '<span style="font-size:13px;color:var(--ink60)"> / '+BANK.length+'</span></span>'+
+    '</div>'+
+    '<div style="margin-top:8px">'+bar(mastered/BANK.length)+'</div>'+
+    '<p style="font-size:11.5px;color:var(--ink60);margin:8px 0 0">5回続けて正解すると「おぼえた」になります。まちがえるとレベルは0にもどります。</p>'+
+  '</section>'+
+  '<div class="eyebrow" style="margin:22px 0 8px">出題するはんい</div>'+
+  '<div class="stack" style="gap:6px">'+
+  CATS.map(c=>{
+    const on=S.selCats.indexOf(c.id)>=0, st=catStat(c.id);
+    return '<button class="row" data-cat="'+c.id+'" style="background:'+(on?"var(--paper2)":"transparent")+
+      ';border-color:'+(on?c.color:"var(--line)")+';opacity:'+(on?1:.55)+'">'+
+      '<span class="box" style="border-color:'+(on?c.color:"var(--line)")+';background:'+(on?c.color:"transparent")+'"></span>'+
+      '<span style="font-size:14px">'+esc(c.label)+'</span>'+
+      '<span class="num" style="margin-left:auto;font-size:11px;color:var(--ink60)">'+st.mastered+'/'+st.total+'</span>'+
+      '<span class="mini">'+bar(st.total?st.mastered/st.total:0,c.color,4)+'</span>'+
+    '</button>';
+  }).join("")+'</div>'+
+  '<div class="eyebrow" style="margin:22px 0 8px">1回の問題数</div>'+
+  '<div style="display:flex;gap:8px">'+
+  [10,20,30,0].map(n=>'<button class="pill'+(S.len===n?" on":"")+'" data-len="'+n+'">'+(n===0?"すべて":n+"問")+'</button>').join("")+
+  '</div>'+
+  '<div class="stack" style="gap:10px;margin-top:26px">'+
+    '<button class="primary" data-start="normal"'+(S.selCats.length?"":" disabled")+'>スタート</button>'+
+    '<button class="secondary" data-start="review"'+(rc?"":" disabled")+'>まちがい直し（'+rc+'問）</button>'+
+  '</div>';
+  bindHeader();
+  app.querySelectorAll("[data-cat]").forEach(el=>el.addEventListener("click",()=>{
+    const id=el.dataset.cat, i=S.selCats.indexOf(id);
+    if(i>=0)S.selCats.splice(i,1); else S.selCats.push(id);
+    render();
+  }));
+  app.querySelectorAll("[data-len]").forEach(el=>el.addEventListener("click",()=>{S.len=+el.dataset.len;render();}));
+  app.querySelectorAll("[data-start]").forEach(el=>el.addEventListener("click",()=>start(el.dataset.start)));
+}
+
+function header(){
+  return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'+LEAF+
+    '<span style="font-family:var(--serif);font-size:17px;letter-spacing:.1em">植物クイズ</span>'+
+    '<span style="margin-left:auto;font-size:12.5px;color:var(--ink60)">'+esc(kidName(S.kid))+'</span>'+
+    '<button class="link" id="switchKid">切替</button></div>';
+}
+function bindHeader(){
+  const b=document.getElementById("switchKid");
+  if(b)b.addEventListener("click",()=>{S.kid=null;S.screen="home";render();});
+}
+
+/* --- 出題 --- */
+function renderQuiz(){
+  const c=S.queue[S.idx], ok=S.judged&&isCorrect(), cat=catOf(c.cat);
+  app.innerHTML=
+  '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">'+
+    '<button class="link" id="quit">← やめる</button>'+
+    '<span class="num" style="margin-left:auto;font-size:12px;color:var(--ink60)">'+(S.idx+1)+' / '+S.queue.length+'</span>'+
+  '</div>'+
+  bar((S.idx+(S.judged?1:0))/S.queue.length)+
+  '<div class="panel" style="margin-top:18px">'+
+    '<span class="tag" style="color:'+cat.color+'">'+esc(cat.label)+'</span>'+
+    '<h2 style="font-size:20px;line-height:1.7;margin:12px 0 0">'+esc(c.prompt)+'</h2>'+
+    (c.multi?'<p style="font-size:11.5px;color:var(--ink60);margin:6px 0 0">あてはまるものを すべて えらんでください</p>':'')+
+  '</div>'+
+  '<div class="stack" style="margin-top:14px">'+
+  c.choices.map((ch,i)=>{
+    const sel=S.picked.indexOf(ch)>=0, isAns=c.answers.indexOf(ch)>=0;
+    let bg="transparent",bd="var(--line)",fg="var(--ink)";
+    if(S.judged){
+      if(isAns){bg="var(--leafLt)";bd="var(--leaf)";}
+      else if(sel){bg="var(--wrongLt)";bd="var(--wrong)";fg="var(--wrong)";}
+    } else if(sel){bg="var(--paper2)";bd="var(--ink)";}
+    const mark=(sel||(S.judged&&isAns))?bd:"var(--line)";
+    return '<button class="choice" data-ch="'+i+'" style="background:'+bg+';border-color:'+bd+';color:'+fg+'">'+
+      (c.multi?'<span class="box" style="margin-right:10px;border-color:'+mark+';background:'+((sel||(S.judged&&isAns))?bd:"transparent")+'"></span>':'')+
+      '<span>'+esc(ch)+'</span>'+
+      (S.judged&&isAns?'<span style="margin-left:auto;color:var(--leaf);font-size:13px">正解</span>':'')+
+    '</button>';
+  }).join("")+'</div>'+
+  (S.judged?
+    '<div class="panel" style="margin-top:14px;border-color:'+(ok?"var(--leaf)":"var(--wrong)")+';background:'+(ok?"var(--leafLt)":"var(--wrongLt)")+'">'+
+      '<div style="font-family:var(--serif);font-size:17px;color:'+(ok?"var(--leaf)":"var(--wrong)")+';margin-bottom:6px">'+(ok?"○ せいかい":"× ざんねん")+'</div>'+
+      '<p style="font-size:13.5px;line-height:1.85;margin:0">'+esc(c.exp)+'</p>'+
+      findLinks(c)+
+    '</div>':'')+
+  '<div style="margin-top:16px">'+
+    (S.judged
+      ? '<button class="primary" id="next">'+(S.idx+1>=S.queue.length?"けっかを見る":"つぎの問題 →")+'</button>'
+      : '<button class="primary" id="judge"'+(S.picked.length?"":" disabled")+'>こたえあわせ</button>')+
+  '</div>';
+  document.getElementById("quit").addEventListener("click",()=>{S.screen="home";render();});
+  app.querySelectorAll("[data-ch]").forEach(el=>el.addEventListener("click",()=>{
+    if(S.judged)return;
+    const ch=c.choices[+el.dataset.ch];
+    if(c.multi){const i=S.picked.indexOf(ch); if(i>=0)S.picked.splice(i,1); else S.picked.push(ch);}
+    else S.picked=[ch];
+    render();
+  }));
+  const j=document.getElementById("judge"); if(j)j.addEventListener("click",judge);
+  const n=document.getElementById("next");  if(n)n.addEventListener("click",next);
+}
+
+/* --- 結果 --- */
+function renderResult(){
+  const right=S.log.filter(l=>l.ok).length;
+  const wrongs=S.log.filter(l=>!l.ok).map(l=>BYID[l.id]);
+  app.innerHTML=
+  '<div style="text-align:center;padding:28px 0 8px">'+LEAF+
+    '<div style="font-family:var(--serif);font-size:44px;margin-top:6px">'+right+
+      '<span style="font-size:18px;color:var(--ink60)"> / '+S.log.length+'</span></div>'+
+    '<p style="color:var(--ink60);font-size:13px;margin:4px 0 0">'+
+      (right===S.log.length?"全問正解！すばらしい":"まちがえた "+(S.log.length-right)+" 問は「まちがい直し」に入りました")+'</p>'+
+  '</div>'+
+  (wrongs.length?
+    '<div class="eyebrow" style="margin:18px 0 8px">まちがえた問題</div><div class="stack">'+
+    wrongs.map(q=>'<div class="panel" style="padding:14px">'+
+      '<p style="font-family:var(--serif);font-size:15px;margin:0 0 6px">'+esc(q.prompt)+'</p>'+
+      '<p style="font-size:13px;color:var(--leaf);margin:0 0 6px">こたえ：'+esc(q.answers.join(" ・ "))+'</p>'+
+      '<p style="font-size:12.5px;color:var(--ink60);line-height:1.8;margin:0">'+esc(q.exp)+'</p>'+
+      findLinks(q)+'</div>').join("")+
+    '</div>':'')+
+  '<div class="stack" style="gap:10px;margin-top:22px">'+
+    '<button class="primary" id="again">もう一度</button>'+
+    (wrongs.length?'<button class="secondary" id="rev">まちがい直しをする</button>':'')+
+    '<button class="secondary" id="home">ホームへ</button>'+
+  '</div>';
+  document.getElementById("again").addEventListener("click",()=>start("normal"));
+  const r=document.getElementById("rev"); if(r)r.addEventListener("click",()=>start("review"));
+  document.getElementById("home").addEventListener("click",()=>{S.screen="home";render();});
+}
+
+render();
+</script>
+</body>
+</html>
