@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ことわざ道場 ｜ 中学受験 語句の知識</title>
+<style>
+:root{
+  --ai:#17324a;        /* 藍 */
+  --ai-2:#24506f;      /* 浅葱がかった藍 */
+  --kinari:#f6f1e4;    /* 生成り */
+  --washi:#fffcf5;     /* 和紙 */
+  --sumi:#20242b;      /* 墨 */
+  --usuzumi:#6b7280;   /* 薄墨 */
+  --yamabuki:#d9a13b;  /* 山吹 */
+  --wakakusa:#4f7a4a;  /* 若草 */
+  --akane:#a8384a;     /* 茜 */
+  --line:#ded4bd;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Times New Roman",serif;
+  --gothic:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--gothic);
+  background:var(--kinari);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(23,50,74,.045), transparent 55%),
+    radial-gradient(circle at 85% 80%, rgba(217,161,59,.07), transparent 50%);
+  color:var(--sumi);
+  min-height:100dvh;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px 96px}
+
+/* ---------- ヘッダー ---------- */
+header{
+  padding:22px 0 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand h1{
+  font-family:var(--mincho);font-size:26px;margin:0;letter-spacing:.14em;color:var(--ai);font-weight:600;
+}
+.brand .sub{font-size:11px;color:var(--usuzumi);letter-spacing:.18em}
+.whobtn{
+  border:1px solid var(--line);background:var(--washi);border-radius:999px;
+  padding:7px 14px;font-size:13px;color:var(--ai);font-family:var(--gothic);cursor:pointer;
+  display:flex;align-items:center;gap:6px;font-weight:600;
+}
+.whobtn .dot{width:8px;height:8px;border-radius:50%;background:var(--yamabuki)}
+
+/* ---------- タブ ---------- */
+nav.tabs{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:20px}
+nav.tabs button{
+  flex:1;background:none;border:none;padding:12px 4px;font-size:14px;font-weight:700;
+  color:var(--usuzumi);font-family:var(--gothic);cursor:pointer;position:relative;letter-spacing:.06em;
+}
+nav.tabs button[aria-selected="true"]{color:var(--ai)}
+nav.tabs button[aria-selected="true"]::after{
+  content:"";position:absolute;left:0;right:0;bottom:-2px;height:3px;background:var(--ai);border-radius:2px;
+}
+
+/* ---------- カード ---------- */
+.card{
+  background:var(--washi);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px;
+  box-shadow:0 1px 0 rgba(23,50,74,.04);
+}
+.card h2{
+  font-family:var(--mincho);font-size:15px;margin:0 0 14px;letter-spacing:.14em;color:var(--ai);
+  display:flex;align-items:center;gap:8px;font-weight:600;
+}
+.card h2::before{content:"";width:3px;height:15px;background:var(--yamabuki);border-radius:2px}
+
+/* ---------- 選択チップ ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:10px 13px;
+  font-size:14px;font-family:var(--gothic);color:var(--sumi);cursor:pointer;transition:.12s;font-weight:600;
+}
+.chip small{display:block;font-size:10px;color:var(--usuzumi);font-weight:400;margin-top:2px;letter-spacing:.04em}
+.chip[aria-pressed="true"]{border-color:var(--ai);background:var(--ai);color:#fff}
+.chip[aria-pressed="true"] small{color:rgba(255,255,255,.7)}
+.chip:active{transform:scale(.97)}
+
+.start{
+  width:100%;padding:17px;border:none;border-radius:10px;background:var(--ai);color:#fff;
+  font-size:17px;font-weight:700;font-family:var(--gothic);letter-spacing:.16em;cursor:pointer;
+  box-shadow:0 3px 0 #0e2334;
+}
+.start:active{transform:translateY(2px);box-shadow:0 1px 0 #0e2334}
+.start:disabled{background:#b6bcc4;box-shadow:none;cursor:default}
+
+/* ---------- 短冊（問題札） ---------- */
+.tanzaku{
+  background:var(--washi);
+  border:1px solid var(--line);
+  border-top:5px solid var(--ai);
+  border-radius:4px;
+  padding:30px 20px;
+  text-align:center;
+  min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;
+  box-shadow:0 2px 12px rgba(23,50,74,.07);
+  position:relative;overflow:hidden;
+}
+.tanzaku::after{
+  content:"";position:absolute;inset:6px;border:1px solid rgba(222,212,189,.75);border-radius:2px;pointer-events:none;
+}
+.qlabel{font-size:11px;letter-spacing:.24em;color:var(--usuzumi)}
+.qtext{
+  font-family:var(--mincho);font-size:27px;line-height:1.7;font-weight:600;color:var(--sumi);
+  letter-spacing:.04em;word-break:auto-phrase;
+}
+.qtext.meaning{font-size:17px;line-height:1.9;font-weight:400;letter-spacing:.02em;text-align:left}
+.blank{
+  display:inline-block;min-width:1.3em;border-bottom:3px solid var(--ai);
+  color:transparent;margin:0 .06em;
+}
+.blank.filled{color:var(--akane);border-bottom-color:var(--akane);animation:ink .45s ease-out}
+@keyframes ink{from{opacity:0;transform:translateY(-6px) scale(.85)}to{opacity:1;transform:none}}
+
+/* ---------- 進捗 ---------- */
+.meter{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:12px;color:var(--usuzumi)}
+.bar{flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ai);border-radius:3px;transition:width .3s}
+.tally{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ai)}
+
+/* ---------- 解答ボタン ---------- */
+.opts{display:grid;gap:9px;margin-top:16px}
+.opt{
+  text-align:left;background:var(--washi);border:1.5px solid var(--line);border-radius:9px;
+  padding:15px 15px;font-size:16px;font-family:var(--gothic);color:var(--sumi);cursor:pointer;
+  display:flex;align-items:center;gap:12px;line-height:1.55;transition:.12s;
+}
+.opt .no{
+  flex:none;width:24px;height:24px;border-radius:50%;background:var(--kinari);color:var(--ai);
+  display:grid;place-items:center;font-size:12px;font-weight:700;border:1px solid var(--line);
+}
+.opt.wide{font-family:var(--mincho);font-size:18px;font-weight:600;letter-spacing:.03em}
+.opt:active{transform:scale(.99)}
+.opt.ok{border-color:var(--wakakusa);background:#eef5ec}
+.opt.ok .no{background:var(--wakakusa);color:#fff;border-color:var(--wakakusa)}
+.opt.ng{border-color:var(--akane);background:#fbeef0}
+.opt.ng .no{background:var(--akane);color:#fff;border-color:var(--akane)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.ok:disabled,.opt.ng:disabled{opacity:1}
+
+/* ---------- 解説 ---------- */
+.answer{margin-top:16px;border-radius:9px;padding:16px;border:1px solid var(--line);background:var(--washi)}
+.answer .verdict{font-size:14px;font-weight:700;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.answer.ok .verdict{color:var(--wakakusa)}
+.answer.ng .verdict{color:var(--akane)}
+.answer .full{font-family:var(--mincho);font-size:21px;font-weight:600;letter-spacing:.04em;margin-bottom:3px;color:var(--ai)}
+.answer .yomi{font-size:12px;color:var(--usuzumi);margin-bottom:9px;letter-spacing:.06em}
+.answer .mean{font-size:15px;line-height:1.8}
+.next{
+  margin-top:14px;width:100%;padding:15px;border:none;border-radius:9px;background:var(--ai);color:#fff;
+  font-size:16px;font-weight:700;letter-spacing:.14em;font-family:var(--gothic);cursor:pointer;
+}
+.next:active{transform:translateY(1px)}
+
+/* ---------- 結果 ---------- */
+.score{text-align:center;padding:26px 10px}
+.score .big{font-family:var(--mincho);font-size:56px;font-weight:600;color:var(--ai);line-height:1;font-variant-numeric:tabular-nums}
+.score .big span{font-size:22px;color:var(--usuzumi)}
+.score .msg{margin-top:12px;font-size:15px;font-weight:700;color:var(--sumi)}
+.score .note{margin-top:6px;font-size:12px;color:var(--usuzumi)}
+.reviewlist{display:grid;gap:9px}
+.rev{border:1px solid var(--line);border-left:4px solid var(--akane);border-radius:7px;padding:12px 13px;background:var(--washi)}
+.rev .k{font-family:var(--mincho);font-size:17px;font-weight:600;color:var(--ai)}
+.rev .m{font-size:13px;color:var(--usuzumi);margin-top:4px;line-height:1.7}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.ghost{
+  padding:14px;border:1.5px solid var(--ai);border-radius:9px;background:transparent;color:var(--ai);
+  font-size:15px;font-weight:700;font-family:var(--gothic);cursor:pointer;
+}
+
+/* ---------- 一覧 ---------- */
+.search{
+  width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:9px;background:var(--washi);
+  font-size:15px;font-family:var(--gothic);margin-bottom:12px;color:var(--sumi);
+}
+.search:focus{outline:none;border-color:var(--ai)}
+.item{border-bottom:1px solid var(--line);padding:13px 2px;display:flex;gap:11px;align-items:flex-start}
+.item:last-child{border-bottom:none}
+.item .badge{
+  flex:none;margin-top:3px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);
+  display:grid;place-items:center;font-size:11px;color:var(--usuzumi);background:#fff;
+}
+.item .badge.done{background:var(--yamabuki);border-color:var(--yamabuki);color:#fff}
+.item .k{font-family:var(--mincho);font-size:17px;font-weight:600;letter-spacing:.03em}
+.item .y{font-size:11px;color:var(--usuzumi);letter-spacing:.05em;margin-top:1px}
+.item .m{font-size:13px;color:#4b5563;line-height:1.75;margin-top:5px}
+.count{font-size:12px;color:var(--usuzumi);margin-bottom:8px}
+
+/* ---------- 記録 ---------- */
+.stat{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.stat:last-child{border-bottom:none}
+.stat .l{font-size:14px;font-weight:600}
+.stat .r{font-size:13px;color:var(--usuzumi);font-variant-numeric:tabular-nums}
+.pbar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:7px}
+.pbar i{display:block;height:100%;background:var(--yamabuki)}
+.danger{background:none;border:none;color:var(--akane);font-size:13px;text-decoration:underline;cursor:pointer;padding:8px 0;font-family:var(--gothic)}
+
+/* ---------- モーダル ---------- */
+.mask{position:fixed;inset:0;background:rgba(32,36,43,.5);display:grid;place-items:center;padding:20px;z-index:50}
+.modal{background:var(--washi);border-radius:12px;padding:22px;width:100%;max-width:380px}
+.modal h3{font-family:var(--mincho);font-size:17px;margin:0 0 16px;letter-spacing:.1em;color:var(--ai)}
+.users{display:grid;gap:8px;margin-bottom:14px}
+.userbtn{
+  padding:14px;border:1.5px solid var(--line);border-radius:9px;background:#fff;font-size:16px;font-weight:600;
+  font-family:var(--gothic);cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;
+}
+.userbtn[aria-pressed="true"]{border-color:var(--ai);background:var(--ai);color:#fff}
+.userbtn .x{font-size:12px;opacity:.55}
+.addrow{display:flex;gap:8px}
+.addrow input{flex:1;padding:12px;border:1.5px solid var(--line);border-radius:9px;font-size:15px;font-family:var(--gothic)}
+.addrow input:focus{outline:none;border-color:var(--ai)}
+.addrow button{padding:12px 16px;border:none;border-radius:9px;background:var(--ai);color:#fff;font-weight:700;cursor:pointer;font-family:var(--gothic)}
+.close{width:100%;margin-top:14px;padding:12px;border:none;background:none;color:var(--usuzumi);font-size:14px;cursor:pointer;font-family:var(--gothic)}
+.hidden{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+:focus-visible{outline:3px solid var(--yamabuki);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>ことわざ道場</h1>
+      <span class="sub">語句の知識</span>
+    </div>
+    <button class="whobtn" id="whoBtn"><span class="dot"></span><span id="whoName">だれ？</span></button>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="home">いどむ</button>
+    <button role="tab" aria-selected="false" data-tab="list">ことわざ一覧</button>
+    <button role="tab" aria-selected="false" data-tab="rec">きろく</button>
+  </nav>
+
+  <!-- ===== ホーム ===== -->
+  <section id="home">
+    <div class="card">
+      <h2>出題のしかた</h2>
+      <div class="chips" id="modeChips">
+        <button class="chip" data-mode="fill" aria-pressed="true">穴うめ<small>□に入る言葉は？</small></button>
+        <button class="chip" data-mode="mean" aria-pressed="false">意味あて<small>ことわざ→意味</small></button>
+        <button class="chip" data-mode="rev"  aria-pressed="false">逆引き<small>意味→ことわざ</small></button>
+        <button class="chip" data-mode="mix"  aria-pressed="false">ごちゃまぜ<small>3つランダム</small></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>はんい</h2>
+      <div class="chips" id="catChips"></div>
+    </div>
+
+    <div class="card">
+      <h2>もんだい数</h2>
+      <div class="chips" id="numChips">
+        <button class="chip" data-num="10" aria-pressed="true">10問</button>
+        <button class="chip" data-num="20" aria-pressed="false">20問</button>
+        <button class="chip" data-num="30" aria-pressed="false">30問</button>
+        <button class="chip" data-num="0"  aria-pressed="false">全部</button>
+      </div>
+      <div style="margin-top:14px" class="chips">
+        <button class="chip" id="weakChip" aria-pressed="false">にがてだけ<small>まだマスターしていない問題</small></button>
+      </div>
+    </div>
+
+    <button class="start" id="startBtn">はじめる</button>
+  </section>
+
+  <!-- ===== クイズ ===== -->
+  <section id="quiz" class="hidden">
+    <div class="meter">
+      <span id="qNo">1 / 10</span>
+      <span class="bar"><i id="qBar" style="width:0%"></i></span>
+      <span class="tally" id="qTally">○0</span>
+    </div>
+    <div class="tanzaku">
+      <div class="qlabel" id="qLabel">□に入る言葉は？</div>
+      <div class="qtext" id="qText"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div id="answer"></div>
+  </section>
+
+  <!-- ===== 結果 ===== -->
+  <section id="result" class="hidden">
+    <div class="card">
+      <div class="score">
+        <div class="big" id="rScore">0<span>/10</span></div>
+        <div class="msg" id="rMsg"></div>
+        <div class="note" id="rNote"></div>
+      </div>
+    </div>
+    <div class="card" id="reviewCard">
+      <h2>まちがえたことわざ</h2>
+      <div class="reviewlist" id="reviewList"></div>
+    </div>
+    <div class="row">
+      <button class="ghost" id="againBtn">もう一度</button>
+      <button class="start" id="homeBtn" style="box-shadow:0 3px 0 #0e2334">ホームへ</button>
+    </div>
+    <button class="ghost" id="retryWrongBtn" style="width:100%;margin-top:9px">まちがえた分だけやり直す</button>
+  </section>
+
+  <!-- ===== 一覧 ===== -->
+  <section id="list" class="hidden">
+    <input class="search" id="searchBox" placeholder="ことわざ・意味・言葉でさがす">
+    <div class="chips" id="listCats" style="margin-bottom:14px"></div>
+    <div class="count" id="listCount"></div>
+    <div class="card" id="listBox"></div>
+  </section>
+
+  <!-- ===== きろく ===== -->
+  <section id="rec" class="hidden">
+    <div class="card">
+      <h2>マスターぐあい</h2>
+      <div id="recStats"></div>
+    </div>
+    <div class="card">
+      <h2>にがてトップ10</h2>
+      <div id="recWeak"></div>
+    </div>
+    <button class="danger" id="resetBtn">このお子さまの記録をぜんぶ消す</button>
+  </section>
+</div>
+
+<!-- ===== ユーザー選択 ===== -->
+<div class="mask hidden" id="userMask">
+  <div class="modal">
+    <h3>だれがやる？</h3>
+    <div class="users" id="userList"></div>
+    <div class="addrow">
+      <input id="newUser" placeholder="なまえを入れる" maxlength="8">
+      <button id="addUser">ふやす</button>
+    </div>
+    <button class="close" id="closeUser">とじる</button>
+  </div>
+</div>
+
+<script>
+/* =======================================================
+   データ  [ことわざ, □にする言葉, 意味, 分類, よみ]
+   分類 0:動物 1:植物 2:数字 3:くらし・その他
+   ======================================================= */
+const RAW = [
+/* --- 動物 --- */
+["虻蜂取らず","虻","二つとも手に入れようと欲ばって、結局どちらも得られないこと。",0,"あぶはちとらず"],
+["蟻の穴から堤も崩れる","蟻","小さな油断や不注意が、大きな失敗をまねくということ。",0,"ありのあなからつつみもくずれる"],
+["犬も歩けば棒に当たる","犬","何かをしていると、思いがけない幸運や災難に出会うということ。",0,""],
+["井の中の蛙大海を知らず","蛙","せまい知識にとらわれて、広い世間を知らないことのたとえ。",0,"いのなかのかわずたいかいをしらず"],
+["馬の耳に念仏","馬","いくら忠告しても、まったく効き目がないこと。",0,"うまのみみにねんぶつ"],
+["木に縁りて魚を求む","魚","方法がまちがっているため、目的が達成できないこと。",0,"きによりてうおをもとむ"],
+["豚に真珠","豚","値打ちのあるものも、それがわからない人には役に立たないこと。",0,"ぶたにしんじゅ"],
+["鳶が鷹を生む","鳶","平凡な親から、すぐれた子が生まれること。",0,"とんびがたかをうむ"],
+["二兎を追う者は一兎をも得ず","二兎","欲ばって二つをねらうと、どちらも手に入らないこと。",0,"にとをおうものはいっとをもえず"],
+["猫に小判","猫","貴重なものも、価値のわからない人にはむだであること。",0,"ねこにこばん"],
+["月とすっぽん","すっぽん","二つのものの違いが、あまりにも大きいことのたとえ。",0,""],
+["犬に論語","犬","道理を説いても、わからない相手には何にもならないこと。",0,"いぬにろんご"],
+["海老で鯛を釣る","鯛","わずかな元手や労力で、大きな利益を得ること。",0,"えびでたいをつる"],
+["蛙の面に水","蛙","何をされても平気でいることのたとえ。",0,"かえるのつらにみず"],
+["河童の川流れ","河童","名人でも、時には失敗することがあるということ。",0,"かっぱのかわながれ"],
+["雉も鳴かずば撃たれまい","雉","余計なことを言わなければ、災いをまねかずにすんだということ。",0,"きじもなかずばうたれまい"],
+["亀の甲より年の功","亀","長年つんだ経験は、とうといものだということ。",0,"かめのこうよりとしのこう"],
+["捕らぬ狸の皮算用","狸","手に入るかどうかわからないうちから、あてにして計画を立てること。",0,"とらぬたぬきのかわざんよう"],
+["柳の下にいつも泥鰌はいない","泥鰌","一度うまくいっても、同じ方法がいつも通用するとはかぎらないこと。",0,"やなぎのしたにいつもどじょうはいない"],
+["泣き面に蜂","蜂","不運の上に、さらに不運が重なること。",0,"なきつらにはち"],
+["魚心あれば水心","魚心","相手が好意を示せば、こちらも応じる気持ちがあるということ。",0,"うおごころあればみずごころ"],
+["牛に引かれて善光寺参り","牛","思いがけないきっかけで、よい方向に導かれること。",0,"うしにひかれてぜんこうじまいり"],
+["飼い犬に手を噛まれる","犬","面倒をみていた者に裏切られること。",0,"かいいぬにてをかまれる"],
+["蛙の子は蛙","蛙","子は親に似るもので、平凡な親からは平凡な子が生まれるということ。",0,"かえるのこはかえる"],
+["立つ鳥跡を濁さず","鳥","立ち去る者は、あとをきれいに始末していくべきだということ。",0,"たつとりあとをにごさず"],
+["猿も木から落ちる","猿","どんな名人でも、失敗することがあるということ。",0,"さるもきからおちる"],
+["虎の威を借る狐","虎","有力者の力をたのみにして、いばる小者のたとえ。",0,"とらのいをかるきつね"],
+["能ある鷹は爪を隠す","鷹","実力のある人は、むやみにそれを見せびらかさないということ。",0,"のうあるたかはつめをかくす"],
+["掃き溜めに鶴","鶴","つまらない所に、まわりとつり合わないすぐれたものが現れること。",0,"はきだめにつる"],
+["藪をつついて蛇を出す","蛇","余計なことをして、かえって災いをまねくこと。",0,"やぶをつついてへびをだす"],
+["蛇の道は蛇","蛇","同じ仲間のことは、その仲間がいちばんよく知っているということ。",0,"じゃのみちはへび"],
+["犬猿の仲","犬猿","非常に仲が悪いことのたとえ。",0,"けんえんのなか"],
+["鶏口となるも牛後となるなかれ","牛後","大きな組織の末端にいるより、小さくても長になれということ。",0,"けいこうとなるもぎゅうごとなるなかれ"],
+["大山鳴動して鼠一匹","鼠","大さわぎしたわりに、結果がたいしたことがないこと。",0,"たいざんめいどうしてねずみいっぴき"],
+["角を矯めて牛を殺す","牛","小さな欠点を直そうとして、かえって全体をだめにすること。",0,"つのをためてうしをころす"],
+["飛んで火に入る夏の虫","虫","自分から進んで、危険や災いの中に飛びこむこと。",0,"とんでひにいるなつのむし"],
+["猫の手も借りたい","猫","非常にいそがしくて、人手がいくらでもほしいこと。",0,"ねこのてもかりたい"],
+["猫に鰹節","鰹節","油断できない、危険な状況のたとえ。",0,"ねこにかつおぶし"],
+["馬子にも衣装","馬子","だれでも身なりを整えれば、立派に見えるということ。",0,"まごにもいしょう"],
+["水魚の交わり","水魚","切っても切れないほど親しい間がらのたとえ。",0,"すいぎょのまじわり"],
+["雀百まで踊り忘れず","雀","幼いころの習慣は、年をとっても直らないということ。",0,"すずめひゃくまでおどりわすれず"],
+["虎穴に入らずんば虎子を得ず","虎穴","危険をおかさなければ、大きな成功は得られないということ。",0,"こけつにいらずんばこじをえず"],
+["鰯の頭も信心から","鰯","つまらないものでも、信仰の対象になればありがたく思えるということ。",0,"いわしのあたまもしんじんから"],
+["逃した魚は大きい","魚","手に入れそこなったものは、実際よりよいものに思われるということ。",0,"にがしたさかなはおおきい"],
+["渡る世間に鬼はない","鬼","世の中には冷たい人ばかりでなく、親切な人もいるということ。",0,"わたるせけんにおにはない"],
+["鬼に金棒","金棒","強いものが、さらに強さを加えることのたとえ。",0,"おににかなぼう"],
+["鬼の目にも涙","涙","冷酷に見える人でも、時には情け深い心を起こすことがあるということ。",0,"おにのめにもなみだ"],
+
+/* --- 植物 --- */
+["瓜のつるに茄子はならぬ","茄子","平凡な親から、非凡な子は生まれないということ。",1,"うりのつるになすびはならぬ"],
+["独活の大木","独活","体ばかり大きくて、役に立たない人のたとえ。",1,"うどのたいぼく"],
+["柳に風","柳","逆らわずに、軽く受け流すこと。",1,"やなぎにかぜ"],
+["隣の芝生は青い","芝生","他人のものは、何でもよく見えるということ。",1,"となりのしばふはあおい"],
+["山椒は小粒でもぴりりと辛い","山椒","体は小さくても、すぐれた才能をもっていることのたとえ。",1,"さんしょうはこつぶでもぴりりとからい"],
+["濡れ手で粟","粟","苦労せずに、大きな利益を手に入れること。",1,"ぬれてであわ"],
+["柳の枝に雪折れなし","柳","柔らかいものは、かたいものよりかえって折れずに耐えるということ。",1,"やなぎのえだにゆきおれなし"],
+["寄らば大樹の陰","大樹","たよるなら、勢力のある人や大きな組織のほうがよいということ。",1,"よらばたいじゅのかげ"],
+["三日見ぬ間の桜","桜","世の中の移り変わりが激しいことのたとえ。",1,"みっかみぬまのさくら"],
+["花より団子","団子","見た目の美しさより、実際の利益をとること。",1,"はなよりだんご"],
+["蒔かぬ種は生えぬ","種","何もしないで、よい結果は得られないということ。",1,"まかぬたねははえぬ"],
+["青は藍より出でて藍より青し","藍","弟子が努力して、師よりすぐれた者になることのたとえ。",1,"あおはあいよりいでてあいよりあおし"],
+["火中の栗を拾う","栗","他人の利益のために、危険をおかすこと。",1,"かちゅうのくりをひろう"],
+["十日の菊六日の菖蒲","菊","時機に遅れて、役に立たないこと。",1,"とおかのきくむいかのあやめ"],
+["桃栗三年柿八年","柿","物事は、成しとげるまでに相応の年数がかかるということ。",1,"ももくりさんねんかきはちねん"],
+["雨後の筍","筍","似たようなものが、次々と現れることのたとえ。",1,"うごのたけのこ"],
+["瓢箪から駒","瓢箪","じょうだんで言ったことが、本当になること。",1,"ひょうたんからこま"],
+["枯れ木も山の賑わい","枯れ木","つまらないものでも、ないよりはましだということ。",1,"かれきもやまのにぎわい"],
+["木を見て森を見ず","森","細かい点にこだわって、全体を見失うこと。",1,"きをみてもりをみず"],
+["蓼食う虫も好き好き","蓼","人の好みは、さまざまであるということ。",1,"たでくうむしもすきずき"],
+["実るほど頭を垂れる稲穂かな","稲穂","立派な人ほど、かえって謙虚であるということ。",1,"みのるほどこうべをたれるいなほかな"],
+["棚からぼた餅","ぼた餅","思いがけない幸運が、まいこむこと。",1,"たなからぼたもち"],
+
+/* --- 数字 --- */
+["石の上にも三年","三年","辛抱強く続ければ、いつかは報われるということ。",2,"いしのうえにもさんねん"],
+["一を聞いて十を知る","十","少し聞いただけで、全体を理解してしまう賢さのたとえ。",2,"いちをきいてじゅうをしる"],
+["一寸の虫にも五分の魂","五分","小さく弱い者にも、意地や誇りがあるということ。",2,"いっすんのむしにもごぶのたましい"],
+["千里の道も一歩から","一歩","大きな事業も、身近な第一歩から始まるということ。",2,"せんりのみちもいっぽから"],
+["五十歩百歩","百歩","少しの違いはあっても、本質的には同じであること。",2,"ごじっぽひゃっぽ"],
+["三人寄れば文殊の知恵","三人","平凡な人でも、三人集まればよい知恵が出るということ。",2,"さんにんよればもんじゅのちえ"],
+["百聞は一見に如かず","一見","何度も聞くより、一度実際に見るほうがよくわかるということ。",2,"ひゃくぶんはいっけんにしかず"],
+["二階から目薬","二階","回りくどくて、まったく効き目がないこと。",2,"にかいからめぐすり"],
+["一石二鳥","二鳥","一つのことをして、同時に二つの利益を得ること。",2,"いっせきにちょう"],
+["二度あることは三度ある","三度","同じようなことは、繰り返し起こるものだということ。",2,"にどあることはさんどある"],
+["一寸先は闇","闇","将来のことは、まったくわからないということ。",2,"いっすんさきはやみ"],
+["早起きは三文の徳","三文","早起きをすると、何かとよいことがあるということ。",2,"はやおきはさんもんのとく"],
+["七転び八起き","八起き","何度失敗しても、くじけずに立ち上がること。",2,"ななころびやおき"],
+["人の噂も七十五日","七十五日","うわさも時がたてば、自然に消えていくということ。",2,"ひとのうわさもしちじゅうごにち"],
+["三つ子の魂百まで","百","幼いころの性格は、一生変わらないということ。",2,"みつごのたましいひゃくまで"],
+["三度目の正直","三度目","一度や二度はあてにならないが、三度目は確かであるということ。",2,"さんどめのしょうじき"],
+["仏の顔も三度","三度","おだやかな人でも、何度もひどいことをされれば怒るということ。",2,"ほとけのかおもさんど"],
+["悪事千里を走る","千里","悪い行いは、すぐに世間に知れわたるということ。",2,"あくじせんりをはしる"],
+["腹八分目に医者いらず","八分目","食べすぎなければ、健康でいられるということ。",2,"はらはちぶんめにいしゃいらず"],
+["人を呪わば穴二つ","二つ","人を害しようとすれば、自分にも災いが返ってくるということ。",2,"ひとをのろわばあなふたつ"],
+["親の光は七光り","七光り","親の威光のおかげで、子が得をすること。",2,"おやのひかりはななひかり"],
+["一か八か","八","運を天にまかせて、思い切ってやってみること。",2,"いちかばちか"],
+["少年老い易く学成り難し","学","月日はすぐ過ぎるので、若いうちに学べということ。",2,"しょうねんおいやすくがくなりがたし"],
+
+/* --- くらし・その他 --- */
+["暑さ寒さも彼岸まで","彼岸","冬の寒さも夏の暑さも、彼岸のころにはやわらぐということ。",3,"あつさもさむさもひがんまで"],
+["医者の不養生","不養生","人には立派なことを説きながら、自分では実行しないこと。",3,"いしゃのふようじょう"],
+["急がば回れ","回れ","急ぐときは、危険な近道より安全な道を行くほうが結局早いということ。",3,"いそがばまわれ"],
+["雨垂れ石を穿つ","雨垂れ","小さな力でも続ければ、大きな成果になるということ。",3,"あまだれいしをうがつ"],
+["後は野となれ山となれ","野","今さえよければ、あとはどうなってもかまわないということ。",3,"あとはのとなれやまとなれ"],
+["果報は寝て待て","果報","幸運は、あせらずに時機を待つのがよいということ。",3,"かほうはねてまて"],
+["溺れる者は藁をもつかむ","藁","危険がせまると、たよりにならないものにまですがろうとすること。",3,"おぼれるものはわらをもつかむ"],
+["帯に短し襷に長し","襷","中途半端で、役に立たないこと。",3,"おびにみじかしたすきにながし"],
+["雨降って地固まる","地","もめごとのあとは、かえって基盤がしっかりすること。",3,"あめふってじかたまる"],
+["勝って兜の緒を締めよ","兜","勝ってもゆだんせず、いっそう気を引きしめよということ。",3,"かってかぶとのおをしめよ"],
+["壁に耳あり障子に目あり","障子","秘密は、もれやすいものだということ。",3,"かべにみみありしょうじにめあり"],
+["弘法にも筆の誤り","弘法","どんな名人でも、失敗することがあるということ。",3,"こうぼうにもふでのあやまり"],
+["弘法筆を選ばず","筆","本当の名人は、道具のよしあしを問題にしないということ。",3,"こうぼうふでをえらばず"],
+["後悔先に立たず","後悔","すんでしまってから悔やんでも、取り返しがつかないということ。",3,"こうかいさきにたたず"],
+["光陰矢の如し","矢","月日は、矢のように早く過ぎ去るということ。",3,"こういんやのごとし"],
+["紺屋の白袴","白袴","他人のためにいそがしくて、自分のことに手が回らないこと。",3,"こうやのしろばかま"],
+["触らぬ神に祟りなし","神","かかわりさえしなければ、災いを受けることもないということ。",3,"さわらぬかみにたたりなし"],
+["転ばぬ先の杖","杖","失敗しないように、前もって用意しておくこと。",3,"ころばぬさきのつえ"],
+["提灯に釣鐘","釣鐘","形は似ていても、比べものにならないほど違うこと。",3,"ちょうちんにつりがね"],
+["塵も積もれば山となる","塵","小さなものでも、積み重なれば大きなものになるということ。",3,"ちりもつもればやまとなる"],
+["良薬は口に苦し","良薬","ためになる忠告は、聞くのがつらいものだということ。",3,"りょうやくはくちににがし"],
+["豆腐にかすがい","かすがい","少しも手ごたえや効き目がないこと。",3,"とうふにかすがい"],
+["急いては事を仕損じる","仕損じる","あせって急ぐと、かえって失敗しやすいということ。",3,"せいてはことをしそんじる"],
+["上手の手から水が漏れる","上手","どんな名人でも、失敗することがあるということ。",3,"じょうずのてからみずがもれる"],
+["好きこそ物の上手なれ","好き","好きなことは熱心にやるので、上達するということ。",3,"すきこそもののじょうずなれ"],
+["過ぎたるはなお及ばざるがごとし","及ばざる","やりすぎは、足りないのと同じでよくないということ。",3,"すぎたるはなおおよばざるがごとし"],
+["弱り目に祟り目","祟り目","不運の上に、さらに不運が重なること。",3,"よわりめにたたりめ"],
+["知らぬが仏","仏","知らなければ腹も立たず、おだやかな心でいられるということ。",3,"しらぬがほとけ"],
+["失敗は成功のもと","成功","失敗しても原因に気づいて直せば、かえって成功につながるということ。",3,"しっぱいはせいこうのもと"],
+["忠言耳に逆らう","忠言","ためになる忠告ほど、聞きづらいものだということ。",3,"ちゅうげんみみにさからう"],
+["情けは人の為ならず","情け","人に親切にすれば、めぐりめぐって自分によい報いがあるということ。",3,"なさけはひとのためならず"],
+["時は金なり","金","時間は金銭と同じように、大切にしなければならないということ。",3,"ときはかねなり"],
+["思い立ったが吉日","吉日","思い立ったら、ためらわずにすぐ実行せよということ。",3,"おもいたったがきちじつ"],
+["船頭多くして船山に登る","船頭","指図する人が多いと、物事がとんでもない方向に進むこと。",3,"せんどうおおくしてふねやまにのぼる"],
+["旅は道連れ世は情け","道連れ","旅では同行者が、世の中では思いやりが大切だということ。",3,"たびはみちづれよはなさけ"],
+["先んずれば人を制す","制す","人より先に物事を行えば、有利に立つことができるということ。",3,"さきんずればひとをせいす"],
+["人事を尽くして天命を待つ","天命","できるかぎりの努力をしたうえで、あとは運命にまかせること。",3,"じんじをつくしててんめいをまつ"],
+["備えあれば憂いなし","憂い","ふだんから準備しておけば、いざというときに心配がないということ。",3,"そなえあればうれいなし"],
+["対岸の火事","対岸","自分には関係がなく、少しも痛みを感じないこと。",3,"たいがんのかじ"],
+["大は小をかねる","小","大きいものは、小さいものの代わりにもなるということ。",3,"だいはしょうをかねる"],
+["捨てる神あれば拾う神あり","拾う神","見捨てられることがあっても、助けてくれる人もいるということ。",3,"すてるかみあればひろうかみあり"],
+["旅の恥はかき捨て","恥","旅先では知り合いがいないので、恥ずかしい行いも気にしないこと。",3,"たびのはじはかきすて"],
+["沈黙は金","沈黙","だまっているほうが、話すよりかえって価値があるということ。",3,"ちんもくはきん"],
+["出る杭は打たれる","杭","才能があって目立つ人は、とかく人にねたまれるということ。",3,"でるくいはうたれる"],
+["月夜に釜を抜かれる","釜","ひどく油断していることのたとえ。",3,"つきよにかまをぬかれる"],
+["天に唾する","唾","人を害しようとして、かえって自分がひどい目にあうこと。",3,"てんにつばする"],
+["人を見たら泥棒と思え","泥棒","他人を軽々しく信用してはいけないということ。",3,"ひとをみたらどろぼうとおもえ"],
+["火のない所に煙は立たぬ","煙","うわさが立つのは、必ず何か根拠があるからだということ。",3,"ひのないところにけむりはたたぬ"],
+["朱に交われば赤くなる","朱","人は付き合う相手によって、よくも悪くもなるということ。",3,"しゅにまじわればあかくなる"],
+["のれんに腕押し","のれん","少しも手ごたえがないこと。",3,"のれんにうでおし"],
+["糠に釘","糠","手ごたえがなく、少しも効き目がないこと。",3,"ぬかにくぎ"],
+["身から出た錆","錆","自分の行いが原因で、自分が苦しむこと。",3,"みからでたさび"],
+["頭隠して尻隠さず","尻","悪事の一部を隠して、全部隠したつもりでいること。",3,"あたまかくしてしりかくさず"],
+["立て板に水","立て板","すらすらとよどみなく話すことのたとえ。",3,"たていたにみず"],
+["浅い川も深く渡れ","深く","簡単そうなことでも、注意深く行いなさいということ。",3,"あさいかわもふかくわたれ"],
+["あばたもえくぼ","えくぼ","好きになると、相手の欠点まで長所に見えるということ。",3,""],
+["案ずるより産むが易し","産む","心配するより、実際にやってみると案外たやすいということ。",3,"あんずるよりうむがやすし"],
+["縁の下の力持ち","縁の下","人に知られないところで、人のために努力する人のこと。",3,"えんのしたのちからもち"],
+["君子危うきに近寄らず","君子","立派な人は、危険なことには初めから近づかないということ。",3,"くんしあやうきにちかよらず"],
+["子はかすがい","かすがい","子どもは、夫婦の間をつなぎとめるものだということ。",3,"こはかすがい"],
+["悪銭身につかず","悪銭","不正に得たお金は、むだに使われてしまうということ。",3,"あくせんみにつかず"],
+["清水の舞台から飛び降りる","清水","思い切って、大きな決断をすること。",3,"きよみずのぶたいからとびおりる"],
+["石橋を叩いて渡る","石橋","用心の上にも、用心を重ねること。",3,"いしばしをたたいてわたる"],
+["灯台下暗し","灯台","身近なことは、かえって気づきにくいということ。",3,"とうだいもとくらし"],
+["言わぬが花","花","はっきり言わないほうが、かえって味わいがあるということ。",3,"いわぬがはな"],
+["初心忘るべからず","初心","始めたころのけんきょな気持ちを、忘れてはいけないということ。",3,"しょしんわするべからず"],
+["損して得取れ","得","一時は損をしても、のちに大きな利益を得よということ。",3,"そんしてとくとれ"],
+["待てば海路の日和あり","海路","あせらずに待てば、必ずよい機会がめぐってくるということ。",3,"まてばかいろのひよりあり"],
+["郷に入っては郷に従え","郷","その土地に行ったら、その土地の習慣に従うのがよいということ。",3,"ごうにいってはごうにしたがえ"],
+["短気は損気","損気","短気を起こすと、結局は自分が損をするということ。",3,"たんきはそんき"],
+["泥棒を捕らえて縄をなう","縄","事が起きてから、あわてて準備することのたとえ。",3,"どろぼうをとらえてなわをなう"],
+["昔取った杵柄","杵柄","若いころに身につけた腕前は、今でも通用するということ。",3,"むかしとったきねづか"],
+["のど元過ぎれば熱さを忘れる","熱さ","苦しいことも、過ぎてしまえば忘れてしまうということ。",3,"のどもとすぎればあつさをわすれる"],
+["うそから出たまこと","まこと","うそのつもりで言ったことが、本当になること。",3,""],
+["焼け石に水","焼け石","少しばかりの助けでは、効果がないこと。",3,"やけいしにみず"]
+];
+
+const CATS=["動物","植物","数字","くらし"];
+const DB=RAW.map((r,i)=>({id:i,f:r[0],b:r[1],m:r[2],c:r[3],y:r[4]||"",
+  q:r[0].replace(r[1],"§")}));
+// 重複した「雨降って地固まる」を除去
+(function(){const seen=new Set();for(let i=DB.length-1;i>=0;i--){if(seen.has(DB[i].f))DB.splice(i,1);else seen.add(DB[i].f);}DB.forEach((d,i)=>d.id=i);})();
+
+/* =======================================================
+   保存
+   ======================================================= */
+const KEY="kotowaza_dojo_v1";
+let S={users:{},cur:null};
+function load(){try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r);}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function stats(){if(!S.cur)return{};if(!S.users[S.cur])S.users[S.cur]={st:{}};return S.users[S.cur].st;}
+function rec(id,ok){
+  const st=stats(); const s=st[id]||(st[id]={o:0,x:0,k:0});
+  if(ok){s.o++;s.k++;}else{s.x++;s.k=0;}
+  save();
+}
+const mastered=id=>{const s=stats()[id];return !!s&&s.k>=2;};
+
+/* =======================================================
+   画面まわり
+   ======================================================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const SEC={home:$("#home"),quiz:$("#quiz"),result:$("#result"),list:$("#list"),rec:$("#rec")};
+function show(name){Object.entries(SEC).forEach(([k,el])=>el.classList.toggle("hidden",k!==name));}
+function tab(name){
+  $$("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name));
+  if(name==="list"){renderList();show("list");}
+  else if(name==="rec"){renderRec();show("rec");}
+  else show("home");
+}
+$$("nav.tabs button").forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+
+/* --- 分類チップ --- */
+const catChips=$("#catChips");
+catChips.innerHTML=`<button class="chip" data-cat="all" aria-pressed="true">ぜんぶ<small>${DB.length}語</small></button>`+
+  CATS.map((c,i)=>`<button class="chip" data-cat="${i}" aria-pressed="false">${c}<small>${DB.filter(d=>d.c===i).length}語</small></button>`).join("");
+function pickGroup(sel,attr){
+  $$(sel+" .chip").forEach(b=>b.onclick=()=>{
+    $$(sel+" .chip").forEach(x=>x.setAttribute("aria-pressed","false"));
+    b.setAttribute("aria-pressed","true");
+  });
+}
+pickGroup("#modeChips");pickGroup("#catChips");pickGroup("#numChips");
+$("#weakChip").onclick=e=>{const b=e.currentTarget;b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")!=="true");};
+const chosen=sel=>$(sel+' .chip[aria-pressed="true"]');
+
+/* =======================================================
+   ユーザー
+   ======================================================= */
+function renderUsers(){
+  const names=Object.keys(S.users);
+  $("#userList").innerHTML = names.length? names.map(n=>
+    `<button class="userbtn" data-n="${n}" aria-pressed="${n===S.cur}">${n}<span class="x" data-del="${n}">けす</span></button>`
+  ).join("") : `<div style="font-size:13px;color:var(--usuzumi);line-height:1.7">まだ登録がありません。<br>下になまえを入れてください。</div>`;
+  $$("#userList .userbtn").forEach(b=>b.onclick=e=>{
+    if(e.target.dataset.del){
+      if(confirm(e.target.dataset.del+" の記録を消します。よろしいですか？")){
+        delete S.users[e.target.dataset.del];
+        if(S.cur===e.target.dataset.del)S.cur=Object.keys(S.users)[0]||null;
+        save();renderUsers();paintWho();
+      }
+      return;
+    }
+    S.cur=b.dataset.n;save();renderUsers();paintWho();$("#userMask").classList.add("hidden");
+  });
+  $("#whoName").textContent=S.cur||"だれ？";
+}
+function paintWho(){$("#whoName").textContent=S.cur||"だれ？";}
+$("#whoBtn").onclick=()=>{renderUsers();$("#userMask").classList.remove("hidden");};
+$("#closeUser").onclick=()=>$("#userMask").classList.add("hidden");
+$("#addUser").onclick=()=>{
+  const v=$("#newUser").value.trim();if(!v)return;
+  if(!S.users[v])S.users[v]={st:{}};
+  S.cur=v;$("#newUser").value="";save();renderUsers();paintWho();
+};
+$("#newUser").addEventListener("keydown",e=>{if(e.key==="Enter")$("#addUser").click();});
+
+/* =======================================================
+   出題
+   ======================================================= */
+let Q=[],idx=0,ok=0,wrong=[],lastSetup=null;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+function buildPool(){
+  const c=chosen("#catChips").dataset.cat;
+  let pool=c==="all"?DB.slice():DB.filter(d=>d.c===+c);
+  if($("#weakChip").getAttribute("aria-pressed")==="true"){
+    const w=pool.filter(d=>!mastered(d.id));
+    if(w.length>=4)pool=w;
+  }
+  return pool;
+}
+function start(setup){
+  lastSetup=setup||null;
+  let pool = setup ? setup : buildPool();
+  if(!pool.length)return;
+  if(!setup && pool.length<4){alert("この条件では問題が足りません。はんいを広げてください。");return;}
+  const n=+chosen("#numChips").dataset.num;
+  const mode=chosen("#modeChips").dataset.mode;
+  Q=shuffle(pool.slice());
+  if(n>0)Q=Q.slice(0,Math.min(n,Q.length));
+  Q=Q.map(d=>({d,mode:mode==="mix"?["fill","mean","rev"][Math.random()*3|0]:mode}));
+  idx=0;ok=0;wrong=[];
+  show("quiz");render();
+}
+$("#startBtn").onclick=()=>{
+  if(!S.cur){renderUsers();$("#userMask").classList.remove("hidden");return;}
+  start(null);
+};
+
+function distract(d,mode,pool){
+  const same=pool.filter(x=>x.c===d.c&&x.id!==d.id);
+  const rest=pool.filter(x=>x.c!==d.c&&x.id!==d.id);
+  const src=shuffle(same.slice()).concat(shuffle(rest.slice()));
+  const key=mode==="fill"?"b":(mode==="mean"?"m":"f");
+  const out=[],used=new Set([d[key]]);
+  for(const x of src){if(used.has(x[key]))continue;used.add(x[key]);out.push(x);if(out.length===3)break;}
+  return out;
+}
+
+function render(){
+  const {d,mode}=Q[idx];
+  $("#qNo").textContent=`${idx+1} / ${Q.length}`;
+  $("#qBar").style.width=(idx/Q.length*100)+"%";
+  $("#qTally").textContent="○"+ok;
+  $("#answer").innerHTML="";
+
+  const qt=$("#qText");
+  qt.classList.toggle("meaning",mode==="rev");
+  if(mode==="fill"){
+    $("#qLabel").textContent="□に入る言葉は？";
+    qt.innerHTML=d.q.replace("§",`<span class="blank" id="bl">${d.b}</span>`);
+  }else if(mode==="mean"){
+    $("#qLabel").textContent="このことわざの意味は？";
+    qt.textContent=d.f;
+  }else{
+    $("#qLabel").textContent="この意味のことわざは？";
+    qt.textContent=d.m;
+  }
+
+  const pool=buildPool().length>=8?buildPool():DB;
+  const key=mode==="fill"?"b":(mode==="mean"?"m":"f");
+  const cards=shuffle([d,...distract(d,mode,pool)]);
+  const wide=(mode==="mean"||mode==="rev");
+  $("#opts").innerHTML=cards.map((x,i)=>
+    `<button class="opt ${mode==="rev"?"wide":""}" data-i="${i}"><span class="no">${"アイウエ"[i]}</span><span>${x[key]}</span></button>`
+  ).join("");
+  $$("#opts .opt").forEach((b,i)=>b.onclick=()=>judge(cards[i].id===d.id,i,cards,d,mode));
+}
+
+function judge(correct,pick,cards,d,mode){
+  $$("#opts .opt").forEach((b,i)=>{
+    b.disabled=true;
+    if(cards[i].id===d.id)b.classList.add("ok");
+    else if(i===pick)b.classList.add("ng");
+  });
+  if(mode==="fill"){const bl=$("#bl");if(bl)bl.classList.add("filled");}
+  if(correct){ok++;}else{wrong.push(d);}
+  rec(d.id,correct);
+  $("#qTally").textContent="○"+ok;
+
+  $("#answer").innerHTML=`
+    <div class="answer ${correct?"ok":"ng"}">
+      <div class="verdict">${correct?"◎ せいかい":"× ざんねん"}</div>
+      <div class="full">${d.f}</div>
+      ${d.y?`<div class="yomi">${d.y}</div>`:""}
+      <div class="mean">${d.m}</div>
+    </div>
+    <button class="next" id="nextBtn">${idx+1<Q.length?"つぎへ":"けっかを見る"}</button>`;
+  $("#nextBtn").onclick=()=>{idx++;idx<Q.length?render():finish();};
+  $("#nextBtn").focus({preventScroll:true});
+}
+
+function finish(){
+  const pct=Math.round(ok/Q.length*100);
+  $("#rScore").innerHTML=`${ok}<span>/${Q.length}</span>`;
+  $("#rMsg").textContent = pct===100?"全問正解！みごとです":pct>=80?"よくできました":pct>=50?"あと一息、復習しよう":"まずは一覧を読んでみよう";
+  $("#rNote").textContent=`正答率 ${pct}％ ／ ${S.cur} さん`;
+  $("#reviewCard").classList.toggle("hidden",wrong.length===0);
+  $("#reviewList").innerHTML=wrong.map(d=>
+    `<div class="rev"><div class="k">${d.f}</div>${d.y?`<div class="m">${d.y}</div>`:""}<div class="m">${d.m}</div></div>`).join("");
+  $("#retryWrongBtn").classList.toggle("hidden",wrong.length===0);
+  show("result");
+}
+$("#againBtn").onclick=()=>start(lastSetup);
+$("#homeBtn").onclick=()=>{show("home");tab("home");};
+$("#retryWrongBtn").onclick=()=>{const w=wrong.slice();start(w);};
+
+/* =======================================================
+   一覧
+   ======================================================= */
+let listCat="all";
+$("#listCats").innerHTML=`<button class="chip" data-cat="all" aria-pressed="true">ぜんぶ</button>`+
+  CATS.map((c,i)=>`<button class="chip" data-cat="${i}" aria-pressed="false">${c}</button>`).join("");
+$$("#listCats .chip").forEach(b=>b.onclick=()=>{
+  $$("#listCats .chip").forEach(x=>x.setAttribute("aria-pressed","false"));
+  b.setAttribute("aria-pressed","true");listCat=b.dataset.cat;renderList();
+});
+$("#searchBox").addEventListener("input",renderList);
+function renderList(){
+  const kw=$("#searchBox").value.trim();
+  let d=DB.filter(x=>listCat==="all"||x.c===+listCat);
+  if(kw)d=d.filter(x=>x.f.includes(kw)||x.m.includes(kw)||x.y.includes(kw)||x.b.includes(kw));
+  $("#listCount").textContent=`${d.length}語　（●＝マスター済み）`;
+  $("#listBox").innerHTML=d.length? d.map(x=>
+    `<div class="item"><span class="badge ${mastered(x.id)?"done":""}">${mastered(x.id)?"●":""}</span>
+      <div><div class="k">${x.f}</div>${x.y?`<div class="y">${x.y}</div>`:""}<div class="m">${x.m}</div></div></div>`
+  ).join("") : `<div style="padding:20px 0;color:var(--usuzumi);font-size:14px">見つかりませんでした。ちがう言葉でさがしてみてください。</div>`;
+}
+
+/* =======================================================
+   きろく
+   ======================================================= */
+function renderRec(){
+  if(!S.cur){$("#recStats").innerHTML=`<div style="font-size:14px;color:var(--usuzumi)">右上からお子さまを選んでください。</div>`;$("#recWeak").innerHTML="";return;}
+  const st=stats();
+  $("#recStats").innerHTML=[["ぜんぶ",DB]].concat(CATS.map((c,i)=>[c,DB.filter(d=>d.c===i)])).map(([n,arr])=>{
+    const m=arr.filter(d=>mastered(d.id)).length;
+    const p=Math.round(m/arr.length*100);
+    return `<div class="stat"><div style="flex:1"><div class="l">${n}</div><div class="pbar"><i style="width:${p}%"></i></div></div><div class="r" style="margin-left:14px">${m}/${arr.length}　${p}%</div></div>`;
+  }).join("");
+  const weak=DB.map(d=>({d,s:st[d.id]})).filter(o=>o.s&&o.s.x>0)
+    .sort((a,b)=>b.s.x-a.s.x||a.s.o-b.s.o).slice(0,10);
+  $("#recWeak").innerHTML=weak.length? weak.map(o=>
+    `<div class="stat"><div class="l" style="font-family:var(--mincho);font-size:16px">${o.d.f}</div><div class="r">×${o.s.x}　○${o.s.o}</div></div>`
+  ).join("") : `<div style="font-size:14px;color:var(--usuzumi)">まだ記録がありません。まずは10問やってみましょう。</div>`;
+}
+$("#resetBtn").onclick=()=>{
+  if(!S.cur)return;
+  if(confirm(S.cur+" さんの記録をすべて消します。よろしいですか？")){S.users[S.cur]={st:{}};save();renderRec();}
+};
+
+/* ===== 起動 ===== */
+load();
+if(!S.cur)S.cur=Object.keys(S.users)[0]||null;
+paintWho();renderList();
+if(!S.cur){renderUsers();$("#userMask").classList.remove("hidden");}
+</script>
+</body>
+</html>

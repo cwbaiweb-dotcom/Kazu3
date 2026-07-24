@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>故事成語クイズ</title>
+<style>
+  :root{
+    --paper:#FAF6EC;
+    --card:#FFFDF6;
+    --ink:#2B2B33;
+    --ink-soft:#6B6560;
+    --ai:#22456E;      /* 藍 */
+    --ai-deep:#18324F;
+    --shu:#C73E3A;     /* 朱 */
+    --shu-soft:#F6E3E1;
+    --matsu:#3F7A54;   /* 松葉 */
+    --matsu-soft:#E2F0E6;
+    --line:#E4DCCB;
+    --gold:#B98B2F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{font-size:16px;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+    background:var(--paper);
+    background-image:radial-gradient(rgba(185,139,47,.05) 1px, transparent 1px);
+    background-size:22px 22px;
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .mincho{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;}
+
+  header{
+    background:linear-gradient(135deg,var(--ai-deep),var(--ai));
+    color:#F5EFE2;
+    padding:14px 18px;
+    display:flex;align-items:center;gap:12px;
+    box-shadow:0 2px 8px rgba(24,50,79,.25);
+  }
+  .seal{
+    width:40px;height:40px;flex:0 0 40px;
+    background:var(--shu);
+    color:#FFF7EE;
+    border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.78rem;line-height:1.05;text-align:center;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-weight:700;letter-spacing:1px;
+    box-shadow:inset 0 0 0 2px rgba(255,247,238,.55);
+  }
+  header h1{font-size:1.15rem;letter-spacing:.14em;font-weight:700;}
+  header .sub{font-size:.7rem;opacity:.75;letter-spacing:.08em;margin-top:2px;}
+  #userChip{
+    margin-left:auto;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.3);
+    color:#F5EFE2;border-radius:999px;
+    padding:6px 14px;font-size:.85rem;cursor:pointer;
+  }
+
+  main{max-width:660px;margin:0 auto;padding:18px 14px 60px;}
+  .screen{display:none;}
+  .screen.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:14px;
+    box-shadow:0 1px 3px rgba(43,43,51,.06);
+  }
+  .card h2{
+    font-size:.85rem;color:var(--ai);letter-spacing:.2em;
+    border-left:4px solid var(--shu);
+    padding-left:10px;margin-bottom:12px;font-weight:700;
+  }
+
+  /* ユーザー選択 */
+  .userRow{display:flex;flex-wrap:wrap;gap:10px;}
+  .userBtn{
+    border:1.5px solid var(--line);background:#fff;
+    border-radius:12px;padding:10px 18px;font-size:1rem;cursor:pointer;
+    font-family:inherit;
+  }
+  .userBtn.selected{border-color:var(--ai);background:var(--ai);color:#fff;}
+  .userAddRow{display:flex;gap:8px;margin-top:10px;}
+  .userAddRow input{
+    flex:1;border:1.5px solid var(--line);border-radius:10px;
+    padding:9px 12px;font-size:1rem;font-family:inherit;background:#fff;
+  }
+  .userAddRow button{
+    border:none;background:var(--ai);color:#fff;border-radius:10px;
+    padding:0 18px;font-size:.9rem;cursor:pointer;font-family:inherit;
+  }
+
+  /* 設定 */
+  .optGrid{display:flex;flex-wrap:wrap;gap:8px;}
+  .opt{
+    border:1.5px solid var(--line);background:#fff;border-radius:999px;
+    padding:8px 16px;font-size:.92rem;cursor:pointer;font-family:inherit;color:var(--ink);
+  }
+  .opt.selected{border-color:var(--shu);background:var(--shu);color:#fff;}
+  .opt small{opacity:.75;font-size:.72rem;margin-left:4px;}
+  .statLine{font-size:.8rem;color:var(--ink-soft);margin-top:10px;line-height:1.7;}
+  .statLine b{color:var(--gold);}
+
+  .bigStart{
+    display:block;width:100%;
+    background:linear-gradient(135deg,var(--shu),#A93330);
+    color:#fff;border:none;border-radius:14px;
+    padding:16px;font-size:1.15rem;letter-spacing:.25em;font-weight:700;
+    cursor:pointer;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    box-shadow:0 3px 10px rgba(199,62,58,.35);
+  }
+  .bigStart:disabled{opacity:.4;box-shadow:none;cursor:default;}
+
+  /* クイズ画面 */
+  .quizTop{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .qCount{font-size:.85rem;color:var(--ink-soft);white-space:nowrap;}
+  .bar{flex:1;height:8px;background:#EDE6D6;border-radius:99px;overflow:hidden;}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ai),var(--shu));width:0%;transition:width .3s;}
+  #quitBtn{border:none;background:none;color:var(--ink-soft);font-size:.8rem;cursor:pointer;text-decoration:underline;font-family:inherit;}
+
+  .qCard{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px 18px 22px;text-align:center;position:relative;margin-bottom:14px;
+    box-shadow:0 2px 6px rgba(43,43,51,.07);
+  }
+  .qLevelSeal{
+    position:absolute;top:12px;right:12px;
+    background:var(--shu);color:#fff;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:.72rem;padding:5px 7px;border-radius:5px;letter-spacing:.1em;
+    box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5);
+  }
+  .qLabel{font-size:.78rem;color:var(--ink-soft);letter-spacing:.2em;margin-bottom:12px;}
+  .qWord{
+    font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    font-size:1.9rem;font-weight:700;line-height:1.4;letter-spacing:.05em;
+  }
+  .qWord.small{font-size:1.35rem;}
+  .qMeaning{font-size:1.05rem;line-height:1.8;text-align:left;}
+  .qReading{font-size:.85rem;color:var(--shu);margin-top:8px;letter-spacing:.1em;}
+  .retryTag{
+    display:inline-block;background:var(--gold);color:#fff;font-size:.7rem;
+    border-radius:99px;padding:3px 10px;margin-bottom:10px;letter-spacing:.1em;
+  }
+
+  .choices{display:flex;flex-direction:column;gap:10px;}
+  .choice{
+    background:#fff;border:1.5px solid var(--line);border-radius:12px;
+    padding:13px 14px;text-align:left;font-size:.98rem;line-height:1.6;
+    cursor:pointer;font-family:inherit;color:var(--ink);
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .choice .mk{
+    flex:0 0 22px;height:22px;border-radius:50%;
+    border:1.5px solid var(--line);color:var(--ink-soft);
+    font-size:.75rem;display:flex;align-items:center;justify-content:center;margin-top:2px;
+  }
+  .choice:not(:disabled):hover{border-color:var(--ai);}
+  .choice:disabled{cursor:default;opacity:.55;}
+  .choice.correct{border-color:var(--matsu);background:var(--matsu-soft);opacity:1;}
+  .choice.correct .mk{border-color:var(--matsu);background:var(--matsu);color:#fff;}
+  .choice.wrong{border-color:var(--shu);background:var(--shu-soft);opacity:1;}
+  .choice.wrong .mk{border-color:var(--shu);background:var(--shu);color:#fff;}
+
+  .feedback{display:none;margin-top:14px;border-radius:14px;padding:16px;text-align:left;}
+  .feedback.show{display:block;animation:fade .25s ease;}
+  .feedback.ok{background:var(--matsu-soft);border:1px solid #BCD9C5;}
+  .feedback.ng{background:var(--shu-soft);border:1px solid #E8C2C0;}
+  .fbHead{font-weight:700;font-size:1.05rem;margin-bottom:8px;}
+  .feedback.ok .fbHead{color:var(--matsu);}
+  .feedback.ng .fbHead{color:var(--shu);}
+  .fbWord{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:1.2rem;font-weight:700;}
+  .fbReading{font-size:.82rem;color:var(--shu);margin:2px 0 8px;}
+  .fbMeaning{font-size:.92rem;line-height:1.8;}
+  .fbNote{font-size:.78rem;color:var(--ink-soft);margin-top:8px;}
+  .nextBtn{
+    display:block;width:100%;margin-top:12px;
+    background:var(--ai);color:#fff;border:none;border-radius:12px;
+    padding:13px;font-size:1rem;letter-spacing:.2em;cursor:pointer;font-family:inherit;
+  }
+
+  /* 結果 */
+  .resultHero{text-align:center;padding:26px 16px;}
+  .resultHero .grade{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:2.4rem;font-weight:700;color:var(--shu);letter-spacing:.1em;
+  }
+  .resultHero .score{font-size:1.1rem;margin-top:8px;}
+  .resultHero .score b{font-size:1.6rem;color:var(--ai);}
+  .masterNote{font-size:.85rem;color:var(--gold);margin-top:10px;font-weight:700;}
+  .wrongItem{
+    border-top:1px dashed var(--line);padding:12px 2px;
+  }
+  .wrongItem:first-of-type{border-top:none;}
+  .wrongItem .w{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-weight:700;font-size:1.05rem;}
+  .wrongItem .r{font-size:.78rem;color:var(--shu);margin:2px 0 4px;}
+  .wrongItem .m{font-size:.88rem;color:var(--ink-soft);line-height:1.7;}
+  .rowBtns{display:flex;gap:10px;}
+  .rowBtns button{
+    flex:1;border-radius:12px;padding:13px;font-size:.95rem;cursor:pointer;font-family:inherit;
+  }
+  .btnGhost{background:#fff;border:1.5px solid var(--ai);color:var(--ai);}
+  .btnFill{background:var(--shu);border:none;color:#fff;}
+
+  /* 一覧 */
+  .listTools{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .listItem{border-top:1px dashed var(--line);padding:11px 2px;display:flex;gap:10px;align-items:flex-start;}
+  .listItem:first-child{border-top:none;}
+  .lvTag{
+    flex:0 0 auto;font-size:.68rem;border-radius:5px;padding:3px 6px;margin-top:3px;
+    background:var(--ai);color:#fff;font-family:"Hiragino Mincho ProN",serif;
+  }
+  .lvTag.B{background:var(--gold);}
+  .lvTag.C{background:#6E5B8E;}
+  .star{color:var(--gold);font-size:.85rem;}
+  .footNav{
+    display:flex;gap:10px;margin-top:4px;
+  }
+  .footNav button{
+    flex:1;background:#fff;border:1.5px solid var(--line);border-radius:12px;
+    padding:11px;font-size:.88rem;cursor:pointer;font-family:inherit;color:var(--ink);
+  }
+  button:focus-visible,.opt:focus-visible,.choice:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal">故事<br>成語</div>
+  <div>
+    <h1 class="mincho">故事成語クイズ</h1>
+    <div class="sub">中学受験・語句の知識（全65語）</div>
+  </div>
+  <button id="userChip" onclick="goHome()">👤 ─</button>
+</header>
+
+<main>
+  <!-- ホーム / 設定 -->
+  <section id="scrHome" class="screen active">
+    <div class="card">
+      <h2>だれが挑戦する？</h2>
+      <div class="userRow" id="userRow"></div>
+      <div class="userAddRow">
+        <input id="newUserName" type="text" maxlength="8" placeholder="なまえを追加（例：たろう）">
+        <button onclick="addUser()">追加</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>出題モード</h2>
+      <div class="optGrid" id="modeRow">
+        <button class="opt selected" data-mode="w2m">意味を答える<small>成語→意味</small></button>
+        <button class="opt" data-mode="m2w">成語を答える<small>意味→成語</small></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>出題範囲</h2>
+      <div class="optGrid" id="rangeRow">
+        <button class="opt selected" data-range="A">レベルA<small>20語</small></button>
+        <button class="opt" data-range="B">レベルB<small>18語</small></button>
+        <button class="opt" data-range="C">その他<small>27語</small></button>
+        <button class="opt" data-range="ALL">全部<small>65語</small></button>
+        <button class="opt" data-range="WEAK">にがてだけ<small id="weakCount">0語</small></button>
+      </div>
+      <div class="statLine" id="masteryLine"></div>
+    </div>
+
+    <div class="card">
+      <h2>問題数</h2>
+      <div class="optGrid" id="countRow">
+        <button class="opt selected" data-count="10">10問</button>
+        <button class="opt" data-count="20">20問</button>
+        <button class="opt" data-count="all">全部</button>
+      </div>
+    </div>
+
+    <button class="bigStart" id="startBtn" onclick="startQuiz()">開　始</button>
+    <div class="footNav" style="margin-top:14px;">
+      <button onclick="showList()">📖 故事成語一覧を見る</button>
+    </div>
+  </section>
+
+  <!-- クイズ -->
+  <section id="scrQuiz" class="screen">
+    <div class="quizTop">
+      <span class="qCount" id="qCount">1問目</span>
+      <div class="bar"><i id="barFill"></i></div>
+      <button id="quitBtn" onclick="goHome()">やめる</button>
+    </div>
+    <div class="qCard">
+      <span class="qLevelSeal" id="qSeal">A</span>
+      <div id="retryTagWrap"></div>
+      <div class="qLabel" id="qLabel"></div>
+      <div id="qBody"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback">
+      <div class="fbHead" id="fbHead"></div>
+      <div class="fbWord" id="fbWord"></div>
+      <div class="fbReading" id="fbReading"></div>
+      <div class="fbMeaning" id="fbMeaning"></div>
+      <div class="fbNote" id="fbNote"></div>
+      <button class="nextBtn" id="nextBtn" onclick="nextQuestion()">次へ</button>
+    </div>
+  </section>
+
+  <!-- 結果 -->
+  <section id="scrResult" class="screen">
+    <div class="card resultHero">
+      <div class="grade" id="grade"></div>
+      <div class="score" id="scoreText"></div>
+      <div class="masterNote" id="masterNote"></div>
+    </div>
+    <div class="card" id="wrongCard">
+      <h2>まちがえた語（復習しよう）</h2>
+      <div id="wrongList"></div>
+    </div>
+    <div class="rowBtns">
+      <button class="btnGhost" onclick="goHome()">ホームへ</button>
+      <button class="btnFill" id="retryWrongBtn" onclick="retryWrong()">まちがいだけ再挑戦</button>
+    </div>
+  </section>
+
+  <!-- 一覧 -->
+  <section id="scrList" class="screen">
+    <div class="card">
+      <h2>故事成語一覧</h2>
+      <div class="listTools">
+        <button class="opt selected" data-flv="ALL">全部</button>
+        <button class="opt" data-flv="A">レベルA</button>
+        <button class="opt" data-flv="B">レベルB</button>
+        <button class="opt" data-flv="C">その他</button>
+      </div>
+      <div id="listBody"></div>
+    </div>
+    <div class="footNav"><button onclick="goHome()">← もどる</button></div>
+  </section>
+</main>
+
+<script>
+/* ================= データ（レベルA20・レベルB18・その他27） ================= */
+const DATA=[
+ // レベルA
+ {id:"a01",lv:"A",w:"完璧",r:"かんぺき",m:"欠点がまったくないこと。借りたものを傷つけず、完全なまま返すこと。"},
+ {id:"a02",lv:"A",w:"木に縁りて魚を求む",r:"きによりてうおをもとむ",m:"方法をまちがえては、目的をとうてい達成できないこと。"},
+ {id:"a03",lv:"A",w:"杞憂",r:"きゆう",m:"しなくてもよい無用の心配。取り越し苦労。"},
+ {id:"a04",lv:"A",w:"玉石混淆",r:"ぎょくせきこんこう",m:"すぐれたものとつまらないものが、入り混じっていること。"},
+ {id:"a05",lv:"A",w:"漁夫の利",r:"ぎょふのり",m:"両者が争っている間に、第三者が利益を横取りすること。"},
+ {id:"a06",lv:"A",w:"蛍雪の功",r:"けいせつのこう",m:"苦労しながら学問にはげむこと。また、その成果として成功すること。"},
+ {id:"a07",lv:"A",w:"呉越同舟",r:"ごえつどうしゅう",m:"仲の悪い者同士が同じ場所に居合わせること。共通の困難に対して協力し合うこと。"},
+ {id:"a08",lv:"A",w:"虎穴に入らずんば虎児を得ず",r:"こけつにいらずんばこじをえず",m:"危険をおかさなければ、大きな成果は得られないということ。"},
+ {id:"a09",lv:"A",w:"五十歩百歩",r:"ごじっぽひゃっぽ",m:"少しの差はあるが、本質的には違いがないこと。"},
+ {id:"a10",lv:"A",w:"四面楚歌",r:"しめんそか",m:"周囲がすべて敵で、孤立して助けのないこと。"},
+ {id:"a11",lv:"A",w:"水魚の交わり",r:"すいぎょのまじわり",m:"特に親密で、離れがたい交わり。"},
+ {id:"a12",lv:"A",w:"推敲",r:"すいこう",m:"詩や文章を書くとき、字句や表現を何度も練り直すこと。"},
+ {id:"a13",lv:"A",w:"大器晩成",r:"たいきばんせい",m:"大人物は、人よりおくれて才能をあらわすということ。"},
+ {id:"a14",lv:"A",w:"他山の石",r:"たざんのいし",m:"他人のよくない言動でも、自分の向上に役立てることができるということ。"},
+ {id:"a15",lv:"A",w:"蛇足",r:"だそく",m:"不必要なつけ足し。よけいなもの。"},
+ {id:"a16",lv:"A",w:"知己",r:"ちき",m:"自分の心をよく理解してくれる人。親友。"},
+ {id:"a17",lv:"A",w:"背水の陣",r:"はいすいのじん",m:"絶対に退かない決死の覚悟で、物事に当たること。"},
+ {id:"a18",lv:"A",w:"万事休す",r:"ばんじきゅうす",m:"すべての手段がつきて、もはやどうにもならないこと。"},
+ {id:"a19",lv:"A",w:"矛盾",r:"むじゅん",m:"前に言ったことと後に言ったことの、つじつまが合わないこと。"},
+ {id:"a20",lv:"A",w:"百里を行く者は九十里を半ばとす",r:"ひゃくりをゆくものはくじゅうりをなかばとす",m:"物事は最後まで気を抜かずに、努力すべきだということ。"},
+ // レベルB
+ {id:"b01",lv:"B",w:"圧巻",r:"あっかん",m:"書物や劇などの中で、最もすぐれた部分や場面。"},
+ {id:"b02",lv:"B",w:"臥薪嘗胆",r:"がしんしょうたん",m:"目的を果たすために、長い間苦心・苦労を重ねること。"},
+ {id:"b03",lv:"B",w:"画竜点睛",r:"がりょうてんせい",m:"最後に加える大切な仕上げ。物事の肝心なところ。"},
+ {id:"b04",lv:"B",w:"九牛の一毛",r:"きゅうぎゅうのいちもう",m:"多数の中の、ごくわずかな部分。取るに足りないこと。"},
+ {id:"b05",lv:"B",w:"牛耳を執る",r:"ぎゅうじをとる",m:"団体や党派などの中心人物となって、それを支配すること。"},
+ {id:"b06",lv:"B",w:"塞翁が馬",r:"さいおうがうま",m:"人生の幸・不幸、吉凶・禍福は予測できないというたとえ。"},
+ {id:"b07",lv:"B",w:"出藍の誉れ",r:"しゅつらんのほまれ",m:"弟子が師匠よりもすぐれていることのたとえ。"},
+ {id:"b08",lv:"B",w:"食指が動く",r:"しょくしがうごく",m:"物を欲しがったり、何かをしてみたい気持ちがおきること。"},
+ {id:"b09",lv:"B",w:"杜撰",r:"ずさん",m:"誤りが多く、いいかげんなこと。"},
+ {id:"b10",lv:"B",w:"折檻",r:"せっかん",m:"きびしくいさめること。きびしくしかること。"},
+ {id:"b11",lv:"B",w:"切磋琢磨",r:"せっさたくま",m:"互いにはげまし合って、学問や人格の向上に努めること。"},
+ {id:"b12",lv:"B",w:"双璧",r:"そうへき",m:"優劣がつけられない、二つのすぐれたもの。"},
+ {id:"b13",lv:"B",w:"朝三暮四",r:"ちょうさんぼし",m:"目先の違いにとらわれて、結果が同じことに気づかないこと。言葉巧みに人をあざむくこと。"},
+ {id:"b14",lv:"B",w:"朝令暮改",r:"ちょうれいぼかい",m:"命令や規則がたびたび変わって、あてにならないこと。"},
+ {id:"b15",lv:"B",w:"白眼視",r:"はくがんし",m:"冷淡な心で人を見ること。冷たい目つきで見ること。"},
+ {id:"b16",lv:"B",w:"物色",r:"ぶっしょく",m:"多くの中から、ちょうどよい人や物を探し出すこと。"},
+ {id:"b17",lv:"B",w:"傍若無人",r:"ぼうじゃくぶじん",m:"そばに人がいないかのように、勝手気ままにふるまうこと。"},
+ {id:"b18",lv:"B",w:"読書百遍義自ずから見る",r:"どくしょひゃっぺんぎおのずからあらわる",m:"難しい書物でも、何回もくり返して読めば、意味は自然に理解できるということ。"},
+ // その他
+ {id:"c01",lv:"C",w:"羹に懲りて膾を吹く",r:"あつものにこりてなますをふく",m:"一度の失敗にこりて、必要以上のむだな用心をすること。"},
+ {id:"c02",lv:"C",w:"石に漱ぎ流れに枕す",r:"いしにくちすすぎながれにまくらす",m:"負け惜しみが強く、自分のまちがいをこじつけて言い逃れること。"},
+ {id:"c03",lv:"C",w:"烏有に帰す",r:"うゆうにきす",m:"火事などで、何もかもすっかりなくなること。"},
+ {id:"c04",lv:"C",w:"雲泥の差",r:"うんでいのさ",m:"違いがはなはだしいこと。大きなへだたり。"},
+ {id:"c05",lv:"C",w:"燕雀安んぞ鴻鵠の志を知らんや",r:"えんじゃくいずくんぞこうこくのこころざしをしらんや",m:"小人物には、大人物の大きな志はわからないということ。"},
+ {id:"c06",lv:"C",w:"屋上屋を架す",r:"おくじょうおくをかす",m:"すでにあるものの上に、同じことを重ねるむだなこと。"},
+ {id:"c07",lv:"C",w:"隗より始めよ",r:"かいよりはじめよ",m:"遠大なことも、まず手近なことから始めるのがよい。言い出した者から始めよということ。"},
+ {id:"c08",lv:"C",w:"鼎の軽重を問う",r:"かなえのけいちょうをとう",m:"権威者の実力をうたがい、その地位をくつがえそうとすること。"},
+ {id:"c09",lv:"C",w:"画餅に帰す",r:"がべいにきす",m:"せっかくの努力や計画が、むだに終わってしまうこと。"},
+ {id:"c10",lv:"C",w:"夏炉冬扇",r:"かろとうせん",m:"夏の火鉢と冬のうちわ。時季外れで役に立たないもののたとえ。"},
+ {id:"c11",lv:"C",w:"邯鄲の夢",r:"かんたんのゆめ",m:"人の世の栄枯盛衰は、はかないものだというたとえ。"},
+ {id:"c12",lv:"C",w:"汗牛充棟",r:"かんぎゅうじゅうとう",m:"蔵書がきわめて多いこと。多くの書籍。"},
+ {id:"c13",lv:"C",w:"管鮑の交わり",r:"かんぽうのまじわり",m:"互いによく理解し合い、利害によって変わることのない親密な交際。"},
+ {id:"c14",lv:"C",w:"愚公山を移す",r:"ぐこうやまをうつす",m:"まごころをこめて努力し続ければ、どんな大事業も成しとげられるということ。"},
+ {id:"c15",lv:"C",w:"鶏口となるも牛後となるなかれ",r:"けいこうとなるもぎゅうごとなるなかれ",m:"大きな集団のしりにつくよりも、小さな集団でも頭になったほうがよいということ。"},
+ {id:"c16",lv:"C",w:"人口に膾炙す",r:"じんこうにかいしゃす",m:"詩文などが、広く人々に親しまれ、もてはやされること。"},
+ {id:"c17",lv:"C",w:"酔生夢死",r:"すいせいむし",m:"何も成すことなく、むなしく一生を過ごすこと。"},
+ {id:"c18",lv:"C",w:"断機の戒め",r:"だんきのいましめ",m:"学問を途中でやめるのは、織りかけの布の糸を断ち切るようなものだという戒め。"},
+ {id:"c19",lv:"C",w:"天衣無縫",r:"てんいむほう",m:"詩文に技巧のあとがなく、自然で美しいこと。人柄が飾り気なく自然なさま。"},
+ {id:"c20",lv:"C",w:"蟷螂の斧",r:"とうろうのおの",m:"弱い者が身のほど知らずに、強い者に立ち向かうことのたとえ。"},
+ {id:"c21",lv:"C",w:"塗炭の苦しみ",r:"とたんのくるしみ",m:"泥にまみれ火に焼かれるような、非常に苦しい境遇。"},
+ {id:"c22",lv:"C",w:"泣いて馬謖を斬る",r:"ないてばしょくをきる",m:"規律を守るためには、愛する者でもやむを得ず処分することのたとえ。"},
+ {id:"c23",lv:"C",w:"白眉",r:"はくび",m:"同じ仲間の中で、最もすぐれている人や物。"},
+ {id:"c24",lv:"C",w:"匹夫の勇",r:"ひっぷのゆう",m:"深い考えのない、腕力にたよるだけの勇気。"},
+ {id:"c25",lv:"C",w:"刎頸の交わり",r:"ふんけいのまじわり",m:"その人のためなら首を切られてもよいというほどの、親しい交わり。"},
+ {id:"c26",lv:"C",w:"学びて時にこれを習う",r:"まなびてときにこれをならう",m:"学んだことを折にふれて復習すれば理解が深まり、なんとうれしいことではないか、ということ。"},
+ {id:"c27",lv:"C",w:"孟母三遷の教え",r:"もうぼさんせんのおしえ",m:"幼い子の教育には、環境を選ぶことが大切だという教え。"}
+];
+const LV_NAME={A:"レベルA",B:"レベルB",C:"その他"};
+
+/* ============ 保存（ローカル保存が使えない環境では自動でメモリ保存に切替） ============ */
+const store=(()=>{try{const t="__t__";localStorage.setItem(t,"1");localStorage.removeItem(t);return localStorage;}
+ catch(e){const m={};return{getItem:k=>(k in m?m[k]:null),setItem:(k,v)=>{m[k]=String(v);},removeItem:k=>{delete m[k];}};}})();
+const load=(k,f)=>{try{const v=store.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}};
+const save=(k,v)=>{try{store.setItem(k,JSON.stringify(v));}catch(e){}};
+
+/* ================= 状態 ================= */
+let users=load("ksg_users",[]);
+let currentUser=load("ksg_current",null);
+let prog={};             // {itemId:{c:正解数,w:誤答数,s:連続正解}}
+let mode="w2m", range="A", count="10";
+let quiz=null;
+
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const isMastered=id=>{const p=prog[id];return p&&p.s>=2;};
+const isWeak=id=>{const p=prog[id];return p&&p.w>0&&p.s<2;};
+
+function loadProg(){prog=currentUser?load("ksg_prog_"+currentUser,{}):{};}
+function saveProg(){if(currentUser)save("ksg_prog_"+currentUser,prog);}
+
+/* ================= ホーム ================= */
+function renderUsers(){
+  const row=$("userRow");row.innerHTML="";
+  if(users.length===0){
+    const p=document.createElement("div");
+    p.style.cssText="font-size:.85rem;color:var(--ink-soft);";
+    p.textContent="まず、なまえを追加してね";
+    row.appendChild(p);
+  }
+  users.forEach(u=>{
+    const b=document.createElement("button");
+    b.className="userBtn"+(u===currentUser?" selected":"");
+    b.textContent=u;
+    b.onclick=()=>{currentUser=u;save("ksg_current",u);loadProg();renderUsers();renderStats();};
+    row.appendChild(b);
+  });
+  $("userChip").textContent="👤 "+(currentUser||"─");
+  $("startBtn").disabled=!currentUser;
+}
+function addUser(){
+  const v=$("newUserName").value.trim();
+  if(!v)return;
+  if(!users.includes(v))users.push(v);
+  currentUser=v;
+  save("ksg_users",users);save("ksg_current",v);
+  $("newUserName").value="";
+  loadProg();renderUsers();renderStats();
+}
+function pool(rg){
+  if(rg==="ALL")return DATA;
+  if(rg==="WEAK")return DATA.filter(d=>isWeak(d.id));
+  return DATA.filter(d=>d.lv===rg);
+}
+function renderStats(){
+  const parts=["A","B","C"].map(lv=>{
+    const items=DATA.filter(d=>d.lv===lv);
+    const m=items.filter(d=>isMastered(d.id)).length;
+    return `${LV_NAME[lv]}：<b>${m}</b>/${items.length}語マスター`;
+  });
+  $("masteryLine").innerHTML=currentUser?("⭐ "+esc(currentUser)+"さんの記録　"+parts.join("　")):"";
+  $("weakCount").textContent=pool("WEAK").length+"語";
+}
+function bindOptRow(rowId,attr,cb){
+  $(rowId).querySelectorAll(".opt").forEach(b=>{
+    b.onclick=()=>{
+      $(rowId).querySelectorAll(".opt").forEach(x=>x.classList.remove("selected"));
+      b.classList.add("selected");cb(b.dataset[attr]);
+    };
+  });
+}
+bindOptRow("modeRow","mode",v=>mode=v);
+bindOptRow("rangeRow","range",v=>range=v);
+bindOptRow("countRow","count",v=>count=v);
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+function goHome(){renderUsers();renderStats();showScreen("scrHome");}
+
+/* ================= クイズ ================= */
+function startQuiz(customItems){
+  let items=customItems||pool(range);
+  if(items.length<1){
+    $("masteryLine").innerHTML='<span style="color:var(--shu);font-weight:700;">「にがて」の語はまだありません。まずはレベルAから挑戦してみよう！</span>';
+    return;
+  }
+  items=shuffle(items);
+  if(!customItems&&count!=="all")items=items.slice(0,Math.min(items.length,parseInt(count,10)));
+  quiz={
+    queue:items.map(d=>({item:d,retry:false})),
+    total:items.length,      // 初出題の数
+    answered:0,              // 初出題で答えた数
+    correctFirst:0,          // 初見で正解した数
+    wrongIds:new Set(),
+    newlyMastered:[]
+  };
+  nextQuestion(true);
+  showScreen("scrQuiz");
+}
+function pickChoices(item){
+  const same=DATA.filter(d=>d.id!==item.id&&d.lv===item.lv);
+  const other=DATA.filter(d=>d.id!==item.id&&d.lv!==item.lv);
+  const picks=shuffle(same).slice(0,3);
+  const extra=shuffle(other);
+  let i=0;
+  while(picks.length<3&&i<extra.length){picks.push(extra[i]);i++;}
+  return shuffle([item,...picks]);
+}
+function nextQuestion(first){
+  if(!quiz)return;
+  if(!first&&quiz.queue.length===0){showResult();return;}
+  if(quiz.queue.length===0){showResult();return;}
+  const q=quiz.queue[0];
+  const item=q.item;
+  $("qSeal").textContent=item.lv==="C"?"他":item.lv;
+  $("retryTagWrap").innerHTML=q.retry?'<span class="retryTag">もう一度！</span>':"";
+  const done=Math.min(quiz.answered+1,quiz.total);
+  $("qCount").textContent=`${done} / ${quiz.total}問`+(q.retry?"（復習）":"");
+  $("barFill").style.width=(quiz.answered/quiz.total*100)+"%";
+
+  const choices=pickChoices(item);
+  const marks=["ア","イ","ウ","エ"];
+  const box=$("choices");box.innerHTML="";
+  if(mode==="w2m"){
+    $("qLabel").textContent="この故事成語の意味は？";
+    $("qBody").innerHTML=`<div class="qWord${item.w.length>8?" small":""}">${esc(item.w)}</div><div class="qReading">${esc(item.r)}</div>`;
+    choices.forEach((c,i)=>{
+      const b=document.createElement("button");
+      b.className="choice";
+      b.dataset.cid=c.id;
+      b.innerHTML=`<span class="mk">${marks[i]}</span><span>${esc(c.m)}</span>`;
+      b.onclick=()=>answer(b,c,item,q);
+      box.appendChild(b);
+    });
+  }else{
+    $("qLabel").textContent="この意味に合う故事成語は？";
+    $("qBody").innerHTML=`<div class="qMeaning">${esc(item.m)}</div>`;
+    choices.forEach((c,i)=>{
+      const b=document.createElement("button");
+      b.className="choice";
+      b.dataset.cid=c.id;
+      b.innerHTML=`<span class="mk">${marks[i]}</span><span class="mincho" style="font-weight:700;">${esc(c.w)}</span>`;
+      b.onclick=()=>answer(b,c,item,q);
+      box.appendChild(b);
+    });
+  }
+  $("feedback").className="feedback";
+}
+function answer(btn,chosen,item,q){
+  const ok=chosen.id===item.id;
+  document.querySelectorAll(".choice").forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.cid===item.id)b.classList.add("correct");
+  });
+  if(!ok)btn.classList.add("wrong");
+
+  // 記録
+  const p=prog[item.id]||{c:0,w:0,s:0};
+  const wasMastered=p.s>=2;
+  if(ok){p.c++;p.s++;}else{p.w++;p.s=0;}
+  prog[item.id]=p;saveProg();
+  if(ok&&!wasMastered&&p.s>=2)quiz.newlyMastered.push(item);
+
+  if(!q.retry){
+    quiz.answered++;
+    if(ok)quiz.correctFirst++;
+  }
+  quiz.queue.shift();
+  if(!ok){
+    quiz.wrongIds.add(item.id);
+    // 少し後ろに差しこんで再出題
+    const pos=Math.min(quiz.queue.length,2+Math.floor(Math.random()*2));
+    quiz.queue.splice(pos,0,{item,retry:true});
+  }
+
+  const fb=$("feedback");
+  fb.className="feedback show "+(ok?"ok":"ng");
+  $("fbHead").textContent=ok?"⭕ 正解！":"❌ ざんねん…";
+  $("fbWord").textContent=item.w;
+  $("fbReading").textContent=item.r;
+  $("fbMeaning").textContent=item.m;
+  const pp=prog[item.id];
+  $("fbNote").textContent=pp.s>=2?"⭐ この語はマスター済み！":(ok?"連続正解 "+pp.s+"回（2回でマスター）":"あとでもう一度出題されるよ");
+  $("nextBtn").focus();
+  $("barFill").style.width=(quiz.answered/quiz.total*100)+"%";
+}
+
+/* ================= 結果 ================= */
+function showResult(){
+  const rate=quiz.total?Math.round(quiz.correctFirst/quiz.total*100):0;
+  const grade=rate===100?"満点！":rate>=80?"すばらしい！":rate>=60?"よくできました":"復習しよう";
+  $("grade").textContent=grade;
+  $("scoreText").innerHTML=`初見正解 <b>${quiz.correctFirst}</b> / ${quiz.total}問（${rate}%）`;
+  $("masterNote").textContent=quiz.newlyMastered.length?("⭐ 新しくマスター："+quiz.newlyMastered.map(d=>d.w).join("・")):"";
+
+  const wrong=DATA.filter(d=>quiz.wrongIds.has(d.id));
+  const wc=$("wrongCard"),wl=$("wrongList");
+  if(wrong.length===0){
+    wc.style.display="block";
+    wl.innerHTML='<div style="font-size:.9rem;color:var(--matsu);font-weight:700;">全問正解！まちがいなし 🎉</div>';
+    $("retryWrongBtn").style.display="none";
+  }else{
+    wc.style.display="block";
+    $("retryWrongBtn").style.display="block";
+    wl.innerHTML=wrong.map(d=>
+      `<div class="wrongItem"><div class="w">${esc(d.w)}</div><div class="r">${esc(d.r)}</div><div class="m">${esc(d.m)}</div></div>`
+    ).join("");
+  }
+  showScreen("scrResult");
+}
+function retryWrong(){
+  const wrong=DATA.filter(d=>quiz.wrongIds.has(d.id));
+  if(wrong.length)startQuiz(wrong);
+}
+
+/* ================= 一覧 ================= */
+let listFilter="ALL";
+function showList(){
+  renderList();
+  showScreen("scrList");
+}
+function renderList(){
+  const items=listFilter==="ALL"?DATA:DATA.filter(d=>d.lv===listFilter);
+  $("listBody").innerHTML=items.map(d=>{
+    const star=isMastered(d.id)?' <span class="star">⭐</span>':"";
+    return `<div class="listItem"><span class="lvTag ${d.lv}">${d.lv==="C"?"他":d.lv}</span>
+      <div><div style="font-weight:700;" class="mincho">${esc(d.w)}${star}</div>
+      <div style="font-size:.75rem;color:var(--shu);">${esc(d.r)}</div>
+      <div style="font-size:.85rem;color:var(--ink-soft);line-height:1.7;">${esc(d.m)}</div></div></div>`;
+  }).join("");
+}
+document.querySelectorAll("#scrList .opt").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("#scrList .opt").forEach(x=>x.classList.remove("selected"));
+    b.classList.add("selected");listFilter=b.dataset.flv;renderList();
+  };
+});
+$("newUserName").addEventListener("keydown",e=>{if(e.key==="Enter")addUser();});
+
+/* 初期化 */
+loadProg();
+renderUsers();
+renderStats();
+</script>
+</body>
+</html>
