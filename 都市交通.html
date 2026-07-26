@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本の交通 一問一答クイズ</title>
+<style>
+  :root{
+    --blue:#2563eb; --blue-d:#1d4ed8; --green:#16a34a; --green-l:#dcfce7;
+    --red:#dc2626; --red-l:#fee2e2; --ink:#1f2937; --sub:#6b7280;
+    --bg1:#eef4ff; --bg2:#e6fbf1; --card:#ffffff; --line:#e5e7eb;
+    --amber:#f59e0b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Maru Gothic ProN","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:16px 14px 48px;}
+  header.top{
+    text-align:center;padding:10px 0 6px;
+  }
+  header.top h1{
+    font-size:1.5rem;margin:6px 0 2px;letter-spacing:.5px;
+  }
+  header.top .sub{color:var(--sub);font-size:.85rem;}
+  .card{
+    background:var(--card);border-radius:20px;padding:20px 18px;
+    box-shadow:0 8px 26px rgba(37,99,235,.10);
+    border:1px solid rgba(37,99,235,.06);
+  }
+  /* ruby */
+  ruby rt{font-size:.55em;color:var(--sub);font-weight:400;}
+
+  /* start screen */
+  .lead{font-size:.95rem;color:var(--sub);line-height:1.7;margin:2px 0 16px;}
+  .cats{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}
+  .catrow{
+    display:flex;align-items:center;gap:12px;padding:12px 14px;
+    border:2px solid var(--line);border-radius:14px;cursor:pointer;
+    transition:.15s;background:#fff;user-select:none;
+  }
+  .catrow:hover{border-color:#c7d2fe;}
+  .catrow.on{border-color:var(--blue);background:#f5f8ff;}
+  .catrow input{width:22px;height:22px;accent-color:var(--blue);flex:0 0 auto;}
+  .catrow .nm{font-weight:700;font-size:1rem;}
+  .catrow .ct{margin-left:auto;font-size:.8rem;color:var(--sub);
+    background:#f1f5f9;border-radius:999px;padding:3px 10px;}
+  .selrow{display:flex;gap:8px;margin:6px 2px 16px;}
+  .selrow button{
+    flex:1;padding:8px;border:1px solid var(--line);background:#fff;border-radius:10px;
+    font-size:.82rem;color:var(--sub);cursor:pointer;font-weight:600;
+  }
+  .selrow button:active{transform:scale(.98);}
+  .lenrow{display:flex;gap:8px;margin:0 2px 18px;}
+  .lenrow .chip{
+    flex:1;text-align:center;padding:10px;border:2px solid var(--line);border-radius:12px;
+    cursor:pointer;font-weight:700;font-size:.9rem;background:#fff;
+  }
+  .lenrow .chip.on{border-color:var(--green);background:var(--green-l);color:#166534;}
+  .bigbtn{
+    display:block;width:100%;border:none;border-radius:16px;cursor:pointer;
+    font-size:1.15rem;font-weight:800;color:#fff;padding:16px;
+    background:linear-gradient(135deg,var(--blue),#4f46e5);
+    box-shadow:0 6px 16px rgba(37,99,235,.35);transition:.15s;
+  }
+  .bigbtn:active{transform:translateY(1px);}
+  .bigbtn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+
+  /* quiz screen */
+  .hud{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+  .hud .pill{font-size:.8rem;font-weight:700;padding:6px 12px;border-radius:999px;background:#fff;
+    border:1px solid var(--line);color:var(--sub);}
+  .hud .pill b{color:var(--ink);}
+  .hud .pill.sc{background:var(--green-l);border-color:#bbf7d0;color:#166534;}
+  .hud .pill.st{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
+  .progress{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-bottom:16px;}
+  .progress>div{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));width:0;transition:.3s;}
+  .qtag{display:inline-block;font-size:.72rem;font-weight:800;color:#fff;background:var(--amber);
+    padding:4px 12px;border-radius:999px;margin-bottom:12px;letter-spacing:.5px;}
+  .qtag.c0{background:#0ea5e9;} .qtag.c1{background:#8b5cf6;} .qtag.c2{background:#ec4899;}
+  .qtag.c3{background:#f97316;} .qtag.c4{background:#14b8a6;}
+  .question{font-size:1.2rem;font-weight:700;line-height:1.7;margin:2px 0 6px;}
+  .question .big{font-size:1.55rem;font-weight:800;}
+  .fact{
+    margin:14px 0 2px;padding:12px 14px;background:#f8fafc;border-left:5px solid var(--blue);
+    border-radius:8px;font-size:1.05rem;line-height:1.7;font-weight:600;color:#334155;
+  }
+  .choices{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+  .choice{
+    display:flex;align-items:center;gap:10px;text-align:left;width:100%;
+    padding:14px 16px;border:2px solid var(--line);border-radius:14px;background:#fff;
+    font-size:1.05rem;font-weight:700;cursor:pointer;transition:.12s;color:var(--ink);
+  }
+  .choice:hover:not(:disabled){border-color:#c7d2fe;background:#f8faff;}
+  .choice .idx{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:#eef2ff;color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;}
+  .choice:disabled{cursor:default;}
+  .choice.correct{border-color:var(--green);background:var(--green-l);color:#166534;}
+  .choice.correct .idx{background:var(--green);color:#fff;}
+  .choice.wrong{border-color:var(--red);background:var(--red-l);color:#991b1b;}
+  .choice.wrong .idx{background:var(--red);color:#fff;}
+  .choice .mk{margin-left:auto;font-size:1.3rem;font-weight:800;}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:14px;display:none;}
+  .feedback.show{display:block;animation:pop .2s ease;}
+  @keyframes pop{from{transform:scale(.96);opacity:.4;}to{transform:scale(1);opacity:1;}}
+  .feedback.ok{background:var(--green-l);border:1px solid #bbf7d0;}
+  .feedback.ng{background:var(--red-l);border:1px solid #fecaca;}
+  .feedback .fbhd{font-weight:800;font-size:1.05rem;margin-bottom:6px;}
+  .feedback.ok .fbhd{color:#166534;} .feedback.ng .fbhd{color:#991b1b;}
+  .feedback .exp{font-size:.92rem;line-height:1.7;color:#334155;}
+  .mapbox{margin-top:12px;text-align:center;}
+  .mapbox svg{width:100%;max-width:260px;height:auto;background:#eaf3ff;border-radius:12px;border:1px solid #cfe0f5;}
+  .mapbox .jland{fill:#e2ead9;stroke:#8aa876;stroke-width:.6;}
+  .mapbox .halo{fill:#ef4444;opacity:.28;}
+  .mapbox .pin{fill:#dc2626;stroke:#fff;stroke-width:1.2;}
+  .mapbox .cap{font-size:.72rem;color:var(--sub);margin-top:4px;}
+  @keyframes ping{0%{r:5;opacity:.5;}70%{r:15;opacity:0;}100%{opacity:0;}}
+  .mapbox .ping{fill:#ef4444;animation:ping 1.3s ease-out infinite;}
+  .navrow{display:flex;gap:10px;margin-top:16px;}
+  .navrow .nextbtn{flex:1;border:none;border-radius:14px;padding:15px;font-size:1.05rem;font-weight:800;
+    color:#fff;background:linear-gradient(135deg,var(--green),#059669);cursor:pointer;
+    box-shadow:0 5px 14px rgba(22,163,74,.3);}
+  .navrow .nextbtn:active{transform:translateY(1px);}
+  .navrow .quitbtn{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:14px;
+    padding:15px 16px;font-weight:700;color:var(--sub);cursor:pointer;}
+
+  /* result */
+  .result{text-align:center;}
+  .result .emoji{font-size:3.2rem;}
+  .result h2{font-size:1.5rem;margin:8px 0 4px;}
+  .result .big{font-size:2.6rem;font-weight:900;color:var(--blue);margin:10px 0;}
+  .result .msg{color:var(--sub);font-size:1rem;line-height:1.7;margin-bottom:16px;}
+  .breakdown{text-align:left;margin:14px 0 20px;display:flex;flex-direction:column;gap:8px;}
+  .brow{display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:700;}
+  .brow .bn{flex:1;}
+  .brow .bar{flex:0 0 120px;height:10px;background:#eef2f7;border-radius:999px;overflow:hidden;}
+  .brow .bar>div{height:100%;background:var(--green);}
+  .brow .bv{flex:0 0 auto;color:var(--sub);font-size:.82rem;width:52px;text-align:right;}
+  footer{text-align:center;color:var(--sub);font-size:.72rem;margin-top:22px;line-height:1.6;}
+  .hidden{display:none;}
+
+  /* account bar */
+  .acctbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 12px;margin-bottom:12px;
+    box-shadow:0 3px 10px rgba(37,99,235,.06);font-size:.85rem;}
+  .acctbar .who{font-weight:700;color:var(--ink);}
+  .acctbar .who b{color:var(--blue);}
+  .acctbar .note{font-weight:400;color:var(--sub);font-size:.78rem;}
+  .acctbar .fire{font-weight:700;color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;
+    padding:3px 9px;border-radius:999px;font-size:.78rem;}
+  .acctbar .sp{flex:1;}
+  .acctbar .mini{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 11px;
+    font-weight:700;font-size:.8rem;color:var(--ink);cursor:pointer;}
+  .acctbar .mini:active{transform:scale(.97);}
+  .acctbar .mini.prime{background:var(--blue);color:#fff;border-color:var(--blue);}
+  /* review + notice */
+  .reviewBtn{display:block;width:100%;border:none;border-radius:14px;cursor:pointer;
+    font-size:1rem;font-weight:800;color:#fff;padding:13px;margin-bottom:14px;
+    background:linear-gradient(135deg,#f59e0b,#ef4444);box-shadow:0 5px 14px rgba(239,68,68,.28);}
+  .reviewBtn:active{transform:translateY(1px);}
+  .storeNotice{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:12px;
+    padding:10px 12px;font-size:.82rem;line-height:1.6;margin-bottom:14px;}
+  /* profile */
+  .stitle{font-size:1.3rem;margin:2px 0 8px;}
+  .sub2{font-size:1rem;margin:18px 0 8px;color:#374151;}
+  .pcard{border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;background:#fff;}
+  .pcard.cur{border-color:var(--blue);background:#f5f8ff;}
+  .pcard .pname{font-weight:800;font-size:1.05rem;}
+  .pcard .curtag{font-size:.7rem;background:var(--blue);color:#fff;border-radius:6px;padding:1px 7px;margin-left:4px;vertical-align:middle;}
+  .pcard .pmeta{font-size:.8rem;color:var(--sub);margin-top:3px;}
+  .pcard .pact{display:flex;gap:8px;margin-top:10px;}
+  .pcard .pinrow{display:flex;gap:8px;margin-top:10px;}
+  .pcard .pinrow input{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:1rem;}
+  .mini{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;font-weight:700;font-size:.85rem;cursor:pointer;color:var(--ink);}
+  .mini.prime{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .mini.danger{background:#fff;color:var(--red);border-color:#fecaca;}
+  .newprof{margin-top:14px;padding-top:8px;border-top:1px dashed var(--line);}
+  .newprof input{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-size:1rem;margin-bottom:10px;}
+  .newprof input:focus{border-color:var(--blue);outline:none;}
+  .quitbtn.wide{width:100%;margin-top:14px;padding:13px;}
+  /* stats */
+  .statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 4px;}
+  .statgrid .stat{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;}
+  .statgrid .sv{font-size:1.3rem;font-weight:900;color:var(--blue);}
+  .statgrid .sl{font-size:.72rem;color:var(--sub);margin-top:2px;}
+  .wlist{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow:auto;}
+  .witem{font-size:.85rem;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;line-height:1.5;}
+  .witem .wx{color:var(--red);font-weight:800;margin-right:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🚄 日本の交通 一問一答</h1>
+    <div class="sub">新幹線・高速道路・トンネル・橋・おもな都市</div>
+  </header>
+
+  <!-- ACCOUNT BAR -->
+  <div class="acctbar" id="acctbar"></div>
+
+  <!-- START -->
+  <section id="start" class="card">
+    <div class="storeNotice" id="storeNotice" style="display:none;">
+      ⚠️ この画面では記録を保存できません。ファイルを<b>ダウンロードして開く</b>と、成績や苦手が保存されます。
+    </div>
+    <button class="reviewBtn" id="reviewBtn" style="display:none;" onclick="startReview()">💪 苦手を復習</button>
+    <p class="lead">学習したい分野をえらんで、「スタート」をおそう。<br>4つの中から正しい答えをタップしてね。まちがえても解説が出るよ。</p>
+    <div class="cats" id="cats"></div>
+    <div class="selrow">
+      <button type="button" onclick="selectAll(true)">すべて選ぶ</button>
+      <button type="button" onclick="selectAll(false)">すべて外す</button>
+    </div>
+    <div class="lenrow" id="lenrow">
+      <div class="chip on" data-len="10">10問</div>
+      <div class="chip" data-len="20">20問</div>
+      <div class="chip" data-len="0">とことん</div>
+    </div>
+    <button class="bigbtn" id="startBtn" onclick="startQuiz()">スタート ▶</button>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="profile" class="card hidden">
+    <h2 class="stitle">👤 プロフィール</h2>
+    <p class="lead">名前をえらんでログインすると、成績や苦手が記録されます。きょうだいで切り替えて使えます。</p>
+    <div id="profileList"></div>
+    <div class="newprof">
+      <h3 class="sub2">＋ 新しいプロフィール</h3>
+      <input type="text" id="newName" maxlength="12" placeholder="なまえ（例：たろう）">
+      <input type="password" id="newPin" inputmode="numeric" maxlength="8" placeholder="PIN（数字・空でもOK）">
+      <button class="bigbtn" onclick="submitNewProfile()">作成してはじめる ▶</button>
+    </div>
+    <button class="quitbtn wide" onclick="backToStart()">← もどる</button>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats" class="card hidden">
+    <div id="statsBody"></div>
+    <button class="quitbtn wide" onclick="backToStart()">← もどる</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="hud">
+      <span class="pill">第 <b id="qnum">1</b> 問<span id="qtot"></span></span>
+      <span class="pill sc">正解 <b id="scoreN">0</b></span>
+      <span class="pill st">れんぞく <b id="streakN">0</b></span>
+    </div>
+    <div class="progress"><div id="pbar"></div></div>
+    <div class="card">
+      <span class="qtag" id="qtag">分野</span>
+      <div class="question" id="qtext"></div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback">
+        <div class="fbhd" id="fbhd"></div>
+        <div class="exp" id="fbexp"></div>
+        <div class="mapbox" id="mapbox"></div>
+      </div>
+      <div class="navrow" id="navrow" style="display:none;">
+        <button class="nextbtn" id="nextBtn" onclick="nextQuestion()">次の問題 ▶</button>
+        <button class="quitbtn" onclick="finishQuiz()">終了</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="card result hidden">
+    <div class="emoji" id="rEmoji">🎉</div>
+    <h2 id="rTitle">おつかれさま！</h2>
+    <div class="big"><span id="rScore">0</span> / <span id="rTotal">0</span></div>
+    <div class="msg" id="rMsg"></div>
+    <div class="breakdown" id="rBreak"></div>
+    <button class="bigbtn" onclick="backToStart()">もう一度 ▶</button>
+  </section>
+
+  <footer>
+    中学受験・地理「都市と交通」学習用ツール<br>データ：営業中の新幹線・おもな高速道路・トンネル・橋・東日本／西日本のおもな都市
+  </footer>
+</div>
+
+<script>
+/* ============ ヘルパー ============ */
+function ruby(t,r){ return r ? `<ruby>${t}<rt>${r}</rt></ruby>` : t; }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function pick(arr,n,excludeText){
+  const p = arr.filter(x=>x.t!==excludeText);
+  return shuffle(p.slice()).slice(0,n);
+}
+
+/* ============ データ ============ */
+const MAP = {"vw": 420.0, "vh": 554.5, "path": "M291.5 78.5 L289.1 75.8 L289.1 72.6 L291.0 71.7 L292.2 70.6 L295.0 72.7 L298.2 74.6 L298.6 75.5 L303.4 74.7 L303.2 75.6 L308.9 75.5 L312.4 69.4 L311.6 64.7 L310.5 61.0 L313.2 58.0 L314.5 57.3 L316.3 56.6 L317.1 55.1 L317.2 45.0 L319.4 41.6 L320.3 34.6 L318.5 27.5 L315.6 19.8 L316.5 17.7 L317.0 15.1 L318.3 15.3 L322.1 14.0 L323.4 12.0 L324.3 13.3 L325.8 15.2 L333.7 23.1 L336.5 26.5 L337.6 28.5 L345.1 36.5 L354.3 43.4 L355.2 44.7 L361.5 48.1 L362.0 49.2 L362.8 50.2 L366.5 50.5 L367.2 51.2 L368.6 50.0 L363.9 48.6 L373.9 50.4 L374.8 53.0 L376.4 54.7 L384.7 55.7 L388.4 53.4 L390.3 51.6 L394.4 48.2 L397.6 44.2 L397.7 47.5 L395.2 52.3 L392.3 56.5 L391.6 59.0 L393.3 63.1 L397.8 65.1 L396.7 65.8 L397.6 65.2 L397.5 64.7 L396.5 64.4 L396.1 64.2 L394.5 64.4 L396.0 69.0 L398.8 72.7 L395.6 71.1 L395.9 71.6 L395.8 72.2 L397.6 72.4 L397.1 73.2 L398.7 73.6 L401.3 73.8 L401.7 74.2 L401.4 72.7 L406.3 70.1 L406.8 69.9 L407.9 70.8 L405.7 71.7 L404.0 72.1 L402.6 73.1 L401.7 75.1 L401.2 75.8 L401.0 76.5 L400.8 75.7 L396.7 76.1 L393.5 76.9 L392.7 78.3 L392.5 78.7 L391.0 80.1 L389.7 81.3 L387.0 80.5 L386.9 79.6 L389.0 79.6 L387.1 79.5 L384.3 81.0 L385.4 82.7 L378.2 82.4 L376.2 80.8 L372.2 81.3 L359.9 90.5 L353.8 99.8 L354.2 102.8 L352.6 107.9 L350.5 108.5 L347.0 105.8 L342.8 104.2 L339.5 102.9 L335.6 100.8 L331.4 98.2 L325.3 94.9 L325.0 94.5 L319.2 91.1 L318.1 90.1 L307.6 95.6 L303.1 99.9 L301.5 98.9 L302.7 99.2 L301.3 98.0 L298.3 94.5 L296.6 92.1 L293.0 92.1 L290.2 93.4 L287.4 99.2 L287.8 101.4 L293.3 105.0 L296.8 104.3 L298.2 105.7 L299.3 107.2 L302.2 110.3 L306.4 112.7 L306.6 114.0 L304.3 115.6 L301.4 115.2 L297.4 114.4 L296.4 114.5 L297.1 114.3 L296.3 113.0 L294.4 115.1 L291.3 116.4 L290.7 120.8 L285.5 124.6 L283.1 123.9 L280.9 120.2 L281.4 116.4 L282.8 113.4 L283.9 112.9 L284.3 110.3 L281.8 104.9 L278.7 102.4 L276.3 99.7 L277.7 97.3 L277.7 91.2 L279.8 89.3 L283.0 88.3 L285.5 85.6 L286.8 87.2 L288.1 85.5 L292.7 81.0 L291.5 78.5Z M280.0 151.0 L279.5 146.7 L278.2 145.8 L279.7 145.1 L282.2 141.7 L283.9 142.4 L288.0 137.3 L287.9 132.3 L288.1 131.7 L288.9 128.2 L293.3 129.1 L295.4 130.6 L296.1 138.4 L297.4 140.1 L299.8 138.7 L299.6 136.7 L300.4 135.1 L302.7 136.5 L304.5 137.8 L306.2 138.7 L307.8 136.4 L309.1 131.1 L307.0 127.6 L306.0 128.8 L306.3 128.9 L302.7 130.0 L299.9 131.0 L298.0 131.4 L298.8 126.3 L301.1 121.9 L301.2 120.5 L305.4 122.6 L309.2 125.8 L313.1 123.6 L311.8 132.8 L312.2 142.5 L314.5 148.2 L317.9 150.4 L316.0 151.4 L314.8 153.1 L312.1 152.9 L310.9 153.6 L309.5 153.2 L305.4 155.6 L302.7 156.6 L302.0 155.8 L302.2 153.1 L302.7 151.0 L300.3 150.4 L301.2 150.6 L301.5 150.5 L301.2 149.0 L299.0 149.2 L297.9 150.2 L297.2 151.3 L295.4 151.6 L293.4 151.1 L293.1 151.7 L292.8 150.9 L290.8 149.5 L289.2 149.7 L283.9 150.8 L282.7 149.9 L281.8 151.1Z M316.8 190.7 L313.6 190.3 L312.9 193.3 L312.6 195.1 L311.7 195.5 L309.7 195.5 L308.1 196.8 L306.3 195.7 L305.4 194.7 L306.2 193.3 L301.6 192.1 L299.1 191.0 L298.3 191.1 L298.7 189.1 L297.9 187.7 L297.7 186.1 L298.1 184.6 L296.5 181.8 L296.1 179.5 L296.3 178.3 L297.1 176.8 L297.5 175.3 L298.9 173.3 L299.3 171.1 L299.8 168.2 L298.4 166.2 L300.5 166.0 L299.7 160.6 L300.2 159.0 L300.0 158.0 L302.0 155.8 L303.6 156.7 L305.4 155.0 L310.0 152.5 L311.7 152.7 L312.8 152.4 L315.8 152.4 L317.9 150.4 L319.5 152.6 L321.2 156.6 L320.5 157.6 L321.2 159.5 L323.8 163.1 L323.6 164.2 L324.3 166.1 L324.9 168.7 L324.9 169.4 L324.5 170.1 L324.6 171.1 L324.5 172.2 L323.7 173.8 L325.5 174.1 L326.2 175.6 L325.1 176.9 L324.4 178.1 L326.2 177.1 L325.1 178.3 L324.5 178.7 L323.6 179.3 L324.2 179.6 L323.0 180.2 L323.0 181.1 L324.2 181.4 L323.4 182.6 L322.8 182.9 L323.3 183.4 L323.7 183.4 L322.5 184.2 L322.1 184.3 L323.3 185.1 L322.2 186.7 L322.3 187.6 L321.1 187.8 L320.9 188.3 L321.5 189.3 L320.5 188.8 L319.2 189.3 L318.6 189.3 L318.7 190.0 L318.4 190.8 L318.5 191.6 L317.9 189.9 L316.8 190.7Z M293.2 192.9 L294.7 192.8 L297.5 191.2 L298.3 191.1 L301.3 192.2 L302.9 193.3 L306.3 193.9 L306.2 195.1 L307.3 195.8 L309.1 195.5 L310.0 194.7 L312.3 196.2 L313.0 195.0 L313.8 192.2 L313.9 189.9 L316.8 190.7 L316.9 191.8 L317.4 193.6 L316.2 193.2 L316.0 193.0 L316.2 194.6 L314.3 196.2 L315.4 197.0 L314.6 197.7 L312.8 198.9 L314.6 200.0 L313.1 201.5 L313.9 202.7 L315.0 203.5 L314.2 203.3 L314.0 203.6 L313.5 204.5 L312.9 205.2 L313.4 206.4 L314.4 206.4 L314.7 206.8 L313.7 207.0 L314.8 207.9 L314.6 209.8 L313.3 208.8 L313.4 208.2 L312.2 207.8 L312.6 207.0 L312.0 206.2 L310.9 205.9 L307.0 206.9 L305.5 206.7 L304.7 207.0 L304.0 207.9 L303.8 208.5 L304.0 208.9 L305.1 209.0 L303.2 209.8 L302.6 211.6 L301.2 217.1 L301.5 220.0 L299.9 222.6 L298.5 223.3 L296.4 222.5 L296.3 220.2 L291.9 219.9 L291.6 218.6 L289.6 218.4 L287.4 217.8 L287.4 215.6 L290.4 215.0 L291.7 212.2 L292.3 208.6 L292.7 207.6 L293.9 205.3 L294.4 204.1 L293.4 202.5 L293.0 199.8 L294.9 198.3 L294.5 197.5 L294.5 195.8 L293.0 193.6Z M278.6 186.6 L278.9 184.0 L279.7 182.0 L281.8 178.7 L282.6 170.2 L280.6 165.9 L278.3 165.5 L276.0 166.5 L275.3 163.9 L274.7 162.9 L276.7 163.7 L278.8 162.7 L281.5 156.8 L281.7 152.5 L280.0 151.0 L281.9 150.4 L283.4 150.0 L288.6 150.7 L289.9 149.4 L290.9 150.3 L292.7 151.4 L293.6 151.8 L294.2 150.7 L296.7 150.9 L297.2 150.6 L298.7 150.4 L300.4 148.7 L301.8 150.0 L300.9 149.9 L300.9 150.8 L300.7 151.1 L302.8 153.0 L301.8 154.6 L302.0 155.8 L300.5 158.3 L300.4 159.9 L299.7 163.3 L299.3 165.8 L298.4 167.3 L298.3 169.9 L299.3 172.1 L297.2 174.6 L296.9 176.4 L296.2 177.5 L295.6 179.2 L296.8 180.8 L298.5 183.3 L298.9 185.0 L298.1 186.6 L298.9 187.9 L298.1 190.0 L298.3 191.1 L295.4 193.0 L293.6 193.4 L293.2 192.9 L290.7 190.2 L289.1 189.3 L288.0 189.5 L285.6 188.3 L283.7 187.7 L282.6 186.3 L278.6 186.6Z M271.6 202.3 L271.3 201.9 L272.9 198.9 L274.7 197.4 L276.2 195.4 L278.6 188.2 L278.6 186.6 L278.6 186.6 L281.2 187.0 L282.6 186.3 L282.8 187.5 L283.7 187.7 L284.6 188.6 L285.6 188.3 L285.9 189.0 L288.0 189.5 L288.5 189.0 L289.1 189.3 L289.7 190.2 L290.7 190.2 L291.4 192.1 L293.2 192.9 L293.2 192.9 L293.0 193.6 L294.1 194.5 L294.5 195.8 L295.3 196.2 L294.5 197.5 L294.5 198.0 L294.9 198.3 L294.4 199.6 L293.0 199.8 L293.8 201.5 L293.4 202.5 L293.7 203.6 L294.4 204.1 L294.5 204.8 L293.9 205.3 L293.8 206.5 L292.7 207.6 L292.8 208.5 L292.3 208.6 L291.6 209.8 L291.7 212.2 L290.6 213.8 L290.4 215.0 L289.3 215.7 L287.4 215.6 L287.4 217.8 L287.4 217.8 L287.1 221.7 L287.7 222.5 L286.4 224.2 L285.0 223.9 L283.9 224.5 L282.4 223.3 L281.0 223.8 L279.9 221.9 L279.0 222.4 L278.3 222.0 L277.2 222.6 L276.6 221.9 L275.7 222.1 L275.7 222.1 L275.0 221.2 L274.3 221.3 L273.8 220.9 L273.1 219.5 L273.8 216.2 L274.5 215.6 L274.5 215.1 L274.1 214.9 L274.5 214.0 L274.4 212.3 L274.8 211.5 L276.6 211.8 L277.9 211.0 L278.9 209.3 L277.8 207.8 L275.6 207.2 L274.8 206.4 L275.1 203.7 L271.6 202.3Z M275.7 222.1 L276.6 221.9 L277.2 222.6 L278.3 222.0 L279.0 222.4 L279.9 221.9 L281.0 223.8 L282.4 223.3 L283.9 224.5 L285.0 223.9 L286.4 224.2 L287.7 222.5 L287.1 221.7 L287.4 217.8 L287.4 217.8 L288.9 218.5 L289.6 218.4 L290.1 217.9 L291.6 218.6 L291.5 219.3 L291.9 219.9 L293.6 219.3 L296.3 220.2 L296.1 221.8 L296.4 222.5 L297.1 223.1 L298.5 223.3 L298.1 222.5 L299.9 222.6 L299.9 220.1 L301.5 220.0 L301.5 220.0 L302.0 221.7 L302.7 222.0 L302.7 223.4 L303.3 224.2 L304.0 231.2 L303.9 234.5 L302.5 245.2 L301.5 246.3 L300.9 246.0 L299.0 247.0 L298.6 248.3 L298.6 248.3 L294.8 247.1 L293.9 246.0 L293.6 246.7 L294.2 247.8 L293.1 248.4 L291.4 250.2 L290.9 249.4 L289.6 248.9 L289.2 247.6 L288.6 247.5 L287.7 246.4 L287.0 246.2 L287.0 246.2 L286.5 245.9 L286.7 243.8 L285.7 243.7 L285.5 242.7 L284.3 241.6 L283.4 241.1 L280.0 240.3 L277.9 240.8 L277.3 241.3 L277.3 242.2 L276.6 242.0 L274.4 242.9 L273.0 244.1 L272.2 244.0 L270.3 245.3 L269.7 245.2 L268.1 247.1 L268.1 247.1 L266.9 246.5 L264.8 246.4 L264.7 245.8 L264.7 245.8 L265.1 244.8 L264.9 244.0 L265.3 243.2 L264.7 241.6 L265.2 240.1 L264.4 238.9 L264.0 239.2 L263.2 238.0 L264.2 236.7 L264.8 234.7 L264.7 234.0 L264.0 233.3 L264.4 232.4 L267.4 231.7 L268.3 231.9 L268.6 230.7 L269.4 230.4 L269.9 230.7 L272.2 230.7 L272.4 230.2 L271.6 227.8 L271.6 226.7 L273.2 225.7 L274.0 223.9 L275.7 222.1Z M287.0 246.2 L287.7 246.4 L288.6 247.5 L289.2 247.6 L289.6 248.9 L290.9 249.4 L291.4 250.2 L293.1 248.4 L294.2 247.8 L293.6 246.7 L293.9 246.0 L294.8 247.1 L298.6 248.3 L298.6 248.3 L298.8 249.1 L298.1 249.3 L297.5 250.5 L296.9 253.7 L294.6 258.5 L294.5 259.9 L294.9 260.1 L294.6 260.4 L294.9 261.7 L294.1 263.3 L293.6 263.4 L293.5 264.6 L294.2 268.2 L296.6 273.4 L296.1 273.9 L295.7 273.8 L296.3 275.0 L296.1 274.1 L296.7 273.8 L299.8 278.7 L299.8 278.7 L299.1 278.8 L297.5 277.6 L296.7 276.2 L295.1 275.6 L294.5 274.6 L292.5 272.9 L292.0 273.7 L292.2 274.3 L291.3 273.9 L289.2 274.5 L288.2 275.4 L287.3 275.2 L286.4 275.7 L285.8 275.6 L284.5 276.0 L283.9 275.2 L282.8 275.1 L279.9 273.3 L279.9 272.7 L278.8 272.1 L276.8 269.0 L276.3 269.4 L276.3 269.4 L275.4 269.2 L274.5 266.3 L274.5 266.3 L277.4 265.2 L277.9 263.4 L278.6 262.9 L279.4 263.4 L279.5 262.5 L280.4 262.2 L280.7 261.6 L282.3 261.5 L282.8 261.2 L282.8 260.7 L283.6 261.0 L284.0 260.5 L284.8 260.9 L285.5 260.7 L285.8 259.1 L286.9 257.5 L286.6 254.0 L286.1 253.0 L287.6 252.2 L286.9 251.1 L287.1 249.3 L286.7 246.6 L287.0 246.2Z M268.1 247.1 L269.7 245.2 L270.3 245.3 L272.2 244.0 L273.0 244.1 L274.4 242.9 L276.6 242.0 L277.3 242.2 L277.3 241.3 L277.9 240.8 L280.0 240.3 L283.4 241.1 L284.3 241.6 L285.5 242.7 L285.7 243.7 L286.7 243.8 L286.5 245.9 L287.0 246.2 L287.0 246.2 L286.7 246.6 L287.1 249.3 L286.9 251.1 L287.6 252.2 L286.1 253.0 L286.6 254.0 L286.9 257.5 L285.8 259.1 L285.5 260.7 L284.8 260.9 L284.0 260.5 L283.6 261.0 L282.8 260.7 L282.8 261.2 L282.3 261.5 L280.7 261.6 L280.4 262.2 L279.5 262.5 L279.4 263.4 L278.6 262.9 L277.9 263.4 L277.4 265.2 L274.5 266.3 L274.5 266.3 L274.1 266.0 L274.1 266.0 L273.3 264.4 L269.6 264.2 L268.6 263.2 L268.8 262.6 L267.6 261.8 L267.8 260.5 L269.0 259.0 L268.7 258.2 L269.1 256.7 L269.6 256.6 L270.1 255.9 L269.7 255.2 L268.1 255.3 L266.7 254.5 L266.9 253.0 L267.5 252.2 L267.2 250.8 L268.2 249.3 L267.1 248.5 L268.1 247.1Z M253.2 272.2 L251.4 271.0 L251.7 270.3 L251.4 269.3 L251.8 268.8 L250.3 267.1 L251.5 266.9 L251.3 266.4 L251.5 265.9 L251.0 265.5 L250.9 264.3 L251.9 263.4 L251.8 260.5 L250.7 260.1 L247.8 260.7 L247.6 260.3 L246.5 259.9 L246.4 258.4 L247.1 256.4 L247.1 255.4 L247.7 254.9 L247.7 254.4 L249.3 253.7 L249.1 252.8 L252.9 251.6 L252.9 251.6 L253.5 250.9 L255.0 251.3 L255.8 250.8 L255.6 249.5 L258.0 249.0 L257.9 247.6 L259.1 247.4 L258.8 245.0 L260.4 244.9 L261.5 244.1 L261.7 243.0 L263.3 244.6 L263.5 245.5 L264.7 245.8 L264.7 245.8 L264.8 246.4 L266.9 246.5 L268.1 247.1 L268.1 247.1 L267.1 248.5 L268.2 249.3 L267.2 250.8 L267.5 252.2 L266.9 253.0 L266.7 254.5 L268.1 255.3 L269.7 255.2 L270.1 255.9 L269.6 256.6 L269.1 256.7 L268.7 258.2 L269.0 259.0 L267.8 260.5 L267.6 261.8 L268.8 262.6 L268.6 263.2 L269.6 264.2 L273.3 264.4 L274.1 266.0 L274.1 266.0 L273.1 266.6 L272.4 266.0 L269.6 266.6 L267.4 264.9 L266.5 265.4 L262.4 264.1 L261.0 266.3 L260.9 267.5 L260.5 268.2 L258.7 268.4 L258.3 269.2 L256.2 269.9 L255.6 270.7 L254.2 270.8 L253.2 272.2Z M253.6 274.3 L253.8 273.4 L253.2 272.2 L253.2 272.2 L254.2 270.8 L255.6 270.7 L256.2 269.9 L258.3 269.2 L258.7 268.4 L260.5 268.2 L260.9 267.5 L261.0 266.3 L262.4 264.1 L266.5 265.4 L267.4 264.9 L269.6 266.6 L272.4 266.0 L273.1 266.6 L274.1 266.0 L274.1 266.0 L274.5 266.3 L274.5 266.3 L275.4 269.2 L276.3 269.4 L276.3 269.4 L279.0 275.0 L279.0 277.6 L279.0 277.6 L276.3 276.7 L276.0 276.9 L275.9 277.6 L274.7 277.1 L273.5 277.3 L273.0 278.0 L272.4 277.8 L271.6 278.5 L271.4 278.0 L270.9 278.1 L271.3 277.8 L271.1 277.3 L267.9 278.2 L267.5 277.4 L266.5 277.3 L265.9 276.1 L263.6 276.1 L260.9 275.2 L259.9 274.5 L258.4 275.2 L258.2 275.7 L258.2 275.7 L257.1 276.1 L256.3 275.5 L255.4 275.5 L254.7 274.5 L253.6 274.3Z M299.8 278.7 L300.1 280.1 L295.7 280.2 L291.0 284.8 L289.9 289.8 L290.1 291.6 L289.5 294.1 L288.4 295.2 L286.4 295.9 L285.5 295.6 L283.1 297.3 L280.9 298.6 L280.5 300.5 L278.8 301.7 L277.3 300.7 L275.9 299.6 L277.4 299.2 L278.2 298.9 L277.1 298.0 L277.3 297.2 L277.4 296.3 L277.3 294.8 L278.4 293.0 L278.0 291.6 L276.4 290.4 L277.8 289.8 L278.2 289.4 L279.0 289.3 L279.5 288.5 L279.3 287.3 L280.5 286.5 L280.6 287.0 L280.9 286.1 L281.1 286.2 L281.5 285.8 L281.9 285.3 L283.4 284.5 L283.9 284.0 L284.1 283.5 L283.1 283.0 L283.8 282.8 L283.1 282.8 L281.1 281.2 L281.0 280.5 L280.3 280.3 L279.6 281.1 L279.1 281.8 L278.5 282.0 L278.8 281.4 L279.5 280.0 L279.0 277.6 L279.0 275.0 L276.3 269.4 L278.8 272.1 L279.9 273.3 L283.9 275.2 L285.8 275.6 L287.3 275.2 L289.2 274.5 L292.2 274.3 L292.5 272.9 L295.1 275.6 L297.5 277.6 L299.8 278.7Z M276.3 284.3 L274.9 284.4 L274.9 283.9 L274.1 283.2 L271.1 281.5 L270.3 282.5 L269.6 282.0 L269.3 282.3 L270.6 283.3 L269.8 283.5 L270.1 284.6 L269.9 285.4 L268.5 283.4 L267.2 282.7 L264.8 282.5 L264.1 281.3 L263.3 281.3 L262.4 280.7 L262.4 280.7 L260.0 279.4 L258.2 275.7 L258.2 275.7 L258.4 275.2 L259.9 274.5 L260.9 275.2 L263.6 276.1 L265.9 276.1 L266.5 277.3 L267.5 277.4 L267.9 278.2 L271.1 277.3 L271.3 277.8 L270.9 278.1 L271.4 278.0 L271.6 278.5 L272.4 277.8 L273.0 278.0 L273.5 277.3 L274.7 277.1 L275.9 277.6 L276.0 276.9 L276.3 276.7 L279.0 277.6 L279.0 277.6 L278.7 278.1 L279.5 280.0 L278.8 280.5 L278.8 281.4 L278.8 281.4 L278.4 281.6 L277.9 281.3 L277.4 281.8 L277.2 281.2 L277.8 281.2 L277.6 280.9 L276.5 281.6 L276.8 281.1 L276.3 281.2 L276.7 280.7 L276.8 281.0 L276.7 280.5 L276.2 281.1 L276.0 281.7 L276.3 283.1 L276.7 283.2 L275.7 283.0 L275.9 283.6 L276.5 283.5 L276.9 284.3 L276.3 284.3Z M262.4 280.7 L263.3 281.3 L264.1 281.3 L264.8 282.5 L267.2 282.7 L268.5 283.4 L269.9 285.4 L270.1 284.6 L269.8 283.5 L270.6 283.3 L269.3 282.3 L269.6 282.0 L270.3 282.5 L271.1 281.5 L274.1 283.2 L274.9 283.9 L274.9 284.4 L276.3 284.3 L276.3 284.3 L276.8 284.9 L276.7 285.1 L276.3 285.1 L276.1 284.4 L275.9 284.5 L276.1 285.1 L275.8 284.8 L275.8 285.2 L275.5 285.4 L275.4 285.0 L275.4 285.4 L275.0 285.3 L275.1 285.5 L274.5 285.6 L274.4 286.0 L274.2 285.7 L274.6 286.7 L274.1 286.3 L274.2 285.9 L273.2 286.4 L274.0 286.8 L273.9 287.0 L274.2 286.8 L274.3 287.3 L274.4 287.1 L274.2 288.0 L273.2 287.8 L273.6 288.0 L273.1 288.3 L273.7 288.5 L273.5 288.7 L273.8 288.9 L273.8 289.7 L273.1 290.0 L273.9 290.1 L273.3 291.0 L273.9 291.3 L274.2 290.8 L274.4 291.6 L275.8 292.1 L275.2 292.3 L275.3 293.2 L273.8 294.0 L274.0 294.7 L274.4 294.8 L274.3 295.2 L272.8 295.1 L272.8 294.5 L273.2 294.6 L272.6 293.6 L273.2 293.1 L272.0 292.1 L271.9 291.0 L271.2 290.6 L269.9 290.9 L269.8 290.5 L269.2 290.3 L266.6 290.5 L264.0 291.5 L262.7 292.7 L262.6 294.6 L263.0 295.2 L261.9 295.2 L261.9 295.2 L260.2 294.9 L260.0 294.2 L259.2 293.3 L258.9 291.9 L259.9 290.1 L259.5 288.1 L257.7 288.1 L257.7 288.1 L258.5 286.6 L261.8 284.6 L262.3 283.6 L262.1 281.1 L262.4 280.7Z M229.8 245.0 L238.7 241.1 L241.3 240.1 L247.3 235.7 L251.3 231.3 L254.1 227.9 L256.1 222.4 L264.2 217.5 L264.5 217.3 L268.5 213.1 L269.3 206.6 L271.6 202.3 L275.1 203.7 L275.6 207.2 L278.9 209.3 L276.6 211.8 L274.4 212.3 L274.1 214.9 L274.5 215.6 L273.1 219.5 L274.3 221.3 L275.7 222.1 L274.0 223.9 L271.6 226.7 L272.4 230.2 L269.9 230.7 L268.6 230.7 L267.4 231.7 L264.0 233.3 L264.8 234.7 L263.2 238.0 L264.4 238.9 L264.7 241.6 L264.9 244.0 L264.7 245.8 L263.5 245.5 L261.7 243.0 L260.4 244.9 L259.1 247.4 L258.0 249.0 L255.8 250.8 L253.5 250.9 L252.9 251.6 L252.7 249.8 L252.9 248.4 L251.0 247.0 L250.5 245.1 L248.9 243.7 L245.2 246.6 L244.1 248.5 L243.3 248.1 L241.4 248.7 L239.3 249.8 L237.9 249.2 L237.7 247.0 L235.9 246.7 L235.0 248.1 L232.5 250.8 L231.9 249.3 L231.5 247.5 L230.4 245.8Z M211.5 263.5 L211.2 262.4 L211.7 261.8 L210.9 260.1 L211.4 259.6 L211.5 257.8 L211.9 256.7 L211.4 256.2 L211.2 254.7 L212.1 253.4 L211.4 252.1 L212.7 250.8 L212.7 249.5 L213.7 246.6 L214.5 245.8 L215.4 245.9 L215.7 245.4 L217.1 245.6 L217.1 245.6 L215.6 248.0 L217.4 250.0 L217.0 250.5 L217.5 250.1 L218.9 251.2 L219.1 251.0 L218.8 251.1 L218.6 250.6 L220.8 251.2 L223.2 250.9 L224.4 249.8 L225.3 246.5 L226.8 245.6 L229.8 245.0 L229.8 245.0 L230.4 245.8 L231.4 246.0 L231.5 247.5 L231.8 247.9 L231.9 249.3 L232.5 250.8 L232.5 250.8 L232.3 255.6 L231.0 256.4 L230.9 257.0 L231.4 257.1 L231.3 257.6 L230.6 257.8 L229.9 260.1 L228.7 261.1 L228.7 261.1 L227.7 261.1 L226.9 260.2 L226.0 260.5 L224.7 260.1 L224.4 259.2 L222.8 260.2 L222.7 259.1 L221.4 259.3 L220.5 260.1 L220.1 259.5 L219.5 259.3 L218.0 261.3 L217.3 261.6 L217.1 262.7 L216.0 263.9 L215.1 264.2 L215.3 263.3 L214.8 262.4 L214.0 262.0 L213.4 262.3 L213.2 261.8 L212.5 262.3 L212.2 263.6 L211.5 263.5Z M199.5 263.7 L200.7 262.2 L201.7 261.8 L203.3 260.3 L207.3 254.9 L207.8 255.1 L207.4 254.6 L209.0 252.2 L210.4 249.0 L210.9 247.1 L210.5 246.4 L210.9 244.6 L210.4 244.1 L209.9 242.6 L210.0 240.7 L208.8 240.4 L209.0 238.9 L210.2 236.9 L210.0 235.5 L210.3 235.0 L210.6 235.0 L210.7 234.5 L213.1 233.3 L214.3 233.7 L216.6 232.6 L218.5 231.0 L220.4 230.6 L221.6 229.9 L222.9 229.9 L223.4 230.4 L223.2 231.3 L223.7 232.1 L221.4 232.7 L221.0 234.0 L221.3 234.8 L221.7 234.7 L221.3 235.2 L221.7 235.3 L220.9 236.3 L219.3 236.1 L218.1 236.9 L217.4 238.6 L216.6 238.9 L216.7 239.1 L216.2 239.5 L214.8 238.6 L215.1 238.1 L214.3 238.1 L214.4 238.5 L214.1 238.3 L214.4 238.9 L214.0 239.0 L213.3 240.5 L213.8 240.9 L213.6 241.4 L213.0 241.5 L213.2 242.1 L212.9 242.4 L213.5 242.6 L214.0 242.0 L214.6 242.1 L214.6 242.6 L215.1 242.6 L215.0 242.9 L215.4 243.2 L216.1 242.9 L216.4 241.7 L217.2 241.5 L217.1 245.6 L217.1 245.6 L215.7 245.4 L215.4 245.9 L214.5 245.8 L213.7 246.6 L212.7 249.5 L212.7 250.8 L211.4 252.1 L212.1 253.4 L211.2 254.7 L211.4 256.2 L211.9 256.7 L211.5 257.8 L211.4 259.6 L210.9 260.1 L211.7 261.8 L211.2 262.4 L211.5 263.5 L211.5 263.5 L211.9 264.4 L212.7 265.0 L211.5 267.1 L211.0 267.3 L211.2 268.1 L210.6 269.4 L210.6 269.4 L208.6 269.9 L206.3 267.6 L205.2 267.8 L204.8 267.5 L203.8 268.1 L203.1 267.1 L201.8 267.1 L201.4 265.6 L200.7 264.7 L199.9 264.5 L199.5 263.7Z M182.9 283.9 L183.3 284.7 L183.7 284.0 L183.9 285.7 L186.8 284.1 L186.1 284.8 L186.0 285.7 L187.9 285.8 L188.0 284.8 L187.4 284.1 L188.7 283.6 L189.1 284.2 L189.8 284.7 L189.9 283.4 L191.0 282.7 L190.7 282.1 L190.8 281.7 L193.8 281.9 L193.6 279.8 L193.2 279.3 L195.1 279.8 L195.2 281.1 L196.3 277.8 L194.1 274.8 L193.4 272.2 L194.8 269.1 L196.7 266.6 L197.2 265.7 L197.8 264.9 L199.5 263.7 L200.7 264.7 L201.8 267.1 L203.8 268.1 L205.2 267.8 L208.6 269.9 L210.6 269.4 L210.2 270.4 L210.5 272.1 L211.4 273.2 L212.1 274.5 L211.6 276.1 L210.0 277.0 L208.2 277.1 L205.6 277.6 L204.8 278.0 L201.3 277.9 L200.3 281.0 L198.3 279.9 L197.1 280.8 L197.9 283.5 L196.5 284.6 L195.7 284.7 L194.3 285.6 L192.9 284.8 L191.2 288.3 L190.1 287.7 L189.1 289.4 L187.7 289.7 L183.8 287.6 L182.4 286.3 L182.2 284.6Z M253.6 274.3 L254.7 274.5 L255.4 275.5 L256.3 275.5 L257.1 276.1 L258.2 275.7 L258.2 275.7 L260.0 279.4 L262.4 280.7 L262.4 280.7 L262.1 281.1 L262.3 283.6 L261.8 284.6 L258.5 286.6 L257.7 288.1 L257.7 288.1 L252.7 289.4 L252.2 288.2 L251.0 288.3 L250.5 286.9 L250.0 287.1 L249.4 287.9 L249.3 290.0 L248.9 290.5 L249.3 293.5 L248.5 294.4 L247.1 294.1 L246.3 293.4 L245.5 290.4 L244.8 290.1 L243.8 290.7 L243.3 290.3 L243.2 289.2 L242.8 288.7 L243.3 287.7 L243.1 286.5 L243.5 285.0 L242.8 281.4 L242.5 281.4 L242.5 281.4 L241.7 279.5 L242.9 278.3 L241.9 277.3 L243.0 275.0 L244.0 275.5 L245.7 272.7 L247.5 273.1 L247.9 274.5 L248.5 274.5 L248.8 273.9 L250.7 274.0 L251.3 275.3 L252.4 275.3 L253.1 274.3 L253.6 274.3Z M232.5 250.8 L235.0 248.1 L235.9 246.7 L237.7 247.0 L237.9 249.2 L239.3 249.8 L241.4 248.7 L243.3 248.1 L244.1 248.5 L245.2 246.6 L248.9 243.7 L250.5 245.1 L251.0 247.0 L252.9 248.4 L252.7 249.8 L252.9 251.6 L249.1 252.8 L247.7 254.4 L247.1 255.4 L246.4 258.4 L247.6 260.3 L250.7 260.1 L251.9 263.4 L251.0 265.5 L251.3 266.4 L250.3 267.1 L251.4 269.3 L251.4 271.0 L253.2 272.2 L253.6 274.3 L253.1 274.3 L251.3 275.3 L248.8 273.9 L247.9 274.5 L245.7 272.7 L243.0 275.0 L242.9 278.3 L242.5 281.4 L242.0 283.1 L240.9 283.8 L240.8 285.4 L241.2 286.4 L241.0 288.2 L239.7 289.8 L238.2 290.8 L236.0 292.1 L235.0 293.0 L234.1 293.2 L232.6 293.0 L230.0 293.3 L227.8 292.1 L228.2 291.2 L229.2 289.8 L228.5 288.2 L229.0 286.8 L229.7 285.1 L228.0 284.9 L227.7 283.3 L227.8 281.2 L226.1 278.4 L224.3 277.2 L223.1 276.8 L225.2 274.3 L227.8 272.1 L229.3 269.6 L228.0 268.0 L228.4 265.9 L230.0 262.4 L228.7 261.1 L229.9 260.1 L231.3 257.6 L230.9 257.0 L232.3 255.6Z M200.3 281.0 L201.3 277.9 L204.8 278.0 L205.6 277.6 L208.2 277.1 L210.0 277.0 L211.6 276.1 L212.1 274.5 L211.4 273.2 L210.5 272.1 L210.2 270.4 L210.6 269.4 L211.2 268.1 L211.5 267.1 L211.9 264.4 L211.5 263.5 L212.5 262.3 L213.4 262.3 L214.8 262.4 L215.1 264.2 L217.1 262.7 L218.0 261.3 L220.1 259.5 L221.4 259.3 L222.8 260.2 L224.7 260.1 L226.9 260.2 L228.7 261.1 L228.7 261.6 L229.9 263.8 L228.8 267.2 L227.9 268.7 L228.9 271.2 L226.4 274.6 L224.3 274.7 L223.3 277.2 L224.6 277.9 L226.9 280.4 L227.2 282.3 L227.6 284.4 L229.3 284.5 L229.7 286.2 L229.8 288.1 L229.0 288.6 L228.3 290.6 L228.2 291.2 L227.3 291.7 L222.8 291.1 L219.5 291.3 L217.8 291.0 L217.0 289.7 L216.1 288.6 L215.1 288.2 L212.3 289.3 L210.8 289.2 L208.8 295.3 L208.2 294.5 L207.6 295.0 L205.1 292.6 L203.1 293.0 L202.8 292.1 L203.4 289.6 L203.8 288.4 L203.3 286.4 L202.9 284.7 L201.7 284.4 L201.2 282.2 L200.3 281.0Z M234.1 293.2 L235.3 292.1 L236.2 291.6 L239.0 289.6 L240.8 289.0 L240.4 286.9 L241.2 285.6 L241.2 284.1 L241.3 283.2 L242.5 281.4 L242.8 281.4 L243.1 286.5 L242.8 288.7 L243.3 290.3 L244.8 290.1 L246.3 293.4 L248.5 294.4 L248.9 290.5 L249.4 287.9 L250.5 286.9 L252.2 288.2 L257.7 288.1 L259.5 288.1 L258.9 291.9 L260.0 294.2 L261.9 295.2 L261.2 296.3 L261.7 297.7 L261.3 298.9 L262.7 300.2 L261.4 303.0 L259.6 305.8 L259.3 308.3 L258.8 308.0 L257.7 309.0 L255.4 309.2 L254.6 308.7 L253.9 307.5 L254.6 305.7 L254.4 304.2 L254.5 303.9 L254.6 303.0 L254.2 302.1 L254.3 299.7 L254.9 298.2 L257.4 297.7 L255.4 295.9 L251.8 295.8 L249.3 297.6 L248.7 299.4 L249.4 298.7 L245.5 301.4 L245.1 303.8 L244.2 305.4 L242.0 308.2 L242.8 310.1 L233.4 308.7 L226.5 307.9 L226.4 305.1 L228.8 303.1 L229.9 302.0 L231.3 299.8 L233.3 296.1 L234.0 294.9 L234.1 293.2Z M210.5 298.0 L208.8 295.3 L208.9 292.4 L211.3 288.9 L214.2 288.7 L215.4 287.5 L217.0 289.1 L217.4 289.9 L218.2 290.8 L220.1 292.1 L225.4 292.9 L227.4 291.2 L228.2 291.2 L228.6 293.6 L230.8 292.6 L232.8 293.4 L234.1 293.2 L234.0 294.9 L233.3 296.1 L231.3 299.8 L229.9 302.0 L228.8 303.1 L226.4 305.1 L226.5 307.9 L216.3 310.5 L218.2 308.8 L218.6 309.0 L218.7 308.4 L221.3 307.1 L221.7 306.8 L222.5 306.5 L222.2 307.8 L223.0 307.2 L222.7 306.5 L222.9 306.3 L222.4 304.2 L220.7 303.9 L220.4 304.1 L219.8 305.4 L218.2 304.7 L217.0 304.7 L216.5 305.1 L215.6 304.0 L215.6 301.9 L215.2 302.4 L214.7 302.8 L214.1 305.3 L215.4 307.2 L212.5 305.5 L212.1 301.7 L212.7 298.7 L212.7 298.6 L213.5 297.9 L213.0 297.6 L213.6 297.0 L213.1 296.5 L212.5 296.2 L211.3 295.9 L211.3 296.3 L212.4 298.2 L211.9 297.6 L211.6 298.2 L211.4 298.6Z M210.5 298.0 L209.1 298.1 L208.3 299.3 L208.5 300.5 L208.2 301.7 L205.6 307.9 L206.1 309.1 L208.2 310.2 L211.8 312.4 L212.3 312.5 L213.3 313.3 L213.5 314.0 L214.1 313.8 L214.0 315.4 L213.6 315.6 L211.9 316.3 L213.0 316.4 L214.0 316.3 L213.8 318.7 L210.9 319.2 L211.0 318.7 L211.9 319.1 L212.3 319.2 L212.9 318.6 L212.3 318.5 L212.2 318.1 L212.0 318.0 L211.8 317.7 L211.6 317.9 L211.5 318.4 L211.1 317.7 L210.8 318.3 L209.2 318.6 L210.1 317.2 L209.1 317.5 L208.7 316.9 L208.1 317.8 L207.4 319.3 L207.1 318.7 L206.2 318.6 L206.1 319.5 L205.7 319.2 L205.1 318.7 L205.0 319.3 L204.8 319.8 L205.0 320.2 L204.5 319.5 L203.8 319.5 L204.2 320.3 L202.7 320.3 L201.8 321.0 L201.2 321.0 L201.5 321.4 L200.4 323.1 L200.7 323.9 L200.1 324.1 L199.7 323.8 L199.2 323.4 L198.5 324.2 L199.5 325.2 L199.8 326.0 L199.8 326.4 L199.4 327.1 L198.8 326.3 L198.4 327.1 L199.2 327.8 L198.1 328.0 L198.1 328.7 L197.4 329.1 L194.3 333.7 L193.7 333.5 L192.2 332.6 L191.1 331.3 L191.1 329.8 L191.6 328.8 L194.6 325.3 L196.1 324.9 L196.7 324.0 L196.6 321.7 L197.1 319.5 L196.9 317.6 L196.2 314.4 L199.1 312.9 L197.8 312.1 L196.6 311.4 L195.8 308.9 L195.7 308.4 L195.8 307.3 L195.6 306.7 L195.3 306.2 L194.7 304.7 L196.1 303.5 L196.0 302.4 L197.0 302.2 L199.6 302.8 L202.4 300.4 L203.3 297.7 L203.7 295.3 L203.1 293.9 L203.1 293.0 L205.6 292.1 L208.1 295.0 L208.8 295.3 L210.4 296.8Z M194.7 304.7 L194.4 304.5 L194.7 303.9 L194.2 303.7 L194.2 303.3 L193.0 303.0 L192.9 302.0 L191.9 302.5 L191.1 301.7 L191.5 300.4 L190.5 299.2 L190.2 297.8 L190.6 297.4 L191.0 294.8 L190.5 293.0 L191.1 291.3 L190.5 291.4 L189.1 289.4 L189.1 289.4 L190.0 288.5 L190.1 287.7 L190.9 287.8 L191.2 288.3 L191.8 288.0 L192.9 284.8 L193.8 285.7 L194.3 285.6 L194.8 284.5 L195.7 284.7 L196.0 284.3 L196.5 284.6 L196.6 283.2 L197.9 283.5 L197.9 282.4 L197.1 280.8 L197.5 280.0 L198.3 279.9 L200.3 281.0 L200.3 281.0 L200.4 281.9 L201.2 282.2 L201.1 284.1 L201.7 284.4 L202.3 283.8 L202.9 284.7 L202.6 285.6 L203.3 286.4 L203.2 287.7 L203.8 288.4 L203.2 289.0 L203.4 289.6 L202.7 291.1 L202.8 292.1 L202.4 292.3 L203.1 293.0 L203.1 293.0 L203.1 293.9 L204.1 294.6 L203.7 295.3 L203.8 297.1 L203.3 297.7 L203.2 299.5 L202.4 300.4 L202.1 301.6 L199.6 302.8 L198.0 302.1 L197.0 302.2 L196.6 301.7 L196.0 302.4 L196.9 302.7 L196.1 303.5 L196.2 304.1 L194.7 304.7Z M194.7 304.7 L195.3 306.2 L193.9 306.8 L192.6 306.1 L191.8 306.8 L188.9 306.4 L188.3 305.0 L187.5 303.1 L186.2 300.8 L185.7 299.9 L184.6 300.7 L185.0 301.1 L183.0 300.5 L180.7 298.7 L180.5 297.8 L180.9 295.5 L179.8 294.9 L178.8 294.6 L176.8 294.5 L176.8 293.6 L175.8 291.9 L173.9 292.5 L170.7 290.5 L172.3 288.5 L173.3 284.9 L170.8 285.0 L169.2 283.0 L169.4 281.1 L171.0 281.3 L173.0 280.2 L174.3 278.8 L177.3 277.8 L178.6 279.8 L179.0 281.0 L177.9 281.3 L176.5 283.7 L178.0 282.7 L178.4 283.8 L177.6 284.2 L179.4 284.7 L179.3 286.7 L180.6 285.7 L181.2 285.5 L180.7 285.4 L179.8 284.0 L181.7 283.6 L182.2 283.5 L182.9 283.9 L182.8 285.6 L183.2 287.5 L183.9 288.7 L189.1 289.4 L190.5 291.4 L190.5 293.0 L190.6 297.4 L190.5 299.2 L191.1 301.7 L192.9 302.0 L194.2 303.3 L194.7 303.9 L194.7 304.7Z M180.5 297.8 L180.7 298.7 L183.0 299.3 L183.0 300.5 L184.2 301.3 L185.0 301.1 L185.0 300.7 L184.6 300.7 L185.0 299.7 L185.7 299.9 L185.6 301.0 L186.2 300.8 L187.0 301.7 L187.5 303.1 L188.5 304.2 L188.3 305.0 L188.3 305.0 L187.8 305.0 L187.6 306.6 L187.0 307.1 L187.2 307.8 L186.6 309.7 L187.2 310.1 L186.7 311.1 L187.1 312.1 L187.3 313.8 L186.9 314.8 L187.1 315.2 L186.6 315.8 L186.6 315.8 L184.9 316.0 L183.5 317.1 L182.9 316.4 L180.8 317.3 L179.7 317.1 L178.9 318.0 L176.9 317.9 L176.3 318.7 L174.8 318.9 L174.4 317.8 L174.4 317.8 L177.3 316.8 L180.5 313.5 L180.5 312.5 L181.1 312.4 L181.0 311.8 L181.2 312.4 L181.8 311.8 L182.1 311.1 L181.3 311.0 L181.2 310.0 L181.6 310.7 L181.7 310.2 L182.2 310.9 L182.5 310.2 L181.9 310.2 L181.6 309.8 L182.8 309.9 L181.6 309.4 L182.7 309.2 L182.9 308.7 L182.3 309.2 L182.5 308.5 L181.7 308.5 L182.3 307.9 L181.4 308.5 L181.5 308.0 L182.1 307.7 L181.3 307.8 L183.2 306.7 L181.6 307.5 L181.2 307.2 L181.2 307.2 L182.5 306.0 L181.6 303.7 L182.1 301.9 L181.6 301.5 L182.6 301.0 L180.1 300.0 L180.1 298.5 L179.7 298.0 L180.5 297.8Z M159.3 292.4 L161.9 291.5 L160.9 288.8 L160.3 287.0 L159.7 285.0 L159.3 282.7 L158.8 282.5 L162.9 281.3 L164.2 281.6 L165.0 281.3 L166.0 281.2 L168.9 281.2 L168.7 281.4 L169.4 281.1 L169.2 283.0 L170.8 285.0 L173.3 284.9 L172.3 288.5 L170.7 290.5 L173.9 292.5 L175.8 291.9 L176.8 293.6 L176.8 294.5 L178.8 294.6 L179.8 294.9 L180.9 295.5 L180.5 297.8 L179.7 298.0 L180.1 300.0 L181.6 301.5 L181.6 303.7 L181.2 307.2 L180.5 307.7 L180.4 307.5 L178.9 306.7 L177.0 307.5 L177.3 307.7 L177.0 308.4 L176.4 308.6 L171.7 308.7 L169.7 307.6 L169.5 307.0 L169.3 306.9 L168.3 305.8 L167.4 305.9 L167.3 305.9 L165.8 305.0 L165.3 305.2 L164.8 305.2 L164.6 305.4 L164.6 304.9 L164.2 305.3 L163.0 305.6 L162.9 305.5 L160.9 305.7 L160.7 305.4 L160.5 305.3 L160.1 305.9 L159.1 306.1 L158.4 305.7 L157.5 306.4 L157.8 305.3 L156.3 303.7 L156.4 302.2 L156.1 300.6 L156.3 298.6 L157.5 296.8 L158.6 295.1 L159.6 294.0 L158.9 293.2Z M188.3 305.0 L188.9 306.4 L190.2 306.9 L191.8 306.8 L192.6 305.7 L192.6 306.1 L193.6 306.1 L193.9 306.8 L194.6 307.0 L195.3 306.2 L195.3 306.2 L195.6 306.7 L195.4 307.1 L195.8 307.3 L196.0 307.9 L195.7 308.4 L195.0 308.3 L195.8 308.9 L195.2 310.4 L196.6 311.4 L197.5 311.0 L197.8 312.1 L198.8 311.9 L199.1 312.9 L198.6 314.0 L196.2 314.4 L195.7 315.5 L196.9 317.6 L196.2 318.0 L197.1 319.5 L196.2 321.0 L196.6 321.7 L196.4 323.1 L196.7 324.0 L196.2 324.0 L196.1 324.9 L196.4 325.5 L194.6 325.3 L192.0 328.9 L191.6 328.8 L191.4 330.1 L191.1 329.8 L191.1 329.8 L190.9 329.2 L190.1 328.8 L188.8 329.4 L186.8 329.0 L186.5 329.6 L185.9 329.8 L185.9 329.2 L185.4 328.9 L185.8 327.7 L186.2 327.5 L186.2 326.6 L186.0 326.0 L185.3 325.9 L185.1 324.8 L184.2 324.2 L185.3 322.3 L186.0 322.0 L186.3 320.5 L186.9 320.2 L187.9 320.5 L188.3 320.0 L187.8 318.9 L187.0 318.7 L186.6 315.8 L186.6 315.8 L187.1 315.2 L186.9 314.8 L187.3 313.8 L187.1 312.1 L186.7 311.1 L187.2 310.1 L186.6 309.7 L187.2 307.8 L187.0 307.1 L187.6 306.6 L187.8 305.0 L188.3 305.0Z M191.1 329.8 L191.8 331.8 L193.4 333.8 L194.3 333.7 L193.6 335.2 L192.8 336.0 L193.0 336.4 L192.7 337.3 L193.3 337.7 L191.8 338.4 L191.6 339.1 L189.5 340.7 L188.8 341.7 L189.3 341.0 L187.8 340.5 L186.1 339.8 L184.8 339.5 L183.0 338.6 L182.4 337.8 L181.2 337.9 L180.9 336.0 L179.8 335.0 L180.5 334.9 L180.0 333.8 L179.5 333.3 L177.5 332.3 L176.5 331.3 L173.6 329.5 L174.1 328.8 L174.9 327.5 L174.2 327.2 L175.6 326.1 L176.1 325.4 L174.1 324.2 L174.5 323.9 L175.5 323.3 L177.0 322.2 L176.3 321.2 L176.0 321.2 L175.7 320.2 L175.3 320.0 L173.8 319.1 L174.4 317.8 L174.8 318.9 L176.9 317.9 L179.7 317.1 L182.9 316.4 L184.9 316.0 L186.6 315.8 L187.8 318.9 L187.9 320.5 L186.3 320.5 L185.3 322.3 L185.1 324.8 L186.0 326.0 L186.2 327.5 L185.4 328.9 L185.9 329.8 L186.8 329.0 L190.1 328.8 L191.1 329.8Z M134.2 284.0 L134.6 284.1 L134.1 284.4 L134.2 284.8 L135.0 285.9 L137.4 286.7 L138.0 286.5 L138.8 285.4 L141.6 284.5 L143.4 285.2 L147.4 285.3 L147.4 285.6 L150.8 284.4 L151.5 284.9 L154.6 284.4 L155.3 285.4 L155.1 284.6 L155.4 284.7 L154.8 284.3 L156.4 283.7 L157.0 282.9 L157.8 282.8 L158.0 282.4 L158.8 282.5 L158.8 282.5 L159.3 282.7 L159.9 283.8 L159.7 285.0 L160.0 285.3 L160.3 287.0 L161.1 287.4 L160.9 288.8 L161.8 289.3 L161.9 291.5 L160.2 292.8 L159.3 292.4 L159.3 292.4 L159.0 292.2 L157.6 293.5 L156.6 293.6 L156.2 293.3 L154.4 294.3 L153.9 293.6 L154.1 292.7 L153.6 292.6 L153.8 291.9 L153.6 291.4 L152.5 290.7 L150.8 290.6 L150.9 289.4 L149.1 290.0 L149.0 290.6 L147.7 291.1 L147.1 292.2 L145.1 290.4 L141.9 289.7 L141.2 292.1 L139.9 292.7 L140.3 294.0 L139.8 293.8 L138.6 294.3 L137.6 294.0 L137.7 295.8 L135.9 296.4 L135.3 296.2 L135.1 297.1 L134.6 297.4 L134.6 297.4 L134.1 296.9 L131.9 297.3 L131.7 297.0 L131.7 297.0 L132.0 295.2 L133.0 294.4 L132.7 293.5 L132.1 293.5 L132.1 293.1 L135.5 291.5 L135.1 290.2 L135.2 289.4 L135.7 288.8 L135.5 287.3 L133.6 286.0 L133.0 284.6 L134.2 284.0Z M134.2 284.0 L133.6 286.0 L135.7 288.8 L135.1 290.2 L132.1 293.1 L132.7 293.5 L132.0 295.2 L131.7 297.0 L129.7 297.2 L127.8 297.0 L126.0 296.3 L125.3 297.8 L123.4 300.1 L120.8 301.8 L122.5 303.1 L121.9 303.1 L120.5 303.4 L117.0 304.5 L115.7 305.1 L114.3 304.8 L113.4 305.1 L112.4 304.3 L109.9 307.0 L109.6 309.5 L109.6 310.8 L108.3 312.9 L108.3 313.6 L106.9 314.8 L106.1 317.9 L104.5 317.4 L103.1 318.0 L101.9 316.3 L100.5 314.4 L99.8 312.5 L100.8 309.7 L100.2 307.8 L103.4 307.5 L104.3 306.3 L105.8 304.7 L107.3 303.2 L108.4 302.4 L108.8 301.6 L109.4 300.8 L112.1 298.6 L113.9 297.5 L114.6 296.5 L115.6 295.4 L116.3 293.9 L120.8 291.2 L121.8 288.9 L121.7 288.1 L121.1 287.0 L122.9 286.2 L128.2 284.9 L129.3 284.3 L130.1 283.6 L130.9 283.2 L131.8 283.1 L132.9 283.6 L133.3 283.5 L133.9 283.4 L134.0 284.0Z M138.6 313.3 L137.2 309.4 L136.6 306.3 L136.1 303.5 L135.7 298.8 L134.6 297.4 L135.3 296.2 L137.7 295.8 L138.6 294.3 L140.3 294.0 L141.2 292.1 L145.1 290.4 L147.7 291.1 L149.1 290.0 L150.8 290.6 L153.6 291.4 L153.6 292.6 L153.9 293.6 L156.2 293.3 L157.6 293.5 L159.3 292.4 L158.9 293.2 L159.6 294.0 L158.6 295.1 L157.5 296.8 L156.3 298.6 L156.1 300.6 L156.4 302.2 L156.3 303.7 L157.8 305.3 L157.5 306.4 L155.9 306.8 L155.8 306.4 L155.3 306.8 L155.7 306.8 L154.4 308.5 L154.4 309.5 L151.8 310.3 L151.6 309.9 L152.3 307.7 L152.3 307.7 L151.3 309.8 L150.7 309.5 L150.4 309.7 L149.2 308.9 L149.4 310.0 L151.3 310.0 L151.3 311.3 L150.7 312.3 L149.7 312.1 L149.2 313.2 L147.0 313.4 L146.7 314.6 L145.3 313.5 L145.1 312.9 L144.8 312.7 L145.0 313.4 L144.0 311.1 L144.8 309.3 L144.0 310.9 L143.3 311.8 L141.8 312.9 L140.6 313.7 L140.3 313.8 L139.1 314.2 L138.7 313.7Z M131.7 297.0 L134.1 296.9 L134.6 297.4 L135.2 301.8 L137.0 304.2 L137.6 308.0 L138.6 311.5 L138.6 313.3 L137.6 313.2 L138.2 314.7 L137.7 314.5 L137.2 315.8 L135.2 315.8 L134.6 315.6 L134.4 314.3 L134.1 314.3 L131.5 315.9 L130.8 315.9 L129.1 317.4 L125.6 318.4 L124.1 318.8 L123.5 319.2 L123.6 319.8 L121.9 320.6 L121.0 320.8 L119.0 321.0 L119.2 319.8 L118.3 318.6 L118.0 317.2 L118.6 316.6 L117.8 315.8 L117.1 316.7 L117.0 316.5 L117.1 316.1 L116.7 316.1 L116.5 315.9 L116.3 315.7 L114.7 316.5 L114.1 317.0 L112.2 319.3 L112.3 320.4 L112.0 320.6 L111.3 319.9 L110.1 319.9 L109.3 317.3 L108.7 314.1 L108.3 313.6 L107.9 312.6 L109.8 310.2 L110.6 307.6 L111.8 305.9 L113.1 304.6 L113.9 304.5 L115.0 304.5 L116.6 304.0 L118.8 304.7 L121.5 303.7 L122.2 303.4 L122.3 302.3 L122.0 300.4 L123.3 299.7 L125.2 297.3 L126.6 296.2 L128.6 296.3 L130.2 296.7Z M108.3 313.6 L108.5 316.5 L109.8 317.2 L110.7 320.2 L111.2 320.7 L112.0 320.6 L112.1 321.0 L112.0 321.8 L112.1 322.8 L111.8 322.8 L111.7 326.2 L109.6 327.4 L110.5 330.1 L109.7 330.9 L108.1 328.8 L107.7 329.0 L106.4 328.6 L104.0 326.7 L103.3 326.0 L103.0 327.2 L103.2 325.7 L102.3 325.4 L101.5 325.1 L99.6 325.2 L98.4 325.7 L97.0 326.4 L96.4 325.9 L96.4 325.2 L95.8 325.5 L95.7 326.0 L94.4 325.9 L94.2 325.7 L94.1 325.1 L93.3 325.5 L93.1 326.1 L93.0 327.3 L90.7 328.1 L90.6 327.9 L89.9 328.1 L90.0 327.7 L89.8 327.9 L88.7 327.5 L88.4 326.5 L88.2 326.6 L86.3 325.1 L85.1 326.7 L83.2 327.6 L82.8 324.5 L82.3 322.5 L83.0 322.1 L83.7 320.6 L83.5 319.7 L83.0 317.6 L83.7 316.9 L85.6 315.3 L84.3 315.7 L84.7 314.2 L88.1 314.9 L89.6 315.4 L89.0 314.5 L90.9 314.9 L89.8 315.1 L90.2 315.6 L92.6 314.9 L93.5 314.8 L94.4 314.3 L94.3 314.0 L95.2 313.0 L95.0 312.2 L96.1 311.8 L97.4 309.5 L98.3 309.3 L98.4 308.3 L99.4 308.8 L99.8 308.3 L100.2 307.8 L100.4 309.4 L101.0 310.6 L100.4 313.3 L102.5 314.5 L102.1 317.1 L104.4 317.8 L105.3 317.1 L107.3 316.1 L107.5 313.8Z M160.2 320.6 L161.6 320.1 L163.0 320.2 L163.0 319.9 L163.4 319.8 L163.3 320.8 L164.6 321.4 L164.0 322.4 L163.5 322.2 L164.1 322.5 L163.7 323.3 L163.1 322.7 L162.7 323.3 L162.3 323.2 L162.7 323.4 L163.3 322.9 L163.7 324.0 L160.9 323.2 L157.7 324.3 L160.8 323.2 L163.6 324.3 L163.4 324.8 L162.9 324.5 L163.1 324.8 L162.7 325.1 L163.4 324.9 L163.4 325.2 L163.0 325.1 L163.6 325.4 L163.8 326.7 L164.3 326.5 L164.4 326.0 L165.0 327.2 L165.7 327.6 L164.4 327.9 L166.0 328.2 L165.4 328.1 L165.9 328.3 L165.8 328.9 L164.3 330.3 L164.7 330.0 L164.6 330.5 L166.2 330.4 L165.4 330.9 L167.0 330.8 L164.6 332.3 L164.1 332.1 L163.7 332.7 L163.3 332.5 L163.0 333.5 L162.7 333.3 L161.8 334.5 L159.3 335.7 L158.6 336.4 L159.1 336.6 L158.5 337.5 L157.9 337.6 L158.5 337.7 L157.6 337.7 L157.3 338.5 L157.3 338.5 L154.8 338.2 L154.4 337.0 L153.9 336.7 L154.5 335.9 L154.3 334.9 L151.9 334.7 L151.8 332.3 L151.2 331.0 L150.5 331.2 L149.8 330.8 L149.3 331.7 L148.5 332.0 L147.0 330.6 L145.1 330.8 L143.6 330.2 L143.1 329.5 L143.1 329.5 L143.8 328.5 L143.5 328.3 L143.8 327.7 L143.7 326.0 L143.7 326.0 L144.4 325.7 L145.8 324.1 L146.5 324.3 L146.7 323.8 L147.4 323.4 L149.2 323.1 L149.4 323.8 L150.5 324.3 L151.7 323.2 L153.3 323.0 L153.6 322.1 L154.3 321.6 L156.4 321.3 L157.3 321.6 L158.4 321.3 L159.6 322.0 L160.0 321.7 L160.2 320.6Z M143.7 326.0 L141.8 325.1 L141.8 325.1 L142.5 324.5 L142.9 321.0 L141.0 319.1 L141.7 319.2 L142.3 319.8 L143.5 319.5 L143.2 320.0 L143.7 319.9 L143.8 320.3 L143.8 319.9 L144.8 319.1 L144.8 318.7 L145.6 318.5 L145.5 318.1 L145.7 318.4 L145.8 317.9 L146.3 318.2 L146.9 317.5 L146.6 316.7 L147.1 316.5 L146.9 316.9 L147.4 316.5 L147.5 316.8 L146.9 317.3 L147.4 317.4 L148.2 316.7 L148.2 315.9 L148.8 316.0 L149.0 315.7 L149.8 316.4 L150.1 316.1 L150.5 316.6 L152.1 316.5 L152.5 317.0 L152.6 315.8 L153.2 316.5 L153.2 315.5 L153.6 315.4 L154.2 315.9 L154.0 317.0 L154.2 317.4 L154.7 317.3 L154.6 316.7 L155.2 316.9 L155.2 316.3 L155.6 317.1 L156.1 316.7 L156.4 317.2 L156.0 318.0 L156.2 318.5 L158.2 319.4 L158.8 319.2 L160.2 320.6 L160.2 320.6 L160.0 321.7 L159.6 322.0 L158.4 321.3 L157.3 321.6 L156.4 321.3 L154.3 321.6 L153.6 322.1 L153.3 323.0 L151.7 323.2 L150.5 324.3 L149.4 323.8 L149.2 323.1 L147.4 323.4 L146.7 323.8 L146.5 324.3 L145.8 324.1 L144.4 325.7 L143.7 326.0Z M143.7 326.0 L143.5 328.3 L143.1 329.5 L141.4 329.9 L139.7 330.9 L135.8 331.3 L134.2 332.1 L131.9 334.4 L131.4 335.5 L130.5 337.0 L130.2 338.7 L124.7 340.9 L126.5 344.0 L124.3 346.1 L123.2 348.1 L120.6 348.7 L121.5 350.6 L121.8 352.6 L121.3 355.6 L120.1 356.0 L120.1 355.0 L119.3 355.5 L118.0 355.1 L117.9 355.8 L117.6 356.4 L117.7 355.2 L117.3 354.4 L118.0 354.1 L119.1 354.6 L117.8 353.1 L117.6 352.3 L116.9 352.6 L115.9 352.8 L115.6 352.8 L116.5 352.1 L117.4 351.3 L117.5 350.9 L118.1 350.3 L116.6 349.9 L117.1 348.9 L115.6 348.5 L117.0 347.8 L117.6 348.6 L117.8 348.6 L118.1 348.3 L118.2 347.7 L119.1 347.2 L118.8 346.2 L117.5 346.1 L117.5 345.7 L116.4 344.9 L115.1 344.9 L116.2 343.8 L116.2 343.1 L115.3 343.0 L115.3 342.2 L115.4 341.5 L115.6 341.1 L115.2 341.0 L114.5 340.4 L114.1 340.7 L113.6 340.6 L110.8 342.5 L109.2 343.6 L109.1 343.0 L109.6 342.1 L110.0 342.0 L110.4 341.6 L110.8 341.4 L111.4 341.1 L112.3 340.9 L112.7 340.6 L117.5 336.8 L121.4 334.4 L122.0 331.5 L122.3 329.6 L123.5 328.7 L123.7 326.3 L127.2 324.4 L126.5 323.1 L127.6 322.5 L128.3 323.1 L130.2 327.0 L132.2 328.2 L133.2 328.1 L134.2 327.6 L134.5 327.4 L135.1 327.0 L136.2 326.9 L136.6 326.9 L140.0 327.1 L141.8 325.1Z M143.1 329.5 L145.1 330.8 L148.5 332.0 L149.8 330.8 L151.2 331.0 L151.9 334.7 L154.5 335.9 L154.4 337.0 L157.3 338.5 L155.3 342.6 L153.7 345.5 L152.9 344.6 L151.3 342.3 L149.2 340.3 L145.1 339.0 L141.2 339.9 L140.8 339.4 L139.6 341.0 L139.4 341.0 L137.6 341.5 L136.5 342.2 L137.8 341.8 L138.9 341.8 L137.7 342.8 L135.8 343.9 L135.2 343.2 L135.2 342.6 L134.6 343.6 L133.9 344.8 L134.1 345.5 L134.1 348.2 L133.7 349.4 L133.1 349.0 L132.0 350.8 L131.0 352.9 L128.9 353.8 L128.1 354.4 L126.8 353.4 L129.0 355.9 L128.7 357.4 L127.7 358.6 L129.2 361.2 L128.1 360.5 L128.0 359.8 L127.4 359.5 L125.9 360.0 L124.4 360.5 L122.4 359.1 L122.2 359.5 L121.1 360.0 L121.0 359.4 L121.3 359.0 L121.6 357.9 L122.1 356.7 L122.3 356.4 L122.5 355.5 L122.1 355.5 L121.3 355.6 L121.8 352.6 L121.5 350.6 L120.6 348.7 L123.2 348.1 L124.3 346.1 L126.5 344.0 L124.7 340.9 L130.2 338.7 L130.5 337.0 L131.4 335.5 L131.9 334.4 L134.2 332.1 L135.8 331.3 L139.7 330.9 L141.4 329.9Z M89.2 336.6 L89.4 338.5 L85.9 339.4 L83.0 341.3 L81.8 344.1 L82.1 346.0 L81.5 346.6 L82.1 347.3 L82.8 348.5 L81.8 350.7 L80.3 350.2 L78.7 349.5 L77.8 350.4 L75.7 351.2 L74.5 353.3 L72.5 353.5 L72.6 353.4 L72.4 353.1 L72.6 352.6 L72.8 350.6 L72.0 351.0 L71.3 349.7 L70.9 348.0 L71.6 347.1 L72.5 346.7 L73.2 346.3 L73.5 345.5 L73.9 344.6 L75.4 343.5 L74.4 341.4 L72.1 342.0 L68.0 340.4 L64.4 340.6 L64.5 340.0 L66.5 339.4 L66.9 338.9 L66.1 338.7 L65.7 338.2 L66.8 337.2 L67.8 336.1 L68.7 335.8 L69.5 336.9 L68.8 337.3 L72.2 337.2 L72.4 336.1 L72.3 335.9 L72.9 334.9 L71.3 336.0 L71.9 335.1 L73.7 332.4 L73.3 332.1 L73.7 331.4 L74.6 330.2 L76.5 329.6 L78.0 329.1 L79.9 328.5 L81.3 328.3 L79.7 329.4 L81.0 329.3 L81.1 329.7 L82.1 328.2 L82.4 328.6 L82.7 328.9 L83.4 329.1 L85.2 327.1 L85.2 328.3 L84.9 329.1 L85.2 329.7 L84.9 330.0 L85.1 330.3 L84.5 331.5 L84.9 332.1 L85.1 332.4 L85.3 333.4 L85.5 333.5 L87.5 336.7 L89.2 336.6Z M68.0 354.7 L64.7 353.8 L61.8 351.1 L62.0 350.6 L62.5 350.5 L62.2 349.1 L61.2 349.3 L59.5 348.6 L59.4 347.0 L58.2 345.6 L58.6 344.5 L59.0 344.4 L59.0 344.4 L60.3 346.1 L60.5 345.9 L59.8 345.2 L60.1 344.6 L59.7 344.4 L60.2 344.3 L60.6 342.5 L59.6 342.3 L59.8 342.1 L58.8 341.2 L59.3 341.1 L59.0 340.7 L59.3 340.3 L60.0 340.9 L59.9 341.5 L60.4 341.1 L60.2 340.6 L59.8 340.6 L60.0 340.1 L59.7 339.8 L59.8 339.4 L60.4 339.8 L60.0 339.3 L60.3 339.4 L60.1 338.4 L60.8 339.0 L60.8 339.4 L61.2 338.6 L61.9 338.6 L62.5 339.1 L62.8 339.6 L62.1 340.6 L62.6 340.7 L62.7 340.4 L62.7 341.1 L64.1 341.3 L64.4 340.6 L64.4 340.6 L67.3 340.9 L68.0 340.4 L69.4 340.5 L72.1 342.0 L72.4 342.8 L74.4 341.4 L75.3 341.6 L75.4 343.5 L75.0 344.2 L73.9 344.6 L74.0 345.2 L73.5 345.5 L73.6 345.8 L73.2 346.3 L72.9 345.6 L72.5 346.7 L72.0 346.5 L71.6 347.1 L71.7 347.6 L70.9 348.0 L71.3 349.7 L71.3 349.7 L69.7 349.5 L68.9 347.8 L68.9 348.3 L68.4 347.9 L67.7 348.2 L68.5 348.6 L66.7 350.5 L66.1 350.0 L66.3 350.5 L66.0 350.8 L66.3 350.7 L66.2 351.0 L66.5 351.0 L67.2 352.2 L67.6 353.8 L68.3 354.2 L68.4 354.7 L68.0 354.7Z M59.0 344.4 L58.2 345.6 L59.5 348.6 L62.2 349.1 L62.0 350.6 L64.7 353.8 L68.0 354.7 L66.3 356.3 L65.8 357.3 L66.8 357.7 L68.8 356.9 L70.9 357.5 L71.0 362.5 L69.1 363.0 L68.5 364.2 L67.8 364.5 L67.1 363.9 L66.2 362.1 L67.9 361.1 L67.5 360.0 L67.4 359.1 L64.0 360.1 L62.5 360.6 L61.2 362.8 L59.8 364.1 L58.4 365.0 L59.5 363.0 L59.2 362.3 L59.7 361.5 L59.9 362.1 L60.1 361.2 L59.8 360.7 L59.4 360.1 L59.1 359.6 L58.5 358.5 L57.7 358.9 L56.9 358.2 L55.5 355.6 L55.8 353.3 L56.0 353.5 L56.4 351.9 L56.4 351.5 L56.4 350.9 L57.1 351.1 L57.6 351.5 L58.0 351.9 L57.7 353.1 L58.3 353.5 L58.3 353.0 L59.3 355.8 L59.1 354.8 L58.8 356.1 L59.3 356.5 L59.0 356.6 L59.5 357.4 L60.2 357.4 L60.9 356.8 L63.0 358.0 L62.7 357.0 L62.0 355.7 L60.8 351.8 L59.5 352.0 L59.1 351.7 L59.0 351.3 L58.4 350.8 L58.7 351.9 L57.9 351.8 L57.6 350.8 L57.9 350.2 L58.2 350.1 L58.2 349.8 L58.1 349.6 L57.3 349.8 L56.9 349.1 L56.3 350.3 L56.0 349.9 L56.5 349.1 L55.9 348.5 L55.3 348.4 L54.8 347.9 L54.7 347.8 L54.2 346.0 L54.4 345.6 L54.2 345.1 L54.2 344.5 L55.8 343.6 L56.7 343.0 L56.5 344.0 L57.3 344.1 L58.5 343.9 L59.0 344.4Z M72.5 353.5 L74.5 353.3 L74.3 352.1 L75.7 351.2 L76.0 350.5 L77.8 350.4 L78.3 348.9 L78.7 349.5 L79.5 349.4 L80.3 350.2 L81.8 350.7 L81.8 350.7 L85.0 352.9 L85.7 351.2 L84.8 349.8 L85.0 348.7 L85.6 348.8 L86.5 348.3 L87.6 348.6 L88.8 349.8 L89.0 351.3 L89.9 352.1 L90.9 354.3 L90.6 354.9 L90.8 356.7 L92.4 358.1 L92.4 358.1 L90.8 358.6 L90.3 359.4 L90.4 360.5 L89.3 361.4 L89.0 362.4 L88.4 362.3 L87.8 363.3 L87.6 364.9 L86.3 364.9 L85.7 365.9 L85.4 367.4 L85.7 368.9 L86.2 369.7 L86.7 369.8 L87.0 371.1 L87.6 371.9 L87.0 373.1 L86.4 373.0 L86.2 374.0 L87.5 375.4 L87.7 376.4 L86.6 376.6 L85.5 376.1 L84.7 377.6 L83.2 377.3 L82.2 378.1 L79.2 378.1 L79.2 378.1 L77.0 376.5 L76.6 375.7 L76.2 376.6 L74.8 377.2 L73.9 377.1 L73.4 377.7 L72.1 377.5 L71.3 376.3 L71.3 376.3 L71.3 375.9 L71.7 376.1 L71.8 375.4 L71.6 375.3 L72.2 374.5 L72.9 374.6 L72.8 373.6 L73.3 373.5 L73.3 373.0 L73.6 373.3 L73.6 372.8 L74.1 372.7 L73.8 372.6 L73.6 372.0 L74.5 371.2 L74.1 370.9 L75.9 369.0 L75.8 368.1 L76.0 367.7 L75.4 367.9 L75.3 367.4 L75.9 366.9 L75.2 366.4 L76.7 364.7 L77.1 364.9 L77.1 364.5 L77.5 364.7 L76.9 364.0 L77.7 364.1 L78.0 363.5 L73.4 364.3 L73.4 363.7 L75.1 362.7 L75.9 361.8 L77.2 361.5 L76.7 361.1 L76.5 359.7 L77.0 359.4 L76.2 357.9 L74.9 357.6 L75.3 356.1 L74.9 356.8 L73.6 356.3 L73.5 355.8 L73.4 356.1 L72.5 353.5Z M104.5 360.5 L104.0 358.5 L101.9 358.0 L100.7 359.8 L97.7 360.3 L96.5 359.0 L93.2 358.9 L92.4 358.1 L90.6 354.9 L89.9 352.1 L88.8 349.8 L86.5 348.3 L85.0 348.7 L85.7 351.2 L81.8 350.7 L82.2 350.5 L81.7 347.8 L81.5 347.1 L82.4 346.3 L82.3 345.6 L82.7 343.2 L84.7 339.8 L88.9 339.7 L89.0 337.7 L89.2 336.6 L90.6 336.9 L93.3 338.0 L94.5 337.5 L96.1 335.3 L96.6 334.9 L97.7 335.2 L98.9 335.3 L100.3 336.1 L101.1 339.9 L100.5 342.5 L99.2 343.4 L98.0 344.2 L97.0 343.6 L96.0 344.6 L98.1 346.9 L98.8 346.9 L99.6 346.1 L100.0 346.0 L100.1 346.0 L101.7 346.7 L104.9 346.3 L104.2 348.1 L103.3 349.5 L103.6 350.4 L105.2 350.2 L104.6 351.5 L105.1 351.7 L105.7 350.9 L106.4 351.8 L106.9 351.4 L105.3 352.4 L104.7 353.7 L105.3 354.7 L105.3 355.0 L106.2 355.0 L106.7 355.2 L107.1 355.4 L107.8 354.8 L107.8 355.3 L107.3 356.1 L106.7 356.6 L106.2 357.7 L106.1 357.9 L106.2 358.0 L106.2 357.9 L106.5 357.8 L107.2 358.3 L106.0 358.8 L105.4 359.0 L104.9 359.5 L104.8 360.0 L104.2 359.7Z M88.7 395.6 L88.9 394.5 L89.6 394.0 L89.7 392.3 L89.3 391.2 L88.8 390.7 L87.7 390.9 L86.9 390.1 L86.4 390.7 L85.7 389.5 L85.6 387.7 L84.7 387.6 L85.0 386.9 L82.7 386.1 L82.6 385.2 L83.3 383.9 L82.2 382.6 L81.0 382.2 L80.4 380.4 L78.8 379.3 L79.2 378.1 L79.2 378.1 L82.2 378.1 L83.2 377.3 L84.7 377.6 L85.5 376.1 L86.6 376.6 L87.7 376.4 L87.5 375.4 L86.2 374.0 L86.4 373.0 L87.0 373.1 L87.6 371.9 L87.0 371.1 L86.7 369.8 L86.2 369.7 L85.7 368.9 L85.4 367.4 L85.7 365.9 L86.3 364.9 L87.6 364.9 L87.8 363.3 L88.4 362.3 L89.0 362.4 L89.3 361.4 L90.4 360.5 L90.3 359.4 L90.8 358.6 L92.4 358.1 L92.4 358.1 L93.2 358.9 L95.6 358.1 L96.5 359.0 L96.3 359.8 L97.7 360.3 L98.3 359.6 L100.7 359.8 L101.3 358.2 L101.9 358.0 L102.6 358.4 L104.0 358.5 L103.7 360.7 L104.5 360.5 L104.5 360.5 L103.9 360.8 L104.0 361.3 L103.8 361.2 L103.8 361.8 L103.1 361.6 L102.5 362.8 L102.2 362.4 L101.9 363.3 L101.6 363.2 L102.1 363.3 L101.8 364.2 L100.7 364.8 L100.1 366.2 L100.2 367.0 L100.8 366.7 L101.1 367.4 L100.4 368.0 L99.6 367.7 L99.4 368.3 L99.3 368.9 L100.0 368.7 L100.1 369.1 L99.6 369.2 L100.3 369.3 L99.4 369.7 L99.0 371.5 L98.2 372.5 L95.3 383.2 L95.0 385.9 L96.0 386.7 L95.3 388.7 L95.5 389.3 L95.1 389.5 L95.5 390.5 L93.6 393.0 L93.7 394.2 L93.4 394.0 L93.8 394.9 L93.2 395.3 L93.4 396.4 L92.5 397.4 L92.9 398.1 L92.2 398.2 L92.0 397.5 L90.8 397.7 L90.4 397.1 L90.5 396.4 L90.2 396.6 L89.7 395.7 L88.7 395.6Z M71.3 376.3 L73.4 377.7 L74.8 377.2 L76.6 375.7 L79.2 378.1 L78.8 379.3 L81.0 382.2 L83.3 383.9 L82.7 386.1 L84.7 387.6 L85.7 389.5 L86.9 390.1 L88.8 390.7 L89.7 392.3 L88.9 394.5 L88.7 395.6 L87.4 395.7 L85.9 396.9 L87.7 399.0 L88.0 400.2 L86.7 401.9 L85.0 403.2 L84.7 403.6 L84.4 404.3 L80.8 405.9 L78.3 406.4 L79.4 404.9 L80.2 403.0 L80.7 401.2 L79.9 396.6 L78.7 393.1 L76.3 392.1 L78.2 390.9 L79.1 392.9 L80.4 392.5 L80.8 388.9 L79.6 388.5 L79.4 388.4 L76.9 389.1 L75.8 391.8 L74.8 394.3 L75.1 394.9 L75.1 395.5 L75.1 397.3 L75.4 397.8 L77.1 400.5 L77.7 401.5 L77.2 402.4 L77.4 403.0 L76.3 403.8 L75.0 403.7 L74.7 402.7 L73.5 401.3 L69.7 400.8 L68.1 401.2 L67.8 400.1 L67.2 399.3 L65.8 396.7 L67.0 396.1 L69.4 396.5 L70.8 391.8 L69.1 388.8 L68.1 387.5 L67.1 386.5 L69.3 385.6 L68.4 383.2 L67.3 381.1 L67.9 378.9 L67.4 377.9 L69.2 377.4 L69.4 377.3 L70.9 377.6 L71.3 376.3Z M17.3 527.1 L17.5 526.2 L17.1 525.7 L17.3 525.1 L17.8 525.4 L18.8 525.1 L19.3 525.7 L19.3 525.4 L20.0 525.7 L19.6 526.7 L20.4 527.4 L22.3 526.2 L22.6 526.5 L22.1 525.9 L23.3 524.8 L23.2 524.1 L23.9 523.9 L24.6 523.0 L25.3 521.6 L25.3 520.6 L26.5 521.5 L27.0 524.0 L25.0 527.2 L23.1 527.3 L23.1 528.2 L22.6 528.0 L23.1 529.0 L22.9 529.3 L21.8 529.8 L20.7 529.4 L21.0 530.3 L19.8 530.7 L19.9 531.2 L18.9 531.6 L18.8 532.5 L17.4 532.1 L16.3 532.8 L16.2 533.0 L17.3 534.1 L17.2 534.7 L18.0 535.7 L18.2 536.5 L17.0 535.2 L16.4 535.5 L16.6 536.0 L15.9 536.4 L15.3 538.4 L14.6 539.0 L15.0 539.8 L16.0 539.3 L16.2 540.0 L12.9 542.5 L12.4 542.3 L12.7 541.1 L12.3 540.7 L12.7 540.5 L12.0 539.2 L12.3 538.8 L12.8 539.0 L12.6 538.6 L13.0 538.4 L12.7 537.8 L13.1 538.0 L13.4 537.3 L14.0 537.2 L14.7 536.1 L13.6 532.5 L14.3 533.0 L14.9 532.3 L15.5 532.6 L15.7 532.1 L16.6 531.3 L16.5 530.7 L18.1 530.4 L18.5 529.6 L19.1 529.7 L19.5 528.8 L18.3 527.8 L17.7 528.0 L17.3 527.1Z", "city": {"札幌市": [310.6, 79.1], "旭川市": [332.6, 59.7], "釧路市": [376.6, 81.3], "根室市": [402.8, 71.7], "帯広市": [350.9, 82.9], "苫小牧市": [316.1, 90.8], "室蘭市": [302.4, 99.3], "函館市": [297.1, 114.3], "青森市": [297.3, 140.2], "八戸市": [313.7, 148.6], "弘前市": [291.2, 146.2], "盛岡市": [306.3, 170.7], "仙台市": [300.2, 209.7], "石巻市": [309.5, 205.4], "気仙沼市": [315.4, 192.3], "秋田市": [283.4, 170.2], "能代市": [281.9, 156.8], "大館市": [293.4, 155.2], "山形市": [289.1, 210.6], "酒田市": [277.7, 192.3], "新庄市": [287.8, 196.4], "福島市": [291.5, 223.6], "郡山市": [289.1, 233.5], "会津若松市": [279.7, 231.0], "水戸市": [291.5, 261.6], "鹿嶋市": [295.4, 272.5], "東海村": [293.6, 258.8], "宇都宮市": [278.6, 256.4], "益子町": [283.2, 258.8], "日光市": [274.7, 252.0], "前橋市": [260.7, 261.0], "高崎市": [259.4, 262.9], "太田市": [267.7, 263.7], "さいたま市": [273.6, 275.5], "秩父市": [261.2, 271.9], "千葉市": [283.6, 282.3], "銚子市": [299.3, 279.0], "成田市": [288.2, 277.7], "市原市": [283.8, 285.3], "君津市": [279.0, 289.9], "野田市": [278.4, 273.0], "東京": [274.5, 280.1], "横浜市": [273.4, 286.9], "川崎市": [274.7, 284.5], "横須賀市": [274.0, 291.3], "新潟市": [259.9, 219.8], "燕市": [256.8, 226.1], "小千谷市": [255.1, 235.9], "富山市": [220.5, 252.6], "金沢市": [208.5, 256.4], "輪島市": [213.7, 233.7], "福井市": [198.9, 270.0], "鯖江市": [198.0, 273.3], "甲府市": [250.1, 280.9], "長野市": [241.6, 253.9], "諏訪市": [240.1, 270.6], "静岡市": [245.9, 299.5], "富士市": [252.5, 294.6], "焼津市": [244.6, 302.5], "浜松市": [231.8, 306.8], "名古屋市": [213.9, 294.0], "東海市": [213.7, 298.1], "豊田市": [219.4, 296.7], "瀬戸市": [217.6, 292.9], "一宮市": [211.5, 290.7], "岐阜市": [210.7, 287.5], "多治見市": [218.7, 289.9], "大津市": [191.3, 298.9], "津市": [205.2, 306.6], "四日市市": [207.6, 299.7], "尾鷲市": [198.2, 324.3], "京都市": [189.1, 298.7], "大阪市": [183.2, 307.4], "門真市": [185.2, 306.0], "堺市": [182.8, 310.7], "泉佐野市": [179.5, 315.0], "神戸市": [176.7, 307.4], "西宮市": [179.7, 306.0], "明石市": [172.3, 308.7], "姫路市": [165.6, 303.8], "奈良市": [189.7, 307.4], "和歌山市": [176.0, 319.9], "鳥取市": [155.8, 285.3], "境港市": [133.8, 284.2], "松江市": [129.8, 286.1], "岡山市": [148.8, 308.2], "倉敷市": [145.5, 310.1], "広島市": [117.0, 315.6], "福山市": [136.6, 312.8], "尾道市": [133.1, 315.0], "呉市": [119.4, 319.4], "山口市": [95.4, 321.0], "岩国市": [111.8, 321.6], "周南市": [102.8, 324.6], "防府市": [97.4, 324.8], "宇部市": [90.6, 327.6], "山陽小野田市": [89.1, 326.2], "高松市": [151.6, 316.9], "坂出市": [147.5, 317.5], "徳島市": [162.5, 324.3], "鳴門市": [163.8, 321.6], "松山市": [123.7, 330.6], "今治市": [128.8, 324.3], "高知市": [140.3, 338.2], "福岡市": [72.1, 337.4], "北九州市": [82.6, 329.5], "久留米市": [74.5, 344.7], "佐賀市": [69.9, 346.4], "唐津市": [62.8, 341.2], "有田町": [61.0, 347.7], "長崎市": [60.6, 360.3], "佐世保市": [57.3, 348.6], "熊本市": [79.5, 359.2], "八代市": [76.5, 366.8], "水俣市": [72.1, 375.0], "大分市": [98.5, 346.9], "宮崎市": [94.3, 383.2], "鹿児島市": [75.6, 391.7], "喜入": [75.4, 397.7], "那覇市": [12.9, 538.7]}};
+
+// 駅の読み
+const STA={ "東京駅":"とうきょうえき","博多駅":"はかたえき","新青森駅":"しんあおもりえき","新潟駅":"にいがたえき",
+"敦賀駅":"つるがえき","新庄駅":"しんじょうえき","秋田駅":"あきたえき","鹿児島中央駅":"かごしまちゅうおうえき",
+"新函館北斗駅":"しんはこだてほくとえき","武雄温泉駅":"たけおおんせんえき","長崎駅":"ながさきえき",
+"高崎駅":"たかさきえき","福島駅":"ふくしまえき","盛岡駅":"もりおかえき" };
+function sta(name){ return {t:name, r:STA[name]||""}; }
+
+// 新幹線
+const SHINKANSEN=[
+ {t:"東海道・山陽新幹線",r:"とうかいどう・さんよう",start:"東京駅",end:"博多駅",branch:"",nick:["のぞみ","ひかり","こだま","みずほ","さくら"],note:"13の都府県を通る。"},
+ {t:"東北新幹線",r:"とうほく",start:"東京駅",end:"新青森駅",branch:"",nick:["はやぶさ","はやて","やまびこ","なすの"],note:""},
+ {t:"上越新幹線",r:"じょうえつ",start:"東京駅",end:"新潟駅",branch:"",nick:["とき","たにがわ"],note:""},
+ {t:"北陸新幹線",r:"ほくりく",start:"東京駅",end:"敦賀駅",branch:"高崎駅",nick:["かがやき","はくたか","つるぎ","あさま"],note:"高崎駅で上越新幹線と分かれる。"},
+ {t:"山形新幹線",r:"やまがた",start:"東京駅",end:"新庄駅",branch:"福島駅",nick:["つばさ"],note:"福島駅で東北新幹線と分かれる。"},
+ {t:"秋田新幹線",r:"あきた",start:"東京駅",end:"秋田駅",branch:"盛岡駅",nick:["こまち"],note:"盛岡駅で東北新幹線と分かれる。"},
+ {t:"九州新幹線",r:"きゅうしゅう",start:"博多駅",end:"鹿児島中央駅",branch:"",nick:["みずほ","さくら","つばめ"],note:""},
+ {t:"北海道新幹線",r:"ほっかいどう",start:"新青森駅",end:"新函館北斗駅",branch:"",nick:["はやぶさ","はやて"],note:""},
+ {t:"西九州新幹線",r:"にしきゅうしゅう",start:"武雄温泉駅",end:"長崎駅",branch:"",nick:["かもめ"],note:""},
+];
+
+// 高速道路
+const HIGHWAY=[
+ {t:"東名高速道路",r:"とうめい",start:"世田谷区",end:"小牧市",note:"全線開通は1969年。"},
+ {t:"名神高速道路",r:"めいしん",start:"小牧市",end:"西宮市",note:"日本最初の高速道路（全線開通は1965年）。"},
+ {t:"山陽自動車道",r:"さんよう",start:"神戸市",end:"下関市",note:"トンネルが多い。"},
+ {t:"九州自動車道",r:"きゅうしゅう",start:"北九州市",end:"鹿児島市",note:""},
+ {t:"東北自動車道",r:"とうほく",start:"川口市",end:"青森市",note:"日本最長の高速道路。"},
+ {t:"関越自動車道",r:"かんえつ",start:"練馬区",end:"長岡市",note:"上越新幹線とほぼ並行している。"},
+ {t:"北陸自動車道",r:"ほくりく",start:"新潟市",end:"米原市",note:"東北自動車道・中国自動車道に次いで3番目の長さ。"},
+ {t:"中央自動車道",r:"ちゅうおう",start:"杉並区",end:"小牧市",note:"沿線に観光地が多く、平日と休日で利用車数に差がある。"},
+];
+const HWCITY={ "世田谷区":"せたがやく","小牧市":"こまきし","西宮市":"にしのみやし","神戸市":"こうべし","下関市":"しものせきし",
+"北九州市":"きたきゅうしゅうし","鹿児島市":"かごしまし","川口市":"かわぐちし","青森市":"あおもりし","練馬区":"ねりまく",
+"長岡市":"ながおかし","新潟市":"にいがたし","米原市":"まいばらし","杉並区":"すぎなみく" };
+function hc(name){ return {t:name, r:HWCITY[name]||""}; }
+
+// トンネル・橋
+const TUNNEL=[
+ {t:"関門トンネル",r:"かんもん",a:"下関市",b:"北九州市",note:"鉄道専用トンネル。",year:"1942年"},
+ {t:"関門橋",r:"かんもんきょう",a:"下関市",b:"北九州市",note:"開通時は東洋最長のつり橋。",year:"1973年"},
+ {t:"関門（国道）トンネル",r:"かんもんこくどう",a:"下関市",b:"北九州市",note:"歩行者・自転車が利用できる人道トンネルもある。",year:"1958年"},
+ {t:"新関門トンネル",r:"しんかんもん",a:"下関市",b:"北九州市",note:"山陽新幹線が通るトンネル。",year:"1975年"},
+ {t:"瀬戸大橋",r:"せとおおはし",a:"倉敷市",b:"坂出市",note:"世界一長い鉄道道路併用橋としてギネス世界記録に認定されている。",year:"1988年"},
+ {t:"東京湾アクアライン",r:"とうきょうわん",a:"川崎市",b:"木更津市",note:"「海ほたる」より川崎側が海底トンネル、木更津側が橋。",year:"1997年"},
+ {t:"明石海峡大橋",r:"あかしかいきょうおおはし",a:"神戸市",b:"淡路市",note:"2022年3月までは世界最長のつり橋であった。",year:"1998年"},
+ {t:"青函トンネル",r:"せいかん",a:"今別町",b:"知内町",note:"海底を通るトンネルとしては世界最長。",year:"1988年"},
+];
+const TCITY={ "下関市":"しものせきし","北九州市":"きたきゅうしゅうし","倉敷市":"くらしきし","坂出市":"さかいでし",
+"川崎市":"かわさきし","木更津市":"きさらづし","神戸市":"こうべし","淡路市":"あわじし","今別町":"いまべつまち","知内町":"しりうちちょう" };
+function tc(name){ return {t:name, r:TCITY[name]||""}; }
+
+// 東日本の都市
+const EAST=[
+ ["札幌市","さっぽろし","ビール・乳製品の生産がさかん。"],
+ ["旭川市","あさひかわし","製紙・パルプ工業がさかん。上川盆地の中心都市。"],
+ ["釧路市","くしろし","日本有数の漁港がある。"],
+ ["根室市","ねむろし","日本本土最東端の都市。"],
+ ["帯広市","おびひろし","十勝平野の中心都市。"],
+ ["苫小牧市","とまこまいし","製紙・パルプ工業・石油精製業がさかん。日本初の掘り込み港がある。"],
+ ["室蘭市","むろらんし","鉄鋼業がさかん。"],
+ ["函館市","はこだてし","水産加工業がさかん。"],
+ ["青森市","あおもりし","青森ねぶた祭りが有名。東北新幹線の終点の新青森駅がある。"],
+ ["八戸市","はちのへし","漁港がある。セメント工業がさかん。"],
+ ["弘前市","ひろさきし","伝統的工芸品の津軽塗の生産地。"],
+ ["盛岡市","もりおかし","伝統的工芸品の南部鉄器の生産地。盛岡駅で秋田新幹線と東北新幹線が分かれる。"],
+ ["仙台市","せんだいし","「杜の都」ともよばれる。仙台七夕まつりが有名。"],
+ ["石巻市","いしのまきし","漁港がある。"],
+ ["気仙沼市","けせんぬまし","漁港がある。"],
+ ["秋田市","あきたし","秋田新幹線の終点の秋田駅がある。秋田竿燈まつりが有名。"],
+ ["能代市","のしろし","米代川の河口に位置する製材都市。"],
+ ["大館市","おおだてし","伝統的工芸品の大館曲げわっぱの生産地。"],
+ ["山形市","やまがたし","山形花笠まつりが有名。隣接する天童市は伝統的工芸品の天童将棋駒の生産地。"],
+ ["酒田市","さかたし","最上川の河口に位置する都市。"],
+ ["新庄市","しんじょうし","山形新幹線の終点の新庄駅がある。"],
+ ["福島市","ふくしまし","福島駅で山形新幹線と東北新幹線が分かれる。"],
+ ["郡山市","こおりやまし","東北自動車道と磐越自動車道が交差している。"],
+ ["会津若松市","あいづわかまつし","伝統的工芸品の会津塗の生産地。"],
+ ["水戸市","みとし","日本三名園の偕楽園がある。"],
+ ["鹿嶋市","かしまし","鉄鋼業がさかん。掘り込み港がある。隣接する神栖市では石油化学工業がさかん。"],
+ ["東海村","とうかいむら","日本で初めて原子力発電が行われた。"],
+ ["宇都宮市","うつのみやし","宇都宮宿で日光街道と奥州街道が分かれる。"],
+ ["益子町","ましこまち","伝統的工芸品の益子焼の生産地。"],
+ ["日光市","にっこうし","徳川家康をまつった日光東照宮がある。"],
+ ["前橋市","まえばしし","電気機器の生産がさかん。"],
+ ["高崎市","たかさきし","電気機器の生産がさかん。高崎駅で北陸新幹線と上越新幹線が分かれる。"],
+ ["太田市","おおたし","自動車工業がさかん。"],
+ ["さいたま市","さいたまし","大宮駅で東北新幹線と上越新幹線が分かれる。"],
+ ["秩父市","ちちぶし","セメント工業がさかん。"],
+ ["千葉市","ちばし","鉄鋼業がさかん。"],
+ ["銚子市","ちょうしし","日本有数の漁港がある。しょうゆの生産がさかん。"],
+ ["成田市","なりたし","成田国際空港がある。"],
+ ["市原市","いちはらし","石油化学工業がさかん。"],
+ ["君津市","きみつし","鉄鋼業がさかん。隣接する木更津市は東京湾アクアラインで川崎市と結ばれている。"],
+ ["野田市","のだし","しょうゆの生産がさかん。"],
+ ["東京","とうきょう","日本の首都。印刷業がさかん。"],
+ ["横浜市","よこはまし","人口第2位の都市。横浜港がある。"],
+ ["川崎市","かわさきし","都道府県所在地以外で唯一の百万都市。東京湾アクアラインで木更津市と結ばれる。"],
+ ["横須賀市","よこすかし","自動車工業・造船業がさかん。"],
+ ["新潟市","にいがたし","本州の日本海側で唯一の政令指定都市。石油精製業・天然ガスの生産がさかん。"],
+ ["燕市","つばめし","洋食器の生産がさかん。"],
+ ["小千谷市","おぢやし","伝統的工芸品の小千谷ちぢみの生産地。"],
+ ["富山市","とやまし","製薬業がさかん。「越中富山の薬売り」といわれていた。"],
+ ["金沢市","かなざわし","日本三名園の兼六園がある。伝統的工芸品の加賀友禅や九谷焼の生産地。"],
+ ["輪島市","わじまし","伝統的工芸品の輪島塗の生産地。2024年の能登半島地震で震度7を観測。"],
+ ["福井市","ふくいし","化学せんい工業がさかん。"],
+ ["鯖江市","さばえし","めがねわくの生産がさかん。"],
+ ["甲府市","こうふし","伝統的工芸品の甲州印伝・甲州水晶貴石細工の生産地。"],
+ ["長野市","ながのし","善光寺の門前町。"],
+ ["諏訪市","すわし","隣接した岡谷市とともに精密機械工業・電子工業がさかん。"],
+ ["静岡市","しずおかし","清水港がある。"],
+ ["富士市","ふじし","製紙・パルプ工業がさかん。"],
+ ["焼津市","やいづし","焼津港はまぐろやかつおをとる遠洋漁業の基地。"],
+ ["浜松市","はままつし","楽器・オートバイの生産がさかん。"],
+ ["名古屋市","なごやし","名古屋港がある。"],
+ ["東海市","とうかいし","鉄鋼業がさかん。"],
+ ["豊田市","とよたし","自動車工業がさかん。"],
+ ["瀬戸市","せとし","陶磁器の生産がさかん。"],
+ ["一宮市","いちのみやし","毛織物の生産がさかん。"],
+ ["岐阜市","ぎふし","長良川の鵜飼が有名。"],
+ ["多治見市","たじみし","陶磁器の生産がさかん。"],
+];
+
+// 西日本の都市
+const WEST=[
+ ["大津市","おおつし","昔は琵琶湖の水上交通の要地であった。京都市との境に比叡山がある。"],
+ ["津市","つし","造船業がさかん。"],
+ ["四日市市","よっかいちし","石油化学工業がさかん。四大公害病の四日市ぜんそくの発生地。"],
+ ["尾鷲市","おわせし","降水量が多い。"],
+ ["京都市","きょうとし","伝統的工芸品の清水焼・西陣織・京友禅の生産地。"],
+ ["大阪市","おおさかし","江戸時代には「天下の台所」とよばれていた。大阪城がある。"],
+ ["門真市","かどまし","電気機器の生産がさかん。"],
+ ["堺市","さかいし","伝統的工芸品の堺打刃物の生産地。石油化学工業がさかん。"],
+ ["泉佐野市","いずみさのし","綿織物の生産がさかん。関西国際空港がある。"],
+ ["神戸市","こうべし","阪神・淡路大震災で大きな被害を受けた。明石海峡大橋で淡路島と結ばれている。"],
+ ["西宮市","にしのみやし","灘の清酒が有名。甲子園球場がある。"],
+ ["明石市","あかしし","日本標準時子午線（東経135度）が通っている。"],
+ ["姫路市","ひめじし","世界文化遺産の姫路城（白鷺城）がある。"],
+ ["奈良市","ならし","伝統的工芸品の奈良筆の生産地。"],
+ ["和歌山市","わかやまし","鉄鋼業がさかん。"],
+ ["鳥取市","とっとりし","鳥取砂丘がある。"],
+ ["境港市","さかいみなとし","日本海側を代表する漁港がある。"],
+ ["松江市","まつえし","宍道湖・中海に面しており、「水の都」ともよばれる。"],
+ ["岡山市","おかやまし","日本三名園の後楽園がある。"],
+ ["倉敷市","くらしきし","水島コンビナートがある。瀬戸大橋で坂出市と結ばれている。"],
+ ["広島市","ひろしまし","世界文化遺産の原爆ドームがある。自動車工業がさかん。"],
+ ["福山市","ふくやまし","鉄鋼業がさかん。"],
+ ["尾道市","おのみちし","造船業がさかん。瀬戸内しまなみ海道で今治市と結ばれている。"],
+ ["呉市","くれし","造船業がさかん。"],
+ ["山口市","やまぐちし","「小京都」の一つ。人口は下関市より少ない。"],
+ ["岩国市","いわくにし","石油化学工業がさかん。錦帯橋がある。"],
+ ["周南市","しゅうなんし","石油化学工業がさかん。"],
+ ["防府市","ほうふし","自動車工業がさかん。"],
+ ["宇部市","うべし","セメント工業がさかん。"],
+ ["山陽小野田市","さんようおのだし","セメント工業がさかん。"],
+ ["高松市","たかまつし","屋島の古戦場がある。"],
+ ["坂出市","さかいでし","造船業がさかん。瀬戸大橋で倉敷市と結ばれている。"],
+ ["徳島市","とくしまし","阿波おどりが有名。"],
+ ["鳴門市","なるとし","鳴門海峡のうず潮が有名。大鳴門橋で淡路島と結ばれている。"],
+ ["松山市","まつやまし","夏目漱石の小説『坊っちゃん』の舞台。道後温泉がある。"],
+ ["今治市","いまばりし","タオルの生産がさかん。瀬戸内しまなみ海道で尾道市と結ばれている。"],
+ ["高知市","こうちし","土佐藩の城下町。隣接するいの町は伝統的工芸品の土佐和紙の生産地。"],
+ ["福岡市","ふくおかし","伝統的工芸品の博多織・博多人形の生産地。"],
+ ["北九州市","きたきゅうしゅうし","鉄鋼業・セメント工業がさかん。八幡製鉄所がある。関門トンネル・関門橋などで下関市と結ばれている。"],
+ ["久留米市","くるめし","ゴム産業がさかん。伝統的工芸品の久留米がすりの生産地。"],
+ ["佐賀市","さがし","佐賀藩の城下町。かつてはクリークという水路が発達していた。隣接する神埼郡には吉野ヶ里遺跡がある。"],
+ ["唐津市","からつし","伝統的工芸品の唐津焼の生産地。"],
+ ["有田町","ありたちょう","伝統的工芸品の伊万里・有田焼の生産地。"],
+ ["長崎市","ながさきし","造船業がさかん。1945年8月9日に原爆が投下された。"],
+ ["佐世保市","させぼし","造船業がさかん。"],
+ ["熊本市","くまもとし","政令指定都市。2016年の熊本地震で被害を受けた熊本城がある。"],
+ ["八代市","やつしろし","球磨川の河口に位置している。"],
+ ["水俣市","みなまたし","四大公害病の水俣病の発生地。"],
+ ["大分市","おおいたし","鉄鋼業・石油化学工業がさかん。"],
+ ["宮崎市","みやざきし","青島にはビロウなどの亜熱帯植物が生えている。"],
+ ["鹿児島市","かごしまし","九州新幹線の終点の鹿児島中央駅がある。"],
+ ["喜入","きいれ","石油備蓄基地がある。現在は鹿児島市の一部。"],
+ ["那覇市","なはし","東京からの直線距離はおよそ1600km。"],
+];
+
+/* ============ 問題生成 ============ */
+// 各問題: {cat, catId, tag, qhtml, ans:{t,r}, pool:[{t,r}], exp}
+function genShinkansen(){
+  const Q=[]; const cat="新幹線", cid=0;
+  const names=SHINKANSEN.map(s=>({t:s.t,r:s.r}));
+  const endPool=SHINKANSEN.map(s=>sta(s.end));
+  const startPool=SHINKANSEN.map(s=>sta(s.start));
+  SHINKANSEN.forEach(s=>{
+    // 終点
+    Q.push({cat,cid,tag:cat,key:`sk:end:${s.t}`,qhtml:`${ruby(s.t,s.r)}の<b>終点</b>の駅はどこ？`,
+      ans:sta(s.end),pool:endPool,exp:`${s.t}は「${s.start}」から「${s.end}」まで。愛称は ${s.nick.join('・')}。`});
+    // 起点
+    Q.push({cat,cid,tag:cat,key:`sk:start:${s.t}`,qhtml:`${ruby(s.t,s.r)}の<b>起点</b>の駅はどこ？`,
+      ans:sta(s.start),pool:startPool,exp:`${s.t}は「${s.start}」が起点。`});
+    // 愛称→路線
+    const nick = s.nick[Math.floor(Math.random()*s.nick.length)];
+    Q.push({cat,cid,tag:cat,key:`sk:nick:${s.t}`,qhtml:`次の愛称（あいしょう）が使われる新幹線はどれ？<div class="fact">「${nick}」</div>`,
+      ans:{t:s.t,r:s.r},pool:names,exp:`「${nick}」は${s.t}の愛称。${s.start}〜${s.end}。`});
+    // 分岐
+    if(s.branch){
+      Q.push({cat,cid,tag:cat,key:`sk:branch:${s.t}`,qhtml:`${ruby(s.t,s.r)}は、どの駅で分かれる？`,
+        ans:sta(s.branch),pool:endPool.concat(startPool,[sta(s.branch)]),exp:`${s.note}`});
+    }
+  });
+  // 特ちょう
+  Q.push({cat,cid,tag:cat,key:`sk:feat:13`,qhtml:`13の都府県を通る新幹線はどれ？`,ans:{t:"東海道・山陽新幹線",r:"とうかいどう・さんよう"},pool:names,exp:`東海道・山陽新幹線（東京〜博多）は13の都府県を通る。`});
+  return Q;
+}
+function genHighway(){
+  const Q=[]; const cat="高速道路", cid=1;
+  const names=HIGHWAY.map(h=>({t:h.t,r:h.r}));
+  const cityPool=[]; HIGHWAY.forEach(h=>{cityPool.push(hc(h.start),hc(h.end));});
+  HIGHWAY.forEach(h=>{
+    Q.push({cat,cid,tag:cat,key:`hw:start:${h.t}`,qhtml:`${ruby(h.t,h.r)}の<b>起点</b>はどこ？`,ans:hc(h.start),pool:cityPool,exp:`${h.t}は「${h.start}」〜「${h.end}」。${h.note}`});
+    Q.push({cat,cid,tag:cat,key:`hw:end:${h.t}`,qhtml:`${ruby(h.t,h.r)}の<b>終点</b>はどこ？`,ans:hc(h.end),pool:cityPool,exp:`${h.t}は「${h.start}」〜「${h.end}」。${h.note}`});
+  });
+  // 特ちょう→路線
+  const feats=[
+   ["日本最初の高速道路（全線開通1965年）はどれ？","名神高速道路"],
+   ["日本最長の高速道路はどれ？","東北自動車道"],
+   ["トンネルが多いことで知られる高速道路はどれ？","山陽自動車道"],
+   ["上越新幹線とほぼ並行している高速道路はどれ？","関越自動車道"],
+   ["沿線に観光地が多く、平日と休日で利用車数に差がある高速道路はどれ？","中央自動車道"],
+  ];
+  feats.forEach(([q,a])=>{
+    const h=HIGHWAY.find(x=>x.t===a);
+    Q.push({cat,cid,tag:cat,key:`hw:feat:${a}`,qhtml:q,ans:{t:h.t,r:h.r},pool:names,exp:`${h.t}（${h.start}〜${h.end}）。${h.note}`});
+  });
+  return Q;
+}
+function genTunnel(){
+  const Q=[]; const cat="トンネル・橋", cid=2;
+  const names=TUNNEL.map(t=>({t:t.t,r:t.r}));
+  const pairPool=TUNNEL.map(t=>({t:`${t.a}と${t.b}`,r:""}));
+  TUNNEL.forEach(t=>{
+    Q.push({cat,cid,tag:cat,key:`tn:link:${t.t}`,qhtml:`${ruby(t.t,t.r)}が結んでいるのは、次のどれ？`,
+      ans:{t:`${t.a}と${t.b}`,r:""},pool:pairPool,exp:`${t.t}は${t.a}と${t.b}を結ぶ。${t.note}（${t.year}開通）`});
+  });
+  const feats=[
+   ["鉄道専用のトンネルはどれ？","関門トンネル"],
+   ["山陽新幹線が通るトンネルはどれ？","新関門トンネル"],
+   ["歩行者・自転車が利用できる人道トンネルもあるのはどれ？","関門（国道）トンネル"],
+   ["開通時、東洋最長のつり橋だったのはどれ？","関門橋"],
+   ["世界一長い鉄道道路併用橋としてギネス世界記録に認定されているのはどれ？","瀬戸大橋"],
+   ["「海ほたる」があり、川崎側が海底トンネル・木更津側が橋なのはどれ？","東京湾アクアライン"],
+   ["2022年3月まで世界最長のつり橋だったのはどれ？","明石海峡大橋"],
+   ["海底を通るトンネルとして世界最長なのはどれ？","青函トンネル"],
+  ];
+  feats.forEach(([q,a])=>{
+    const t=TUNNEL.find(x=>x.t===a);
+    Q.push({cat,cid,tag:cat,key:`tn:feat:${a}`,qhtml:q,ans:{t:t.t,r:t.r},pool:names,exp:`${t.t}は${t.a}と${t.b}を結ぶ。${t.note}（${t.year}開通）`});
+  });
+  return Q;
+}
+function genCities(list, cat, cid){
+  const Q=[];
+  // 選択肢プール（漢字の都市名。読みと説明も保持）
+  const cities=list.map(c=>({t:c[0],r:c[1],desc:c[2]}));
+  list.forEach(c=>{
+    const [name,read,desc]=c;
+    // 説明→都市名（漢字を答える。読みは解答時に表示）
+    Q.push({cat,cid,tag:cat,key:`c:${name}`,
+      qhtml:`次の特ちょうにあてはまる都市はどれ？<div class="fact">${desc}</div>`,
+      ans:{t:name,r:read},
+      pool:cities,
+      noRuby:true,            // 選択肢はふりがな無し（読みを答えさせない）
+      avoidDesc:desc,         // 同じ説明の都市は選択肢に出さない
+      city:name,              // 解答時に地図でこの都市をピン表示
+      exp:`答えは <b>${name}</b>（${read}）。<br>${desc}`});
+  });
+  return Q;
+}
+
+const CATS=[
+ {id:0, name:"新幹線", gen:genShinkansen},
+ {id:1, name:"高速道路", gen:genHighway},
+ {id:2, name:"トンネル・橋", gen:genTunnel},
+ {id:3, name:"東日本の都市", gen:()=>genCities(EAST,"東日本の都市",3)},
+ {id:4, name:"西日本の都市", gen:()=>genCities(WEST,"西日本の都市",4)},
+];
+// 各分野の問題数を事前計算
+const CAT_POOLS = CATS.map(c=>c.gen());
+// キー→問題（苦手復習で再出題するため）
+const QUESTION_BY_KEY={};
+CAT_POOLS.forEach(pool=>pool.forEach(q=>{ if(q.key) QUESTION_BY_KEY[q.key]=q; }));
+// 問題の短いラベル（苦手リスト表示用）
+function qLabel(q){
+  const tmp=document.createElement('div'); tmp.innerHTML=q.qhtml;
+  const fact=tmp.querySelector('.fact');
+  let base = fact ? fact.textContent : tmp.textContent;
+  base = base.replace(/\s+/g,' ').trim();
+  return `[${q.cat}] ${base}`;
+}
+
+/* ============ 画面制御 ============ */
+let quizList=[], idx=0, score=0, streak=0, best=0, answered=false, answeredCount=0;
+let perCat={}; // {catId:{ok,total}}
+let quizLen=10;
+let reviewMode=false;
+
+/* ============ アカウント（プロフィール）機能 ============ */
+const DBKEY='koutsuQuiz_profiles_v1';
+let STORE_OK=true;
+try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); }catch(e){ STORE_OK=false; }
+let DB={activeId:null, users:{}};
+function loadDB(){ if(!STORE_OK) return; try{ const s=localStorage.getItem(DBKEY); if(s) DB=JSON.parse(s); }catch(e){} }
+function saveDB(){ if(!STORE_OK) return; try{ localStorage.setItem(DBKEY, JSON.stringify(DB)); }catch(e){} }
+function activeUser(){ return DB.activeId ? DB.users[DB.activeId] : null; }
+function catName(cid){ const c=CATS.find(x=>x.id===cid); return c?c.name:''; }
+function fmtDate(off){ const d=new Date(); if(off) d.setDate(d.getDate()+off);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+function touchLogin(u){
+  const t=fmtDate(0), y=fmtDate(-1);
+  if(u.login.last===t){/* すでに今日ログイン済み */}
+  else if(u.login.last===y) u.login.streak=(u.login.streak||0)+1;
+  else u.login.streak=1;
+  u.login.last=t; saveDB();
+}
+function newUser(name,pin){
+  const id='u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  return {id, name:name, pin:pin||'', createdAt:fmtDate(0),
+    stats:{answered:0,correct:0,bestStreak:0},
+    cats:{}, wrong:{}, login:{last:'',streak:0}};
+}
+function createProfile(name,pin){
+  const u=newUser(name,pin);
+  DB.users[u.id]=u; DB.activeId=u.id; touchLogin(u); saveDB();
+  renderAccountBar(); return u;
+}
+function switchTo(id){
+  DB.activeId=id; const u=activeUser(); if(u) touchLogin(u);
+  saveDB(); renderAccountBar();
+}
+function deleteProfile(id){
+  delete DB.users[id];
+  if(DB.activeId===id) DB.activeId=null;
+  saveDB(); renderAccountBar();
+}
+
+function recordAnswer(q,correct){
+  const u=activeUser(); if(!u||!q.key) return;
+  u.stats.answered++; if(correct) u.stats.correct++;
+  u.stats.bestStreak=Math.max(u.stats.bestStreak||0, streak);
+  const c=(u.cats[q.cid]=u.cats[q.cid]||{ok:0,total:0}); c.total++; if(correct) c.ok++;
+  if(!correct){
+    const w=u.wrong[q.key];
+    if(w){ w.n=(w.n||1)+1; } else { u.wrong[q.key]={key:q.key,cid:q.cid,cat:q.cat,label:qLabel(q),n:1}; }
+  } else if(u.wrong[q.key]){ delete u.wrong[q.key]; } // できたので苦手リストから外す
+  saveDB();
+}
+
+/* ---- 画面切り替え ---- */
+function hideAll(){ ['start','quiz','result','profile','stats'].forEach(id=>{const e=document.getElementById(id); if(e) e.classList.add('hidden');}); }
+function showScreen(id){ hideAll(); document.getElementById(id).classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ---- アカウントバー ---- */
+function renderAccountBar(){
+  const bar=document.getElementById('acctbar'); const u=activeUser();
+  if(u){
+    bar.innerHTML=`<span class="who">👤 <b>${u.name}</b></span>
+      <span class="fire">🔥 ${u.login.streak||1}日連続</span>
+      <span class="sp"></span>
+      <button class="mini" onclick="openStats()">📊 成績</button>
+      <button class="mini" onclick="openProfile()">切替</button>`;
+  } else {
+    bar.innerHTML=`<span class="who">👤 ゲスト <span class="note">（記録は保存されません）</span></span>
+      <span class="sp"></span>
+      <button class="mini prime" onclick="openProfile()">プロフィールを作成 / 選択</button>`;
+  }
+  // スタート画面の「復習」ボタンと保存状態の更新
+  updateReviewBtn(); updateStoreNotice();
+}
+function updateStoreNotice(){
+  const n=document.getElementById('storeNotice'); if(!n) return;
+  n.style.display = STORE_OK ? 'none' : 'block';
+}
+function updateReviewBtn(){
+  const b=document.getElementById('reviewBtn'); if(!b) return;
+  const u=activeUser(); const n=u?Object.keys(u.wrong).length:0;
+  if(u && n>0){ b.style.display='block'; b.textContent=`💪 苦手を復習（${n}問）`; }
+  else { b.style.display='none'; }
+}
+
+/* ---- プロフィール画面 ---- */
+function openProfile(){ renderProfileList(); showScreen('profile'); }
+function renderProfileList(){
+  const box=document.getElementById('profileList');
+  const ids=Object.keys(DB.users);
+  if(ids.length===0){ box.innerHTML='<p class="lead">まだプロフィールがありません。下から作成してね。</p>'; return; }
+  box.innerHTML='';
+  ids.forEach(id=>{
+    const u=DB.users[id]; const isCur=(id===DB.activeId);
+    const acc=u.stats.answered, cor=u.stats.correct;
+    const card=document.createElement('div'); card.className='pcard'+(isCur?' cur':'');
+    card.innerHTML=`
+      <div class="pmain">
+        <div class="pname">${u.pin?'🔒 ':''}${u.name} ${isCur?'<span class="curtag">今</span>':''}</div>
+        <div class="pmeta">正解 ${cor} / ${acc}問 ・ 🔥${u.login.streak||0}日 ・ 苦手${Object.keys(u.wrong).length}</div>
+      </div>
+      <div class="pinrow" id="pin-${id}" style="display:none;">
+        <input type="password" inputmode="numeric" maxlength="8" placeholder="PIN" id="pinin-${id}">
+        <button class="mini prime" onclick="tryLogin('${id}')">はいる</button>
+      </div>
+      <div class="pact">
+        <button class="mini prime" onclick="selectProfile('${id}')">${isCur?'つかう':'ログイン'}</button>
+        <button class="mini danger" onclick="askDelete('${id}')">削除</button>
+      </div>`;
+    box.appendChild(card);
+  });
+}
+function selectProfile(id){
+  const u=DB.users[id];
+  if(u.pin && id!==DB.activeId){ // PINあり → 入力欄を出す
+    const row=document.getElementById('pin-'+id); row.style.display='flex';
+    document.getElementById('pinin-'+id).focus(); return;
+  }
+  switchTo(id); backToStart();
+}
+function tryLogin(id){
+  const val=document.getElementById('pinin-'+id).value;
+  if(val===DB.users[id].pin){ switchTo(id); backToStart(); }
+  else { alert('PINがちがいます'); }
+}
+function askDelete(id){
+  if(confirm(`「${DB.users[id].name}」を削除します。記録も消えます。よろしいですか？`)){
+    deleteProfile(id); renderProfileList();
+  }
+}
+function submitNewProfile(){
+  const name=document.getElementById('newName').value.trim();
+  const pin=document.getElementById('newPin').value.trim();
+  if(!name){ alert('名前を入力してね'); return; }
+  if(pin && !/^\d{2,8}$/.test(pin)){ alert('PINは数字2〜8けたにしてね（空でもOK）'); return; }
+  createProfile(name,pin);
+  document.getElementById('newName').value=''; document.getElementById('newPin').value='';
+  backToStart();
+}
+
+/* ---- 成績画面 ---- */
+function openStats(){ renderStats(); showScreen('stats'); }
+function renderStats(){
+  const u=activeUser();
+  const box=document.getElementById('statsBody');
+  if(!u){ box.innerHTML='<p class="lead">プロフィールを作成すると成績が記録されます。</p>'; return; }
+  const acc=u.stats.answered, cor=u.stats.correct, pct=acc?Math.round(cor/acc*100):0;
+  let html=`<h2 class="stitle">👤 ${u.name} の成績</h2>
+    <div class="statgrid">
+      <div class="stat"><div class="sv">${acc}</div><div class="sl">といた問題</div></div>
+      <div class="stat"><div class="sv">${cor}</div><div class="sl">正解</div></div>
+      <div class="stat"><div class="sv">${pct}%</div><div class="sl">正解率</div></div>
+      <div class="stat"><div class="sv">🔥${u.login.streak||0}</div><div class="sl">連続日数</div></div>
+      <div class="stat"><div class="sv">${u.stats.bestStreak||0}</div><div class="sl">最高れんぞく</div></div>
+    </div>`;
+  // 分野別
+  html+='<h3 class="sub2">分野別の進捗</h3><div class="breakdown">';
+  let any=false;
+  CATS.forEach(c=>{
+    const d=u.cats[c.id]; if(!d||!d.total) return; any=true;
+    const r=Math.round(d.ok/d.total*100);
+    html+=`<div class="brow"><span class="bn">${c.name}</span>
+      <span class="bar"><div style="width:${r}%"></div></span>
+      <span class="bv">${d.ok}/${d.total}</span></div>`;
+  });
+  if(!any) html+='<p class="lead">まだ記録がありません。</p>';
+  html+='</div>';
+  // 苦手
+  const wk=Object.values(u.wrong);
+  html+=`<h3 class="sub2">苦手問題（${wk.length}）</h3>`;
+  if(wk.length){
+    html+=`<button class="bigbtn" style="margin:4px 0 10px" onclick="startReview()">💪 苦手を復習する</button>`;
+    html+='<div class="wlist">';
+    wk.sort((a,b)=>b.n-a.n).slice(0,40).forEach(w=>{
+      html+=`<div class="witem"><span class="wx">✕${w.n}</span> ${w.label}</div>`;
+    });
+    html+='</div>';
+  } else { html+='<p class="lead">苦手問題はありません。よくできています！</p>'; }
+  box.innerHTML=html;
+}
+
+/* ---- 苦手復習 ---- */
+function startReview(){
+  const u=activeUser(); if(!u) return;
+  const keys=Object.keys(u.wrong).filter(k=>QUESTION_BY_KEY[k]);
+  if(keys.length===0){ alert('復習する苦手問題はありません。'); return; }
+  quizList=shuffle(keys.map(k=>QUESTION_BY_KEY[k]));
+  quizLen=quizList.length;
+  idx=0; score=0; streak=0; best=0; perCat={}; answeredCount=0; reviewMode=true;
+  document.getElementById('qtot').textContent=` / ${quizLen}`;
+  showScreen('quiz'); renderQuestion();
+}
+
+// 開始画面のカテゴリー生成
+(function initCats(){
+  const box=document.getElementById('cats');
+  CATS.forEach((c,i)=>{
+    const div=document.createElement('label');
+    div.className='catrow on';
+    div.innerHTML=`<input type="checkbox" checked data-cid="${c.id}" onchange="toggleRow(this)">
+      <span class="nm">${c.name}</span>
+      <span class="ct">${CAT_POOLS[i].length}問</span>`;
+    box.appendChild(div);
+  });
+  // 出題数チップ
+  document.querySelectorAll('#lenrow .chip').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      document.querySelectorAll('#lenrow .chip').forEach(x=>x.classList.remove('on'));
+      chip.classList.add('on'); quizLen=parseInt(chip.dataset.len,10);
+    });
+  });
+})();
+function toggleRow(cb){ cb.closest('.catrow').classList.toggle('on', cb.checked); updateStartBtn(); }
+function selectAll(v){
+  document.querySelectorAll('#cats input').forEach(cb=>{cb.checked=v; cb.closest('.catrow').classList.toggle('on',v);});
+  updateStartBtn();
+}
+function selectedCids(){
+  return [...document.querySelectorAll('#cats input:checked')].map(cb=>parseInt(cb.dataset.cid,10));
+}
+function updateStartBtn(){ document.getElementById('startBtn').disabled = selectedCids().length===0; }
+
+function startQuiz(){
+  const cids=selectedCids();
+  if(cids.length===0) return;
+  let pool=[];
+  cids.forEach(cid=>{ pool=pool.concat(CAT_POOLS[cid]); });
+  pool=shuffle(pool.slice());
+  quizLen = (quizLen===0) ? pool.length : Math.min(quizLen, pool.length);
+  quizList=pool.slice(0,quizLen);
+  idx=0; score=0; streak=0; best=0; perCat={}; answeredCount=0; reviewMode=false;
+  document.getElementById('qtot').textContent = ` / ${quizLen}`;
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=quizList[idx];
+  document.getElementById('qnum').textContent=idx+1;
+  document.getElementById('scoreN').textContent=score;
+  document.getElementById('streakN').textContent=streak;
+  document.getElementById('pbar').style.width=`${(idx/quizLen)*100}%`;
+  const tag=document.getElementById('qtag');
+  tag.textContent=q.tag; tag.className=`qtag c${q.cid}`;
+  document.getElementById('qtext').innerHTML=q.qhtml;
+  // 選択肢（avoidDesc があれば同じ説明の都市は除外／同名は重複させない）
+  let cand=q.pool.filter(x=>x.t!==q.ans.t);
+  if(q.avoidDesc) cand=cand.filter(x=>x.desc!==q.avoidDesc);
+  const seen=new Set(); cand=cand.filter(x=>seen.has(x.t)?false:(seen.add(x.t),true));
+  const opts=shuffle(cand.slice()).slice(0,3);
+  const all=shuffle([q.ans, ...opts]);
+  const idxLabel=["A","B","C","D"];
+  const cbox=document.getElementById('choices');
+  cbox.innerHTML='';
+  all.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='choice';
+    b.dataset.t=o.t;
+    b.dataset.correct = (o.t===q.ans.t)?'1':'0';
+    const label = q.noRuby ? o.t : ruby(o.t,o.r);
+    b.innerHTML=`<span class="idx">${idxLabel[i]}</span><span>${label}</span><span class="mk"></span>`;
+    b.onclick=()=>choose(b,o,q);
+    cbox.appendChild(b);
+  });
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('navrow').style.display='none';
+}
+
+function choose(btn,opt,q){
+  if(answered) return;
+  answered=true;
+  answeredCount++;
+  const correct = opt.t===q.ans.t;
+  // 集計
+  perCat[q.cid]=perCat[q.cid]||{ok:0,total:0,name:q.cat};
+  perCat[q.cid].total++;
+  // 選択肢の見た目を確定
+  document.querySelectorAll('#choices .choice').forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.correct==='1'){
+      b.classList.add('correct');
+      b.querySelector('.mk').textContent='⭕';
+    }
+  });
+  if(!correct){
+    btn.classList.add('wrong');
+    btn.querySelector('.mk').textContent='✕';
+  }
+
+  if(correct){
+    score++; streak++; best=Math.max(best,streak); perCat[q.cid].ok++;
+    showFeedback(true,q);
+  } else {
+    streak=0;
+    showFeedback(false,q);
+  }
+  recordAnswer(q,correct); // プロフィールに記録（累計・分野別・苦手・最高れんぞく）
+  document.getElementById('scoreN').textContent=score;
+  document.getElementById('streakN').textContent=streak;
+  document.getElementById('pbar').style.width=`${((idx+1)/quizLen)*100}%`;
+  document.getElementById('navrow').style.display='flex';
+  if(idx+1>=quizLen){ document.getElementById('nextBtn').textContent='結果を見る 🏁'; }
+}
+
+function cityMapSVG(name){
+  const c=MAP.city[name]; if(!c) return '';
+  const [x,y]=c;
+  return `<svg viewBox="0 0 ${MAP.vw} ${MAP.vh}" role="img" aria-label="${name}の位置">
+    <path class="jland" d="${MAP.path}"/>
+    <circle class="ping" cx="${x}" cy="${y}" r="5"/>
+    <circle class="halo" cx="${x}" cy="${y}" r="9"/>
+    <circle class="pin"  cx="${x}" cy="${y}" r="4"/>
+  </svg>
+  <div class="cap">📍 ${name} の位置</div>`;
+}
+function showFeedback(ok,q){
+  const fb=document.getElementById('feedback');
+  fb.className='feedback show '+(ok?'ok':'ng');
+  document.getElementById('fbhd').textContent = ok?'⭕ 正解！':'❌ ざんねん…';
+  document.getElementById('fbexp').innerHTML = q.exp + (ok?'':`　→ 正解は <b>${q.noRuby?q.ans.t:ruby(q.ans.t,q.ans.r)}</b>`);
+  const mb=document.getElementById('mapbox');
+  mb.innerHTML = q.city ? cityMapSVG(q.city) : '';
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx>=quizLen){ finishQuiz(); return; }
+  renderQuestion();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function finishQuiz(){
+  showScreen('result');
+  const total=Math.max(1,answeredCount);
+  const pct=Math.round(score/total*100);
+  document.getElementById('rScore').textContent=score;
+  document.getElementById('rTotal').textContent=total;
+  let emoji,title,msg;
+  if(pct>=90){emoji='🏆';title='すばらしい！';msg='ほぼ完ぺき！この調子でどんどん進めよう。';}
+  else if(pct>=70){emoji='🎉';title='よくできました！';msg='あと少しで満点。まちがえた問題をもう一度確認しよう。';}
+  else if(pct>=50){emoji='💪';title='いい調子！';msg='半分以上正解。くり返せばもっと覚えられるよ。';}
+  else{emoji='📚';title='これから！';msg='まずは解説をよく読んでみよう。何回もやれば必ず覚えられる。';}
+  if(reviewMode){ title='復習おつかれさま！'; emoji='💪';
+    const left=activeUser()?Object.keys(activeUser().wrong).length:0;
+    msg=`正解した問題は苦手リストから外れました。残りの苦手は ${left} 問。`;
+  }
+  document.getElementById('rEmoji').textContent=emoji;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rMsg').textContent=`正解率 ${pct}％ ・ 最高れんぞく ${best} 問　${msg}`;
+  // 分野別
+  const bd=document.getElementById('rBreak'); bd.innerHTML='';
+  Object.keys(perCat).forEach(k=>{
+    const p=perCat[k]; const r2=Math.round(p.ok/p.total*100);
+    const row=document.createElement('div'); row.className='brow';
+    row.innerHTML=`<span class="bn">${p.name}</span>
+      <span class="bar"><div style="width:${r2}%"></div></span>
+      <span class="bv">${p.ok}/${p.total}</span>`;
+    bd.appendChild(row);
+  });
+}
+
+function backToStart(){
+  reviewMode=false;
+  renderAccountBar();       // 復習ボタン数・保存状態を更新
+  showScreen('start');
+}
+
+/* ---- 初期化 ---- */
+loadDB();
+if(DB.activeId && DB.users[DB.activeId]) touchLogin(DB.users[DB.activeId]);
+renderAccountBar();
+</script>
+</body>
+</html>
