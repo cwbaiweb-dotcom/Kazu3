@@ -90,9 +90,11 @@
 
   /* ---- Login ---- */
   .avatar-grid{
-    display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0 6px;
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 14px; margin: 22px 0 6px;
   }
+  .avatar-tile{ position:relative; }
   .avatar-btn{
+    width:100%;
     font-family:"Shippori Mincho", serif;
     font-size: 22px; font-weight:800;
     padding: 26px 8px;
@@ -105,6 +107,19 @@
   }
   .avatar-btn:hover{ border-color: var(--aizome); background: #f2f1ea; transform: translateY(-2px); }
   .avatar-btn .kana{ display:block; font-size:11px; color: var(--sumi-soft); font-weight:500; margin-top:6px; font-family:"Noto Sans JP",sans-serif; letter-spacing:0.1em; }
+  .avatar-delete-btn{
+    position:absolute; top:-8px; right:-8px; width:26px; height:26px; border-radius:50%;
+    background: #fff; border:1.5px solid var(--shuiro); color: var(--shuiro);
+    font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .avatar-delete-btn:hover{ background: rgba(181,69,28,0.1); }
+  .avatar-add-btn{
+    width:100%; height:100%; min-height:88px;
+    font-family:"Shippori Mincho", serif; font-size:15px; font-weight:700;
+    border-radius:4px; border:1.5px dashed var(--kincha); background: rgba(169,120,31,0.04);
+    color: var(--kincha); cursor:pointer; transition: all .12s ease;
+  }
+  .avatar-add-btn:hover{ background: rgba(169,120,31,0.1); border-color: var(--aizome); color: var(--aizome-deep); }
 
   /* ---- Home / dashboard ---- */
   .stat-grid{
@@ -541,7 +556,7 @@ const DATA = [
 ];
 
 const MIN_YEAR = 239, MAX_YEAR = 2011;
-const ACCOUNTS = ["音", "昂", "暁"];
+const DEFAULT_ACCOUNTS = ["音", "昂", "暁"]; // seed for a brand-new store only; STORE.accounts is the live list
 const APP_ID = "kj-quiz-shakai-nendai";
 const STORAGE_KEY = APP_ID;
 const SYNC_KEY = APP_ID + ":sync";
@@ -585,8 +600,8 @@ function blankAccountProgress(){
 }
 function blankStore(){
   const progress = {};
-  ACCOUNTS.forEach(a=>{ progress[a] = blankAccountProgress(); });
-  return { app: APP_ID, version: SCHEMA_VERSION, accounts: ACCOUNTS.slice(), progress, updatedAt: null };
+  DEFAULT_ACCOUNTS.forEach(a=>{ progress[a] = blankAccountProgress(); });
+  return { app: APP_ID, version: SCHEMA_VERSION, accounts: DEFAULT_ACCOUNTS.slice(), progress, updatedAt: null };
 }
 
 function migrateFromV2(oldRaw){
@@ -594,7 +609,7 @@ function migrateFromV2(oldRaw){
   let old;
   try{ old = JSON.parse(oldRaw); }catch(e){ return null; }
   const store = blankStore();
-  ACCOUNTS.forEach(a=>{
+  DEFAULT_ACCOUNTS.forEach(a=>{
     const oldAcc = old[a];
     if(!oldAcc) return;
     const acc = store.progress[a];
@@ -679,6 +694,48 @@ function saveStore(opts){
 }
 
 let STORE = loadStore();
+normalizeAccounts();
+
+// Ensures STORE.accounts (the live, editable account list) always exists and
+// always matches reality -- this runs on every load, including for data
+// saved by earlier versions of this tool that predate add/delete accounts,
+// so nobody's existing 音/昂/暁 records are ever dropped by this refactor.
+function normalizeAccounts(){
+  if(!STORE.progress) STORE.progress = {};
+  if(!Array.isArray(STORE.accounts) || STORE.accounts.length === 0){
+    const fromProgress = Object.keys(STORE.progress);
+    STORE.accounts = fromProgress.length ? fromProgress : DEFAULT_ACCOUNTS.slice();
+  }
+  // Any account name that already has a progress bucket but wasn't listed
+  // (can happen with older saves) gets included too, never dropped.
+  Object.keys(STORE.progress).forEach(name=>{
+    if(!STORE.accounts.includes(name)) STORE.accounts.push(name);
+  });
+  STORE.accounts.forEach(name=>{
+    if(!STORE.progress[name]) STORE.progress[name] = blankAccountProgress();
+  });
+}
+
+function accountList(){ return STORE.accounts; }
+
+function addAccount(name){
+  name = (name || "").trim();
+  if(!name) return { ok: false, error: "名前を入力してください。" };
+  if(name.length > 12) return { ok: false, error: "名前は12文字以内にしてください。" };
+  if(STORE.accounts.includes(name)) return { ok: false, error: "同じ名前のアカウントがすでにあります。" };
+  STORE.accounts.push(name);
+  STORE.progress[name] = blankAccountProgress();
+  saveStore();
+  pushOnly(); // spec: push after account add/rename/delete
+  return { ok: true };
+}
+
+function deleteAccount(name){
+  STORE.accounts = STORE.accounts.filter(a => a !== name);
+  delete STORE.progress[name];
+  saveStore();
+  pushOnly();
+}
 
 function getCommittedStats(account){
   if(!STORE.progress[account]) STORE.progress[account] = blankAccountProgress();
@@ -1119,8 +1176,10 @@ function adoptCloud(cloudData){
   const merged = deepClone(cloudData);
   merged.app = APP_ID;
   if(!merged.progress) merged.progress = {};
+  if(!Array.isArray(merged.accounts)) merged.accounts = Object.keys(merged.progress);
   let mergeHappened = false;
-  ACCOUNTS.forEach(name=>{
+  const allNames = new Set([...(STORE.accounts||[]), ...merged.accounts]);
+  allNames.forEach(name=>{
     const localAcc = STORE.progress[name];
     const localHasThis = localAcc && dbHasRecords({ progress: { [name]: localAcc } });
     const cloudHasThis = merged.progress[name] && dbHasRecords({ progress: { [name]: merged.progress[name] } });
@@ -1129,6 +1188,7 @@ function adoptCloud(cloudData){
     // as "local-only" and must be carried over rather than silently dropped.
     if(localHasThis && !cloudHasThis){
       merged.progress[name] = localAcc;
+      if(!merged.accounts.includes(name)) merged.accounts.push(name);
       mergeHappened = true;
     }
   });
@@ -1214,7 +1274,8 @@ function handleImportFile(file){
       render();
       return;
     }
-    const accountSummaries = ACCOUNTS.map(name=>{
+    const importedAccounts = Array.isArray(parsed.accounts) ? parsed.accounts : Object.keys(parsed.progress || {});
+    const accountSummaries = importedAccounts.map(name=>{
       const acc = parsed.progress && parsed.progress[name];
       const has = acc && dbHasRecords({ progress: { [name]: acc } });
       return `${name}：${has ? "記録あり" : "記録なし"}`;
@@ -1259,7 +1320,7 @@ function buildFullKpList(){
     "過去の誤答内容","最終誤答日","習得日",
   ];
   const rows = [];
-  ACCOUNTS.forEach(name=>{
+  STORE.accounts.forEach(name=>{
     const acc = STORE.progress[name] || blankAccountProgress();
     DATA.forEach((d,idx)=>{
       const [item, year] = d;
@@ -1413,7 +1474,65 @@ function renderModalOverlay(){
     document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
     return;
   }
+
+  if(m.type === 'addAccount'){
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>アカウントを追加</h3>
+        <p>新しく挑戦する人の名前を入力してください。</p>
+        <div class="modal-field">
+          <label>名前（12文字まで）</label>
+          <input type="text" id="newAccountNameInput" maxlength="12" placeholder="例：つばさ" autocomplete="off">
+        </div>
+        <p id="addAccountError" style="color:var(--shuiro); display:none;"></p>
+        <div class="modal-btn-row">
+          <button class="sync-btn" id="addAccountConfirmBtn">追加する</button>
+          <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
+        </div>
+      </div>
+    `;
+    const input = document.getElementById('newAccountNameInput');
+    input.focus();
+    const doAdd = ()=>{
+      const result = addAccount(input.value);
+      if(!result.ok){
+        const err = document.getElementById('addAccountError');
+        err.textContent = result.error;
+        err.style.display = 'block';
+        return;
+      }
+      state.modal = null;
+      render();
+    };
+    document.getElementById('addAccountConfirmBtn').onclick = doAdd;
+    input.addEventListener('keydown', e=>{ if(e.key === 'Enter') doAdd(); });
+    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
+    return;
+  }
+
+  if(m.type === 'deleteAccountConfirm'){
+    const acc = STORE.progress[m.name] || blankAccountProgress();
+    const hasRecords = dbHasRecords({ progress: { [m.name]: acc } });
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>「${m.name}」を削除しますか？</h3>
+        <p>挑戦回数：${acc.quizzesTaken || 0}回${hasRecords ? '<br><b style="color:var(--shuiro);">この操作は元に戻せません。学習の記録もすべて削除されます。</b>' : '（記録はまだありません）'}</p>
+        <div class="modal-btn-row">
+          <button class="sync-btn warn" id="deleteAccountConfirmBtn">削除する</button>
+          <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('deleteAccountConfirmBtn').onclick = ()=>{
+      deleteAccount(m.name);
+      state.modal = null;
+      render();
+    };
+    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
+    return;
+  }
 }
+
 
 function renderScreen(){
   const app = document.getElementById('app');
@@ -1427,7 +1546,15 @@ function renderScreen(){
         <div class="qtype-tag">アカウントを選んでね</div>
         <div class="question-text">だれのクイズ？</div>
         <div class="avatar-grid">
-          ${ACCOUNTS.map(a=>`<button class="avatar-btn" data-name="${a}">${a}<span class="kana">タップして開始</span></button>`).join("")}
+          ${STORE.accounts.map(a=>`
+            <div class="avatar-tile">
+              <button class="avatar-delete-btn" data-name="${a}" title="このアカウントを削除">✕</button>
+              <button class="avatar-btn" data-name="${a}">${a}<span class="kana">タップして開始</span></button>
+            </div>
+          `).join("")}
+          <div class="avatar-tile">
+            <button class="avatar-add-btn" id="addAccountBtn">＋<br>アカウントを追加</button>
+          </div>
         </div>
       </div>
     `;
@@ -1438,6 +1565,17 @@ function renderScreen(){
         render();
       };
     });
+    app.querySelectorAll('.avatar-delete-btn').forEach(btn=>{
+      btn.onclick = (e)=>{
+        e.stopPropagation();
+        state.modal = { type: "deleteAccountConfirm", name: btn.dataset.name };
+        render();
+      };
+    });
+    document.getElementById('addAccountBtn').onclick = ()=>{
+      state.modal = { type: "addAccount" };
+      render();
+    };
     return;
   }
 
