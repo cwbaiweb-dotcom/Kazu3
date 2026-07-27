@@ -704,20 +704,32 @@ function gasErrMsg(e){
   if(e&&e.badgas) return "☁⚠ GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
   return "☁⚠ 同期エラー";
 }
-async function push(){
+async function push(msgOk){
   if(!SY) return;
   setStatus("proc","☁ 保存中…");
   try{
     const j=await callGAS({method:"POST",body:JSON.stringify({key:SY.key,data:S})});
     if(!j.ok){ setStatus("err","☁⚠ "+authMsg(j.error)); return; }
     SY.lastSync=new Date().toISOString(); saveSync();
-    setStatus("ok","☁✓ クラウド保存ずみ");
-  }catch(e){ setStatus(e.net?"err":"err",gasErrMsg(e)); }
+    setStatus("ok", msgOk||"☁✓ クラウド保存ずみ");
+  }catch(e){ setStatus("err",gasErrMsg(e)); }
 }
 function authMsg(err){
   if(err&&!/key|auth|認証|合言葉/i.test(err)) return err;
   return "合言葉が違います";
 }
+function dbSummary(d){
+  let acc=0,seen=0,mast=0;
+  if(d&&d.users) for(const u of Object.values(d.users)){
+    acc++;
+    for(const it of Object.values(u.st||{})){
+      if((it.o||0)+(it.x||0)>0) seen++;
+      if((it.k||0)>=2) mast++;
+    }
+  }
+  return {acc,seen,mast};
+}
+const sumTxt=cs=>`${cs.acc}人・出題済み${cs.seen}・習得${cs.mast}`;
 async function pull(){
   if(!SY) return;
   setStatus("proc","☁ 同期中…");
@@ -731,29 +743,53 @@ async function pull(){
 function resolveMerge(cloud){
   const localHas=dbHasRecords(S);
   const cloudHas=cloud&&dbHasRecords(cloud);
-  if(!cloud){ push(); return; }                         // クラウド空 → push
-  if(!localHas && cloudHas){ adopt(cloud); return; }     // ローカル空 → 無条件採用
-  if(localHas && !cloudHas){ push(); return; }           // クラウド空 → 無条件push
-  if(!localHas && !cloudHas){ push(); return; }
-  // 両方に記録 → updatedAt の新しい方が勝ち
-  if((cloud.updatedAt||"") > (S.updatedAt||"")) adopt(cloud);
-  else push();
+  if(!cloud || !cloudHas){
+    // クラウドに進捗が無い（doGet が data を返していない場合もここ）
+    if(localHas) push("☁ クラウドに進捗が無かったので、この端末の記録を送りました");
+    else setStatus("ok","☁ クラウドにもこの端末にも記録がありません");
+    return;
+  }
+  const cs=dbSummary(cloud);
+  if(!localHas){ adopt(cloud,cs); return; }                 // ローカル空 → 無条件採用
+  if((cloud.updatedAt||"") > (S.updatedAt||"")) adopt(cloud,cs);   // クラウドが新しい → 採用
+  else push("☁ この端末のほうが新しいので送りました（相手側で「今すぐ同期」すると反映されます）");
 }
-function adopt(cloud){
+function adopt(cloud,cs){
   const localUsers=S.users||{};
   const prevCur=S.cur;
   const merged=JSON.parse(JSON.stringify(cloud));
   merged.app=APP; if(!merged.users) merged.users={};
   let mergedAny=false;
-  for(const name of Object.keys(localUsers)){            // 名前で判定、ローカル固有は残す
+  for(const name of Object.keys(localUsers)){            // 名前で判定、ローカル固有アカウントは残す
     if(!merged.users[name]){ merged.users[name]=localUsers[name]; mergedAny=true; }
+    else mergedAny = mergeAccount(merged.users[name], localUsers[name]) || mergedAny;  // 同名は項目ごとに良い方を残す
   }
   merged.cur=(prevCur&&merged.users[prevCur])?prevCur:(merged.cur&&merged.users[merged.cur]?merged.cur:Object.keys(merged.users)[0]||null);
   S=merged;
-  if(mergedAny){ saveDB(false); push(); setStatus("ok","☁✓ 記録を合流しました"); }
-  else{ saveDB(true); setStatus("ok","☁✓ 同期しました"); }   // 純粋な採用は updatedAt 維持
-  if(!S.cur){}
+  if(mergedAny){ saveDB(false); push("☁✓ クラウドと合流しました（"+sumTxt(dbSummary(S))+"）"); }
+  else{ saveDB(true); setStatus("ok","☁✓ クラウドから取り込みました（"+sumTxt(cs)+"）"); }
   paintWho(); renderList(); if(!SEC.rec.classList.contains("hidden")) renderRec();
+}
+// 同名アカウントを項目ごとに合流：正解・誤答は多い方、習得は片方でも習得なら維持、誤答内容も統合
+function mergeAccount(base, other){
+  let changed=false;
+  const bs=base.st||(base.st={}), os=other.st||{};
+  for(const id of Object.keys(os)){
+    const o=os[id]; const b=bs[id];
+    if(!b){ bs[id]=o; changed=true; continue; }
+    const nb={
+      o:Math.max(b.o||0,o.o||0),
+      x:Math.max(b.x||0,o.x||0),
+      k:Math.max(b.k||0,o.k||0),
+      bf:{A:{w:Math.max((b.bf&&b.bf.A.w)||0,(o.bf&&o.bf.A.w)||0)},
+          B:{w:Math.max((b.bf&&b.bf.B.w)||0,(o.bf&&o.bf.B.w)||0)}},
+      wl:((b.wl||[]).concat(o.wl||[])).sort((p,q)=>(p.at||"")<(q.at||"")?-1:1).slice(-20),
+      mAt:b.mAt||o.mAt||null,
+      seen:((b.seen||"")>(o.seen||""))?b.seen:o.seen
+    };
+    if(JSON.stringify(nb)!==JSON.stringify(b)){ bs[id]=nb; changed=true; }
+  }
+  return changed;
 }
 
 /* =======================================================
