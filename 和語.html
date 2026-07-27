@@ -3,332 +3,417 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>和語マスター 〜語句の知識クイズ〜</title>
+<title>和語マスター｜中学受験 語句の知識</title>
 <style>
 :root{
-  --washi:#F6F2E7;
-  --washi-deep:#EDE6D3;
-  --ai:#28466E;        /* 藍 */
-  --ai-deep:#1B3252;
-  --shu:#C0463C;       /* 朱 */
-  --matsu:#3E7154;     /* 松葉(正解) */
-  --kincha:#B8802E;    /* 金茶(マスター) */
-  --sumi:#2B2A26;      /* 墨 */
-  --usuzumi:#7A756A;
-  --line:#D9D0BA;
-  --card:#FFFDF7;
-  --radius:14px;
+  --washi:#F6F2E7; --washi-deep:#EDE6D3; --card:#FFFDF7;
+  --ai:#28466E; --ai-deep:#1B3252; --ai-pale:#EEF2F8;
+  --shu:#C0463C; --shu-pale:#F9EFED;
+  --matsu:#3E7154; --matsu-pale:#EFF5EF;
+  --kincha:#B8802E; --kincha-pale:#FBF4E4;
+  --sumi:#2B2A26; --usuzumi:#7A756A; --line:#D9D0BA;
   --serif:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;
   --sans:"Hiragino Kaku Gothic ProN","Yu Gothic","YuGothic","Noto Sans JP",sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{font-size:16px}
-body{
-  font-family:var(--sans);
-  background:var(--washi);
-  background-image:radial-gradient(rgba(43,42,38,.025) 1px, transparent 1px);
-  background-size:22px 22px;
-  color:var(--sumi);
-  min-height:100vh;
-  line-height:1.6;
-}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
-.app{max-width:640px;margin:0 auto;padding:16px 16px 48px}
+body{font-family:var(--sans);background:var(--washi);
+  background-image:radial-gradient(rgba(43,42,38,.025) 1px,transparent 1px);background-size:22px 22px;
+  color:var(--sumi);line-height:1.6;min-height:100vh;font-size:16px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:16px}
+.app{max-width:660px;margin:0 auto;padding:14px 14px 60px}
 
-/* ---------- ヘッダー ---------- */
-.header{display:flex;align-items:center;justify-content:space-between;padding:10px 2px 18px}
-.brand{display:flex;align-items:center;gap:12px}
-.hanko{
-  width:46px;height:46px;border-radius:8px;background:var(--shu);color:#FFF8ED;
-  font-family:var(--serif);font-weight:700;font-size:22px;line-height:1.05;
-  display:flex;align-items:center;justify-content:center;
-  writing-mode:vertical-rl;letter-spacing:2px;box-shadow:0 2px 0 rgba(0,0,0,.12);
-}
-.brand h1{font-family:var(--serif);font-size:22px;font-weight:700;letter-spacing:.06em}
-.brand small{display:block;font-family:var(--sans);font-size:11px;color:var(--usuzumi);font-weight:400;letter-spacing:.14em}
-.player-chip{
-  display:flex;align-items:center;gap:7px;background:var(--card);border:1.5px solid var(--line);
-  border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ai-deep);
-}
-.player-chip:active{transform:scale(.97)}
-.player-chip .dot{width:9px;height:9px;border-radius:50%;background:var(--ai)}
+/* warn bar */
+.warnbar{display:none;background:var(--kincha-pale);border:1.5px solid var(--kincha);color:#7a5416;
+  border-radius:10px;padding:10px 13px;font-size:12.5px;line-height:1.55;margin-bottom:12px}
+.warnbar.show{display:block}
 
-/* ---------- 画面共通 ---------- */
+/* header */
+.header{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 16px;gap:10px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.hanko{width:44px;height:44px;border-radius:8px;background:var(--shu);color:#FFF8ED;font-family:var(--serif);
+  font-weight:700;font-size:21px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;
+  letter-spacing:2px;box-shadow:0 2px 0 rgba(0,0,0,.12);flex-shrink:0}
+.brand h1{font-family:var(--serif);font-size:20px;font-weight:700;letter-spacing:.05em;white-space:nowrap}
+.brand small{display:block;font-family:var(--sans);font-size:10.5px;color:var(--usuzumi);font-weight:400;letter-spacing:.13em}
+.chip{display:flex;align-items:center;gap:7px;background:var(--card);border:1.5px solid var(--line);
+  border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:700;color:var(--ai-deep);flex-shrink:0}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--ai)}
+
 .screen{display:none}
-.screen.active{display:block;animation:fade .25s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.section-label{
-  font-size:12px;letter-spacing:.22em;color:var(--usuzumi);font-weight:700;
-  margin:22px 0 10px;display:flex;align-items:center;gap:10px;
-}
-.section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.screen.active{display:block;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.lbl{font-size:11.5px;letter-spacing:.2em;color:var(--usuzumi);font-weight:700;margin:20px 0 9px;
+  display:flex;align-items:center;gap:9px}
+.lbl::after{content:"";flex:1;height:1px;background:var(--line)}
+.lbl:first-child{margin-top:4px}
 
-/* ---------- プレイヤー選択 ---------- */
-.player-list{display:grid;gap:12px;margin-top:8px}
-.player-card{
-  display:flex;align-items:center;gap:14px;background:var(--card);
-  border:1.5px solid var(--line);border-radius:var(--radius);padding:16px 18px;
-  text-align:left;transition:transform .12s, box-shadow .12s;width:100%;
-}
-.player-card:active{transform:scale(.98)}
-.player-avatar{
-  width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-  font-family:var(--serif);font-size:26px;font-weight:700;color:#FFF8ED;flex-shrink:0;
-}
-.player-info{flex:1;min-width:0}
-.player-name{font-size:17px;font-weight:700}
-.player-sub{font-size:12.5px;color:var(--usuzumi)}
-.rename-btn{font-size:12px;color:var(--usuzumi);padding:8px;border-radius:8px}
-.rename-btn:active{background:var(--washi-deep)}
+/* generic cards */
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:14px}
+.row{display:flex;align-items:center;gap:12px}
 
-/* ---------- ホーム ---------- */
-.mode-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.mode-btn{
-  background:var(--card);border:1.5px solid var(--line);border-radius:12px;
-  padding:12px 6px;font-size:13.5px;font-weight:700;color:var(--usuzumi);
-}
-.mode-btn.selected{border-color:var(--ai);color:var(--ai-deep);background:#EEF2F8;box-shadow:inset 0 0 0 1px var(--ai)}
-.cat-grid{display:grid;gap:10px}
-.cat-card{
-  display:flex;align-items:center;gap:14px;background:var(--card);
-  border:1.5px solid var(--line);border-radius:var(--radius);padding:14px 16px;
-  text-align:left;transition:transform .12s;width:100%;
-}
-.cat-card:active{transform:scale(.98)}
-.cat-card.selected{border-color:var(--ai);box-shadow:inset 0 0 0 1.5px var(--ai);background:#F4F7FB}
-.cat-mark{
-  width:44px;height:44px;border-radius:9px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--serif);font-weight:700;font-size:19px;color:#FFF8ED;
-  writing-mode:vertical-rl;letter-spacing:1px;line-height:1;
-}
+/* accounts */
+.acc-card{display:flex;align-items:center;gap:13px;background:var(--card);border:1.5px solid var(--line);
+  border-radius:13px;padding:14px 15px;text-align:left;width:100%;margin-bottom:10px}
+.acc-card.active{border-color:var(--ai);box-shadow:inset 0 0 0 1.5px var(--ai)}
+.avatar{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:23px;font-weight:700;color:#FFF8ED;flex-shrink:0;background:var(--ai)}
+.acc-info{flex:1;min-width:0}
+.acc-name{font-size:16.5px;font-weight:700}
+.acc-sub{font-size:12px;color:var(--usuzumi)}
+.icon-btn{font-size:12px;color:var(--usuzumi);padding:9px 7px;border-radius:8px;flex-shrink:0}
+.icon-btn:active{background:var(--washi-deep)}
+.add-btn{width:100%;border:1.5px dashed var(--line);border-radius:13px;padding:14px;font-size:14.5px;
+  font-weight:700;color:var(--usuzumi);background:transparent}
+
+/* mode + category */
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.seg button{background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:11px 4px;
+  font-size:13px;font-weight:700;color:var(--usuzumi);line-height:1.35}
+.seg button b{display:block;font-size:15px;color:inherit}
+.seg button.on{border-color:var(--ai);color:var(--ai-deep);background:var(--ai-pale);box-shadow:inset 0 0 0 1px var(--ai)}
+.cat-card{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);
+  border-radius:13px;padding:12px 14px;text-align:left;width:100%;margin-bottom:9px}
+.cat-card.on{border-color:var(--ai);box-shadow:inset 0 0 0 1.5px var(--ai);background:#F4F7FB}
+.cat-mark{width:42px;height:42px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-weight:700;font-size:18px;color:#FFF8ED;writing-mode:vertical-rl;letter-spacing:1px;line-height:1}
 .cat-info{flex:1;min-width:0}
-.cat-name{font-size:15.5px;font-weight:700}
-.cat-detail{font-size:12px;color:var(--usuzumi);display:flex;align-items:center;gap:8px;margin-top:2px}
-.bar{flex:1;max-width:130px;height:6px;background:var(--washi-deep);border-radius:99px;overflow:hidden}
-.bar > i{display:block;height:100%;background:var(--kincha);border-radius:99px;transition:width .4s}
-.cat-count{font-size:12px;font-weight:700;color:var(--kincha);white-space:nowrap}
-.start-area{position:sticky;bottom:12px;margin-top:24px;display:grid;gap:10px}
-.big-btn{
-  background:var(--ai);color:#FFF8ED;font-size:17px;font-weight:700;letter-spacing:.12em;
-  border-radius:var(--radius);padding:17px;box-shadow:0 3px 0 var(--ai-deep);
-  transition:transform .1s;
-}
+.cat-name{font-size:15px;font-weight:700}
+.cat-detail{font-size:11.5px;color:var(--usuzumi);display:flex;align-items:center;gap:8px;margin-top:3px}
+.bar{flex:1;max-width:150px;height:7px;background:var(--washi-deep);border-radius:99px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar i.m{background:var(--kincha)}
+.bar i.p{background:#DCC98F}
+.cat-count{font-size:11.5px;font-weight:700;color:var(--kincha);white-space:nowrap}
+.overall{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--usuzumi);margin-top:4px;padding:0 2px}
+.overall b{color:var(--kincha);font-size:15px}
+
+/* start */
+.start-area{display:grid;gap:9px;margin-top:18px}
+.big-btn{background:var(--ai);color:#FFF8ED;font-size:16.5px;font-weight:700;letter-spacing:.1em;
+  border-radius:13px;padding:16px;box-shadow:0 3px 0 var(--ai-deep)}
 .big-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ai-deep)}
 .big-btn:disabled{opacity:.45;box-shadow:none}
-.review-btn{
-  background:var(--card);color:var(--shu);border:1.5px solid var(--shu);
-  font-size:15px;font-weight:700;border-radius:var(--radius);padding:13px;
-}
-.review-btn:disabled{opacity:.4}
+.sub-btn{background:var(--card);border:1.5px solid var(--ai);color:var(--ai-deep);font-size:14.5px;
+  font-weight:700;border-radius:12px;padding:12px}
+.sub-btn:disabled{opacity:.4}
+.mini-btn{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;
+  font-size:12.5px;font-weight:700;color:var(--sumi)}
+.mini-btn:active{background:var(--washi-deep)}
+.hint{font-size:11.5px;color:var(--usuzumi);margin-top:6px;line-height:1.5}
 
-/* ---------- クイズ ---------- */
-.quiz-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.quit-btn{font-size:13px;color:var(--usuzumi);padding:8px 10px;border-radius:8px;flex-shrink:0}
-.quit-btn:active{background:var(--washi-deep)}
-.progress-track{flex:1;height:8px;background:var(--washi-deep);border-radius:99px;overflow:hidden}
-.progress-track > i{display:block;height:100%;background:var(--ai);border-radius:99px;transition:width .3s}
-.q-counter{font-size:13px;font-weight:700;color:var(--usuzumi);flex-shrink:0}
-.q-card{
-  background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
-  padding:26px 20px;text-align:center;position:relative;overflow:hidden;
-}
-.q-card::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--ai);
-}
-.q-type{
-  display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.18em;
-  color:var(--ai-deep);background:#EEF2F8;border-radius:99px;padding:4px 14px;margin-bottom:14px;
-}
-.q-word{font-family:var(--serif);font-size:40px;font-weight:700;letter-spacing:.05em;line-height:1.3}
-.q-meaning{font-size:18px;font-weight:600;line-height:1.8;text-align:left;display:inline-block;max-width:100%}
-.q-mastery{margin-top:12px;font-size:12px;color:var(--kincha);font-weight:700;letter-spacing:.1em;min-height:18px}
-.choices{display:grid;gap:10px;margin-top:16px}
-.choice{
-  background:var(--card);border:1.5px solid var(--line);border-radius:12px;
-  padding:14px 16px;font-size:15.5px;font-weight:600;text-align:left;line-height:1.55;
-  display:flex;gap:12px;align-items:flex-start;transition:transform .1s;width:100%;color:var(--sumi);
-}
-.choice:active{transform:scale(.985)}
-.choice .kigo{
-  font-family:var(--serif);font-weight:700;color:var(--usuzumi);flex-shrink:0;
-  width:26px;height:26px;border:1.5px solid var(--line);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:1px;
-}
-.choice.word-choice{justify-content:center;text-align:center;font-family:var(--serif);font-size:20px;letter-spacing:.04em}
-.choice.correct{border-color:var(--matsu);background:#EFF5EF;color:var(--matsu)}
+/* ranking */
+.rank-item{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);font-size:14px}
+.rank-item:last-child{border-bottom:none}
+.rank-no{width:22px;font-family:var(--serif);font-weight:700;color:var(--usuzumi);font-size:13px;flex-shrink:0}
+.rank-w{flex:1;font-family:var(--serif);font-size:16px;font-weight:700;min-width:0}
+.rank-n{font-size:11.5px;font-weight:700;color:var(--shu);background:var(--shu-pale);border-radius:99px;padding:2px 9px;flex-shrink:0}
+
+/* sync panel */
+.sync-status{font-size:12.5px;font-weight:700;padding:9px 11px;border-radius:9px;background:var(--washi-deep);
+  color:var(--usuzumi);line-height:1.5;word-break:break-word}
+.sync-status.ok{background:var(--matsu-pale);color:var(--matsu)}
+.sync-status.err{background:var(--shu-pale);color:var(--shu)}
+.sync-status.busy{background:var(--ai-pale);color:var(--ai-deep)}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.btn-grid .wide{grid-column:1/-1}
+
+/* quiz */
+.qbar-wrap{margin-bottom:12px}
+.qtop{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.quit-btn{font-size:12.5px;color:var(--usuzumi);padding:7px 9px;border-radius:8px;flex-shrink:0}
+.track{flex:1;height:8px;background:var(--washi-deep);border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;background:var(--ai);border-radius:99px;transition:width .3s}
+.qstats{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--usuzumi);font-weight:700;flex-wrap:wrap}
+.qstats .ok{color:var(--matsu)}
+.qstats .ng{color:var(--shu)}
+.qstats .sep{color:var(--line)}
+.nav-row{display:flex;gap:8px;margin-bottom:10px}
+.nav-row button{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:9px;
+  font-size:12.5px;font-weight:700;color:var(--usuzumi)}
+.nav-row button:disabled{opacity:.35}
+.review-banner{background:var(--kincha-pale);border:1.5px solid var(--kincha);color:#7a5416;border-radius:10px;
+  padding:8px 12px;font-size:12px;font-weight:700;margin-bottom:10px}
+.q-card{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:24px 18px;
+  text-align:center;position:relative;overflow:hidden}
+.q-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--ai)}
+.q-type{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--ai-deep);
+  background:var(--ai-pale);border-radius:99px;padding:4px 13px;margin-bottom:12px}
+.q-word{font-family:var(--serif);font-size:38px;font-weight:700;letter-spacing:.04em;line-height:1.3}
+.q-meaning{font-size:17.5px;font-weight:600;line-height:1.75;text-align:left}
+.gauge{margin-top:11px;font-size:11.5px;color:var(--kincha);font-weight:700;letter-spacing:.1em;min-height:17px}
+.choices{display:grid;gap:9px;margin-top:14px}
+.choice{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;
+  font-size:15px;font-weight:600;text-align:left;line-height:1.55;display:flex;gap:11px;align-items:flex-start;width:100%}
+.choice .kigo{font-family:var(--serif);font-weight:700;color:var(--usuzumi);flex-shrink:0;width:25px;height:25px;
+  border:1.5px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.5px;margin-top:1px}
+.choice.wordmode{justify-content:center;text-align:center;font-family:var(--serif);font-size:19px}
+.choice.wordmode .kigo{margin-top:0}
+.choice.correct{border-color:var(--matsu);background:var(--matsu-pale);color:var(--matsu)}
 .choice.correct .kigo{border-color:var(--matsu);color:var(--matsu)}
-.choice.wrong{border-color:var(--shu);background:#F9EFED;color:var(--shu)}
+.choice.wrong{border-color:var(--shu);background:var(--shu-pale);color:var(--shu)}
 .choice.wrong .kigo{border-color:var(--shu);color:var(--shu)}
-.choice.dim{opacity:.45}
+.choice.dim{opacity:.42}
 .choice:disabled{cursor:default}
-
-/* ---------- 解説パネル ---------- */
-.feedback{
-  margin-top:14px;border-radius:var(--radius);padding:18px;display:none;
-  animation:fade .25s ease;border:1.5px solid;
-}
-.feedback.show{display:block}
-.feedback.good{background:#EFF5EF;border-color:var(--matsu)}
-.feedback.bad{background:#F9EFED;border-color:var(--shu)}
-.fb-head{font-size:19px;font-weight:800;letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+.feedback{margin-top:13px;border-radius:13px;padding:16px;border:1.5px solid;display:none}
+.feedback.show{display:block;animation:fade .2s ease}
+.feedback.good{background:var(--matsu-pale);border-color:var(--matsu)}
+.feedback.bad{background:var(--shu-pale);border-color:var(--shu)}
+.fb-head{font-size:18px;font-weight:800;letter-spacing:.05em}
 .feedback.good .fb-head{color:var(--matsu)}
 .feedback.bad .fb-head{color:var(--shu)}
-.fb-word{font-family:var(--serif);font-size:22px;font-weight:700;margin-top:10px}
-.fb-word span{font-size:14px;color:var(--usuzumi);font-weight:400;margin-left:8px}
-.fb-meaning{font-size:14.5px;margin-top:4px}
-.fb-example{
-  margin-top:10px;background:rgba(255,255,255,.7);border-radius:10px;padding:10px 14px;
-  font-size:14px;line-height:1.7;
-}
-.fb-example b{color:var(--ai-deep)}
-.fb-example::before{content:"例 ";font-size:11px;font-weight:700;color:var(--usuzumi);letter-spacing:.15em}
-.fb-master{margin-top:10px;font-size:13.5px;font-weight:700;color:var(--kincha)}
-.next-btn{
-  margin-top:14px;width:100%;background:var(--sumi);color:#FFF8ED;font-size:15.5px;
-  font-weight:700;letter-spacing:.1em;border-radius:12px;padding:14px;
-}
-.next-btn:active{transform:translateY(1px)}
+.fb-word{font-family:var(--serif);font-size:21px;font-weight:700;margin-top:8px}
+.fb-word span{font-size:13px;color:var(--usuzumi);font-weight:400;margin-left:7px}
+.fb-mean{font-size:14px;margin-top:3px}
+.fb-ex{margin-top:9px;background:rgba(255,255,255,.72);border-radius:9px;padding:9px 13px;font-size:13.5px;line-height:1.7}
+.fb-ex b{color:var(--ai-deep)}
+.fb-ex::before{content:"例 ";font-size:10.5px;font-weight:700;color:var(--usuzumi);letter-spacing:.14em}
+.fb-note{margin-top:9px;font-size:13px;font-weight:700;color:var(--kincha)}
+.next-btn{margin-top:12px;width:100%;background:var(--sumi);color:#FFF8ED;font-size:15px;font-weight:700;
+  letter-spacing:.09em;border-radius:11px;padding:13px}
 
-/* ---------- 結果 ---------- */
-.result-card{
-  background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
-  padding:32px 22px;text-align:center;
-}
-.result-title{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:.08em}
-.result-score{font-family:var(--serif);font-size:56px;font-weight:700;color:var(--ai);margin:8px 0 2px}
-.result-score small{font-size:20px;color:var(--usuzumi)}
-.result-msg{font-size:15px;color:var(--usuzumi);margin-bottom:6px}
-.stamp{
-  margin:14px auto 0;width:86px;height:86px;border:3px solid var(--shu);border-radius:50%;
-  color:var(--shu);font-family:var(--serif);font-size:26px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);
-  letter-spacing:2px;opacity:0;
-}
+/* result */
+.res-head{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:26px 18px;text-align:center}
+.res-title{font-family:var(--serif);font-size:21px;font-weight:700;letter-spacing:.07em}
+.res-score{font-family:var(--serif);font-size:50px;font-weight:700;color:var(--ai);margin:4px 0 0}
+.res-score small{font-size:18px;color:var(--usuzumi)}
+.res-sub{font-size:13px;color:var(--usuzumi)}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.res-cell{background:var(--washi-deep);border-radius:10px;padding:9px 4px}
+.res-cell b{display:block;font-size:19px;font-family:var(--serif)}
+.res-cell span{font-size:10.5px;color:var(--usuzumi);letter-spacing:.08em}
+.stamp{margin:14px auto 0;width:80px;height:80px;border:3px solid var(--shu);border-radius:50%;color:var(--shu);
+  font-family:var(--serif);font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  transform:rotate(-8deg);letter-spacing:2px;opacity:0}
 .stamp.show{animation:stamp .4s cubic-bezier(.2,1.6,.4,1) forwards}
 @keyframes stamp{from{opacity:0;transform:rotate(-8deg) scale(2)}to{opacity:.92;transform:rotate(-8deg) scale(1)}}
-.new-master{margin-top:16px;text-align:left}
-.new-master h3{font-size:13px;letter-spacing:.15em;color:var(--kincha);font-weight:700;margin-bottom:8px}
-.master-tags{display:flex;flex-wrap:wrap;gap:8px}
-.master-tag{
-  background:#FBF4E4;border:1.5px solid var(--kincha);color:var(--kincha);
-  font-family:var(--serif);font-weight:700;font-size:14.5px;border-radius:99px;padding:5px 14px;
-}
-.wrong-list{margin-top:18px;text-align:left}
-.wrong-list h3{font-size:13px;letter-spacing:.15em;color:var(--shu);font-weight:700;margin-bottom:8px}
-.wrong-item{
-  background:var(--card);border:1.5px solid var(--line);border-left:4px solid var(--shu);
-  border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:14px;
-}
-.wrong-item b{font-family:var(--serif);font-size:16px}
-.result-actions{display:grid;gap:10px;margin-top:22px}
-.sub-btn{
-  background:var(--card);border:1.5px solid var(--ai);color:var(--ai-deep);
-  font-size:15px;font-weight:700;border-radius:var(--radius);padding:13px;
-}
-footer{margin-top:36px;text-align:center;font-size:11px;color:var(--usuzumi);letter-spacing:.1em}
-@media (max-width:400px){
-  .q-word{font-size:32px}
-  .mode-row{grid-template-columns:1fr 1fr 1fr;gap:6px}
-  .mode-btn{font-size:12px;padding:11px 4px}
-}
-@media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
-}
+.tag{display:inline-block;background:var(--kincha-pale);border:1.5px solid var(--kincha);color:var(--kincha);
+  font-family:var(--serif);font-weight:700;font-size:14px;border-radius:99px;padding:4px 13px;margin:0 6px 6px 0}
+.wrong-item{background:var(--card);border:1.5px solid var(--line);border-left:4px solid var(--shu);
+  border-radius:10px;padding:11px 13px;margin-bottom:8px;font-size:13.5px;line-height:1.65}
+.wrong-item .w{font-family:var(--serif);font-size:16.5px;font-weight:700}
+.wrong-item .fm{font-size:10.5px;font-weight:700;color:var(--usuzumi);background:var(--washi-deep);
+  border-radius:99px;padding:2px 8px;margin-left:7px;letter-spacing:.06em}
+.wrong-item .ans{color:var(--shu);font-weight:700}
+.wrong-item .cor{color:var(--matsu);font-weight:700}
+
+/* all list */
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.filters select{background:var(--card);border:1.5px solid var(--line);border-radius:9px;padding:8px 9px;
+  font-size:12.5px;font-weight:700;color:var(--sumi)}
+.kp-row{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px;
+  text-align:left;width:100%;display:block}
+.kp-row.danger{background:var(--shu-pale);border-color:var(--shu)}
+.kp-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.kp-w{font-family:var(--serif);font-size:16px;font-weight:700}
+.kp-cat{font-size:10px;color:#FFF8ED;border-radius:99px;padding:2px 8px;font-weight:700}
+.badge{font-size:10.5px;font-weight:700;border-radius:99px;padding:2px 9px;letter-spacing:.04em}
+.badge.m{background:var(--kincha-pale);color:var(--kincha);border:1px solid var(--kincha)}
+.badge.p{background:var(--ai-pale);color:var(--ai-deep);border:1px solid var(--ai)}
+.badge.n{background:var(--washi-deep);color:var(--usuzumi);border:1px solid var(--line)}
+.badge.x{background:#fff;color:var(--shu);border:1px solid var(--shu)}
+.badge.warn{background:var(--shu);color:#FFF8ED}
+.kp-mean{font-size:12.5px;color:var(--usuzumi);margin-top:3px;line-height:1.5}
+.kp-detail{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);font-size:12.5px;line-height:1.7;display:none}
+.kp-detail.open{display:block}
+.kp-detail .k{color:var(--usuzumi);font-weight:700;letter-spacing:.05em}
+
+/* modal */
+.modal-root{position:fixed;inset:0;background:rgba(43,42,38,.55);display:none;align-items:center;
+  justify-content:center;padding:18px;z-index:50}
+.modal-root.show{display:flex}
+.modal{background:var(--card);border-radius:15px;padding:20px;width:100%;max-width:420px;max-height:86vh;overflow:auto}
+.modal h3{font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:9px}
+.modal .body{font-size:13.5px;line-height:1.7;color:var(--sumi)}
+.modal .body p{margin-bottom:8px}
+.modal input[type=text],.modal input[type=password]{width:100%;border:1.5px solid var(--line);border-radius:9px;
+  padding:11px;margin-top:7px;background:#fff}
+.modal label{display:block;font-size:12px;font-weight:700;color:var(--usuzumi);margin-top:11px}
+.modal .acts{display:grid;gap:8px;margin-top:16px}
+.modal .acts button{border-radius:11px;padding:12px;font-size:14.5px;font-weight:700}
+.m-primary{background:var(--ai);color:#FFF8ED}
+.m-danger{background:var(--shu);color:#FFF8ED}
+.m-ghost{background:var(--washi-deep);color:var(--sumi)}
+footer{margin-top:32px;text-align:center;font-size:10.5px;color:var(--usuzumi);letter-spacing:.08em;line-height:1.7}
+@media (max-width:380px){.q-word{font-size:31px}.seg button{font-size:11.5px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="app">
+  <div class="warnbar" id="warnBar"></div>
   <div class="header">
     <div class="brand">
       <div class="hanko">和語</div>
-      <h1>和語マスター<small>ごくの ちしき クイズ</small></h1>
+      <h1>和語マスター<small>ごくの ちしき ／ 中学受験</small></h1>
     </div>
-    <button class="player-chip" id="playerChip" onclick="showScreen('player')" style="display:none">
+    <button class="chip" id="chip" onclick="chipClick()" style="display:none">
       <span class="dot" id="chipDot"></span><span id="chipName"></span>
     </button>
   </div>
 
-  <!-- プレイヤー選択 -->
-  <div class="screen" id="screen-player">
-    <div class="section-label">だれが ちょうせんする?</div>
-    <div class="player-list" id="playerList"></div>
+  <!-- ================= アカウント ================= -->
+  <div class="screen" id="sc-account">
+    <div class="lbl">だれが ちょうせんする?</div>
+    <div id="accList"></div>
+    <button class="add-btn" onclick="uiAddAccount()">＋ アカウントを追加</button>
   </div>
 
-  <!-- ホーム -->
-  <div class="screen" id="screen-home">
-    <div class="section-label">こたえかた</div>
-    <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="w2m">言葉 → 意味</button>
-      <button class="mode-btn" data-mode="m2w">意味 → 言葉</button>
-      <button class="mode-btn" data-mode="mix">ミックス</button>
+  <!-- ================= ホーム ================= -->
+  <div class="screen" id="sc-home">
+    <div class="lbl">出題モード</div>
+    <div class="seg" id="modeSeg">
+      <button data-mode="10q"><b>10問</b>10語×2形式</button>
+      <button data-mode="20q"><b>20問</b>20語×2形式</button>
+      <button data-mode="all"><b>全問</b>実力チェック</button>
     </div>
-    <div class="section-label">カテゴリーをえらぶ</div>
-    <div class="cat-grid" id="catGrid"></div>
+    <div class="hint" id="modeHint"></div>
+
+    <div class="lbl">カテゴリー</div>
+    <div id="catGrid"></div>
+    <div class="overall" id="overall"></div>
+
     <div class="start-area">
-      <button class="big-btn" id="startBtn">スタート(10問)</button>
-      <button class="review-btn" id="reviewBtn">にがて復習 <span id="reviewCount"></span></button>
+      <button class="big-btn" id="startBtn">スタート</button>
     </div>
+
+    <div class="lbl">間違いランキング</div>
+    <div class="panel" id="rankPanel"></div>
+
+    <div class="lbl">記録データの管理</div>
+    <div class="panel">
+      <div class="sync-status" id="syncStatus">クラウド同期は未設定です</div>
+      <div class="btn-grid">
+        <button class="mini-btn" onclick="exportJSON()">📤 記録を書き出す</button>
+        <button class="mini-btn" onclick="importJSON()">📥 記録を読み込む</button>
+        <button class="mini-btn wide" onclick="uiSyncSettings()">☁ クラウド同期設定</button>
+        <button class="mini-btn" id="btnSyncNow" onclick="cloudPull({manual:true})" style="display:none">今すぐ同期</button>
+        <button class="mini-btn" id="btnList" onclick="exportList()" style="display:none">📋 全問一覧をDriveへ</button>
+      </div>
+      <div class="btn-grid">
+        <button class="mini-btn wide" onclick="uiReset()" style="color:var(--shu)">記録をリセット</button>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
   </div>
 
-  <!-- クイズ -->
-  <div class="screen" id="screen-quiz">
-    <div class="quiz-top">
-      <button class="quit-btn" onclick="quitQuiz()">やめる</button>
-      <div class="progress-track"><i id="quizBar"></i></div>
-      <div class="q-counter" id="qCounter"></div>
+  <!-- ================= クイズ ================= -->
+  <div class="screen" id="sc-quiz">
+    <div class="qbar-wrap">
+      <div class="qtop">
+        <button class="quit-btn" onclick="uiQuit()">やめる</button>
+        <div class="track"><i id="qBar"></i></div>
+      </div>
+      <div class="qstats" id="qStats"></div>
     </div>
+    <div class="nav-row">
+      <button id="btnPrev" onclick="navPrev()">← 前の問題</button>
+      <button id="btnNext" onclick="navNext()">次の問題 →</button>
+    </div>
+    <div class="review-banner" id="reviewBanner" style="display:none"></div>
     <div class="q-card">
       <div class="q-type" id="qType"></div>
       <div id="qPrompt"></div>
-      <div class="q-mastery" id="qMastery"></div>
+      <div class="gauge" id="qGauge"></div>
     </div>
     <div class="choices" id="choices"></div>
     <div class="feedback" id="feedback">
       <div class="fb-head" id="fbHead"></div>
       <div class="fb-word" id="fbWord"></div>
-      <div class="fb-meaning" id="fbMeaning"></div>
-      <div class="fb-example" id="fbExample"></div>
-      <div class="fb-master" id="fbMaster"></div>
-      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">つぎへ</button>
+      <div class="fb-mean" id="fbMean"></div>
+      <div class="fb-ex" id="fbEx"></div>
+      <div class="fb-note" id="fbNote"></div>
+      <button class="next-btn" id="fbNext" onclick="goNext()">つぎへ</button>
     </div>
   </div>
 
-  <!-- 結果 -->
-  <div class="screen" id="screen-result">
-    <div class="result-card">
-      <div class="result-title">けっか はっぴょう</div>
-      <div class="result-score"><span id="resScore"></span><small> / <span id="resTotal"></span></small></div>
-      <div class="result-msg" id="resMsg"></div>
+  <!-- ================= 結果 ================= -->
+  <div class="screen" id="sc-result">
+    <div class="res-head">
+      <div class="res-title">けっか はっぴょう</div>
+      <div class="res-score"><span id="rScore"></span><small> / <span id="rTotal"></span></small></div>
+      <div class="res-sub" id="rMsg"></div>
+      <div class="res-grid">
+        <div class="res-cell"><b id="rRate" style="color:var(--ai)"></b><span>正答率</span></div>
+        <div class="res-cell"><b id="rWrong" style="color:var(--shu)"></b><span>誤答</span></div>
+        <div class="res-cell"><b id="rNew" style="color:var(--kincha)"></b><span>新規習得</span></div>
+      </div>
       <div class="stamp" id="stamp">合格</div>
-      <div class="new-master" id="newMasterBox" style="display:none">
-        <h3>★ あたらしくマスターした言葉</h3>
-        <div class="master-tags" id="masterTags"></div>
-      </div>
-      <div class="wrong-list" id="wrongBox" style="display:none">
-        <h3>まちがえた言葉(復習リストに入りました)</h3>
-        <div id="wrongItems"></div>
-      </div>
     </div>
-    <div class="result-actions">
-      <button class="big-btn" onclick="retrySame()">もういちど(同じ設定)</button>
-      <button class="sub-btn" onclick="showScreen('home')">ホームにもどる</button>
+    <div id="rNewBox" style="display:none">
+      <div class="lbl">★ 今回あらたに習得した言葉</div>
+      <div id="rNewTags"></div>
+    </div>
+    <div id="rWrongBox" style="display:none">
+      <div class="lbl">間違えた問題</div>
+      <div id="rWrongList"></div>
+    </div>
+    <div id="rTodoBox" style="display:none">
+      <div class="lbl">⚠ 要復習（今回セッション内で習得しきれず）</div>
+      <div id="rTodoList"></div>
+    </div>
+    <div class="lbl">カテゴリー別 全問一覧</div>
+    <div class="filters">
+      <select id="fCat" onchange="renderAllList()"></select>
+      <select id="fState" onchange="renderAllList()">
+        <option value="">すべての状態</option>
+        <option value="mastered">習得済み</option>
+        <option value="partial">◯回正解</option>
+        <option value="wrong">誤答</option>
+        <option value="new">未出題</option>
+        <option value="danger">2回以上ミス</option>
+      </select>
+      <select id="fSort" onchange="renderAllList()">
+        <option value="wrong">誤答が多い順</option>
+        <option value="cat">カテゴリー順</option>
+        <option value="word">ことば順</option>
+      </select>
+    </div>
+    <div id="allList"></div>
+    <div class="start-area">
+      <button class="sub-btn" onclick="downloadCSV()">⬇ 一覧をCSVでダウンロード</button>
+      <button class="big-btn" onclick="go('home')">ホームにもどる</button>
     </div>
   </div>
 
-  <footer>四科のまとめ・第四章「和語」より|全<span id="totalWords"></span>語</footer>
+  <footer>四科のまとめ 第四章「語句の知識／和語」より<br>全<span id="totalWords"></span>語｜kj-quiz-kokugo-wago</footer>
 </div>
+<div class="modal-root" id="modalRoot"><div class="modal" id="modalBox"></div></div>
 <script>
-/* ================= データ ================= */
+/* ============================================================
+   和語マスター v2  —  共通仕様書 v1.0 + 追補 v1.1 準拠
+   ============================================================ */
+const APP_ID = "kj-quiz-kokugo-wago";
+const APP_LABEL = "和語";
+const SCHEMA_VERSION = 1;
+const MASTERY_STREAK = 2;      /* 要確認①：習得に必要な連続正解数 */
+const REANSWER_PREV = true;    /* 要確認②：直前1問のみ再解答可（falseで閲覧のみ） */
+const WRONG_LOG_MAX = 20;
+const REQUEUE_WRONG = 3;       /* 誤答 → 3問後 */
+const REQUEUE_OK = 6;          /* 正解・未習得 → 6問後 */
+const MAX_APPEAR = 4;          /* 1セッション内の同一KP出題上限 */
+
+/* 出題形式：A=意味→ことば / B=ことば→意味 */
+const FMT = {
+  A:{label:"意味 → ことば", q:"この意味の言葉は?"},
+  B:{label:"ことば → 意味", q:"この言葉の意味は?"}
+};
+
 const CATEGORIES = [
-  {id:"meishi1", name:"名詞①", mark:"名一", color:"#28466E"},
-  {id:"meishi2", name:"名詞②", mark:"名二", color:"#3D5A80"},
-  {id:"fukushi1", name:"副詞・言い回し", mark:"副一", color:"#6B4F8C"},
-  {id:"doushi", name:"動詞", mark:"動", color:"#3E7154"},
-  {id:"keiyoushi", name:"形容詞", mark:"形", color:"#B8802E"},
-  {id:"fukushi2", name:"副詞・その他", mark:"副二", color:"#A0522D"},
+  {id:"meishi1",   name:"名詞①",        mark:"名一", color:"#28466E"},
+  {id:"meishi2",   name:"名詞②",        mark:"名二", color:"#3D5A80"},
+  {id:"fukushi1",  name:"副詞・言い回し", mark:"副一", color:"#6B4F8C"},
+  {id:"doushi",    name:"動詞",          mark:"動",  color:"#3E7154"},
+  {id:"keiyoushi", name:"形容詞",        mark:"形",  color:"#B8802E"},
+  {id:"fukushi2",  name:"副詞・その他",   mark:"副二", color:"#A0522D"}
 ];
-/* w:言葉 k:漢字表記 m:意味 e:例文 c:カテゴリー */
+const CATMAP = {}; CATEGORIES.forEach(c=>CATMAP[c.id]=c);
+
+/* 漢字を含む見出し語のよみがな */
+const YOMI = {
+  "雲ゆき":"くもゆき","月なみ":"つきなみ","身寄り":"みより","奥の手":"おくのて",
+  "虎の子":"とらのこ","見くびる":"みくびる","ばつが悪い":"ばつがわるい","間々(まま)":"まま"
+};
 const WORDS = [
 /* --- 名詞① --- */
 {w:"あかつき",k:"暁",m:"夜明け。また、あることが実現したとき。",e:"合格した<b>あかつき</b>には、家族で旅行に行こう。",c:"meishi1"},
@@ -454,294 +539,940 @@ const WORDS = [
 {w:"やつれる",k:"窶れる",m:"病気や心労などで、やせおとろえる。",e:"看病続きで母はすっかり<b>やつれて</b>いた。",c:"fukushi2"},
 {w:"よもや",k:"よもや",m:"万が一にも。いくらなんでも。",e:"<b>よもや</b>初戦で負けるとは思わなかった。",c:"fukushi2"},
 ];
-</script>
-<script>
-/* ================= ストレージ ================= */
-const STORE_KEY = "wago_quiz_v1";
-let memStore = null;
-function loadStore(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){ if(memStore) return memStore; }
-  return defaultStore();
-}
-function saveStore(){
-  memStore = store;
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }catch(e){}
-}
-function defaultStore(){
-  return {
-    players:[
-      {name:"プレイヤー1", color:"#28466E", stats:{}, wrong:[]},
-      {name:"プレイヤー2", color:"#C0463C", stats:{}, wrong:[]},
-      {name:"プレイヤー3", color:"#3E7154", stats:{}, wrong:[]},
-    ],
-    current:null, mode:"w2m", cat:null,
-  };
-}
-let store = loadStore();
-
-/* ================= 共通 ================= */
+/* ---------- 語彙データの整形 ---------- */
+WORDS.forEach(w=>{ w.id = "kp_" + w.w; w.y = YOMI[w.w] || w.w; });
+const WMAP = {}; WORDS.forEach(w=>WMAP[w.id]=w);
 const $ = id => document.getElementById(id);
-function shuffle(a){
-  const arr=[...a];
-  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-  return arr;
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function shuffle(a){ const r=[...a]; for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];} return r; }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function nowISO(){ return new Date().toISOString(); }
+function fmtDate(iso){ if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; return d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate(); }
+function fmtDateTime(iso){ if(!iso) return "—"; const d=new Date(iso); if(isNaN(d)) return "—";
+  const p=n=>("0"+n).slice(-2); return (d.getMonth()+1)+"/"+d.getDate()+" "+p(d.getHours())+":"+p(d.getMinutes()); }
+function stamp8(){ const d=new Date(); const p=n=>("0"+n).slice(-2); return ""+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate()); }
+
+/* ---------- localStorage（使えない環境でも動作） ---------- */
+let storageOK = true;
+function rawGet(k){ try{ return localStorage.getItem(k); }catch(e){ storageOK=false; return null; } }
+function rawSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ storageOK=false; return false; } }
+function rawDel(k){ try{ localStorage.removeItem(k); }catch(e){ storageOK=false; } }
+
+/* ---------- DB ---------- */
+function defaultDB(){
+  return { app:APP_ID, version:SCHEMA_VERSION, updatedAt:nowISO(), activeAccountId:null, accounts:[], progress:{} };
 }
-function player(){ return store.players[store.current]; }
-function stat(w){
-  const p=player();
-  if(!p.stats[w]) p.stats[w]={streak:0, seen:0, ok:0, mastered:false};
-  return p.stats[w];
+function newItem(){
+  return { streak:0, mastered:false, masteredAt:null, lastFormat:null,
+    totalCorrect:0, totalWrong:0,
+    byFormat:{ A:{correct:0,wrong:0}, B:{correct:0,wrong:0} },
+    wrongLog:[], lastSeenAt:null };
 }
-function masteredCount(catId){
-  const p=player();
-  return WORDS.filter(x=>x.c===catId && p.stats[x.w] && p.stats[x.w].mastered).length;
+function migrate(d){
+  if(!d || typeof d!=="object") return defaultDB();
+  d.app = APP_ID;
+  if(typeof d.version!=="number") d.version = SCHEMA_VERSION;
+  if(d.version < SCHEMA_VERSION) d.version = SCHEMA_VERSION;   /* 将来のマイグレーション挿入位置 */
+  if(!Array.isArray(d.accounts)) d.accounts=[];
+  if(!d.progress || typeof d.progress!=="object") d.progress={};
+  d.accounts.forEach(a=>{
+    const p = d.progress[a.id] || (d.progress[a.id]={items:{},sessions:[]});
+    if(!p.items || typeof p.items!=="object") p.items={};
+    if(!Array.isArray(p.sessions)) p.sessions=[];
+    Object.keys(p.items).forEach(k=>{
+      const it=p.items[k]; const base=newItem();
+      for(const key in base) if(it[key]===undefined) it[key]=base[key];
+      if(!it.byFormat) it.byFormat=base.byFormat;
+      if(!it.byFormat.A) it.byFormat.A={correct:0,wrong:0};
+      if(!it.byFormat.B) it.byFormat.B={correct:0,wrong:0};
+      if(!Array.isArray(it.wrongLog)) it.wrongLog=[];
+    });
+  });
+  if(!d.updatedAt) d.updatedAt = nowISO();
+  if(d.activeAccountId && !d.accounts.some(a=>a.id===d.activeAccountId)) d.activeAccountId=null;
+  return d;
 }
-function showScreen(name){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  $("screen-"+name).classList.add("active");
-  $("playerChip").style.display = (name==="player") ? "none" : "flex";
-  if(name==="player") renderPlayers();
-  if(name==="home") renderHome();
+function loadDB(){
+  const raw = rawGet(APP_ID);
+  if(!raw) return defaultDB();
+  try{ return migrate(JSON.parse(raw)); }catch(e){ return defaultDB(); }
+}
+let db = loadDB();
+
+/* keepUpdatedAt:true = クラウド由来データの保存（updatedAtを上書きしない） */
+function saveDB(opt){
+  opt = opt || {};
+  if(!opt.keepUpdatedAt) db.updatedAt = nowISO();
+  rawSet(APP_ID, JSON.stringify(db));
+  if(opt.push) cloudPush();
+}
+function acc(){ return db.accounts.find(a=>a.id===db.activeAccountId) || null; }
+function prog(accId){
+  const id = accId || db.activeAccountId;
+  if(!db.progress[id]) db.progress[id] = {items:{},sessions:[]};
+  return db.progress[id];
+}
+/* 参照専用（存在しなければ既定値を返すだけで保存しない） */
+function peek(kpId, accId){
+  const p = db.progress[accId || db.activeAccountId];
+  return (p && p.items && p.items[kpId]) ? p.items[kpId] : newItem();
+}
+function dbHasRecords(d){
+  if(!d || !d.progress) return false;
+  return Object.keys(d.progress).some(aid=>{
+    const p = d.progress[aid] || {};
+    if(Array.isArray(p.sessions) && p.sessions.length>0) return true;
+    const items = p.items || {};
+    return Object.keys(items).some(k=>((items[k].totalCorrect||0)+(items[k].totalWrong||0))>0);
+  });
+}
+function stateOf(it){
+  if(it.mastered) return "mastered";
+  if((it.totalCorrect+it.totalWrong)===0) return "new";
+  if(it.streak>0) return "partial";
+  return "wrong";
+}
+function stateText(it){
+  const s = stateOf(it);
+  if(s==="mastered") return "習得済み";
+  if(s==="new") return "未出題";
+  if(s==="partial") return it.streak+"回正解";
+  return "誤答";
 }
 
-/* ================= プレイヤー画面 ================= */
-function renderPlayers(){
-  const list=$("playerList"); list.innerHTML="";
-  store.players.forEach((p,i)=>{
-    const total=WORDS.length;
-    const m=WORDS.filter(x=>p.stats[x.w]&&p.stats[x.w].mastered).length;
-    const card=document.createElement("button");
-    card.className="player-card";
-    card.innerHTML=`
-      <div class="player-avatar" style="background:${p.color}">${p.name.slice(0,1)}</div>
-      <div class="player-info">
-        <div class="player-name">${p.name}</div>
-        <div class="player-sub">マスター ${m} / ${total} 語 ・ にがて ${p.wrong.length} 語</div>
-      </div>
-      <span class="rename-btn" data-i="${i}">✎ 名前</span>`;
-    card.onclick=(ev)=>{
-      if(ev.target.classList.contains("rename-btn")){
-        const nm=prompt("なまえを入力してね", p.name);
-        if(nm && nm.trim()){ p.name=nm.trim().slice(0,10); saveStore(); renderPlayers(); }
-        return;
-      }
-      store.current=i; saveStore(); updateChip(); showScreen("home");
+/* ============================================================
+   クラウド同期（追補 v1.1 §4／§5）
+   ============================================================ */
+const SYNC_KEY = APP_ID + ":sync";
+function getSync(){ try{ return JSON.parse(rawGet(SYNC_KEY)||"null"); }catch(e){ return null; } }
+function setSync(c){ if(c) rawSet(SYNC_KEY, JSON.stringify(c)); else rawDel(SYNC_KEY); }
+function syncOn(){ const c=getSync(); return !!(c && c.url && c.key); }
+
+function setStatus(msg, kind){
+  const el = $("syncStatus"); if(!el) return;
+  const c = getSync();
+  const last = (c && c.lastSync) ? "　｜　最終同期 " + fmtDateTime(c.lastSync) : "";
+  el.className = "sync-status" + (kind ? " "+kind : "");
+  el.textContent = msg + last;
+}
+function touchSync(){ const c=getSync(); if(c){ c.lastSync=nowISO(); setSync(c); } }
+
+async function gasCall(opt){
+  const c = getSync();
+  if(!c || !c.url || !c.key) throw {kind:"nocfg"};
+  let res;
+  try{
+    if(opt.method==="GET"){
+      res = await fetch(c.url + "?key=" + encodeURIComponent(c.key) + "&app=" + encodeURIComponent(APP_ID));
+    }else{
+      res = await fetch(c.url, { method:"POST",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify(opt.body) });
+    }
+  }catch(e){ throw {kind:"offline"}; }
+  let text;
+  try{ text = await res.text(); }catch(e){ throw {kind:"offline"}; }
+  let json;
+  try{ json = JSON.parse(text); }catch(e){ throw {kind:"badresp"}; }
+  if(!json || json.ok !== true) throw {kind:"api", error:(json && json.error) || "不明なエラー"};
+  return json;
+}
+function syncErr(e){
+  if(!e) return "同期エラー";
+  if(e.kind==="nocfg")   return "クラウド同期が未設定です";
+  if(e.kind==="offline") return "オフライン（ローカルには保存済み）";
+  if(e.kind==="badresp") return "GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
+  if(e.kind==="api"){
+    const t = String(e.error||"");
+    if(/合言葉|key|unauthor|認証|invalid/i.test(t)) return "合言葉が違います";
+    return t;
+  }
+  return "同期エラー";
+}
+
+async function cloudPush(){
+  if(!syncOn()) return false;
+  setStatus("☁… クラウドに保存中", "busy");
+  try{
+    await gasCall({ method:"POST", body:{ key:getSync().key, data:db } });
+    touchSync(); setStatus("☁✓ クラウド保存ずみ", "ok"); return true;
+  }catch(e){ setStatus("☁⚠ " + syncErr(e), "err"); return false; }
+}
+
+/* クラウド採用時：ローカルにしかないアカウント（名前で判定）を合流させる */
+function adoptCloud(cloudRaw){
+  const c = migrate(clone(cloudRaw));
+  const activeName = acc() ? acc().name : null;
+  let merged = false;
+  db.accounts.forEach(la=>{
+    if(!c.accounts.some(ca=>ca.name===la.name)){
+      c.accounts.push(clone(la));
+      c.progress[la.id] = clone(db.progress[la.id] || {items:{},sessions:[]});
+      merged = true;
+    }
+  });
+  const keep = c.updatedAt;
+  db = c; db.updatedAt = keep;
+  const found = activeName ? db.accounts.find(a=>a.name===activeName) : null;
+  db.activeAccountId = found ? found.id : (db.accounts[0] ? db.accounts[0].id : null);
+  return merged;
+}
+
+async function cloudPull(opt){
+  opt = opt || {};
+  if(!syncOn()){ if(opt.manual) setStatus("クラウド同期が未設定です", "err"); return; }
+  setStatus("☁… 同期中", "busy");
+  let json;
+  try{ json = await gasCall({method:"GET"}); }
+  catch(e){ setStatus("☁⚠ " + syncErr(e), "err"); return; }
+
+  const cloud = json.data;
+  if(!cloud){ await cloudPush(); return; }                       /* §5-5 クラウドが空 → push */
+
+  const lh = dbHasRecords(db), ch = dbHasRecords(cloud);
+  let take;
+  if(!lh && ch) take = true;                                     /* §5-2 事故防止：無条件でクラウド採用 */
+  else if(lh && !ch){ await cloudPush(); return; }               /* 逆は無条件push */
+  else take = String(cloud.updatedAt||"") > String(db.updatedAt||"");  /* §5-3 updatedAtの新しい方 */
+
+  if(!take){ await cloudPush(); return; }
+
+  const merged = adoptCloud(cloud);
+  saveDB({keepUpdatedAt:true});
+  refreshAll();
+  if(merged){ await cloudPush(); setStatus("☁✓ クラウドの記録と合流しました", "ok"); }
+  else { touchSync(); setStatus("☁✓ クラウドから取り込みました", "ok"); }
+}
+
+/* ---------- 全問一覧の書き出し（追補 §6） ---------- */
+async function exportList(){
+  if(!syncOn()){ setStatus("クラウド同期が未設定です", "err"); return; }
+  await cloudPull({});                                           /* 空上書き防止：必ず先にpull */
+  if(!dbHasRecords(db)){
+    modal({ title:"書き出しを中止しました",
+      html:"<p>この端末にもクラウドにも学習記録がまだありません。</p><p>空のデータで既存の一覧シートを上書きしないよう、書き出しを中止しました。学習を1回終えてから、もう一度お試しください。</p>",
+      acts:[{label:"閉じる", kind:"m-ghost"}] });
+    return;
+  }
+  const header = ["名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
+    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"];
+  const rows = [];
+  db.accounts.forEach(a=>{
+    const items = (db.progress[a.id]||{}).items || {};
+    WORDS.forEach(w=>{
+      const it = items[w.id] || newItem();
+      const lastWrong = it.wrongLog.length ? it.wrongLog[it.wrongLog.length-1].at : "";
+      rows.push([ a.name, CATMAP[w.c].name, CATMAP[w.c].mark, w.w, w.y, "",
+        stateText(it), it.totalCorrect, it.totalWrong,
+        it.byFormat.A.wrong, it.byFormat.B.wrong,
+        it.wrongLog.map(l=>l.answered).join(";"),
+        fmtDate(lastWrong), fmtDate(it.masteredAt) ]);
+    });
+  });
+  setStatus("☁… 一覧を書き出し中", "busy");
+  try{
+    await gasCall({ method:"POST", body:{ key:getSync().key, app:APP_ID, list:{header, rows} } });
+    touchSync(); setStatus("☁✓ 全問一覧をスプレッドシートに書き出しました", "ok");
+  }catch(e){ setStatus("☁⚠ " + syncErr(e), "err"); }
+}
+
+/* ============================================================
+   モーダル
+   ============================================================ */
+function modal(cfg){
+  const box = $("modalBox");
+  let h = "<h3>"+esc(cfg.title)+"</h3><div class='body'>"+(cfg.html||"")+"</div>";
+  h += "<div class='acts'></div>";
+  box.innerHTML = h;
+  const acts = box.querySelector(".acts");
+  (cfg.acts||[{label:"閉じる",kind:"m-ghost"}]).forEach(a=>{
+    const b = document.createElement("button");
+    b.className = a.kind || "m-ghost";
+    b.textContent = a.label;
+    b.onclick = ()=>{
+      const inp = box.querySelector("input[data-v]");
+      const inp2 = box.querySelector("input[data-v2]");
+      const v = inp ? inp.value.trim() : null;
+      const v2 = inp2 ? inp2.value.trim() : null;
+      if(a.keep !== true) closeModal();
+      if(a.onClick) a.onClick(v, v2);
+    };
+    acts.appendChild(b);
+  });
+  $("modalRoot").classList.add("show");
+  const f = box.querySelector("input");
+  if(f) setTimeout(()=>f.focus(), 60);
+}
+function closeModal(){ $("modalRoot").classList.remove("show"); }
+$("modalRoot").addEventListener("click", e=>{ if(e.target.id==="modalRoot") closeModal(); });
+
+/* ============================================================
+   画面遷移
+   ============================================================ */
+function chipClick(){
+  if(S && S.history.length>0 && !S.committed){
+    modal({ title:"アカウントを切り替えますか?",
+      html:"<p>いま学習中の内容は<b>記録されません</b>。</p>",
+      acts:[{label:"切り替える", kind:"m-danger", onClick:()=>{ S=null; go("account"); }},
+            {label:"つづける", kind:"m-primary"}] });
+    return;
+  }
+  go("account");
+}
+function go(name){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $("sc-"+name).classList.add("active");
+  $("chip").style.display = (name==="account") ? "none" : "flex";
+  if(name==="account") renderAccounts();
+  if(name==="home") renderHome();
+  window.scrollTo(0,0);
+}
+function refreshAll(){
+  if(!acc()){ go("account"); return; }
+  updateChip();
+  if($("sc-home").classList.contains("active")) renderHome();
+  if($("sc-account").classList.contains("active")) renderAccounts();
+}
+function updateChip(){
+  const a = acc();
+  if(!a) return;
+  $("chipName").textContent = a.name;
+}
+
+/* ============================================================
+   アカウント（§1）
+   ============================================================ */
+const AVATAR_COLORS = ["#28466E","#C0463C","#3E7154","#6B4F8C","#B8802E","#A0522D"];
+function accColor(id){
+  const i = db.accounts.findIndex(a=>a.id===id);
+  return AVATAR_COLORS[(i<0?0:i) % AVATAR_COLORS.length];
+}
+function renderAccounts(){
+  const list = $("accList"); list.innerHTML = "";
+  if(db.accounts.length===0){
+    list.innerHTML = "<div class='panel' style='text-align:center;color:var(--usuzumi);font-size:13.5px'>まだアカウントがありません。<br>下のボタンから追加してください。</div>";
+    return;
+  }
+  db.accounts.forEach(a=>{
+    const items = (db.progress[a.id]||{}).items || {};
+    const m = WORDS.filter(w=>items[w.id] && items[w.id].mastered).length;
+    const ses = ((db.progress[a.id]||{}).sessions||[]).length;
+    const card = document.createElement("div");
+    card.className = "acc-card" + (a.id===db.activeAccountId ? " active" : "");
+    card.innerHTML =
+      "<div class='avatar' style='background:"+accColor(a.id)+"'>"+esc(a.name.slice(0,1))+"</div>"+
+      "<div class='acc-info'><div class='acc-name'>"+esc(a.name)+"</div>"+
+      "<div class='acc-sub'>習得 "+m+" / "+WORDS.length+" 語　学習 "+ses+" 回</div></div>"+
+      "<button class='icon-btn' data-a='ren'>✎</button><button class='icon-btn' data-a='del'>🗑</button>";
+    card.onclick = (ev)=>{
+      const act = ev.target.dataset ? ev.target.dataset.a : null;
+      if(act==="ren"){ uiRenameAccount(a); return; }
+      if(act==="del"){ uiDeleteAccount(a); return; }
+      db.activeAccountId = a.id; saveDB(); updateChip(); go("home");
     };
     list.appendChild(card);
   });
 }
-function updateChip(){
-  const p=player();
-  $("chipName").textContent=p.name;
-  $("chipDot").style.background=p.color;
+function uiAddAccount(){
+  modal({ title:"アカウントを追加",
+    html:"<label>なまえ</label><input type='text' data-v maxlength='12' placeholder='例）長男'>",
+    acts:[
+      {label:"追加する", kind:"m-primary", onClick:(v)=>{
+        if(!v) return;
+        if(db.accounts.some(a=>a.name===v)){ modal({title:"追加できません", html:"<p>同じ名前のアカウントがすでにあります。</p>"}); return; }
+        const id = "acc_" + Date.now().toString(36);
+        db.accounts.push({ id, name:v, createdAt:nowISO() });
+        db.progress[id] = { items:{}, sessions:[] };
+        db.activeAccountId = id;
+        saveDB({push:true}); updateChip(); renderAccounts(); go("home");
+      }},
+      {label:"やめる", kind:"m-ghost"}
+    ]});
+}
+function uiRenameAccount(a){
+  modal({ title:"なまえを変える",
+    html:"<label>あたらしいなまえ</label><input type='text' data-v maxlength='12' value='"+esc(a.name)+"'>",
+    acts:[
+      {label:"変更する", kind:"m-primary", onClick:(v)=>{
+        if(!v) return;
+        a.name = v; saveDB({push:true}); updateChip(); renderAccounts();
+      }},
+      {label:"やめる", kind:"m-ghost"}
+    ]});
+}
+function uiDeleteAccount(a){
+  modal({ title:"アカウントを削除しますか?",
+    html:"<p><b>"+esc(a.name)+"</b> の学習記録（習得状況・誤答の履歴・学習履歴）がすべて消えます。この操作は取り消せません。</p>",
+    acts:[
+      {label:"削除する", kind:"m-danger", onClick:()=>{
+        db.accounts = db.accounts.filter(x=>x.id!==a.id);
+        delete db.progress[a.id];
+        if(db.activeAccountId===a.id) db.activeAccountId = db.accounts[0] ? db.accounts[0].id : null;
+        saveDB({push:true});
+        if(!db.activeAccountId) go("account"); else { updateChip(); renderAccounts(); }
+      }},
+      {label:"やめる", kind:"m-ghost"}
+    ]});
 }
 
-/* ================= ホーム画面 ================= */
+/* ============================================================
+   ホーム（§2・§6-2・§9-2）
+   ============================================================ */
+let uiMode = "10q";
+let uiCat = null;
+function catWords(catId){ return catId ? WORDS.filter(w=>w.c===catId) : WORDS; }
+
 function renderHome(){
-  /* モード */
-  document.querySelectorAll(".mode-btn").forEach(b=>{
-    b.classList.toggle("selected", b.dataset.mode===store.mode);
-    b.onclick=()=>{ store.mode=b.dataset.mode; saveStore(); renderHome(); };
+  if(!acc()){ go("account"); return; }
+  updateChip();
+  document.querySelectorAll("#modeSeg button").forEach(b=>{
+    b.classList.toggle("on", b.dataset.mode===uiMode);
+    b.onclick = ()=>{ uiMode=b.dataset.mode; renderHome(); };
   });
+  const pool = catWords(uiCat);
+  const remain = pool.filter(w=>!peek(w.id).mastered).length;
+  if(uiMode==="all"){
+    $("modeHint").textContent = "習得済みもふくめ、選んだカテゴリーの全"+pool.length+"語を1語1問で1周します（間違えても再出題なし）。";
+  }else{
+    const want = uiMode==="10q" ? 10 : 20;
+    const got = Math.min(want, remain);
+    $("modeHint").textContent = got<want
+      ? "未習得はあと"+remain+"語です。今回は"+got+"語で出題します。"
+      : got+"語を、意味→ことば／ことば→意味の2形式で出題します（およそ"+(got*2)+"問）。";
+  }
   /* カテゴリー */
-  const grid=$("catGrid"); grid.innerHTML="";
-  const allCard=document.createElement("button");
-  const allMastered=WORDS.filter(x=>player().stats[x.w]&&player().stats[x.w].mastered).length;
-  allCard.className="cat-card"+(store.cat===null?" selected":"");
-  allCard.innerHTML=`
-    <div class="cat-mark" style="background:var(--sumi)">全部</div>
-    <div class="cat-info">
-      <div class="cat-name">ぜんぶミックス</div>
-      <div class="cat-detail">
-        <div class="bar"><i style="width:${(allMastered/WORDS.length*100).toFixed(1)}%"></i></div>
-        <span class="cat-count">★${allMastered}/${WORDS.length}</span>
-      </div>
-    </div>`;
-  allCard.onclick=()=>{ store.cat=null; saveStore(); renderHome(); };
-  grid.appendChild(allCard);
-  CATEGORIES.forEach(cat=>{
-    const words=WORDS.filter(x=>x.c===cat.id);
-    const m=masteredCount(cat.id);
-    const card=document.createElement("button");
-    card.className="cat-card"+(store.cat===cat.id?" selected":"");
-    card.innerHTML=`
-      <div class="cat-mark" style="background:${cat.color}">${cat.mark}</div>
-      <div class="cat-info">
-        <div class="cat-name">${cat.name}</div>
-        <div class="cat-detail">
-          <div class="bar"><i style="width:${(m/words.length*100).toFixed(1)}%"></i></div>
-          <span class="cat-count">★${m}/${words.length}</span>
-        </div>
-      </div>`;
-    card.onclick=()=>{ store.cat=cat.id; saveStore(); renderHome(); };
-    grid.appendChild(card);
-  });
-  /* 復習ボタン */
-  const wc=player().wrong.length;
-  $("reviewCount").textContent = wc ? `(${wc}語)` : "(なし)";
-  $("reviewBtn").disabled = wc===0;
-  $("startBtn").onclick=()=>startQuiz(false);
-  $("reviewBtn").onclick=()=>startQuiz(true);
-}
-
-/* ================= クイズ ================= */
-const ROUND_SIZE=10;
-let quiz=null;
-function pickQuestions(review){
-  const p=player();
-  let pool;
-  if(review){
-    pool = WORDS.filter(x=>p.wrong.includes(x.w));
-  }else{
-    pool = store.cat ? WORDS.filter(x=>x.c===store.cat) : [...WORDS];
-  }
-  /* 未マスター優先で選ぶ */
-  const un = shuffle(pool.filter(x=>!(p.stats[x.w]&&p.stats[x.w].mastered)));
-  const done = shuffle(pool.filter(x=>p.stats[x.w]&&p.stats[x.w].mastered));
-  return [...un, ...done].slice(0, ROUND_SIZE);
-}
-function makeChoices(word, mode){
-  /* 同カテゴリー優先でダミーを選ぶ */
-  const same = shuffle(WORDS.filter(x=>x.c===word.c && x.w!==word.w));
-  const others = shuffle(WORDS.filter(x=>x.c!==word.c));
-  const dummies = [...same, ...others].slice(0,3);
-  return shuffle([word, ...dummies]);
-}
-function startQuiz(review){
-  const qs = pickQuestions(review);
-  if(qs.length===0) return;
-  quiz = {
-    review,
-    questions: qs.map(w=>{
-      const mode = store.mode==="mix" ? (Math.random()<0.5?"w2m":"m2w") : store.mode;
-      return {word:w, mode, choices:makeChoices(w,mode)};
-    }),
-    idx:0, correct:0, newlyMastered:[], wrongThisRound:[],
+  const grid = $("catGrid"); grid.innerHTML="";
+  const mk = (id, name, mark, color, words)=>{
+    const items = prog().items;
+    const m = words.filter(w=>items[w.id] && items[w.id].mastered).length;
+    const p = words.filter(w=>items[w.id] && !items[w.id].mastered && items[w.id].streak>0).length;
+    const b = document.createElement("button");
+    b.className = "cat-card" + ((uiCat===id) ? " on" : "");
+    b.innerHTML =
+      "<div class='cat-mark' style='background:"+color+"'>"+mark+"</div>"+
+      "<div class='cat-info'><div class='cat-name'>"+name+"</div><div class='cat-detail'>"+
+      "<div class='bar'><i class='m' style='width:"+(m/words.length*100)+"%'></i>"+
+      "<i class='p' style='width:"+(p/words.length*100)+"%'></i></div>"+
+      "<span class='cat-count'>★"+m+"/"+words.length+"</span></div></div>";
+    b.onclick = ()=>{ uiCat=id; renderHome(); };
+    grid.appendChild(b);
   };
-  showScreen("quiz");
-  renderQuestion();
+  mk(null, "ぜんぶミックス", "全部", "#2B2A26", WORDS);
+  CATEGORIES.forEach(c=>mk(c.id, c.name, c.mark, c.color, WORDS.filter(w=>w.c===c.id)));
+  const items = prog().items;
+  const mAll = WORDS.filter(w=>items[w.id] && items[w.id].mastered).length;
+  $("overall").innerHTML = "総合習得率 <b>"+Math.round(mAll/WORDS.length*100)+"%</b>（"+mAll+" / "+WORDS.length+" 語）";
+  $("startBtn").textContent = uiMode==="all" ? "全問モードをスタート（"+pool.length+"問）" : "スタート";
+  $("startBtn").onclick = ()=>startSession({mode:uiMode, cat:uiCat});
+  renderRanking();
+  renderSyncPanel();
 }
-function renderQuestion(){
-  const q=quiz.questions[quiz.idx];
-  const s=stat(q.word.w);
-  $("quizBar").style.width=(quiz.idx/quiz.questions.length*100)+"%";
-  $("qCounter").textContent=`${quiz.idx+1} / ${quiz.questions.length}`;
-  $("feedback").className="feedback";
-  const kigo=["ア","イ","ウ","エ"];
-  if(q.mode==="w2m"){
-    $("qType").textContent="この言葉の意味は?";
-    $("qPrompt").innerHTML=`<div class="q-word">${q.word.w}</div>`;
-  }else{
-    $("qType").textContent="この意味の言葉は?";
-    $("qPrompt").innerHTML=`<div class="q-meaning">${q.word.m}</div>`;
+
+function renderRanking(){
+  const items = prog().items;
+  const list = WORDS.filter(w=>items[w.id] && items[w.id].totalWrong>0)
+    .sort((a,b)=>items[b.id].totalWrong - items[a.id].totalWrong).slice(0,8);
+  const p = $("rankPanel");
+  if(list.length===0){
+    p.innerHTML = "<div style='color:var(--usuzumi);font-size:13px;text-align:center;padding:6px'>まだ間違いの記録はありません。</div>";
+    return;
   }
-  $("qMastery").textContent = s.mastered ? "★ マスターずみ(復習)" :
-    s.streak===1 ? "あと1回連続正解でマスター!" : "";
-  const box=$("choices"); box.innerHTML="";
-  q.choices.forEach((c,i)=>{
-    const btn=document.createElement("button");
-    if(q.mode==="w2m"){
-      btn.className="choice";
-      btn.innerHTML=`<span class="kigo">${kigo[i]}</span><span>${c.m}</span>`;
+  p.innerHTML = list.map((w,i)=>
+    "<div class='rank-item'><span class='rank-no'>"+(i+1)+"</span>"+
+    "<span class='rank-w'>"+esc(w.w)+"</span>"+
+    "<span class='rank-n'>誤答"+items[w.id].totalWrong+"回</span></div>").join("")
+    + "<button class='sub-btn' style='width:100%;margin-top:11px' onclick=\"startSession({mode:'review'})\">この言葉だけで復習する</button>";
+}
+
+function renderSyncPanel(){
+  $("btnSyncNow").style.display = syncOn() ? "block" : "none";
+  $("btnList").style.display = syncOn() ? "block" : "none";
+  if(!syncOn()) setStatus("クラウド同期は未設定です", "");
+}
+
+function uiSyncSettings(){
+  const c = getSync() || {url:"", key:""};
+  modal({ title:"クラウド同期設定",
+    html:"<p style='font-size:12.5px;color:var(--usuzumi)'>Google Apps Script のウェブアプリURL（/exec で終わるもの）と合言葉を入力してください。この端末にだけ保存され、外部には送られません。</p>"+
+      "<label>GASのURL</label><input type='text' data-v placeholder='https://script.google.com/.../exec' value='"+esc(c.url||"")+"'>"+
+      "<label>合言葉</label><input type='text' data-v2 value='"+esc(c.key||"")+"'>",
+    acts:[
+      {label:"保存して同期", kind:"m-primary", onClick:async (url,key)=>{
+        if(!url || !key){ setStatus("URLと合言葉の両方を入力してください","err"); return; }
+        if(!/\/exec\s*$/.test(url)){
+          modal({title:"URLを確認してください", html:"<p>GASのURLは <b>/exec</b> で終わる必要があります。「デプロイを管理」からウェブアプリのURLをコピーしてください。</p>"});
+          return;
+        }
+        setSync({url, key, lastSync:null});
+        renderSyncPanel();
+        await cloudPull({manual:true});
+        refreshAll();
+      }},
+      (getSync() ? {label:"同期を解除", kind:"m-danger", onClick:()=>{ setSync(null); renderSyncPanel(); setStatus("クラウド同期を解除しました",""); }} : null),
+      {label:"やめる", kind:"m-ghost"}
+    ].filter(Boolean)});
+}
+
+/* ---------- JSON 書き出し／読み込み ---------- */
+function download(name, text, mime){
+  const blob = new Blob([text], {type: mime || "application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+function exportJSON(){
+  download("和語記録_"+stamp8()+".json", JSON.stringify(db, null, 2));
+  setStatus("記録をこの端末に書き出しました", "ok");
+}
+function importJSON(){
+  const inp = $("fileInput");
+  inp.value = "";
+  inp.onchange = ()=>{
+    const f = inp.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      let d;
+      try{ d = JSON.parse(r.result); }catch(e){
+        modal({title:"読み込めません", html:"<p>JSONとして読み取れませんでした。書き出したファイルをそのまま選んでください。</p>"}); return;
+      }
+      if(!d || d.app !== APP_ID){
+        modal({title:"別のツールの記録です", html:"<p>このファイルの識別子は <b>"+esc((d&&d.app)||"不明")+"</b> です。和語ツール（"+APP_ID+"）の記録を選んでください。</p>"}); return;
+      }
+      const names = (d.accounts||[]).map(a=>a.name).join("、") || "（アカウントなし）";
+      modal({ title:"この記録に置き換えますか?",
+        html:"<p><b>アカウント：</b>"+esc(names)+"<br><b>保存日時：</b>"+fmtDateTime(d.updatedAt)+"</p>"+
+             "<p>いまこの端末にある記録は、すべてこの内容に置き換わります。</p>",
+        acts:[
+          {label:"置き換える", kind:"m-danger", onClick:()=>{
+            db = migrate(d);
+            saveDB({push:true});
+            refreshAll(); go("home");
+            setStatus("記録を読み込みました", "ok");
+          }},
+          {label:"やめる", kind:"m-ghost"}
+        ]});
+    };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+function uiReset(){
+  const a = acc();
+  modal({ title:"記録をリセット",
+    html:"<p>消したい範囲をえらんでください。この操作は取り消せません。</p>",
+    acts:[
+      (a ? {label:"「"+a.name+"」の記録だけ消す", kind:"m-danger", onClick:()=>{
+        db.progress[a.id] = {items:{},sessions:[]};
+        saveDB({push:true}); refreshAll(); setStatus("このアカウントの記録を消しました","");
+      }} : null),
+      {label:"すべてのアカウントと記録を消す", kind:"m-danger", onClick:()=>{
+        db = defaultDB(); saveDB({push:true}); refreshAll(); go("account");
+      }},
+      {label:"やめる", kind:"m-ghost"}
+    ].filter(Boolean)});
+}
+
+/* ============================================================
+   出題エンジン（§2・§3・§4・§5）
+   ============================================================ */
+let S = null;   /* セッション（一時領域。完走時のみ永続化） */
+
+function priorityCmp(a,b){
+  const ia = peek(a.id), ib = peek(b.id);
+  if(ib.totalWrong !== ia.totalWrong) return ib.totalWrong - ia.totalWrong;   /* ①誤答が多い */
+  const ua = (ia.totalCorrect+ia.totalWrong)===0, ub = (ib.totalCorrect+ib.totalWrong)===0;
+  if(ua !== ub) return ua ? -1 : 1;                                           /* ②未出題 */
+  const la = ia.lastSeenAt||"", lb = ib.lastSeenAt||"";
+  return la<lb ? -1 : la>lb ? 1 : 0;                                          /* ③最終出題が古い */
+}
+function otherFmt(f){ return f==="A" ? "B" : "A"; }
+function firstFmt(kpId){
+  const last = peek(kpId).lastFormat;
+  return last ? otherFmt(last) : (Math.random()<0.5 ? "A" : "B");
+}
+
+function startSession(opt){
+  if(!acc()){ go("account"); return; }
+  const mode = opt.mode;
+  let kps, want = 0, shortage = null;
+
+  if(mode==="all"){
+    kps = shuffle(catWords(opt.cat));
+  }else if(mode==="review"){
+    const items = prog().items;
+    kps = WORDS.filter(w=>items[w.id] && items[w.id].totalWrong>0)
+      .sort((a,b)=>items[b.id].totalWrong-items[a.id].totalWrong).slice(0,20);
+    if(kps.length===0) return;
+    kps = shuffle(kps);
+  }else{
+    want = mode==="10q" ? 10 : 20;
+    let pool = catWords(opt.cat).filter(w=>!peek(w.id).mastered);
+    pool = shuffle(pool).sort(priorityCmp);
+    kps = shuffle(pool.slice(0, want));
+    if(kps.length===0){
+      modal({title:"出題できる語がありません", html:"<p>このカテゴリーはすべて習得済みです。<b>全問モード</b>で実力チェックをするか、別のカテゴリーを選んでください。</p>"});
+      return;
+    }
+    if(kps.length < want) shortage = {want, got:kps.length};
+  }
+
+  S = { mode, cat:opt.cat||null, startedAt:nowISO(),
+    work:{}, appear:{}, queue:[], history:[], current:null,
+    phase:"answering", view:null, qidSeq:1,
+    requeue: mode!=="all", committed:false };
+
+  kps.forEach(w=>{ S.work[w.id] = clone(peek(w.id)); S.appear[w.id] = 0; });
+  S.queue = kps.map(w=>({ qid:S.qidSeq++, kpId:w.id, format:firstFmt(w.id), pinned:false }));
+
+  go("quiz");
+  if(shortage){
+    modal({ title:"出題数のおしらせ",
+      html:"<p>未習得の語が"+shortage.got+"語しか残っていないため、今回は<b>"+shortage.got+"語</b>で出題します。</p>",
+      acts:[{label:"はじめる", kind:"m-primary", onClick:advance}] });
+  }else advance();
+}
+
+function makeChoices(kpId){
+  const w = WMAP[kpId];
+  const same = shuffle(WORDS.filter(x=>x.c===w.c && x.id!==kpId));
+  const other = shuffle(WORDS.filter(x=>x.c!==w.c));
+  return shuffle([kpId].concat(same.concat(other).slice(0,3).map(x=>x.id)));
+}
+function advance(){
+  if(S.queue.length===0){ finishSession(); return; }
+  const q = S.queue.shift();
+  S.appear[q.kpId] = (S.appear[q.kpId]||0) + 1;
+  q.choices = makeChoices(q.kpId);
+  S.current = q; S.phase = "answering"; S.view = null;
+  renderQuiz();
+}
+function insertQueue(item, offset){
+  let i = Math.min(offset-1, S.queue.length);
+  if(i<0) i = 0;
+  while(i < S.queue.length && S.queue[i].pinned) i++;   /* 埋まっていれば直後の空きへ */
+  S.queue.splice(i, 0, item);
+}
+function applyAnswer(e){
+  const w = S.work[e.kpId];
+  w.lastSeenAt = e.at;
+  if(e.correct){
+    w.totalCorrect++; w.byFormat[e.format].correct++;
+    /* 連続する2回は必ず異なる出題形式であること */
+    if(w.streak>0 && w.lastFormat && w.lastFormat!==e.format) w.streak++;
+    else w.streak = 1;
+    w.lastFormat = e.format;
+    if(w.streak>=MASTERY_STREAK && !w.mastered){ w.mastered=true; w.masteredAt=e.at; e.newMaster=true; }
+  }else{
+    w.totalWrong++; w.byFormat[e.format].wrong++;
+    w.wrongLog.push({ at:e.at, format:e.format, answered:WMAP[e.answered].w });
+    if(w.wrongLog.length>WRONG_LOG_MAX) w.wrongLog = w.wrongLog.slice(-WRONG_LOG_MAX);
+    w.streak = 0; w.mastered = false; w.masteredAt = null; w.lastFormat = e.format;
+  }
+  if(S.requeue){
+    const n = S.appear[e.kpId] || 1;
+    if(!w.mastered && n < MAX_APPEAR){
+      const qid = S.qidSeq++;
+      insertQueue({ qid, kpId:e.kpId, format:otherFmt(e.format), pinned:true },
+        e.correct ? REQUEUE_OK : REQUEUE_WRONG);
+      e.scheduled = qid;
+    }else if(!w.mastered){ e.needsReview = true; }
+  }
+}
+function answer(chosen){
+  const q = S.current;
+  const e = { qid:q.qid, kpId:q.kpId, format:q.format, choices:q.choices,
+    answered:chosen, correct:(chosen===q.kpId), pre:clone(S.work[q.kpId]),
+    scheduled:null, at:nowISO(), appearNo:S.appear[q.kpId] };
+  S.history.push(e);
+  applyAnswer(e);
+  S.phase = "feedback";
+  renderQuiz();
+}
+function reanswer(idx, chosen){
+  const e = S.history[idx];
+  S.work[e.kpId] = clone(e.pre);
+  if(e.scheduled){ S.queue = S.queue.filter(q=>q.qid!==e.scheduled); e.scheduled=null; }
+  delete e.newMaster; delete e.needsReview;
+  e.answered = chosen; e.correct = (chosen===e.kpId); e.at = nowISO(); e.redone = true;
+  applyAnswer(e);
+  renderQuiz();
+}
+function goNext(){ if(S.queue.length===0) finishSession(); else advance(); }
+
+/* ---------- ナビゲーション（§5-1） ---------- */
+function liveIsAnswered(){ return S.phase==="feedback"; }
+function firstViewable(){ return liveIsAnswered() ? S.history.length-2 : S.history.length-1; }
+function navPrev(){
+  if(S.view===null){ const i=firstViewable(); if(i<0) return; S.view=i; }
+  else if(S.view>0) S.view--;
+  renderQuiz();
+}
+function navNext(){
+  if(S.view===null) return;
+  const limit = firstViewable();
+  if(S.view < limit) S.view++;
+  else S.view = null;
+  renderQuiz();
+}
+function uiQuit(){
+  modal({ title:"クイズをやめますか?",
+    html:"<p>とちゅうでやめると、<b>今回の成績と習得の記録は残りません</b>。（最後まで終えたときだけ記録されます）</p>",
+    acts:[
+      {label:"やめてホームへ", kind:"m-danger", onClick:()=>{ S=null; go("home"); }},
+      {label:"つづける", kind:"m-primary"}
+    ]});
+}
+
+/* ---------- 描画 ---------- */
+function renderQuiz(){
+  const reviewing = S.view !== null;
+  const e = reviewing ? S.history[S.view] : (liveIsAnswered() ? S.history[S.history.length-1] : null);
+  const q = reviewing ? e : S.current;
+  const kp = WMAP[q.kpId];
+  const done = S.history.length;
+  const total = done + (liveIsAnswered() ? 0 : 1) + S.queue.length;
+  const idxShown = reviewing ? S.view+1 : done + (liveIsAnswered() ? 0 : 1);
+  const okN = S.history.filter(x=>x.correct).length;
+  const remainKp = new Set(S.queue.map(x=>x.kpId));
+  if(!liveIsAnswered() && !reviewing) remainKp.add(S.current.kpId);
+
+  $("qBar").style.width = ((idxShown-1)/Math.max(total,1)*100)+"%";
+  $("qStats").innerHTML =
+    "<span>"+idxShown+"問目 / 全"+total+"問</span><span class='sep'>|</span>"+
+    "<span>あと"+remainKp.size+"語</span><span class='sep'>|</span>"+
+    "<span class='ok'>正解 "+okN+"</span><span class='ng'>誤答 "+(done-okN)+"</span>";
+
+  const canPrev = reviewing ? S.view>0 : firstViewable()>=0;
+  $("btnPrev").disabled = !canPrev;
+  $("btnNext").disabled = !reviewing;
+  $("btnNext").textContent = reviewing ? "次の問題 →" : "次の問題 →";
+
+  const reanswerable = reviewing && REANSWER_PREV && !liveIsAnswered() && S.view===S.history.length-1;
+  const banner = $("reviewBanner");
+  if(reviewing){
+    banner.style.display = "block";
+    banner.textContent = reanswerable
+      ? "◀ 直前の問題を見ています。選びなおすと、この問題の正誤は上書きされます。"
+      : "◀ 前の問題を見ています（この問題は閲覧のみ）。";
+  }else banner.style.display = "none";
+
+  const w = S.work[q.kpId];
+  if(q.format==="A"){
+    $("qType").textContent = FMT.A.q;
+    $("qPrompt").innerHTML = "<div class='q-meaning'>"+esc(kp.m)+"</div>";
+  }else{
+    $("qType").textContent = FMT.B.q;
+    $("qPrompt").innerHTML = "<div class='q-word'>"+esc(kp.w)+"</div>";
+  }
+  const dots = [];
+  for(let i=0;i<MASTERY_STREAK;i++) dots.push(i<w.streak ? "●" : "○");
+  $("qGauge").textContent = w.mastered ? "★ 習得ずみ" : dots.join("")+"　あと"+Math.max(MASTERY_STREAK-w.streak,0)+"回で習得";
+
+  /* 選択肢 */
+  const kigo = ["ア","イ","ウ","エ"];
+  const box = $("choices"); box.innerHTML = "";
+  q.choices.forEach((cid,i)=>{
+    const cw = WMAP[cid];
+    const b = document.createElement("button");
+    b.className = "choice" + (q.format==="A" ? " wordmode" : "");
+    b.innerHTML = "<span class='kigo'>"+kigo[i]+"</span><span>"+esc(q.format==="A" ? cw.w : cw.m)+"</span>";
+    if(e){
+      b.disabled = !reanswerable;
+      if(cid===q.kpId) b.classList.add("correct");
+      else if(cid===e.answered) b.classList.add("wrong");
+      else b.classList.add("dim");
+      if(reanswerable) b.onclick = ()=>reanswer(S.view, cid);
     }else{
-      btn.className="choice word-choice";
-      btn.textContent=c.w;
+      b.onclick = ()=>answer(cid);
     }
-    btn.dataset.word=c.w;
-    btn.onclick=()=>answer(c, btn);
-    box.appendChild(btn);
+    box.appendChild(b);
   });
-}
-function answer(chosen, btn){
-  const q=quiz.questions[quiz.idx];
-  const ok = chosen.w===q.word.w;
-  const s=stat(q.word.w);
-  const p=player();
-  s.seen++;
-  const wasMastered=s.mastered;
-  document.querySelectorAll(".choice").forEach(b=>{
-    b.disabled=true;
-    if(b.dataset.word===q.word.w) b.classList.add("correct");
-    else if(b===btn) b.classList.add("wrong");
-    else b.classList.add("dim");
-  });
-  let masterMsg="";
-  if(ok){
-    quiz.correct++;
-    s.ok++; s.streak++;
-    if(!s.mastered && s.streak>=2){
-      s.mastered=true;
-      quiz.newlyMastered.push(q.word);
-      masterMsg="★ 2回連続正解! この言葉をマスターした!";
-    }else if(!s.mastered && s.streak===1){
-      masterMsg="いいね! 次も正解すればマスター!";
-    }
-    if(s.mastered && p.wrong.includes(q.word.w)){
-      p.wrong=p.wrong.filter(w=>w!==q.word.w);
-    }
+
+  /* 解説 */
+  const fb = $("feedback");
+  if(e){
+    fb.className = "feedback show " + (e.correct ? "good" : "bad");
+    $("fbHead").textContent = e.correct ? "○ せいかい!" : "× ざんねん…";
+    $("fbWord").innerHTML = esc(kp.w) + (kp.k!==kp.w ? "<span>【"+esc(kp.k)+"】</span>" : "");
+    $("fbMean").textContent = kp.m;
+    $("fbEx").innerHTML = kp.e;
+    let note = "";
+    if(e.newMaster) note = "★ 異なる形式で2回連続正解! この言葉を習得しました。";
+    else if(e.correct && w.streak===1) note = "いいね! つぎは「"+FMT[otherFmt(e.format)].label+"」で出ます。";
+    else if(!e.correct) note = "あなたの答え：" + esc(WMAP[e.answered].w);
+    if(e.needsReview) note += "（このセッションでの出題は上限に達しました。結果画面で要復習に入ります）";
+    $("fbNote").textContent = note;
+    $("fbNote").style.display = note ? "block" : "none";
+    $("fbNext").style.display = reviewing ? "none" : "block";
+    $("fbNext").textContent = S.queue.length===0 ? "けっかを見る" : "つぎへ";
   }else{
-    s.streak=0;
-    if(wasMastered){ s.mastered=false; }
-    if(!p.wrong.includes(q.word.w)) p.wrong.push(q.word.w);
-    quiz.wrongThisRound.push(q.word);
+    fb.className = "feedback";
   }
-  saveStore();
-  const fb=$("feedback");
-  fb.className="feedback show "+(ok?"good":"bad");
-  $("fbHead").textContent= ok ? "○ せいかい!" : "× ざんねん…";
-  $("fbWord").innerHTML=`${q.word.w}<span>${q.word.k!==q.word.w? "【"+q.word.k+"】":""}</span>`;
-  $("fbMeaning").textContent=q.word.m;
-  $("fbExample").innerHTML=q.word.e;
-  $("fbMaster").textContent=masterMsg;
-  $("fbMaster").style.display=masterMsg?"block":"none";
-  $("nextBtn").textContent = quiz.idx===quiz.questions.length-1 ? "けっかを見る" : "つぎへ";
-  fb.scrollIntoView({behavior:"smooth", block:"nearest"});
-}
-function nextQuestion(){
-  quiz.idx++;
-  if(quiz.idx>=quiz.questions.length){ showResult(); }
-  else renderQuestion();
-}
-function quitQuiz(){
-  if(confirm("クイズをやめてホームにもどる?")) showScreen("home");
 }
 
-/* ================= 結果 ================= */
+/* ---------- 完走時のみ確定（§5-2） ---------- */
+function finishSession(){
+  if(S.committed){ showResult(); return; }
+  const p = prog();
+  const newly = [], wrongKp = [], sessionWrongCount = {};
+  S.history.forEach(e=>{
+    if(!e.correct){
+      sessionWrongCount[e.kpId] = (sessionWrongCount[e.kpId]||0)+1;
+      if(wrongKp.indexOf(e.kpId)<0) wrongKp.push(e.kpId);
+    }
+  });
+  Object.keys(S.work).forEach(kp=>{
+    if(!S.appear[kp]) return;
+    const before = p.items[kp];
+    const after = S.work[kp];
+    if(after.mastered && (!before || !before.mastered)) newly.push(kp);
+    p.items[kp] = after;
+  });
+  const correct = S.history.filter(e=>e.correct).length;
+  p.sessions.push({ startedAt:S.startedAt, finishedAt:nowISO(), mode:S.mode,
+    correct, wrong:S.history.length-correct, newlyMastered:newly, wrongKpIds:wrongKp, sessionWrongCount });
+  S.newly = newly; S.committed = true;
+  saveDB({push:true});
+  showResult();
+}
+
+/* ============================================================
+   結果画面（§7・§9-2）
+   ============================================================ */
 function showResult(){
-  showScreen("result");
-  const total=quiz.questions.length;
-  $("resScore").textContent=quiz.correct;
-  $("resTotal").textContent=total;
-  const rate=quiz.correct/total;
-  $("resMsg").textContent =
-    rate===1 ? "パーフェクト! すばらしい!" :
-    rate>=0.8 ? "よくできました!" :
-    rate>=0.5 ? "その調子! 復習でのばそう!" : "まちがえた言葉をもう一度見てみよう!";
-  const stamp=$("stamp");
-  stamp.classList.remove("show");
-  if(rate>=0.8){ setTimeout(()=>stamp.classList.add("show"),200); stamp.style.display="flex"; }
-  else stamp.style.display="none";
-  /* 新規マスター */
-  if(quiz.newlyMastered.length){
-    $("newMasterBox").style.display="block";
-    $("masterTags").innerHTML=quiz.newlyMastered.map(w=>`<span class="master-tag">${w.w}</span>`).join("");
-  }else $("newMasterBox").style.display="none";
-  /* まちがい */
-  if(quiz.wrongThisRound.length){
-    $("wrongBox").style.display="block";
-    $("wrongItems").innerHTML=quiz.wrongThisRound.map(w=>
-      `<div class="wrong-item"><b>${w.w}</b> … ${w.m}</div>`).join("");
-  }else $("wrongBox").style.display="none";
-}
-function retrySame(){ startQuiz(quiz.review); }
+  const total = S.history.length;
+  const correct = S.history.filter(e=>e.correct).length;
+  const rate = total ? correct/total : 0;
+  $("rScore").textContent = correct;
+  $("rTotal").textContent = total;
+  $("rRate").textContent = Math.round(rate*100)+"%";
+  $("rWrong").textContent = total-correct;
+  $("rNew").textContent = S.newly.length;
+  $("rMsg").textContent = rate===1 ? "パーフェクト! すばらしい!"
+    : rate>=0.8 ? "よくできました!"
+    : rate>=0.5 ? "その調子! 復習でのばそう!" : "まちがえた言葉をもう一度見てみよう!";
+  const st = $("stamp");
+  st.classList.remove("show");
+  if(rate>=0.8){ st.style.display="flex"; setTimeout(()=>st.classList.add("show"),200); } else st.style.display="none";
 
-/* ================= 起動 ================= */
-$("totalWords").textContent=WORDS.length;
-if(store.current!==null && store.players[store.current]){ updateChip(); showScreen("home"); }
-else showScreen("player");
+  if(S.newly.length){
+    $("rNewBox").style.display="block";
+    $("rNewTags").innerHTML = S.newly.map(id=>"<span class='tag'>"+esc(WMAP[id].w)+"</span>").join("");
+  }else $("rNewBox").style.display="none";
+
+  const wrongs = S.history.filter(e=>!e.correct);
+  if(wrongs.length){
+    $("rWrongBox").style.display="block";
+    $("rWrongList").innerHTML = wrongs.map(e=>{
+      const kp = WMAP[e.kpId];
+      return "<div class='wrong-item'><span class='w'>"+esc(kp.w)+"</span>"+
+        "<span class='fm'>"+FMT[e.format].label+"</span><br>"+
+        "<span class='ans'>あなた：</span>"+esc(e.format==="A" ? WMAP[e.answered].w : WMAP[e.answered].m)+"<br>"+
+        "<span class='cor'>正解：</span>"+esc(e.format==="A" ? kp.w : kp.m)+"<br>"+
+        "<span style='color:var(--usuzumi)'>"+esc(kp.m)+"</span></div>";
+    }).join("");
+  }else $("rWrongBox").style.display="none";
+
+  const todo = [...new Set(S.history.filter(e=>e.needsReview).map(e=>e.kpId))];
+  if(todo.length){
+    $("rTodoBox").style.display="block";
+    $("rTodoList").innerHTML = todo.map(id=>"<span class='tag' style='background:var(--shu-pale);border-color:var(--shu);color:var(--shu)'>"+esc(WMAP[id].w)+"</span>").join("");
+  }else $("rTodoBox").style.display="none";
+
+  const fc = $("fCat");
+  if(fc.options.length===0){
+    fc.innerHTML = "<option value=''>すべてのカテゴリー</option>" +
+      CATEGORIES.map(c=>"<option value='"+c.id+"'>"+c.name+"</option>").join("");
+  }
+  renderAllList();
+  go("result");
+}
+
+function renderAllList(){
+  const items = prog().items;
+  const fc = $("fCat").value, fs = $("fState").value, so = $("fSort").value;
+  let list = WORDS.slice();
+  if(fc) list = list.filter(w=>w.c===fc);
+  if(fs){
+    list = list.filter(w=>{
+      const it = items[w.id] || newItem();
+      if(fs==="danger") return it.totalWrong>=2;
+      return stateOf(it)===fs;
+    });
+  }
+  const g = w => items[w.id] || newItem();
+  if(so==="wrong") list.sort((a,b)=>g(b).totalWrong-g(a).totalWrong || a.w.localeCompare(b.w,"ja"));
+  else if(so==="cat") list.sort((a,b)=>CATEGORIES.findIndex(c=>c.id===a.c)-CATEGORIES.findIndex(c=>c.id===b.c));
+  else list.sort((a,b)=>a.y.localeCompare(b.y,"ja"));
+
+  const box = $("allList");
+  if(list.length===0){ box.innerHTML="<div class='panel' style='text-align:center;color:var(--usuzumi);font-size:13px'>該当する言葉はありません。</div>"; return; }
+  box.innerHTML = list.map(w=>{
+    const it = g(w);
+    const s = stateOf(it);
+    const bc = s==="mastered" ? "m" : s==="partial" ? "p" : s==="new" ? "n" : "x";
+    const danger = it.totalWrong>=2;
+    const cat = CATMAP[w.c];
+    const lastWrong = it.wrongLog.length ? it.wrongLog[it.wrongLog.length-1] : null;
+    let detail = "<div class='kp-detail' id='d_"+esc(w.id)+"'>";
+    detail += "<div><span class='k'>意味</span>　"+esc(w.m)+"</div>";
+    detail += "<div><span class='k'>例文</span>　"+w.e+"</div>";
+    detail += "<div><span class='k'>形式別</span>　"+FMT.A.label+"：正"+it.byFormat.A.correct+"／誤"+it.byFormat.A.wrong+
+              "　　"+FMT.B.label+"：正"+it.byFormat.B.correct+"／誤"+it.byFormat.B.wrong+"</div>";
+    if(it.wrongLog.length)
+      detail += "<div><span class='k'>過去の誤答</span>　"+it.wrongLog.map(l=>esc(l.answered)+"（"+fmtDate(l.at)+"）").join("／")+"</div>";
+    if(it.masteredAt) detail += "<div><span class='k'>習得日</span>　"+fmtDate(it.masteredAt)+"</div>";
+    detail += "</div>";
+    return "<div class='kp-row"+(danger?" danger":"")+"' onclick=\"toggleKp('"+esc(w.id)+"')\">"+
+      "<div class='kp-top'><span class='kp-w'>"+esc(w.w)+"</span>"+
+      "<span class='kp-cat' style='background:"+cat.color+"'>"+cat.mark+"</span>"+
+      "<span class='badge "+bc+"'>"+stateText(it)+"</span>"+
+      (it.totalWrong>0 ? "<span class='badge "+(danger?"warn":"x")+"'>"+(danger?"⚠️2回以上ミス ":"")+"誤答"+it.totalWrong+"回</span>" : "")+
+      "</div><div class='kp-mean'>"+esc(w.m)+"</div>"+detail+"</div>";
+  }).join("");
+}
+function toggleKp(id){ const d=$("d_"+id); if(d) d.classList.toggle("open"); }
+
+/* ---------- CSV（§7-4） ---------- */
+function csvCell(v){ const s=String(v==null?"":v); return '"'+s.replace(/"/g,'""')+'"'; }
+function downloadCSV(){
+  const items = prog().items;
+  const header = ["カテゴリー","知識ポイント","問題文","正解","直近の解答","状態","累計正解数","累計誤答数",
+    "形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"];
+  const rows = WORDS.map(w=>{
+    const it = items[w.id] || newItem();
+    const lastWrong = it.wrongLog.length ? it.wrongLog[it.wrongLog.length-1] : null;
+    const recent = it.streak>0 ? "○正解" : (lastWrong ? lastWrong.answered : "—");
+    return [ CATMAP[w.c].name, w.w, w.m, w.w, recent, stateText(it),
+      it.totalCorrect, it.totalWrong, it.byFormat.A.wrong, it.byFormat.B.wrong,
+      it.wrongLog.map(l=>l.answered).join(";"),
+      lastWrong ? fmtDate(lastWrong.at) : "", fmtDate(it.masteredAt) ];
+  }).sort((a,b)=>b[7]-a[7]);
+  const csv = "\uFEFF" + [header].concat(rows).map(r=>r.map(csvCell).join(",")).join("\r\n");
+  const name = "結果_" + (acc()?acc().name:"記録") + "_" + stamp8() + ".csv";
+  download(name, csv, "text/csv;charset=utf-8");
+}
+
+/* ============================================================
+   起動
+   ============================================================ */
+$("totalWords").textContent = WORDS.length;
+(function boot(){
+  if(!storageOK){
+    const wb = $("warnBar"); wb.classList.add("show");
+    wb.textContent = syncOn()
+      ? "☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます。"
+      : "⚠ この端末には学習記録を保存できません（ブラウザの設定によるもの）。クラウド同期を設定すると記録を残せます。";
+  }
+  if(db.activeAccountId && acc()){ updateChip(); go("home"); }
+  else go("account");
+  if(syncOn()) cloudPull({}).then(()=>refreshAll());
+})();
+window.addEventListener("beforeunload", e=>{
+  if(S && S.history.length>0 && !S.committed){ e.preventDefault(); e.returnValue=""; }
+});
+
 </script>
 </body>
 </html>
