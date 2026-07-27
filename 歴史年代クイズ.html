@@ -286,6 +286,136 @@
   .review-item .ryear{ color: var(--aizome-deep); font-weight:700; }
 
   footer{ text-align:center; margin-top: 30px; font-size:11px; color: var(--sumi-soft); opacity:0.6; }
+  /* ---- v3: session length mode selector ---- */
+  .len-toggle{ display:flex; gap:8px; margin: 4px 0 12px; }
+  .len-btn{
+    flex:1; font-family:"Shippori Mincho", serif; font-size:13px; font-weight:700;
+    padding: 9px 6px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; color: var(--sumi-soft); cursor:pointer; transition: all .12s ease;
+  }
+  .len-btn:hover{ border-color: var(--kincha); }
+  .len-btn.active{ background: var(--kincha); border-color: var(--kincha); color:#faf6ec; }
+  .shortage-note{ font-size:11.5px; color: var(--shuiro); margin: -4px 0 10px; text-align:center; }
+
+  /* ---- v3: era mastery bars ---- */
+  .era-bars{ text-align:left; margin-top:14px; }
+  .era-bars h3{
+    font-family:"Shippori Mincho", serif; font-size:15px; color: var(--sumi);
+    border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:10px;
+  }
+  .era-bar-row{ margin-bottom:9px; }
+  .era-bar-row .ebr-label{
+    display:flex; justify-content:space-between; font-size:12px; color: var(--sumi-soft); margin-bottom:3px;
+  }
+  .era-bar-track{
+    display:flex; height:10px; border-radius:5px; overflow:hidden; background:#e9e3d2;
+  }
+  .era-bar-seg.mastered{ background: var(--aizome); }
+  .era-bar-seg.partial{ background: var(--kincha); }
+  .era-bar-seg.none{ background: transparent; }
+
+  /* ---- v3: in-quiz progress bar & KP gauge ---- */
+  .progress-track{
+    height:7px; border-radius:4px; background:#e9e3d2; overflow:hidden; margin-bottom:10px;
+  }
+  .progress-fill{ height:100%; background: var(--aizome); }
+  .stat-strip{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px 14px;
+    font-size:12px; color: var(--sumi-soft); margin-bottom:10px;
+  }
+  .stat-strip b{ color: var(--aizome-deep); }
+  .kp-gauge{ letter-spacing:3px; font-size:14px; color: var(--kincha); }
+
+  /* ---- v3: back/forward nav ---- */
+  .nav-row{ display:flex; justify-content:space-between; gap:10px; margin-top:14px; }
+  .nav-btn{
+    font-family:"Shippori Mincho", serif; font-size:13px; font-weight:700;
+    padding:9px 14px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; color: var(--sumi-soft); cursor:pointer;
+  }
+  .nav-btn:hover:not(:disabled){ border-color: var(--aizome); color: var(--aizome-deep); }
+  .nav-btn:disabled{ opacity:0.35; cursor:default; }
+  .review-banner{
+    font-size:12px; color: var(--shuiro); background: rgba(181,69,28,0.08);
+    border:1px solid var(--shuiro); border-radius:3px; padding:6px 10px; margin-bottom:10px; text-align:center;
+  }
+
+  /* ---- v3: results category table ---- */
+  .filter-row{ display:flex; gap:8px; margin: 10px 0; flex-wrap:wrap; }
+  .filter-row select{
+    font-family:"Noto Sans JP", sans-serif; font-size:12.5px; padding:6px 8px;
+    border:1.5px solid var(--line); border-radius:3px; background:#fff; color: var(--sumi);
+  }
+  .kp-table{ width:100%; border-collapse:collapse; font-size:12px; text-align:left; }
+  .kp-table th{
+    font-family:"Shippori Mincho", serif; font-weight:700; color: var(--sumi-soft);
+    border-bottom:1.5px solid var(--line); padding:6px 6px; white-space:nowrap;
+  }
+  .kp-table td{ border-bottom:1px solid var(--line); padding:6px 6px; vertical-align:top; }
+  .kp-table tr.flagged td{ background: rgba(181,69,28,0.06); }
+  .kp-badge{
+    display:inline-block; font-size:10.5px; font-weight:700; padding:2px 6px; border-radius:10px;
+    background: rgba(181,69,28,0.14); color: var(--shuiro);
+  }
+  .csv-btn{
+    font-family:"Shippori Mincho", serif; font-size:14px; font-weight:700;
+    padding:12px 18px; border-radius:3px; border:1.5px solid var(--moss); color: var(--moss);
+    background:#fff; cursor:pointer;
+  }
+  .csv-btn:hover{ background: rgba(95,111,78,0.08); }
+
+  /* ---- v4: cloud sync panel ---- */
+  .sync-panel{ text-align:left; margin-top:16px; }
+  .sync-panel h3{
+    font-family:"Shippori Mincho", serif; font-size:15px; color: var(--sumi);
+    border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:10px;
+  }
+  .sync-status{
+    display:inline-block; font-size:12.5px; font-weight:700; padding:6px 12px;
+    border-radius:20px; margin-bottom:12px;
+  }
+  .sync-status.success{ background: rgba(95,111,78,0.15); color: var(--moss); }
+  .sync-status.error{ background: rgba(181,69,28,0.12); color: var(--shuiro); }
+  .sync-status.pending{ background: rgba(169,120,31,0.14); color: var(--kincha); }
+  .sync-status.idle{ background: rgba(43,43,43,0.08); color: var(--sumi-soft); }
+  .sync-btn-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+  .sync-btn{
+    font-family:"Shippori Mincho", serif; font-size:13px; font-weight:700;
+    padding:9px 14px; border-radius:3px; border:1.5px solid var(--aizome);
+    background:#fff; color: var(--aizome-deep); cursor:pointer;
+  }
+  .sync-btn:hover{ background: rgba(44,74,110,0.08); }
+  .sync-btn.warn{ border-color: var(--shuiro); color: var(--shuiro); }
+  .sync-btn.warn:hover{ background: rgba(181,69,28,0.06); }
+
+  /* ---- v4: modal overlay ---- */
+  .modal-overlay{
+    position:fixed; inset:0; background: rgba(43,43,43,0.55);
+    display:flex; align-items:center; justify-content:center; padding:20px; z-index:1000;
+  }
+  .modal-box{
+    background:#faf6ec; border:1px solid var(--line); border-radius:4px;
+    box-shadow: var(--card-shadow); max-width:480px; width:100%;
+    padding:24px 22px; max-height:86vh; overflow-y:auto;
+  }
+  .modal-box h3{ font-family:"Shippori Mincho", serif; font-size:17px; color: var(--aizome-deep); margin:0 0 12px; }
+  .modal-box p{ font-size:13px; line-height:1.8; color: var(--sumi); margin:0 0 14px; }
+  .modal-field{ margin-bottom:12px; }
+  .modal-field label{ display:block; font-size:12px; color: var(--sumi-soft); margin-bottom:4px; }
+  .modal-field input{
+    width:100%; font-family:"Noto Sans JP",sans-serif; font-size:14px; padding:9px 10px;
+    border:1.5px solid var(--line); border-radius:3px; box-sizing:border-box;
+  }
+  .modal-btn-row{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+
+  .storage-warning{
+    font-size:12.5px; line-height:1.7; padding:10px 14px; border-radius:3px;
+    margin-bottom:14px; text-align:left;
+    background: rgba(181,69,28,0.08); border:1px solid var(--shuiro); color: var(--shuiro);
+  }
+  .storage-warning.ok-with-cloud{
+    background: rgba(44,74,110,0.08); border-color: var(--aizome); color: var(--aizome-deep);
+  }
 </style>
 </head>
 <body>
@@ -412,85 +542,186 @@ const DATA = [
 
 const MIN_YEAR = 239, MAX_YEAR = 2011;
 const ACCOUNTS = ["音", "昂", "暁"];
-const STORAGE_KEY = "rekishi100_quiz_v1";
+const APP_ID = "kj-quiz-shakai-nendai";
+const STORAGE_KEY = APP_ID;
+const SYNC_KEY = APP_ID + ":sync";
+const PREV_V3_KEY = "kj-quiz-rekishi-nendai"; // this tool's own previous (pre-sync) key
+const OLD_V2_KEY = "rekishi100_quiz_v1";       // earlier still (pre-spec) key
+const SCHEMA_VERSION = 2;
 
-// ---- storage ----
-function loadAllData(){
+const MASTERY_STREAK = 2;      // consecutive correct answers, in DIFFERENT formats, to master a KP
+const WRONG_REQUEUE_GAP = 3;   // wrong answer -> reappears after this many other problems
+const PARTIAL_REQUEUE_GAP = 6; // correct-but-not-yet-mastered -> reappears after this many
+const MAX_APPEARANCES = 4;     // cap on how many times one KP can appear in a single session
+const WRONG_LOG_MAX = 20;
+const HOME_WRONG_THRESHOLD = 3;    // "よく間違える問題" home list (existing feature, unchanged)
+const RESULT_WRONG_BADGE_THRESHOLD = 2; // spec: highlight 2+ cumulative mistakes in the full KP table
+
+const ERA_BOUNDARIES = [
+  [239, "古代"], [538, "飛鳥時代"], [710, "奈良時代"], [794, "平安時代"],
+  [1185, "鎌倉時代"], [1336, "室町時代"], [1573, "安土桃山時代"], [1603, "江戸時代"],
+  [1868, "明治時代"], [1912, "大正時代"], [1926, "昭和時代"], [1989, "平成時代以降"],
+];
+function eraForYear(y){
+  let idx = 0;
+  for(let i=0;i<ERA_BOUNDARIES.length;i++) if(y >= ERA_BOUNDARIES[i][0]) idx = i;
+  return idx;
+}
+function eraName(y){ return ERA_BOUNDARIES[eraForYear(y)][1]; }
+
+// ---------------------------------------------------------------------
+// storage: load / save / migrate
+// ---------------------------------------------------------------------
+function blankItemStat(){
+  return {
+    streak: 0, mastered: false, masteredAt: null, lastFormat: null,
+    totalCorrect: 0, totalWrong: 0,
+    byFormat: { A: {correct:0, wrong:0}, B: {correct:0, wrong:0} },
+    wrongLog: [], lastSeenAt: null, favorite: false,
+  };
+}
+function blankAccountProgress(){
+  return { items: {}, quizzesTaken: 0, sessions: [] };
+}
+function blankStore(){
+  const progress = {};
+  ACCOUNTS.forEach(a=>{ progress[a] = blankAccountProgress(); });
+  return { app: APP_ID, version: SCHEMA_VERSION, accounts: ACCOUNTS.slice(), progress, updatedAt: null };
+}
+
+function migrateFromV2(oldRaw){
+  // Best-effort port of the oldest (v2, pre common-spec) schema so 音/昂/暁 keep their history.
+  let old;
+  try{ old = JSON.parse(oldRaw); }catch(e){ return null; }
+  const store = blankStore();
+  ACCOUNTS.forEach(a=>{
+    const oldAcc = old[a];
+    if(!oldAcc) return;
+    const acc = store.progress[a];
+    acc.quizzesTaken = oldAcc.quizzesTaken || 0;
+    const allIdxKeys = new Set([
+      ...Object.keys(oldAcc.items || {}),
+      ...Object.keys(oldAcc.favorites || {}),
+    ]);
+    allIdxKeys.forEach(idx=>{
+      const oi = (oldAcc.items && oldAcc.items[idx]) || {};
+      const streak = Math.min(oi.correctStreak || 0, MASTERY_STREAK);
+      acc.items[idx] = {
+        streak,
+        mastered: (oi.correctStreak || 0) >= 3, // old mastery threshold was 3-in-a-row same format
+        masteredAt: (oi.correctStreak || 0) >= 3 ? new Date().toISOString() : null,
+        lastFormat: null,
+        totalCorrect: oi.correctTotal || 0,
+        totalWrong: oi.wrongTotal || 0,
+        byFormat: { A: {correct:0, wrong:0}, B: {correct:0, wrong:0} },
+        wrongLog: [],
+        lastSeenAt: null,
+        favorite: !!(oldAcc.favorites && oldAcc.favorites[idx]),
+      };
+    });
+  });
+  return store;
+}
+
+// Whether this browser can actually persist to localStorage (some private-
+// browsing modes throw on every access). Checked once at load time.
+let LOCAL_STORAGE_OK = true;
+function probeLocalStorage(){
+  try{
+    const t = "__probe__";
+    localStorage.setItem(t, "1");
+    localStorage.removeItem(t);
+    return true;
+  }catch(e){ return false; }
+}
+
+function loadStore(){
+  LOCAL_STORAGE_OK = probeLocalStorage();
+  if(!LOCAL_STORAGE_OK) return blankStore();
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  const fresh = {};
-  ACCOUNTS.forEach(a=>{
-    fresh[a] = { items: {}, quizzesTaken: 0, totalCorrect: 0, totalAnswered: 0, favorites: {}, queue: [] };
-  });
-  return fresh;
+  // try this tool's own previous (pre-sync) key
+  try{
+    const prevRaw = localStorage.getItem(PREV_V3_KEY);
+    if(prevRaw){
+      const prev = JSON.parse(prevRaw);
+      prev.app = APP_ID;
+      if(prev.updatedAt === undefined) prev.updatedAt = null;
+      return prev;
+    }
+  }catch(e){}
+  // fall back further to the original (pre common-spec) key
+  try{
+    const oldRaw = localStorage.getItem(OLD_V2_KEY);
+    if(oldRaw){
+      const migrated = migrateFromV2(oldRaw);
+      if(migrated) return migrated;
+    }
+  }catch(e){}
+  return blankStore();
 }
-function saveAllData(d){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }catch(e){}
-}
-let ALL_DATA = loadAllData();
 
-const MASTERY_THRESHOLD = 3;
-const WRONG_FLAG_THRESHOLD = 3;
-
-function getAccountStats(name){
-  if(!ALL_DATA[name]) ALL_DATA[name] = { items: {}, quizzesTaken: 0, totalCorrect: 0, totalAnswered: 0, favorites: {}, queue: [] };
-  if(!ALL_DATA[name].favorites) ALL_DATA[name].favorites = {};
-  if(!ALL_DATA[name].queue) ALL_DATA[name].queue = [];
-  return ALL_DATA[name];
+// preserveUpdatedAt=true is used when we've just adopted a record set that
+// already carries its own updatedAt (e.g. pulled from the cloud) -- in that
+// case we must NOT stamp "now" over it.
+function saveStore(opts){
+  opts = opts || {};
+  if(!opts.preserveUpdatedAt) STORE.updatedAt = nowIso();
+  if(!LOCAL_STORAGE_OK){
+    // Nothing we can do locally; the in-memory STORE object is still live
+    // for this session, and syncStatus messaging tells the user why.
+    return;
+  }
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STORE)); }
+  catch(e){ LOCAL_STORAGE_OK = false; }
 }
 
-function isMastered(stats, dataIdx){
-  const s = stats.items[dataIdx];
-  return !!s && s.correctStreak >= MASTERY_THRESHOLD;
+let STORE = loadStore();
+
+function getCommittedStats(account){
+  if(!STORE.progress[account]) STORE.progress[account] = blankAccountProgress();
+  return STORE.progress[account];
 }
-function isFrequentlyWrong(stats, dataIdx){
-  const s = stats.items[dataIdx];
-  return !!s && s.wrongTotal >= WRONG_FLAG_THRESHOLD;
+function getItemStat(progress, dataIdx){
+  if(!progress.items[dataIdx]) progress.items[dataIdx] = blankItemStat();
+  return progress.items[dataIdx];
 }
-function masteredCount(stats){
+// During an active session, reads/writes should hit the in-memory pending
+// copy so nothing is persisted until the session is completed in full.
+function currentProgress(){
+  if(state.session) return state.session.pendingProgress;
+  return getCommittedStats(state.account);
+}
+function isMastered(progress, dataIdx){
+  const s = progress.items[dataIdx];
+  return !!s && s.mastered;
+}
+function isFrequentlyWrong(progress, dataIdx, threshold){
+  const s = progress.items[dataIdx];
+  return !!s && s.totalWrong >= threshold;
+}
+function isFavorite(progress, dataIdx){
+  const s = progress.items[dataIdx];
+  return !!s && s.favorite;
+}
+function toggleFavorite(dataIdx){
+  const progress = currentProgress();
+  const s = getItemStat(progress, dataIdx);
+  s.favorite = !s.favorite;
+  if(!state.session) saveStore();
+  return s.favorite;
+}
+function masteredCount(progress){
   let n = 0;
-  for(let i=0;i<DATA.length;i++) if(isMastered(stats, i)) n++;
+  for(let i=0;i<DATA.length;i++) if(isMastered(progress, i)) n++;
   return n;
 }
-function sourcePoolCount(stats){
-  return DATA.length - masteredCount(stats);
-}
 
-// Pulls the next batch of questions (up to 20) from the account's shuffled,
-// mastery-aware queue. The queue is a standing random order of all not-yet-
-// mastered items; it's consumed batch by batch across quiz sessions, and
-// reshuffled from the remaining un-mastered pool once exhausted, so every
-// item gets asked before any repeats happen.
-function nextQuizIndices(stats){
-  stats.queue = stats.queue.filter(idx => !isMastered(stats, idx));
-  const unmastered = [];
-  for(let i=0;i<DATA.length;i++) if(!isMastered(stats, i)) unmastered.push(i);
-  if(unmastered.length === 0) return [];
-
-  if(stats.queue.length === 0){
-    stats.queue = shuffle(unmastered);
-  }
-  const take = stats.queue.slice(0, Math.min(20, stats.queue.length));
-  stats.queue = stats.queue.slice(take.length);
-  saveAllData(ALL_DATA);
-  return take;
-}
-
-function isFavorite(name, dataIdx){
-  const stats = getAccountStats(name);
-  return !!stats.favorites[dataIdx];
-}
-function toggleFavorite(name, dataIdx){
-  const stats = getAccountStats(name);
-  if(stats.favorites[dataIdx]) delete stats.favorites[dataIdx];
-  else stats.favorites[dataIdx] = true;
-  saveAllData(ALL_DATA);
-  return !!stats.favorites[dataIdx];
-}
-
-// ---- helpers ----
+// ---------------------------------------------------------------------
+// helpers
+// ---------------------------------------------------------------------
 function shuffle(arr){
   const a = arr.slice();
   for(let i=a.length-1;i>0;i--){
@@ -503,65 +734,688 @@ function pctPos(year){ return ((year - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100;
 function openGoogleSearch(query){
   window.open("https://www.google.com/search?q=" + encodeURIComponent(query), "_blank", "noopener");
 }
+function otherFormat(f){ return f === "A" ? "B" : "A"; }
+function nowIso(){ return new Date().toISOString(); }
+function todayStamp(){
+  const d = new Date();
+  return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+}
+function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
 
+// ---------------------------------------------------------------------
+// question materialization: given a KP + format, build the on-screen question
+// ---------------------------------------------------------------------
+function materializeQuestion(dataIdx, format, answerMode){
+  const [item, year, mnemonic] = DATA[dataIdx];
+  const useInput = format === "A" && answerMode === "input";
+  let choices = null, correctIdx = null;
+  if(format === "A" && !useInput){
+    const distractYears = shuffle(DATA.filter((d,i)=>i!==dataIdx).map(d=>d[1]));
+    const yrSet = new Set([year]);
+    const opts = [year];
+    for(const y of distractYears){
+      if(opts.length>=4) break;
+      if(!yrSet.has(y)){ yrSet.add(y); opts.push(y); }
+    }
+    const shuffled = shuffle(opts.map(y=>({y, isCorrect:y===year})));
+    choices = shuffled.map(o=>String(o.y)+"年");
+    correctIdx = shuffled.findIndex(o=>o.isCorrect);
+  } else if(format === "B"){
+    const distractItems = shuffle(DATA.filter((d,i)=>i!==dataIdx).map(d=>d[0]));
+    const opts = [item, ...distractItems.slice(0,3)];
+    const shuffled = shuffle(opts.map(o=>({text:o, isCorrect:o===item})));
+    choices = shuffled.map(o=>o.text);
+    correctIdx = shuffled.findIndex(o=>o.isCorrect);
+  }
+  return { dataIdx, format, item, year, mnemonic, useInput, choices, correctIdx };
+}
+
+// ---------------------------------------------------------------------
+// session KP selection + initial problem list
+// ---------------------------------------------------------------------
+function selectSessionKPs(mode, progress){
+  if(mode === "all") return DATA.map((d,i)=>i);
+  const n = mode === "10q" ? 10 : 20;
+  const candidates = [];
+  for(let i=0;i<DATA.length;i++) if(!isMastered(progress, i)) candidates.push(i);
+  candidates.sort((a,b)=>{
+    const sa = progress.items[a], sb = progress.items[b];
+    const wa = sa ? sa.totalWrong : 0, wb = sb ? sb.totalWrong : 0;
+    if(wb !== wa) return wb - wa; // most-wrong first
+    const seenA = sa && sa.lastSeenAt, seenB = sb && sb.lastSeenAt;
+    if(!seenA && seenB) return -1; // never-seen before seen
+    if(seenA && !seenB) return 1;
+    if(!seenA && !seenB) return a - b;
+    return new Date(seenA) - new Date(seenB); // oldest-seen first
+  });
+  return candidates.slice(0, n);
+}
+
+function buildInitialProblems(mode, kpIndices, progress){
+  if(mode === "all"){
+    const problems = kpIndices.map(idx=>{
+      const s = progress.items[idx];
+      const fmt = (s && s.lastFormat) ? otherFormat(s.lastFormat) : (Math.random()<0.5?"A":"B");
+      return { dataIdx: idx, format: fmt };
+    });
+    return shuffle(problems);
+  }
+  let problems = [];
+  kpIndices.forEach(idx=>{
+    problems.push({dataIdx: idx, format:"A"});
+    problems.push({dataIdx: idx, format:"B"});
+  });
+  problems = shuffle(problems);
+  // avoid the same KP's two formats landing back-to-back
+  for(let i=1;i<problems.length;i++){
+    if(problems[i].dataIdx === problems[i-1].dataIdx){
+      for(let j=i+1;j<problems.length;j++){
+        if(problems[j].dataIdx !== problems[i-1].dataIdx && problems[j].dataIdx !== problems[i].dataIdx){
+          [problems[i], problems[j]] = [problems[j], problems[i]];
+          break;
+        }
+      }
+    }
+  }
+  return problems;
+}
+
+// ---------------------------------------------------------------------
+// answer application (mutates the given progress object's item stat)
+// ---------------------------------------------------------------------
+function applyAnswer(progress, dataIdx, format, correct, answeredText){
+  const s = getItemStat(progress, dataIdx);
+  const wasMastered = s.mastered;
+  s.byFormat[format][correct ? "correct" : "wrong"]++;
+  if(correct){
+    s.totalCorrect++;
+    if(s.lastFormat !== format) s.streak++; // only a DIFFERENT format advances the streak
+    if(s.streak >= MASTERY_STREAK){
+      if(!s.mastered){ s.mastered = true; s.masteredAt = nowIso(); }
+    }
+  } else {
+    s.totalWrong++;
+    s.streak = 0;
+    s.mastered = false; // any miss un-masters the KP, even if mastered earlier
+    s.wrongLog.push({at: nowIso(), format, answered: answeredText});
+    if(s.wrongLog.length > WRONG_LOG_MAX) s.wrongLog.shift();
+  }
+  s.lastFormat = format;
+  s.lastSeenAt = nowIso();
+  return { newlyMastered: !wasMastered && s.mastered };
+}
+
+// ---------------------------------------------------------------------
+// global UI state
+// ---------------------------------------------------------------------
 let state = {
-  screen: "login", // login | home | quiz | result
+  screen: "login", // login | home | quiz | result | favorites
   account: null,
-  quizMode: "choice", // choice | input
-  questions: [],
-  qIndex: 0,
-  score: 0,
-  answered: false,
-  log: []
+  quizMode: "choice", // choice | input  (answer style for format-A questions)
+  session: null,
+  syncStatus: { kind: "idle", message: "" }, // idle | pending | success | error
+  modal: null, // {type: "syncSettings" | "importConfirm" | "listBlocked" | "importMismatch", ...}
 };
 
-function buildQuestionsFromIndices(indices, forceType){
-  return indices.map(idx=>{
-    const [item, year, mnemonic] = DATA[idx];
-    const type = forceType || (Math.random() < 0.5 ? "event2year" : "year2event");
-    let choices, correctIdx;
-    if(type === "event2year"){
-      const distractYears = shuffle(DATA.filter((d,i)=>i!==idx).map(d=>d[1]));
-      const yrSet = new Set([year]);
-      const opts = [year];
-      for(const y of distractYears){
-        if(opts.length>=4) break;
-        if(!yrSet.has(y)){ yrSet.add(y); opts.push(y); }
-      }
-      const shuffled = shuffle(opts.map((y,i)=>({y, isCorrect:y===year})));
-      choices = shuffled.map(o=>String(o.y)+"年");
-      correctIdx = shuffled.findIndex(o=>o.isCorrect);
-    } else {
-      const distractItems = shuffle(DATA.filter((d,i)=>i!==idx).map(d=>d[0]));
-      const opts = [item, ...distractItems.slice(0,3)];
-      const shuffled = shuffle(opts.map(o=>({text:o, isCorrect:o===item})));
-      choices = shuffled.map(o=>o.text);
-      correctIdx = shuffled.findIndex(o=>o.isCorrect);
-    }
-    return {dataIdx: idx, item, year, mnemonic, type, choices, correctIdx};
+function startSession(mode){
+  const committed = getCommittedStats(state.account);
+  const pendingProgress = deepClone(committed);
+  const kpIndices = selectSessionKPs(mode, committed);
+  const requestedN = mode === "all" ? DATA.length : (mode === "10q" ? 10 : 20);
+  const shortage = mode !== "all" && kpIndices.length < requestedN;
+  const problems = buildInitialProblems(mode, kpIndices, pendingProgress);
+  const appearanceCount = {};
+  kpIndices.forEach(idx=>{ appearanceCount[idx] = mode === "all" ? 1 : 2; });
+
+  state.session = {
+    mode, answerMode: state.quizMode,
+    startedAt: nowIso(),
+    pendingProgress,
+    kpTotal: kpIndices.length,
+    shortage,
+    questions: problems,
+    qIndex: 0,
+    reviewIndex: null,
+    score: 0,
+    wrongCount: 0,
+    log: [],
+    appearanceCount,
+    newlyMastered: new Set(),
+  };
+  state.screen = "quiz";
+}
+
+function scheduleRequeue(sess, fromLogIdx, dataIdx, lastUsedFormat, gap){
+  if(sess.mode === "all") return null;
+  const count = sess.appearanceCount[dataIdx] || 0;
+  if(count >= MAX_APPEARANCES) return null;
+  const targetIdx = Math.min(sess.qIndex + 1 + gap, sess.questions.length);
+  sess.questions.splice(targetIdx, 0, { dataIdx, format: otherFormat(lastUsedFormat), fromLog: fromLogIdx });
+  sess.appearanceCount[dataIdx] = count + 1;
+  return targetIdx;
+}
+function removeScheduledRequeue(sess, logIdx){
+  const i = sess.questions.findIndex(q => q.fromLog === logIdx);
+  if(i !== -1 && i > sess.qIndex - 1){
+    const removed = sess.questions.splice(i, 1)[0];
+    sess.appearanceCount[removed.dataIdx] = Math.max(0, (sess.appearanceCount[removed.dataIdx]||1) - 1);
+  }
+}
+
+// Records an answer for the LIVE question at sess.qIndex (fresh answer, not a redo).
+function commitLiveAnswer(correct, answeredText){
+  const sess = state.session;
+  const q = sess.questions[sess.qIndex];
+  const snapshotBefore = deepClone(getItemStat(sess.pendingProgress, q.dataIdx));
+  const { newlyMastered } = applyAnswer(sess.pendingProgress, q.dataIdx, q.format, correct, answeredText);
+  if(newlyMastered) sess.newlyMastered.add(q.dataIdx);
+  if(correct) sess.score++; else sess.wrongCount++;
+
+  let requeueIdx = null;
+  if(!correct){
+    requeueIdx = scheduleRequeue(sess, sess.qIndex, q.dataIdx, q.format, WRONG_REQUEUE_GAP);
+  } else if(!newlyMastered && !isMastered(sess.pendingProgress, q.dataIdx)){
+    requeueIdx = scheduleRequeue(sess, sess.qIndex, q.dataIdx, q.format, PARTIAL_REQUEUE_GAP);
+  }
+
+  sess.log.push({
+    dataIdx: q.dataIdx, format: q.format, correct, answeredText,
+    snapshotBefore, requeueIdx,
+  });
+  sess.qIndex++;
+}
+
+// Overwrites the most recent (still-redoable) answer.
+function redoAnswer(correct, answeredText){
+  const sess = state.session;
+  const j = sess.qIndex - 1;
+  const old = sess.log[j];
+  const q = sess.questions[j];
+
+  // roll back
+  sess.pendingProgress.items[q.dataIdx] = deepClone(old.snapshotBefore);
+  if(old.correct) sess.score--; else sess.wrongCount--;
+  if(old.requeueIdx !== null) removeScheduledRequeue(sess, j);
+
+  // re-apply
+  const { newlyMastered } = applyAnswer(sess.pendingProgress, q.dataIdx, q.format, correct, answeredText);
+  if(newlyMastered) sess.newlyMastered.add(q.dataIdx); else sess.newlyMastered.delete(q.dataIdx);
+  if(correct) sess.score++; else sess.wrongCount++;
+
+  let requeueIdx = null;
+  if(!correct){
+    requeueIdx = scheduleRequeue(sess, j, q.dataIdx, q.format, WRONG_REQUEUE_GAP);
+  } else if(!newlyMastered && !isMastered(sess.pendingProgress, q.dataIdx)){
+    requeueIdx = scheduleRequeue(sess, j, q.dataIdx, q.format, PARTIAL_REQUEUE_GAP);
+  }
+  sess.log[j] = { dataIdx: q.dataIdx, format: q.format, correct, answeredText, snapshotBefore: old.snapshotBefore, requeueIdx };
+  state.session.reviewIndex = null;
+}
+
+function finishSession(){
+  const sess = state.session;
+  STORE.progress[state.account] = sess.pendingProgress;
+  const acc = STORE.progress[state.account];
+  acc.quizzesTaken = (acc.quizzesTaken || 0) + 1;
+  acc.sessions = acc.sessions || [];
+  acc.sessions.push({
+    startedAt: sess.startedAt, finishedAt: nowIso(), mode: sess.mode,
+    correct: sess.score, wrong: sess.wrongCount,
+    newlyMastered: Array.from(sess.newlyMastered),
+  });
+  if(acc.sessions.length > 50) acc.sessions = acc.sessions.slice(-50);
+  saveStore();
+  state.screen = "result";
+  pushOnly(); // spec: push automatically right after a session's save
+}
+
+function confirmLeaveSession(){
+  if(state.screen === "quiz" && state.session){
+    return window.confirm("ここで終了すると今回の記録は保存されません。よろしいですか？");
+  }
+  return true;
+}
+window.addEventListener('beforeunload', (e)=>{
+  if(state.screen === "quiz" && state.session){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+// ---------------------------------------------------------------------
+// CSV export
+// ---------------------------------------------------------------------
+function statusLabel(s){
+  if(!s) return "未出題";
+  if(s.mastered) return "習得済み";
+  if(s.totalCorrect + s.totalWrong === 0) return "未出題";
+  return `${s.streak}回連続正解中`;
+}
+function exportCsv(account){
+  const progress = getCommittedStats(account);
+  const rows = [[
+    "カテゴリー","知識ポイント","問題文","正解","直近の解答","状態",
+    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"
+  ]];
+  const indices = DATA.map((d,i)=>i).sort((a,b)=>{
+    const sa = progress.items[a], sb = progress.items[b];
+    const wa = sa ? sa.totalWrong : 0, wb = sb ? sb.totalWrong : 0;
+    return wb - wa;
+  });
+  indices.forEach(idx=>{
+    const [item, year] = DATA[idx];
+    const s = progress.items[idx];
+    const lastAnswered = s && s.wrongLog.length ? s.wrongLog[s.wrongLog.length-1].answered : "";
+    const wrongHistory = s ? s.wrongLog.map(w=>w.answered).join(";") : "";
+    const lastWrongDate = s && s.wrongLog.length ? s.wrongLog[s.wrongLog.length-1].at : "";
+    rows.push([
+      eraName(year), item, `${item}（${year}年）`, String(year), lastAnswered, statusLabel(s),
+      s ? s.totalCorrect : 0, s ? s.totalWrong : 0,
+      s ? s.byFormat.A.wrong : 0, s ? s.byFormat.B.wrong : 0,
+      wrongHistory, lastWrongDate, (s && s.masteredAt) || "",
+    ]);
+  });
+  const csv = rows.map(r => r.map(cell=>{
+    const v = String(cell ?? "");
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v;
+  }).join(",")).join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `結果_${account}_${todayStamp()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+
+// ---------------------------------------------------------------------
+// v4: cloud sync (addendum v1.1)
+// ---------------------------------------------------------------------
+function loadSyncConfig(){
+  try{
+    const raw = localStorage.getItem(SYNC_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function saveSyncConfig(cfg){
+  try{ localStorage.setItem(SYNC_KEY, JSON.stringify(cfg)); }catch(e){}
+}
+function clearSyncConfig(){
+  try{ localStorage.removeItem(SYNC_KEY); }catch(e){}
+}
+
+function dbHasRecords(db){
+  if(!db || !db.progress) return false;
+  return Object.values(db.progress).some(acc=>{
+    if(acc && acc.sessions && acc.sessions.length > 0) return true;
+    if(!acc || !acc.items) return false;
+    return Object.values(acc.items).some(it => (it.totalCorrect||0) + (it.totalWrong||0) > 0);
   });
 }
 
-// In "year input" mode there's no sensible way to type a full event
-// description, so every question is asked as event -> year (the child
-// types the year); in "choice" mode the type is randomized as before.
-function buildQuiz(account){
-  const stats = getAccountStats(account);
-  const chosen = nextQuizIndices(stats);
-  const forceType = state.quizMode === "input" ? "event2year" : null;
-  return buildQuestionsFromIndices(chosen, forceType);
+function setSyncStatus(kind, message){
+  state.syncStatus = { kind, message };
+  if(state.screen === "home") render();
 }
 
-// Rebuilds a quiz using the exact same set of items as the just-finished
-// quiz (fresh answer-choice shuffling and question-type randomization),
-// for extra drilling on a tricky batch without pulling new items.
-function buildRepeatQuiz(previousQuestions){
-  const indices = previousQuestions.map(q=>q.dataIdx);
-  const forceType = state.quizMode === "input" ? "event2year" : null;
-  return buildQuestionsFromIndices(shuffle(indices), forceType);
+function classifySyncError(e){
+  if(e && e.kind) return e;
+  return { kind: "network" };
+}
+function syncErrorMessage(e){
+  switch(e.kind){
+    case "network": return "オフライン（ローカルには保存済み）";
+    case "badkey": return "合言葉が違います";
+    case "badresponse": return "GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
+    default: return e.message || "同期エラーが発生しました";
+  }
+}
+function handleSyncError(e){
+  const c = classifySyncError(e);
+  setSyncStatus("error", (c.kind === "badkey" ? "☁⚠ " : "☁⚠ ") + syncErrorMessage(c));
 }
 
+async function fetchJson(url, options){
+  let res;
+  try{ res = await fetch(url, options); }
+  catch(e){ throw { kind: "network" }; }
+  let text;
+  try{ text = await res.text(); }catch(e){ throw { kind: "network" }; }
+  let json;
+  try{ json = JSON.parse(text); }catch(e){ throw { kind: "badresponse" }; }
+  if(!json.ok){
+    const msg = json.error || "";
+    throw { kind: /合言葉|key|unauthorized/i.test(msg) ? "badkey" : "servererror", message: msg };
+  }
+  return json;
+}
+
+async function pullFromCloud(cfg){
+  const url = cfg.url + "?key=" + encodeURIComponent(cfg.key) + "&app=" + encodeURIComponent(APP_ID);
+  const json = await fetchJson(url, { method: "GET" });
+  return json.data; // db object, or null
+}
+async function pushToCloud(cfg, data){
+  await fetchJson(cfg.url, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ key: cfg.key, data }),
+  });
+}
+async function pushListToCloud(cfg, list){
+  await fetchJson(cfg.url, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ key: cfg.key, app: APP_ID, list }),
+  });
+}
+
+// Merges any local-only accounts (matched by name) into an adopted cloud
+// record set, so a fresh device that already made local progress never
+// silently loses it when the cloud copy wins.
+function adoptCloud(cloudData){
+  const merged = deepClone(cloudData);
+  merged.app = APP_ID;
+  if(!merged.progress) merged.progress = {};
+  let mergeHappened = false;
+  ACCOUNTS.forEach(name=>{
+    const localAcc = STORE.progress[name];
+    const localHasThis = localAcc && dbHasRecords({ progress: { [name]: localAcc } });
+    const cloudHasThis = merged.progress[name] && dbHasRecords({ progress: { [name]: merged.progress[name] } });
+    // An account name that's missing from the cloud copy, or present there
+    // but with no real records while the local copy does have some, counts
+    // as "local-only" and must be carried over rather than silently dropped.
+    if(localHasThis && !cloudHasThis){
+      merged.progress[name] = localAcc;
+      mergeHappened = true;
+    }
+  });
+  STORE = merged;
+  saveStore({ preserveUpdatedAt: true });
+  return mergeHappened;
+}
+
+// Push-only: used for the deterministic "local just changed" triggers
+// (session finished, import replaced data) where local is unambiguously
+// the freshest copy and a full pull/merge would be the wrong move.
+async function pushOnly(){
+  const cfg = loadSyncConfig();
+  if(!cfg) return;
+  setSyncStatus("pending", "☁… 同期中");
+  try{
+    await pushToCloud(cfg, STORE);
+    cfg.lastSync = nowIso();
+    saveSyncConfig(cfg);
+    setSyncStatus("success", "☁✓ クラウド保存ずみ");
+  }catch(e){ handleSyncError(e); }
+}
+
+// Full pull + win/lose merge, per addendum §5.
+async function doSync(){
+  const cfg = loadSyncConfig();
+  if(!cfg) return;
+  setSyncStatus("pending", "☁… 同期中");
+  try{
+    const cloudData = await pullFromCloud(cfg);
+    const localHas = dbHasRecords(STORE);
+    const cloudHas = dbHasRecords(cloudData);
+
+    if(!cloudData){
+      await pushToCloud(cfg, STORE);
+    } else if(!localHas && cloudHas){
+      const merged = adoptCloud(cloudData);
+      if(merged) await pushToCloud(cfg, STORE);
+    } else if(localHas && !cloudHas){
+      await pushToCloud(cfg, STORE);
+    } else if(localHas && cloudHas){
+      const localTime = STORE.updatedAt ? new Date(STORE.updatedAt).getTime() : 0;
+      const cloudTime = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : 0;
+      if(cloudTime > localTime){
+        const merged = adoptCloud(cloudData);
+        if(merged) await pushToCloud(cfg, STORE);
+      } else {
+        await pushToCloud(cfg, STORE);
+      }
+    }
+    cfg.lastSync = nowIso();
+    saveSyncConfig(cfg);
+    setSyncStatus("success", "☁✓ クラウド保存ずみ");
+  }catch(e){ handleSyncError(e); }
+}
+
+// ---- JSON export / import (§3) ----
+function exportJsonDb(){
+  const json = JSON.stringify(STORE, null, 2);
+  const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `歴史年代クイズ記録_${todayStamp()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+
+function handleImportFile(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let parsed;
+    try{ parsed = JSON.parse(reader.result); }
+    catch(e){
+      state.modal = { type: "importMismatch", reason: "このファイルは読み込めませんでした（JSON形式が壊れています）。" };
+      render();
+      return;
+    }
+    if(!parsed || parsed.app !== APP_ID){
+      state.modal = { type: "importMismatch", reason: "このファイルは別のツール（または別バージョン）の記録データのようです。" };
+      render();
+      return;
+    }
+    const accountSummaries = ACCOUNTS.map(name=>{
+      const acc = parsed.progress && parsed.progress[name];
+      const has = acc && dbHasRecords({ progress: { [name]: acc } });
+      return `${name}：${has ? "記録あり" : "記録なし"}`;
+    }).join(" / ");
+    state.modal = {
+      type: "importConfirm",
+      pendingData: parsed,
+      summary: accountSummaries,
+      savedAt: parsed.updatedAt || "（不明）",
+    };
+    render();
+  };
+  reader.readAsText(file);
+}
+function confirmImportReplace(){
+  const data = state.modal && state.modal.pendingData;
+  if(!data) return;
+  STORE = data;
+  STORE.app = APP_ID;
+  saveStore(); // updatedAt refreshed -- this is now a fresh local change
+  state.modal = null;
+  render();
+  pushOnly(); // spec: push right after an import replace
+}
+
+// ---- full KP list export to Drive (§6) ----
+function statusLabelForList(s){
+  if(!s || (s.totalCorrect||0)+(s.totalWrong||0) === 0) return "未出題";
+  if(s.mastered) return "習得済み";
+  return `${s.streak}回正解`;
+}
+function formatDateJP(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+}
+function buildFullKpList(){
+  const header = [
+    "名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
+    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数",
+    "過去の誤答内容","最終誤答日","習得日",
+  ];
+  const rows = [];
+  ACCOUNTS.forEach(name=>{
+    const acc = STORE.progress[name] || blankAccountProgress();
+    DATA.forEach((d,idx)=>{
+      const [item, year] = d;
+      const s = acc.items[idx];
+      const wrongHistory = s ? s.wrongLog.map(w=>w.answered).join(";") : "";
+      const lastWrongDate = s && s.wrongLog.length ? formatDateJP(s.wrongLog[s.wrongLog.length-1].at) : "";
+      rows.push([
+        name, eraName(year), "", item, "", "",
+        statusLabelForList(s),
+        s ? s.totalCorrect : 0, s ? s.totalWrong : 0,
+        s ? s.byFormat.A.wrong : 0, s ? s.byFormat.B.wrong : 0,
+        wrongHistory, lastWrongDate, formatDateJP(s && s.masteredAt),
+      ]);
+    });
+  });
+  return { header, rows };
+}
+async function exportListToDrive(){
+  const cfg = loadSyncConfig();
+  if(!cfg) return;
+  setSyncStatus("pending", "☁… 一覧を書き出し中");
+  try{
+    // anti-empty-overwrite: always pull the latest first
+    const cloudData = await pullFromCloud(cfg);
+    const localHas = dbHasRecords(STORE);
+    const cloudHas = dbHasRecords(cloudData);
+    if(!localHas && cloudHas){
+      adoptCloud(cloudData);
+    } else if(localHas && cloudHas){
+      const localTime = STORE.updatedAt ? new Date(STORE.updatedAt).getTime() : 0;
+      const cloudTime = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : 0;
+      if(cloudTime > localTime) adoptCloud(cloudData);
+    }
+    if(!dbHasRecords(STORE)){
+      state.modal = { type: "listBlocked" };
+      setSyncStatus("idle", "");
+      render();
+      return;
+    }
+    const list = buildFullKpList();
+    await pushListToCloud(cfg, list);
+    cfg.lastSync = nowIso();
+    saveSyncConfig(cfg);
+    setSyncStatus("success", "全問一覧をスプレッドシートに書き出しました");
+  }catch(e){ handleSyncError(e); }
+}
+
+// ---------------------------------------------------------------------
+// rendering
+// ---------------------------------------------------------------------
 function render(){
+  renderScreen();
+  renderModalOverlay();
+}
+
+function renderModalOverlay(){
+  let overlay = document.getElementById('modalOverlay');
+  if(!state.modal){
+    if(overlay) overlay.remove();
+    return;
+  }
+  if(!overlay){
+    overlay = document.createElement('div');
+    overlay.id = 'modalOverlay';
+    document.body.appendChild(overlay);
+  }
+  overlay.className = 'modal-overlay';
+  const m = state.modal;
+
+  if(m.type === 'syncSettings'){
+    const cfg = loadSyncConfig();
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>☁ クラウド同期設定</h3>
+        <p>GAS（Google Apps Script）で公開したウェブアプリのURLと、合言葉を入力してください。この端末にだけ保存され、他の場所には送信されません。</p>
+        <div class="modal-field">
+          <label>URL（.../exec で終わるもの）</label>
+          <input type="text" id="syncUrlInput" value="${cfg ? cfg.url : ''}" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+        <div class="modal-field">
+          <label>合言葉</label>
+          <input type="text" id="syncKeyInput" value="${cfg ? cfg.key : ''}" placeholder="合言葉">
+        </div>
+        <div class="modal-btn-row">
+          <button class="sync-btn" id="syncSaveBtn">保存して同期</button>
+          ${cfg ? `<button class="sync-btn warn" id="syncDisconnectBtn">同期を解除</button>` : ''}
+          <button class="ghost-btn" id="modalCancelBtn">閉じる</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('syncSaveBtn').onclick = ()=>{
+      const url = document.getElementById('syncUrlInput').value.trim();
+      const key = document.getElementById('syncKeyInput').value.trim();
+      if(!url.endsWith('/exec') || !key){
+        alert('URLは「/exec」で終わる形式で、合言葉も入力してください。');
+        return;
+      }
+      saveSyncConfig({ url, key, lastSync: null });
+      state.modal = null;
+      render();
+      doSync();
+    };
+    const discBtn = document.getElementById('syncDisconnectBtn');
+    if(discBtn) discBtn.onclick = ()=>{
+      clearSyncConfig();
+      state.modal = null;
+      state.syncStatus = { kind: 'idle', message: '' };
+      render();
+    };
+    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
+    return;
+  }
+
+  if(m.type === 'importConfirm'){
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>記録を置き換えますか？</h3>
+        <p>読み込んだファイルの保存日時：${m.savedAt}<br>${m.summary}</p>
+        <p style="color:var(--shuiro);">この端末にある現在の記録は、読み込んだ内容で<b>すべて置き換わります</b>。元には戻せません。</p>
+        <div class="modal-btn-row">
+          <button class="sync-btn warn" id="importConfirmBtn">置き換える</button>
+          <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('importConfirmBtn').onclick = confirmImportReplace;
+    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
+    return;
+  }
+
+  if(m.type === 'importMismatch'){
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>読み込めませんでした</h3>
+        <p>${m.reason}</p>
+        <div class="modal-btn-row"><button class="ghost-btn" id="modalCancelBtn">閉じる</button></div>
+      </div>
+    `;
+    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
+    return;
+  }
+
+  if(m.type === 'listBlocked'){
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>書き出しを中止しました</h3>
+        <p>クラウド・この端末のどちらにも記録データが見つからなかったため、一覧の書き出しを中止しました。既存のスプレッドシートが空データで上書きされるのを防ぐための安全装置です。クイズに挑戦して記録を作ってから、もう一度お試しください。</p>
+        <div class="modal-btn-row"><button class="ghost-btn" id="modalCancelBtn">閉じる</button></div>
+      </div>
+    `;
+    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
+    return;
+  }
+}
+
+function renderScreen(){
   const app = document.getElementById('app');
   const accountBar = document.getElementById('accountBar');
 
@@ -587,178 +1441,232 @@ function render(){
     return;
   }
 
-  // From here on, account bar visible
   accountBar.style.display = "flex";
   document.getElementById('accountNamePill').textContent = state.account;
   document.getElementById('switchAccountBtn').onclick = ()=>{
+    if(!confirmLeaveSession()) return;
+    state.session = null;
     state.screen = "login";
     state.account = null;
     render();
   };
 
-  if(state.screen === "home"){
-    renderTimelineMap(null);
-    const stats = getAccountStats(state.account);
-    const overallPct = stats.totalAnswered ? Math.round((stats.totalCorrect/stats.totalAnswered)*100) : 0;
-    const mastered = masteredCount(stats);
-    const sourcePool = DATA.length - mastered;
-    const nextBatchSize = Math.min(20, sourcePool);
+  if(state.screen === "home"){ renderHome(app); return; }
+  if(state.screen === "quiz"){ renderQuiz(app); return; }
+  if(state.screen === "result"){ renderResult(app); return; }
+  if(state.screen === "favorites"){ renderFavorites(app); return; }
+}
 
-    // build per-item accuracy, only items with attempts, sorted worst first
-    const itemRows = Object.keys(stats.items).map(idx=>{
-      const s = stats.items[idx];
-      const pct = Math.round((s.correctTotal/s.attempts)*100);
-      return {idx: Number(idx), attempts:s.attempts, correctTotal:s.correctTotal, pct};
-    }).filter(r=>!isMastered(stats, r.idx)).sort((a,b)=>a.pct-b.pct).slice(0,8);
-
-    const weakHtml = itemRows.length ? itemRows.map(r=>{
-      const d = DATA[r.idx];
-      const cls = r.pct < 50 ? "low" : (r.pct < 80 ? "mid" : "high");
-      return `<div class="weak-row">
-        <div class="wi">${d[0]}</div>
-        <div class="wy">${d[1]}年</div>
-        <div class="wp ${cls}">${r.pct}%（${r.correctTotal}/${r.attempts}）</div>
+function renderEraBars(progress){
+  const rows = ERA_BOUNDARIES.map(([start, name], i)=>{
+    const end = i+1 < ERA_BOUNDARIES.length ? ERA_BOUNDARIES[i+1][0] : MAX_YEAR + 1;
+    const idxs = [];
+    DATA.forEach((d,idx)=>{ if(d[1] >= start && d[1] < end) idxs.push(idx); });
+    if(idxs.length === 0) return "";
+    let mastered = 0, partial = 0;
+    idxs.forEach(idx=>{
+      const s = progress.items[idx];
+      if(s && s.mastered) mastered++;
+      else if(s && s.streak > 0) partial++;
+    });
+    const total = idxs.length;
+    const noneCount = total - mastered - partial;
+    const pctM = (mastered/total)*100, pctP = (partial/total)*100, pctN = (noneCount/total)*100;
+    return `
+      <div class="era-bar-row">
+        <div class="ebr-label"><span>${name}</span><span>${mastered} / ${total}</span></div>
+        <div class="era-bar-track">
+          <div class="era-bar-seg mastered" style="width:${pctM}%"></div>
+          <div class="era-bar-seg partial" style="width:${pctP}%"></div>
+          <div class="era-bar-seg none" style="width:${pctN}%"></div>
+        </div>
       </div>`;
-    }).join("") : `<div class="weak-row"><div class="wi">まだ記録がありません。クイズに挑戦してみよう！</div></div>`;
+  }).join("");
+  return rows;
+}
 
-    // items that have been wrong 3+ times (regardless of current mastery), sorted by most-wrong first
-    const wrongRows = Object.keys(stats.items).map(idx=>{
-      const s = stats.items[idx];
-      return {idx: Number(idx), wrongTotal: s.wrongTotal||0};
-    }).filter(r=>r.wrongTotal >= WRONG_FLAG_THRESHOLD).sort((a,b)=>b.wrongTotal-a.wrongTotal);
+function renderHome(app){
+  renderTimelineMap(null);
+  const progress = getCommittedStats(state.account);
+  const syncCfg = loadSyncConfig();
+  const totalAnswered = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect+s.totalWrong,0);
+  const totalCorrect = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect,0);
+  const overallPct = totalAnswered ? Math.round((totalCorrect/totalAnswered)*100) : 0;
+  const mastered = masteredCount(progress);
+  const sourcePool = DATA.length - mastered;
 
-    const wrongHtml = wrongRows.length ? wrongRows.map(r=>{
-      const d = DATA[r.idx];
-      return `<div class="weak-row">
-        <div class="wi">${d[0]}</div>
-        <div class="wy">${d[1]}年</div>
-        <div class="wp low">${r.wrongTotal}回ミス</div>
-      </div>`;
-    }).join("") : `<div class="weak-row"><div class="wi">3回以上まちがえた問題はまだありません。</div></div>`;
+  const itemRows = Object.keys(progress.items).map(idx=>{
+    const s = progress.items[idx];
+    const attempts = s.totalCorrect + s.totalWrong;
+    const pct = attempts ? Math.round((s.totalCorrect/attempts)*100) : 0;
+    return {idx: Number(idx), attempts, correctTotal:s.totalCorrect, pct};
+  }).filter(r=>!isMastered(progress, r.idx) && r.attempts>0).sort((a,b)=>a.pct-b.pct).slice(0,8);
+  const weakHtml = itemRows.length ? itemRows.map(r=>{
+    const d = DATA[r.idx];
+    const cls = r.pct < 50 ? "low" : (r.pct < 80 ? "mid" : "high");
+    return `<div class="weak-row"><div class="wi">${d[0]}</div><div class="wy">${d[1]}年</div>
+      <div class="wp ${cls}">${r.pct}%（${r.correctTotal}/${r.attempts}）</div></div>`;
+  }).join("") : `<div class="weak-row"><div class="wi">まだ記録がありません。クイズに挑戦してみよう！</div></div>`;
 
-    app.innerHTML = `
-      <div class="card center-card">
-        <div class="qtype-tag">${state.account} さんの成績</div>
-        <div class="question-text">${state.account} さん、ようこそ</div>
-        <div class="stat-grid">
-          <div class="stat-box"><div class="num">${stats.quizzesTaken}</div><div class="label">挑戦回数</div></div>
-          <div class="stat-box"><div class="num">${overallPct}%</div><div class="label">全体正解率</div></div>
-          <div class="stat-box"><div class="num">${sourcePool}</div><div class="label">出題元数</div></div>
-          <div class="stat-box"><div class="num">${mastered}</div><div class="label">復習不要数</div></div>
-        </div>
-        <div class="mode-toggle">
-          <button class="mode-btn ${state.quizMode==='choice' ? 'active' : ''}" id="modeChoiceBtn">選択形式（4択）</button>
-          <button class="mode-btn ${state.quizMode==='input' ? 'active' : ''}" id="modeInputBtn">年代入力形式（数字で回答）</button>
-        </div>
-        <div class="btn-row">
-          ${sourcePool > 0
-            ? `<button class="big-btn" id="startBtn">クイズをはじめる（${nextBatchSize}問）</button>`
-            : `<div class="result-comment" style="margin:0 0 4px;">🎉 全100問、3回連続正解して復習不要になりました！</div>`
-          }
-          <button class="ghost-btn" id="favBtn">★ お気に入りをみる（${Object.keys(stats.favorites).length}件）</button>
-        </div>
-        <div class="weak-list">
-          <h3>正解率が低い項目（要復習）</h3>
-          ${weakHtml}
-        </div>
-        <div class="weak-list">
-          <h3>よく間違える問題（3回以上ミス）</h3>
-          ${wrongHtml}
+  const wrongRows = Object.keys(progress.items).map(idx=>({idx:Number(idx), wrongTotal:progress.items[idx].totalWrong}))
+    .filter(r=>r.wrongTotal >= HOME_WRONG_THRESHOLD).sort((a,b)=>b.wrongTotal-a.wrongTotal);
+  const wrongHtml = wrongRows.length ? wrongRows.map(r=>{
+    const d = DATA[r.idx];
+    return `<div class="weak-row"><div class="wi">${d[0]}</div><div class="wy">${d[1]}年</div>
+      <div class="wp low">${r.wrongTotal}回ミス</div></div>`;
+  }).join("") : `<div class="weak-row"><div class="wi">3回以上まちがえた問題はまだありません。</div></div>`;
+
+  app.innerHTML = `
+    <div class="card center-card">
+      ${!LOCAL_STORAGE_OK ? renderStorageWarning() : ''}
+      <div class="qtype-tag">${state.account} さんの成績</div>
+      <div class="question-text">${state.account} さん、ようこそ</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">${progress.quizzesTaken||0}</div><div class="label">挑戦回数</div></div>
+        <div class="stat-box"><div class="num">${overallPct}%</div><div class="label">全体正解率</div></div>
+        <div class="stat-box"><div class="num">${sourcePool}</div><div class="label">出題元数</div></div>
+        <div class="stat-box"><div class="num">${mastered}</div><div class="label">復習不要数</div></div>
+      </div>
+
+      <div class="mode-toggle">
+        <button class="mode-btn ${state.quizMode==='choice' ? 'active' : ''}" id="modeChoiceBtn">選択形式（4択）</button>
+        <button class="mode-btn ${state.quizMode==='input' ? 'active' : ''}" id="modeInputBtn">年代入力形式（数字で回答）</button>
+      </div>
+
+      <div class="len-toggle">
+        <button class="len-btn" id="lenBtn10">10問モード</button>
+        <button class="len-btn" id="lenBtn20">20問モード</button>
+        <button class="len-btn" id="lenBtnAll">全問モード</button>
+      </div>
+      <div class="shortage-note">※10・20問モードは「知識ポイント」の数。1KPにつき2問（出来事→年代／年代→出来事）出題されます。</div>
+
+      <div class="btn-row">
+        <button class="ghost-btn" id="favBtn">★ お気に入りをみる（${Object.values(progress.items).filter(s=>s.favorite).length}件）</button>
+        <button class="csv-btn" id="csvBtn">結果をCSVでダウンロード</button>
+      </div>
+
+      <div class="era-bars">
+        <h3>時代別 習得状況</h3>
+        ${renderEraBars(progress)}
+      </div>
+
+      <div class="weak-list">
+        <h3>正解率が低い項目（要復習）</h3>
+        ${weakHtml}
+      </div>
+      <div class="weak-list">
+        <h3>よく間違える問題（3回以上ミス）</h3>
+        ${wrongHtml}
+      </div>
+
+      <div class="sync-panel">
+        <h3>記録データの管理</h3>
+        ${renderSyncStatusPill()}
+        <div class="sync-btn-grid">
+          <button class="sync-btn" id="exportJsonBtn">📤 記録を書き出す(JSON)</button>
+          <button class="sync-btn" id="importJsonBtn">📥 記録を読み込む</button>
+          <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
+          <button class="sync-btn" id="syncSettingsBtn">☁ クラウド同期設定</button>
+          ${syncCfg ? `<button class="sync-btn" id="syncNowBtn">今すぐ同期</button>` : ''}
+          ${syncCfg ? `<button class="sync-btn" id="listExportBtn">📋 全問一覧をDriveへ</button>` : ''}
         </div>
       </div>
-    `;
-    document.getElementById('modeChoiceBtn').onclick = ()=>{
-      state.quizMode = "choice";
-      render();
-    };
-    document.getElementById('modeInputBtn').onclick = ()=>{
-      state.quizMode = "input";
-      render();
-    };
-    const startBtn = document.getElementById('startBtn');
-    if(startBtn){
-      startBtn.onclick = ()=>{
-        state.questions = buildQuiz(state.account);
-        state.qIndex = 0; state.score = 0; state.answered=false; state.log=[];
-        state.screen = "quiz";
-        render();
-      };
-    }
-    document.getElementById('favBtn').onclick = ()=>{
-      state.screen = "favorites";
-      render();
-    };
-    return;
+    </div>
+  `;
+  document.getElementById('modeChoiceBtn').onclick = ()=>{ state.quizMode = "choice"; render(); };
+  document.getElementById('modeInputBtn').onclick = ()=>{ state.quizMode = "input"; render(); };
+  document.getElementById('lenBtn10').onclick = ()=>{ startSession("10q"); render(); };
+  document.getElementById('lenBtn20').onclick = ()=>{ startSession("20q"); render(); };
+  document.getElementById('lenBtnAll').onclick = ()=>{ startSession("all"); render(); };
+  document.getElementById('favBtn').onclick = ()=>{ state.screen = "favorites"; render(); };
+  document.getElementById('csvBtn').onclick = ()=>exportCsv(state.account);
+
+  document.getElementById('exportJsonBtn').onclick = exportJsonDb;
+  const importInput = document.getElementById('importJsonFile');
+  document.getElementById('importJsonBtn').onclick = ()=> importInput.click();
+  importInput.onchange = (e)=>{
+    if(e.target.files && e.target.files[0]) handleImportFile(e.target.files[0]);
+    importInput.value = "";
+  };
+  document.getElementById('syncSettingsBtn').onclick = ()=>{ state.modal = { type: "syncSettings" }; render(); };
+  const syncNowBtn = document.getElementById('syncNowBtn');
+  if(syncNowBtn) syncNowBtn.onclick = doSync;
+  const listExportBtn = document.getElementById('listExportBtn');
+  if(listExportBtn) listExportBtn.onclick = exportListToDrive;
+}
+
+function renderStorageWarning(){
+  const cfg = loadSyncConfig();
+  if(cfg){
+    return `<div class="storage-warning ok-with-cloud">☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます</div>`;
   }
+  return `<div class="storage-warning">⚠ この端末（ブラウザ）には記録を保存できません（プライベートブラウジング等）。記録を残すには「☁ クラウド同期設定」から同期を設定してください。</div>`;
+}
 
+function renderSyncStatusPill(){
+  const s = state.syncStatus;
+  const cfg = loadSyncConfig();
+  if(s.kind === 'idle' && !cfg){
+    return `<div class="sync-status idle">☁ 未設定（この端末にのみ記録が保存されます）</div>`;
+  }
+  const lastSyncTxt = cfg && cfg.lastSync ? `｜最終同期 ${formatDateJP(cfg.lastSync)} ${new Date(cfg.lastSync).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}` : '';
+  const msg = s.message || (cfg ? '☁ 同期設定ずみ' : '☁ 未設定');
+  return `<div class="sync-status ${s.kind}">${msg}${lastSyncTxt}</div>`;
+}
 
-  if(state.screen === "favorites"){
-    renderTimelineMap(null);
-    const stats = getAccountStats(state.account);
-    const favIdxs = Object.keys(stats.favorites).map(Number).sort((a,b)=>DATA[a][1]-DATA[b][1]);
-    const listHtml = favIdxs.length ? favIdxs.map(idx=>{
-      const d = DATA[idx];
-      return `<div class="review-item ok">
-        <button class="search-btn" data-search="${d[0].replace(/"/g,'&quot;')}">🔍</button>
-        <button class="star-btn active" data-idx="${idx}">★</button>
-        <span class="ritem">${d[0]}</span> — <span class="ryear">${d[1]}年</span><br>
-        ${d[2]}
-      </div>`;
-    }).join("") : `<div class="fav-empty">まだお気に入りはありません。クイズ中に★ボタンで登録できます。</div>`;
+function renderQuiz(app){
+  const sess = state.session;
+  const liveQ = sess.questions[sess.qIndex];
+  const viewingReview = sess.reviewIndex !== null;
+  const viewIdx = viewingReview ? sess.reviewIndex : sess.qIndex;
+  const q = viewingReview ? sess.questions[viewIdx] : liveQ;
+  const logEntry = viewingReview ? sess.log[viewIdx] : null;
+  const canRedo = viewingReview && viewIdx === sess.qIndex - 1;
 
-    app.innerHTML = `
-      <div class="card">
-        <div class="qtype-tag">${state.account} さんのお気に入り</div>
-        <div class="question-text">忘れそう・気になる問題</div>
-        <div class="review-list">${listHtml}</div>
-        <div class="btn-row">
-          <button class="ghost-btn" id="backHomeBtn">成績ページにもどる</button>
-        </div>
+  renderTimelineMap(q.year);
+  const progress = sess.pendingProgress;
+  const isEventQ = q.format === "A";
+  const useInput = q.format === "A" && sess.answerMode === "input";
+  const freqWrong = isFrequentlyWrong(progress, q.dataIdx, HOME_WRONG_THRESHOLD);
+  const itemStat = progress.items[q.dataIdx];
+  const streakForGauge = viewingReview && !canRedo ? null : (itemStat ? itemStat.streak : 0);
+  const gauge = streakForGauge===null ? "" :
+    '<span class="kp-gauge">' + "●".repeat(Math.min(streakForGauge, MASTERY_STREAK)) + "○".repeat(Math.max(0, MASTERY_STREAK-streakForGauge)) + "</span>";
+
+  // "あと◯語" = KPs in this session's target set not yet mastered, live
+  const sessionKpSet = new Set(sess.questions.map(qq=>qq.dataIdx));
+  let stillToMaster = 0;
+  sessionKpSet.forEach(idx=>{ if(!isMastered(progress, idx)) stillToMaster++; });
+
+  const progressPct = Math.round((sess.qIndex / sess.questions.length) * 100);
+
+  const materialized = q.choices !== undefined ? q : materializeQuestion(q.dataIdx, q.format, sess.answerMode);
+
+  app.innerHTML = `
+    <div class="card">
+      ${viewingReview ? `<div class="review-banner">${canRedo ? "直前の問題を見直しています。答えを選び直すと上書きされます。" : "過去の問題を閲覧中です（この問題はもう答え直せません）"}</div>` : ""}
+      <div class="progress-track"><div class="progress-fill" style="width:${progressPct}%"></div></div>
+      <div class="stat-strip">
+        <span>第 <b>${viewIdx+1}</b> / ${sess.questions.length} 問</span>
+        <span>正解 <b>${sess.score}</b> ／ 誤答 <b>${sess.wrongCount}</b></span>
+        ${sess.mode !== "all" ? `<span>あと <b>${stillToMaster}</b> 語</span>` : ""}
+        ${gauge}
       </div>
-    `;
-    app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
-      btn.onclick = ()=>{
-        toggleFavorite(state.account, Number(btn.dataset.idx));
-        render();
-      };
-    });
-    app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
-      btn.onclick = ()=> openGoogleSearch(btn.dataset.search);
-    });
-    document.getElementById('backHomeBtn').onclick = ()=>{
-      state.screen = "home";
-      render();
-    };
-    return;
-  }
-
-  if(state.screen === "quiz"){
-    const q = state.questions[state.qIndex];
-    renderTimelineMap(q.year);
-    const isEventQ = q.type === "event2year";
-    const useInput = state.quizMode === "input";
-    const stats = getAccountStats(state.account);
-    const freqWrong = isFrequentlyWrong(stats, q.dataIdx);
-    app.innerHTML = `
-      <div class="card">
-        <div class="progress-row">
-          <div class="qnum">第 <b>${state.qIndex+1}</b> / ${state.questions.length} 問</div>
-          <div class="score">正解 ${state.score} 問</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <div class="qtype-tag ${isEventQ ? '' : 'era-to-event'}" style="margin-bottom:0;">${isEventQ ? "出来事 → 年代" : "年代 → 出来事"}</div>
+          ${useInput ? `<div class="qtype-tag" style="background:var(--kincha); margin-bottom:0;">✎ 入力形式</div>` : ''}
+          ${freqWrong ? `<div class="qtype-tag" style="background:var(--shuiro); margin-bottom:0;">⚠️ よく間違える</div>` : ''}
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-            <div class="qtype-tag ${isEventQ ? '' : 'era-to-event'}" style="margin-bottom:0;">${isEventQ ? "出来事 → 年代" : "年代 → 出来事"}</div>
-            ${useInput ? `<div class="qtype-tag" style="background:var(--kincha); margin-bottom:0;">✎ 入力形式</div>` : ''}
-            ${freqWrong ? `<div class="qtype-tag" style="background:var(--shuiro); margin-bottom:0;">⚠️ よく間違える</div>` : ''}
-          </div>
-          <button class="star-btn ${isFavorite(state.account, q.dataIdx) ? 'active' : ''}" id="favToggleBtn">★ <span class="lbl">あとで見る</span></button>
-        </div>
-        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-          <button class="search-btn" id="searchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
-        </div>
-        <div class="question-text" style="margin-top:14px;">
-          ${isEventQ ? q.item : `<span class="year-big">${q.year}年</span> に起こったことは？`}
-        </div>
+        <button class="star-btn ${isFavorite(progress, q.dataIdx) ? 'active' : ''}" id="favToggleBtn">★ <span class="lbl">あとで見る</span></button>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+        <button class="search-btn" id="searchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
+      </div>
+      <div class="question-text" style="margin-top:14px;">
+        ${isEventQ ? materialized.item : `<span class="year-big">${materialized.year}年</span> に起こったことは？`}
+      </div>
+      ${(!viewingReview || canRedo) ? `
         ${useInput ? `
           <div class="year-input-row">
             <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="year-input" id="yearInput" placeholder="例：239 / 1868" autocomplete="off">
@@ -767,191 +1675,254 @@ function render(){
           </div>
           <div class="year-input-hint">3桁・4桁どちらの年代でも、数字だけ入力してください</div>
         ` : `<div class="choices" id="choices"></div>`}
-        <div class="feedback-box" id="feedback"></div>
-        <button class="next-btn" id="nextBtn">${state.qIndex===state.questions.length-1 ? "結果を見る" : "次の問題へ"}</button>
+      ` : `
+        <div class="choices" id="choicesReadonly">
+          ${materialized.choices.map((c,i)=>{
+            let cls = 'choice-btn';
+            if(i === materialized.correctIdx) cls += ' correct';
+            else if(logEntry && logEntry.answeredText === c) cls += ' wrong';
+            return `<button class="${cls}" disabled>${c}</button>`;
+          }).join("")}
+        </div>
+      `}
+      <div class="feedback-box ${viewingReview ? 'show' : ''}" id="feedback">
+        ${viewingReview ? `${logEntry.correct ? "○ 正解でした" : "× 不正解でした（正解: " + materialized.year + "年）"}<br><span class="mnemonic">${materialized.mnemonic}</span>` : ""}
       </div>
-    `;
+      ${!viewingReview ? `<button class="next-btn" id="nextBtn">${sess.qIndex===sess.questions.length-1 ? "結果を見る" : "次の問題へ"}</button>` : ""}
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn" ${viewIdx<=0 ? "disabled" : ""}>← 前の問題</button>
+        <button class="nav-btn" id="fwdBtn" ${!viewingReview ? "disabled" : ""}>進む →</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('prevBtn').onclick = ()=>{
+    sess.reviewIndex = viewingReview ? Math.max(0, sess.reviewIndex-1) : sess.qIndex-1;
+    render();
+  };
+  document.getElementById('fwdBtn').onclick = ()=>{
+    if(!viewingReview) return;
+    sess.reviewIndex = (sess.reviewIndex >= sess.qIndex-1) ? null : sess.reviewIndex+1;
+    render();
+  };
+  document.getElementById('favToggleBtn').onclick = ()=>{
+    const nowFav = toggleFavorite(q.dataIdx);
+    document.getElementById('favToggleBtn').classList.toggle('active', nowFav);
+  };
+  document.getElementById('searchBtn').onclick = ()=> openGoogleSearch(materialized.item);
+
+  if(!viewingReview){
+    document.getElementById('nextBtn').onclick = nextQuestion;
     if(useInput){
       const inputEl = document.getElementById('yearInput');
       const submitBtn = document.getElementById('yearSubmitBtn');
-      submitBtn.onclick = submitYearAnswer;
-      inputEl.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter') submitYearAnswer();
-      });
+      submitBtn.onclick = ()=>submitAnswer('input', materialized);
+      inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') submitAnswer('input', materialized); });
       inputEl.focus();
     } else {
       const choicesEl = document.getElementById('choices');
-      q.choices.forEach((c, i)=>{
+      materialized.choices.forEach((c,i)=>{
         const btn = document.createElement('button');
         btn.className = 'choice-btn';
         btn.textContent = c;
-        btn.onclick = ()=> selectAnswer(i);
+        btn.onclick = ()=> submitAnswer('choice', materialized, i);
         choicesEl.appendChild(btn);
       });
     }
-    document.getElementById('nextBtn').onclick = nextQuestion;
-    document.getElementById('favToggleBtn').onclick = ()=>{
-      const nowFav = toggleFavorite(state.account, q.dataIdx);
-      const btn = document.getElementById('favToggleBtn');
-      btn.classList.toggle('active', nowFav);
-    };
-    document.getElementById('searchBtn').onclick = ()=>{
-      openGoogleSearch(q.item);
-    };
-    return;
-  }
-
-  if(state.screen === "result"){
-    renderTimelineMap(null, true);
-    const pct = Math.round((state.score/20)*100);
-    let comment;
-    if(pct===100) comment = "満点！歴史マスター認定です";
-    else if(pct>=80) comment = "あと少し！よく覚えています";
-    else if(pct>=50) comment = "半分以上正解！この調子で復習を";
-    else comment = "語呂合わせを見直してもう一度挑戦しよう";
-
-    const reviewHtml = state.log.map(l=>{
-      const nowMastered = isMastered(getAccountStats(state.account), l.dataIdx);
-      return `<div class="review-item ${l.correct ? 'ok' : ''}">
-        <button class="search-btn" data-search="${l.item.replace(/"/g,'&quot;')}">🔍</button>
-        <button class="star-btn ${isFavorite(state.account, l.dataIdx) ? 'active' : ''}" data-idx="${l.dataIdx}">★</button>
-        <span class="ritem">${l.item}</span> — <span class="ryear">${l.year}年</span> ${nowMastered ? '<span style="color:var(--moss);font-weight:700;">卒業！</span>' : ''}<br>
-        ${l.mnemonic}
-      </div>`;
-    }).join("");
-
-    const stats = getAccountStats(state.account);
-    const remaining = sourcePoolCount(stats);
-
-    app.innerHTML = `
-      <div class="card center-card">
-        <div class="qtype-tag">${state.account} さんの結果</div>
-        <div class="result-score">${state.score}<span> / ${state.questions.length} 問正解</span></div>
-        <div class="result-comment">${comment}</div>
-        <div class="btn-row">
-          <button class="big-btn" id="repeatSameBtn">今の${state.questions.length}問をもう一度</button>
-          ${remaining > 0
-            ? `<button class="ghost-btn" id="retryBtn">新しい問題に挑戦する</button>`
-            : `<div class="result-comment" style="margin:0 0 4px;">🎉 全100問、3回連続正解して復習不要になりました！</div>`
-          }
-          <button class="ghost-btn" id="homeBtn">成績ページにもどる</button>
-        </div>
-        <div class="review-list">${reviewHtml}</div>
-      </div>
-    `;
-    document.getElementById('repeatSameBtn').onclick = ()=>{
-      state.questions = buildRepeatQuiz(state.questions);
-      state.qIndex = 0; state.score = 0; state.answered=false; state.log=[];
-      state.screen = "quiz";
-      render();
-    };
-    const retryBtn = document.getElementById('retryBtn');
-    if(retryBtn){
-      retryBtn.onclick = ()=>{
-        state.questions = buildQuiz(state.account);
-        state.qIndex = 0; state.score = 0; state.answered=false; state.log=[];
-        state.screen = "quiz";
-        render();
-      };
+  } else if(canRedo){
+    // redo UI: same as live but writes go through redoAnswer
+    if(useInput){
+      const inputEl = document.getElementById('yearInput');
+      const submitBtn = document.getElementById('yearSubmitBtn');
+      submitBtn.onclick = ()=>submitAnswer('input', materialized, null, true);
+      inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') submitAnswer('input', materialized, null, true); });
+    } else {
+      const choicesEl = document.getElementById('choices');
+      materialized.choices.forEach((c,i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = c;
+        btn.onclick = ()=> submitAnswer('choice', materialized, i, true);
+        choicesEl.appendChild(btn);
+      });
     }
-    document.getElementById('homeBtn').onclick = ()=>{
-      state.screen = "home";
-      render();
-    };
-    app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
-      btn.onclick = ()=>{
-        const nowFav = toggleFavorite(state.account, Number(btn.dataset.idx));
-        btn.classList.toggle('active', nowFav);
-      };
-    });
-    app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
-      btn.onclick = ()=> openGoogleSearch(btn.dataset.search);
-    });
-    return;
   }
 }
 
-// Shared bookkeeping for both answer modes: updates score, the review log,
-// and the account's per-item mastery/wrong-count stats.
-function recordAnswer(correct){
-  state.answered = true;
-  const q = state.questions[state.qIndex];
-  if(correct) state.score++;
-  state.log.push({dataIdx:q.dataIdx, item:q.item, year:q.year, mnemonic:q.mnemonic, correct});
-
-  const stats = getAccountStats(state.account);
-  if(!stats.items[q.dataIdx]) stats.items[q.dataIdx] = {attempts:0, correctStreak:0, correctTotal:0, wrongTotal:0};
-  const itemStat = stats.items[q.dataIdx];
-  itemStat.attempts++;
-  if(correct){
-    itemStat.correctStreak++;
-    itemStat.correctTotal++;
+function submitAnswer(kind, materialized, choiceIdx, isRedo){
+  const sess = state.session;
+  let correct, answeredText;
+  if(kind === 'choice'){
+    correct = choiceIdx === materialized.correctIdx;
+    answeredText = materialized.choices[choiceIdx];
   } else {
-    itemStat.correctStreak = 0; // one miss clears the streak toward mastery
-    itemStat.wrongTotal++;
+    const inputEl = document.getElementById('yearInput');
+    const raw = (inputEl.value || "").trim();
+    const val = parseInt(raw, 10);
+    correct = !isNaN(val) && String(val) === raw.replace(/^0+(?=\d)/, "") && val === materialized.year;
+    answeredText = raw;
+    inputEl.disabled = true;
+    inputEl.classList.add(correct ? 'input-correct' : 'input-wrong');
+    if(!correct) inputEl.value = raw + "　→　正解: " + materialized.year;
   }
-  stats.totalAnswered++;
-  if(correct) stats.totalCorrect++;
-  saveAllData(ALL_DATA);
-  return q;
-}
 
-function showFeedback(correct, mnemonic, correctYear){
+  if(isRedo){ redoAnswer(correct, answeredText); render(); return; }
+
+  commitLiveAnswer(correct, answeredText);
+
+  if(kind === 'choice'){
+    document.querySelectorAll('.choice-btn').forEach((b,idx)=>{
+      b.disabled = true;
+      if(idx === materialized.correctIdx) b.classList.add('correct');
+      else if(b.textContent === answeredText) b.classList.add('wrong');
+    });
+  }
   const fb = document.getElementById('feedback');
   fb.classList.add('show');
-  fb.innerHTML = `${correct ? "○ 正解！" : "× 残念、正解は " + correctYear + "年"}<br><span class="mnemonic">${mnemonic}</span>`;
+  fb.innerHTML = `${correct ? "○ 正解！" : "× 残念、正解は " + materialized.year + "年"}<br><span class="mnemonic">${materialized.mnemonic}</span>`;
   document.getElementById('nextBtn').classList.add('show');
 }
 
-function selectAnswer(i){
-  if(state.answered) return;
-  const q = state.questions[state.qIndex];
-  const correct = i === q.correctIdx;
-  recordAnswer(correct);
-
-  const buttons = document.querySelectorAll('.choice-btn');
-  buttons.forEach((b, idx)=>{
-    b.disabled = true;
-    if(idx === q.correctIdx) b.classList.add('correct');
-    else if(idx === i) b.classList.add('wrong');
-  });
-
-  showFeedback(correct, q.mnemonic, q.year);
-}
-
-function submitYearAnswer(){
-  if(state.answered) return;
-  const q = state.questions[state.qIndex];
-  const inputEl = document.getElementById('yearInput');
-  const submitBtn = document.getElementById('yearSubmitBtn');
-  const raw = (inputEl.value || "").trim();
-  const val = parseInt(raw, 10);
-  const correct = !isNaN(val) && String(val) === raw.replace(/^0+(?=\d)/, "") && val === q.year;
-
-  recordAnswer(correct);
-
-  inputEl.disabled = true;
-  submitBtn.disabled = true;
-  inputEl.classList.add(correct ? 'input-correct' : 'input-wrong');
-  if(!correct){
-    inputEl.value = raw + "　→　正解: " + q.year;
-  }
-
-  showFeedback(correct, q.mnemonic, q.year);
-}
-
 function nextQuestion(){
-  if(state.qIndex >= state.questions.length-1){
-    const stats = getAccountStats(state.account);
-    stats.quizzesTaken++;
-    saveAllData(ALL_DATA);
-    state.screen = "result";
+  const sess = state.session;
+  if(sess.qIndex >= sess.questions.length){
+    finishSession();
     render();
     return;
   }
-  state.qIndex++;
-  state.answered = false;
   render();
+}
+
+function renderResult(app){
+  const sess = state.session;
+  renderTimelineMap(null, true);
+  const total = sess.questions.length;
+  const pct = Math.round((sess.score/total)*100);
+  let comment;
+  if(pct===100) comment = "満点！歴史マスター認定です";
+  else if(pct>=80) comment = "あと少し！よく覚えています";
+  else if(pct>=50) comment = "半分以上正解！この調子で復習を";
+  else comment = "語呂合わせを見直してもう一度挑戦しよう";
+
+  const progress = getCommittedStats(state.account);
+  const wrongEntries = sess.log.filter(l=>!l.correct);
+  const reviewHtml = wrongEntries.length ? wrongEntries.map(l=>{
+    const d = DATA[l.dataIdx];
+    return `<div class="review-item">
+      <button class="search-btn" data-search="${d[0].replace(/"/g,'&quot;')}">🔍</button>
+      <button class="star-btn ${isFavorite(progress, l.dataIdx) ? 'active':''}" data-idx="${l.dataIdx}">★</button>
+      <span class="ritem">${d[0]}</span> — <span class="ryear">${d[1]}年</span> (${l.format==='A'?'出来事→年代':'年代→出来事'})<br>
+      あなたの答え: ${l.answeredText}
+    </div>`;
+  }).join("") : `<div class="fav-empty">今回は間違いなし！お見事です。</div>`;
+
+  // category (era) full table
+  const eraFilterOptions = ['すべて', ...ERA_BOUNDARIES.map(e=>e[1])];
+  app.innerHTML = `
+    <div class="card center-card">
+      <div class="qtype-tag">${state.account} さんの結果（${sess.mode==='all'?'全問モード':sess.mode==='10q'?'10問モード':'20問モード'}）</div>
+      <div class="result-score">${sess.score}<span> / ${total} 問正解</span></div>
+      <div class="result-comment">${comment}</div>
+      <div class="result-comment" style="color:var(--moss);">今回新しく習得：${sess.newlyMastered.size}問</div>
+      <div class="btn-row">
+        <button class="big-btn" id="backHomeBtn">成績ページにもどる</button>
+        <button class="csv-btn" id="csvBtnResult">結果をCSVでダウンロード</button>
+      </div>
+      <div class="weak-list">
+        <h3>今回間違えた問題</h3>
+        <div class="review-list">${reviewHtml}</div>
+      </div>
+      <div class="weak-list">
+        <div class="filter-row">
+          <select id="eraFilter">${eraFilterOptions.map(e=>`<option value="${e}">${e}</option>`).join("")}</select>
+          <select id="sortFilter">
+            <option value="wrong">誤答数が多い順</option>
+            <option value="category">カテゴリー順</option>
+            <option value="status">状態順</option>
+          </select>
+        </div>
+        <div id="kpTableWrap"></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('backHomeBtn').onclick = ()=>{
+    state.session = null;
+    state.screen = "home";
+    render();
+  };
+  document.getElementById('csvBtnResult').onclick = ()=>exportCsv(state.account);
+  app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
+    btn.onclick = ()=>{
+      const nowFav = toggleFavorite(Number(btn.dataset.idx));
+      btn.classList.toggle('active', nowFav);
+    };
+  });
+  app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
+    btn.onclick = ()=> openGoogleSearch(btn.dataset.search);
+  });
+
+  function renderKpTable(){
+    const era = document.getElementById('eraFilter').value;
+    const sortKey = document.getElementById('sortFilter').value;
+    let rows = DATA.map((d,idx)=>({idx, item:d[0], year:d[1], era:eraName(d[1]), s: progress.items[idx]}));
+    if(era !== 'すべて') rows = rows.filter(r=>r.era===era);
+    if(sortKey === 'wrong') rows.sort((a,b)=>(b.s?b.s.totalWrong:0)-(a.s?a.s.totalWrong:0));
+    else if(sortKey === 'category') rows.sort((a,b)=>a.year-b.year);
+    else if(sortKey === 'status') rows.sort((a,b)=>{
+      const ma = a.s&&a.s.mastered?1:0, mb=b.s&&b.s.mastered?1:0;
+      return ma-mb;
+    });
+    const html = `
+      <table class="kp-table">
+        <thead><tr><th>カテゴリー</th><th>知識ポイント</th><th>状態</th><th>累計正誤</th></tr></thead>
+        <tbody>
+          ${rows.map(r=>{
+            const flagged = r.s && r.s.totalWrong >= RESULT_WRONG_BADGE_THRESHOLD;
+            return `<tr class="${flagged?'flagged':''}">
+              <td>${r.era}</td>
+              <td>${r.item}${flagged ? ` <span class="kp-badge">⚠️${r.s.totalWrong}回ミス</span>` : ''}</td>
+              <td>${statusLabel(r.s)}</td>
+              <td>○${r.s?r.s.totalCorrect:0} ／ ×${r.s?r.s.totalWrong:0}</td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    `;
+    document.getElementById('kpTableWrap').innerHTML = html;
+  }
+  document.getElementById('eraFilter').onchange = renderKpTable;
+  document.getElementById('sortFilter').onchange = renderKpTable;
+  renderKpTable();
+}
+
+function renderFavorites(app){
+  renderTimelineMap(null);
+  const progress = getCommittedStats(state.account);
+  const favIdxs = Object.keys(progress.items).map(Number).filter(idx=>progress.items[idx].favorite).sort((a,b)=>DATA[a][1]-DATA[b][1]);
+  const listHtml = favIdxs.length ? favIdxs.map(idx=>{
+    const d = DATA[idx];
+    return `<div class="review-item ok">
+      <button class="search-btn" data-search="${d[0].replace(/"/g,'&quot;')}">🔍</button>
+      <button class="star-btn active" data-idx="${idx}">★</button>
+      <span class="ritem">${d[0]}</span> — <span class="ryear">${d[1]}年</span><br>
+      ${d[2]}
+    </div>`;
+  }).join("") : `<div class="fav-empty">まだお気に入りはありません。クイズ中に★ボタンで登録できます。</div>`;
+  app.innerHTML = `
+    <div class="card">
+      <div class="qtype-tag">${state.account} さんのお気に入り</div>
+      <div class="question-text">忘れそう・気になる問題</div>
+      <div class="review-list">${listHtml}</div>
+      <div class="btn-row"><button class="ghost-btn" id="backHomeBtn">成績ページにもどる</button></div>
+    </div>
+  `;
+  app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
+    btn.onclick = ()=>{ toggleFavorite(Number(btn.dataset.idx)); render(); };
+  });
+  app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
+    btn.onclick = ()=> openGoogleSearch(btn.dataset.search);
+  });
+  document.getElementById('backHomeBtn').onclick = ()=>{ state.screen = "home"; render(); };
 }
 
 function renderTimelineMap(currentYear, done){
@@ -961,10 +1932,11 @@ function renderTimelineMap(currentYear, done){
     [239,"古代"],[710,"奈良"],[794,"平安"],[1192,"鎌倉"],[1336,"室町"],
     [1603,"江戸"],[1868,"明治"],[1912,"大正〜昭和"],[1989,"平成〜"]
   ];
-  labels.forEach(([y,label])=>{
-    html += `<div class="era-label" style="left:${pctPos(y)}%">${label}</div>`;
-  });
-  const answeredYears = done ? state.log.map(l=>l.year) : (state.screen==="quiz" ? state.questions.slice(0,state.qIndex).map(q=>q.year) : []);
+  labels.forEach(([y,label])=>{ html += `<div class="era-label" style="left:${pctPos(y)}%">${label}</div>`; });
+  let answeredYears = [];
+  if(state.session && state.screen === "quiz"){
+    answeredYears = sessionAnsweredYears();
+  }
   DATA.forEach(d=>{
     const y = d[1];
     let cls = "dot";
@@ -974,8 +1946,13 @@ function renderTimelineMap(currentYear, done){
   });
   map.innerHTML = html;
 }
+function sessionAnsweredYears(){
+  const sess = state.session;
+  return sess.log.map(l => DATA[l.dataIdx][1]);
+}
 
 render();
+if(loadSyncConfig()) doSync(); // §5: pull on app launch
 </script>
 </body>
 </html>
