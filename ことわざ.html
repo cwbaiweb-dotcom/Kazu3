@@ -751,8 +751,7 @@ function resolveMerge(cloud){
   }
   const cs=dbSummary(cloud);
   if(!localHas){ adopt(cloud,cs); return; }                 // ローカル空 → 無条件採用
-  if((cloud.updatedAt||"") > (S.updatedAt||"")) adopt(cloud,cs);   // クラウドが新しい → 採用
-  else push("☁ この端末のほうが新しいので送りました（相手側で「今すぐ同期」すると反映されます）");
+  adopt(cloud,cs);   // 両方に記録あり → 常に「合流」（新しい方だけ勝ち、をやめる）。項目ごとに多い方を残す
 }
 function adopt(cloud,cs){
   const localUsers=S.users||{};
