@@ -610,9 +610,26 @@ const APP="kj-quiz-kokugo-kotowaza";      // ツール識別子（変更しな�
 const OLDKEY="kotowaza_dojo_v1";           // 旧バージョンからの移行元
 const SYNCKEY=APP+":sync";                 // 同期設定（同期対象に含めない）
 const TOOLNAME="ことわざ道場";
-let S={app:APP,version:2,updatedAt:null,users:{},cur:null};
+function blankDB(){ return {app:APP,version:1,updatedAt:null,activeAccountId:null,accounts:[],progress:{}}; }
+let S=blankDB();
 let SY=null;        // {url,key,lastSync}
 let memFail=false;  // localStorage が使えない環境
+
+/* ---- §9 アカウント補助 ---- */
+function accByName(n){ return S.accounts.find(a=>a.name===n)||null; }
+function accById(id){ return S.accounts.find(a=>a.id===id)||null; }
+function curAcc(){ return accById(S.activeAccountId); }
+function curName(){ const a=curAcc(); return a?a.name:null; }
+function prog(id){ if(!S.progress[id]) S.progress[id]={items:{},sessions:[]}; return S.progress[id]; }
+function curItems(){ const a=curAcc(); return a?prog(a.id).items:{}; }
+function newAccId(){ return "acc_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function addAccount(name){
+  let a=accByName(name);
+  if(!a){ a={id:newAccId(),name,createdAt:new Date().toISOString()}; S.accounts.push(a); prog(a.id); }
+  return a;
+}
+function blankItem(){ return {streak:0,mastered:false,masteredAt:null,lastFormat:null,
+  totalCorrect:0,totalWrong:0,byFormat:{A:{correct:0,wrong:0},B:{correct:0,wrong:0}},wrongLog:[],lastSeenAt:null}; }
 
 function load(){
   loadSync();
@@ -625,20 +642,37 @@ function load(){
 function loadSync(){ try{ const r=localStorage.getItem(SYNCKEY); if(r) SY=JSON.parse(r); }catch(e){} }
 function saveSync(){ try{ localStorage.setItem(SYNCKEY,JSON.stringify(SY)); }catch(e){} }
 function migrate(){
-  if(!S.users) S.users={};
-  S.app=APP; if(!S.version) S.version=2;
-  for(const name of Object.keys(S.users)){
-    const u=S.users[name];
-    if(!u.st) u.st={};
-    if(!u.createdAt) u.createdAt=new Date().toISOString();
-    for(const id of Object.keys(u.st)){
-      const it=u.st[id];
-      if(it.bf===undefined) it.bf={A:{w:0},B:{w:0}};  // A=意味→ことわざ, B=ことわざ→語/意味
-      if(it.wl===undefined) it.wl=[];
-      if(it.mAt===undefined) it.mAt=null;
-      if(it.seen===undefined) it.seen=null;
+  // 旧・独自スキーマ {users:{name:{st,sessions?}},cur} → §9 へ変換
+  if(S && S.users && !S.accounts){
+    const old=S; S=blankDB(); S.updatedAt=old.updatedAt||null;
+    for(const name of Object.keys(old.users||{})){
+      const a=addAccount(name); const u=old.users[name]||{}; const p=prog(a.id);
+      for(const id of Object.keys(u.st||{})){
+        const it=u.st[id];
+        p.items[id]={
+          streak:it.k||0, mastered:(it.k||0)>=2, masteredAt:it.mAt||null, lastFormat:null,
+          totalCorrect:it.o||0, totalWrong:it.x||0,
+          byFormat:{A:{correct:0,wrong:(it.bf&&it.bf.A?it.bf.A.w:0)||0},
+                    B:{correct:0,wrong:(it.bf&&it.bf.B?it.bf.B.w:0)||0}},
+          wrongLog:(it.wl||[]).map(w=>({at:w.at,format:w.f,answered:w.ans})),
+          lastSeenAt:it.seen||null
+        };
+      }
+      if(Array.isArray(u.sessions)) p.sessions=u.sessions;
     }
+    const ca=old.cur?accByName(old.cur):null;
+    S.activeAccountId=ca?ca.id:(S.accounts[0]?S.accounts[0].id:null);
   }
+  // §9 の欠損補完
+  if(!S.accounts) S.accounts=[];
+  if(!S.progress) S.progress={};
+  S.app=APP; if(!S.version) S.version=1;
+  for(const a of S.accounts){ const p=prog(a.id); if(!p.items)p.items={}; if(!Array.isArray(p.sessions))p.sessions=[];
+    for(const id of Object.keys(p.items)){ const it=p.items[id];
+      if(!it.byFormat) it.byFormat={A:{correct:0,wrong:0},B:{correct:0,wrong:0}};
+      if(!it.wrongLog) it.wrongLog=[];
+    } }
+  if(!S.activeAccountId && S.accounts[0]) S.activeAccountId=S.accounts[0].id;
 }
 // fromCloud=true のときは updatedAt を上書きしない（追補§2）
 function saveDB(fromCloud){
@@ -647,34 +681,35 @@ function saveDB(fromCloud){
   catch(e){ memFail=true; }
   paintWarn();
 }
-function save(){ saveDB(false); }   // 既存呼び出し互換
-function stats(){if(!S.cur)return{};if(!S.users[S.cur])S.users[S.cur]={st:{},createdAt:new Date().toISOString()};return S.users[S.cur].st;}
+function save(){ saveDB(false); }
+function stats(){ return curItems(); }   // 互換：アクティブ口座の items を返す
 function rec(id,ok,mode,ansText){
-  const st=stats(); if(!st) return;
-  const s=st[id]||(st[id]={o:0,x:0,k:0,bf:{A:{w:0},B:{w:0}},wl:[],mAt:null,seen:null});
-  if(!s.bf) s.bf={A:{w:0},B:{w:0}}; if(!s.wl) s.wl=[];
-  s.seen=new Date().toISOString();
-  const bucket=(mode==="rev")?"A":"B";
-  if(ok){ s.o++; s.k++; if(s.k>=2 && !s.mAt) s.mAt=new Date().toISOString(); }
-  else{
-    s.x++; s.k=0; s.mAt=null;
-    s.bf[bucket].w++;
-    s.wl.push({at:new Date().toISOString(),f:bucket,ans:ansText||""});
-    if(s.wl.length>20) s.wl=s.wl.slice(-20);
+  const a=curAcc(); if(!a) return;
+  const items=prog(a.id).items;
+  const s=items[id]||(items[id]=blankItem());
+  const fmt=(mode==="rev")?"A":"B";   // A=意味→ことわざ, B=ことわざ→語/意味
+  s.lastFormat=fmt; s.lastSeenAt=new Date().toISOString();
+  if(ok){
+    s.totalCorrect++; s.byFormat[fmt].correct++; s.streak++;
+    if(s.streak>=2 && !s.mastered){ s.mastered=true; s.masteredAt=new Date().toISOString(); }
+  }else{
+    s.totalWrong++; s.byFormat[fmt].wrong++; s.streak=0; s.mastered=false; s.masteredAt=null;
+    s.wrongLog.push({at:new Date().toISOString(),format:fmt,answered:ansText||""});
+    if(s.wrongLog.length>20) s.wrongLog=s.wrongLog.slice(-20);
   }
   save();
 }
-const mastered=id=>{const s=stats()[id];return !!s&&s.k>=2;};
+const mastered=id=>{ const s=curItems()[id]; return !!s&&s.mastered; };
 
 /* =======================================================
    クラウド同期（追補v1.1）  サーバー(GAS)のAPI契約は変更しない
    ======================================================= */
 function dbHasRecords(d){
-  if(!d||!d.users) return false;
-  for(const u of Object.values(d.users)){
-    if(Array.isArray(u.sessions)&&u.sessions.length) return true;
-    for(const it of Object.values(u.st||{})){
-      if((it.o||0)+(it.x||0)>0) return true;
+  if(!d||!d.progress) return false;
+  for(const p of Object.values(d.progress)){
+    if(Array.isArray(p.sessions)&&p.sessions.length) return true;
+    for(const it of Object.values(p.items||{})){
+      if((it.totalCorrect||0)+(it.totalWrong||0)>0) return true;
     }
   }
   return false;
@@ -687,7 +722,6 @@ function setStatus(kind,msg){
   el.textContent=(msg||"")+extra;
 }
 async function callGAS(opt){
-  // opt.method / opt.qs / opt.body → text→JSON.parse。返り値 {ok,...} or throws{net:true}
   const url = opt.qs ? (SY.url + (SY.url.includes("?")?"&":"?") + opt.qs) : SY.url;
   let res;
   try{
@@ -720,11 +754,11 @@ function authMsg(err){
 }
 function dbSummary(d){
   let acc=0,seen=0,mast=0;
-  if(d&&d.users) for(const u of Object.values(d.users)){
-    acc++;
-    for(const it of Object.values(u.st||{})){
-      if((it.o||0)+(it.x||0)>0) seen++;
-      if((it.k||0)>=2) mast++;
+  if(d&&Array.isArray(d.accounts)) acc=d.accounts.length;
+  if(d&&d.progress) for(const p of Object.values(d.progress)){
+    for(const it of Object.values(p.items||{})){
+      if((it.totalCorrect||0)+(it.totalWrong||0)>0) seen++;
+      if(it.mastered) mast++;
     }
   }
   return {acc,seen,mast};
@@ -736,7 +770,7 @@ async function pull(){
   try{
     const j=await callGAS({method:"GET",qs:"key="+encodeURIComponent(SY.key)+"&app="+encodeURIComponent(APP)});
     if(!j.ok){ setStatus("err","☁⚠ "+authMsg(j.error)); return; }
-    resolveMerge(j.data);   // 勝敗ルール＋アカウント合流（追補§5）
+    resolveMerge(j.data);
     SY.lastSync=new Date().toISOString(); saveSync();
   }catch(e){ setStatus("err",gasErrMsg(e)); }
 }
@@ -744,51 +778,78 @@ function resolveMerge(cloud){
   const localHas=dbHasRecords(S);
   const cloudHas=cloud&&dbHasRecords(cloud);
   if(!cloud || !cloudHas){
-    // クラウドに進捗が無い（doGet が data を返していない場合もここ）
     if(localHas) push("☁ クラウドに進捗が無かったので、この端末の記録を送りました");
     else setStatus("ok","☁ クラウドにもこの端末にも記録がありません");
     return;
   }
   const cs=dbSummary(cloud);
-  if(!localHas){ adopt(cloud,cs); return; }                 // ローカル空 → 無条件採用
-  adopt(cloud,cs);   // 両方に記録あり → 常に「合流」（新しい方だけ勝ち、をやめる）。項目ごとに多い方を残す
+  if(!localHas){ adopt(cloud,cs); return; }
+  adopt(cloud,cs);   // 両方に記録あり → 常に「合流」（項目・セッションを統合）
 }
 function adopt(cloud,cs){
-  const localUsers=S.users||{};
-  const prevCur=S.cur;
+  const prevName=curName();
   const merged=JSON.parse(JSON.stringify(cloud));
-  merged.app=APP; if(!merged.users) merged.users={};
-  let mergedAny=false;
-  for(const name of Object.keys(localUsers)){            // 名前で判定、ローカル固有アカウントは残す
-    if(!merged.users[name]){ merged.users[name]=localUsers[name]; mergedAny=true; }
-    else mergedAny = mergeAccount(merged.users[name], localUsers[name]) || mergedAny;  // 同名は項目ごとに良い方を残す
+  merged.app=APP;
+  if(!Array.isArray(merged.accounts)) merged.accounts=[];
+  if(!merged.progress) merged.progress={};
+  const nameToId={}; for(const a of merged.accounts) nameToId[a.name]=a.id;
+  let changed=false;
+  for(const la of S.accounts){
+    const lp=S.progress[la.id]||{items:{},sessions:[]};
+    if(!nameToId[la.name]){                         // ローカル固有アカウント → 追加
+      merged.accounts.push({id:la.id,name:la.name,createdAt:la.createdAt||new Date().toISOString()});
+      merged.progress[la.id]=JSON.parse(JSON.stringify(lp));
+      nameToId[la.name]=la.id; changed=true;
+    }else{                                          // 同名 → 中身を合流
+      const mid=nameToId[la.name];
+      if(!merged.progress[mid]) merged.progress[mid]={items:{},sessions:[]};
+      if(mergeProgress(merged.progress[mid], lp)) changed=true;
+    }
   }
-  merged.cur=(prevCur&&merged.users[prevCur])?prevCur:(merged.cur&&merged.users[merged.cur]?merged.cur:Object.keys(merged.users)[0]||null);
   S=merged;
-  if(mergedAny){ saveDB(false); push("☁✓ クラウドと合流しました（"+sumTxt(dbSummary(S))+"）"); }
+  const keep=prevName?accByName(prevName):null;
+  S.activeAccountId = keep?keep.id
+    : (S.activeAccountId&&accById(S.activeAccountId)?S.activeAccountId:(S.accounts[0]?S.accounts[0].id:null));
+  if(changed){ saveDB(false); push("☁✓ クラウドと合流しました（"+sumTxt(dbSummary(S))+"）"); }
   else{ saveDB(true); setStatus("ok","☁✓ クラウドから取り込みました（"+sumTxt(cs)+"）"); }
   paintWho(); renderList(); if(!SEC.rec.classList.contains("hidden")) renderRec();
 }
-// 同名アカウントを項目ごとに合流：正解・誤答は多い方、習得は片方でも習得なら維持、誤答内容も統合
-function mergeAccount(base, other){
+// 同名アカウントの progress を項目ごとに合流（多い方を残す）＋ sessions を finishedAt で統合
+function mergeProgress(base, other){
   let changed=false;
-  const bs=base.st||(base.st={}), os=other.st||{};
-  for(const id of Object.keys(os)){
-    const o=os[id]; const b=bs[id];
-    if(!b){ bs[id]=o; changed=true; continue; }
+  base.items=base.items||{}; base.sessions=base.sessions||[];
+  const bi=base.items, oi=other.items||{};
+  for(const id of Object.keys(oi)){
+    const o=oi[id], b=bi[id];
+    if(!b){ bi[id]=JSON.parse(JSON.stringify(o)); changed=true; continue; }
+    const bf=b.byFormat||{A:{},B:{}}, of=o.byFormat||{A:{},B:{}};
     const nb={
-      o:Math.max(b.o||0,o.o||0),
-      x:Math.max(b.x||0,o.x||0),
-      k:Math.max(b.k||0,o.k||0),
-      bf:{A:{w:Math.max((b.bf&&b.bf.A.w)||0,(o.bf&&o.bf.A.w)||0)},
-          B:{w:Math.max((b.bf&&b.bf.B.w)||0,(o.bf&&o.bf.B.w)||0)}},
-      wl:((b.wl||[]).concat(o.wl||[])).sort((p,q)=>(p.at||"")<(q.at||"")?-1:1).slice(-20),
-      mAt:b.mAt||o.mAt||null,
-      seen:((b.seen||"")>(o.seen||""))?b.seen:o.seen
+      streak:Math.max(b.streak||0,o.streak||0),
+      mastered:!!(b.mastered||o.mastered),
+      masteredAt:b.masteredAt||o.masteredAt||null,
+      lastFormat:((b.lastSeenAt||"")>=(o.lastSeenAt||""))?b.lastFormat:o.lastFormat,
+      totalCorrect:Math.max(b.totalCorrect||0,o.totalCorrect||0),
+      totalWrong:Math.max(b.totalWrong||0,o.totalWrong||0),
+      byFormat:{A:{correct:Math.max((bf.A&&bf.A.correct)||0,(of.A&&of.A.correct)||0),
+                   wrong:Math.max((bf.A&&bf.A.wrong)||0,(of.A&&of.A.wrong)||0)},
+                B:{correct:Math.max((bf.B&&bf.B.correct)||0,(of.B&&of.B.correct)||0),
+                   wrong:Math.max((bf.B&&bf.B.wrong)||0,(of.B&&of.B.wrong)||0)}},
+      wrongLog:dedupLog((b.wrongLog||[]).concat(o.wrongLog||[])),
+      lastSeenAt:((b.lastSeenAt||"")>(o.lastSeenAt||""))?b.lastSeenAt:o.lastSeenAt
     };
-    if(JSON.stringify(nb)!==JSON.stringify(b)){ bs[id]=nb; changed=true; }
+    if(JSON.stringify(nb)!==JSON.stringify(b)){ bi[id]=nb; changed=true; }
   }
+  const seen=new Set(base.sessions.map(s=>s.finishedAt));
+  for(const s of (other.sessions||[])){ if(s&&!seen.has(s.finishedAt)){ base.sessions.push(s); seen.add(s.finishedAt); changed=true; } }
+  base.sessions.sort((p,q)=>(p.finishedAt||"")<(q.finishedAt||"")?-1:1);
+  if(base.sessions.length>100) base.sessions=base.sessions.slice(-100);
   return changed;
+}
+function dedupLog(arr){
+  arr.sort((p,q)=>(p.at||"")<(q.at||"")?-1:1);
+  const seen=new Set(), out=[];
+  for(const w of arr){ const k=(w.at||"")+"|"+(w.answered||""); if(!seen.has(k)){seen.add(k);out.push(w);} }
+  return out.slice(-20);
 }
 
 /* =======================================================
@@ -823,15 +884,18 @@ const chosen=sel=>$(sel+' .chip[aria-pressed="true"]');
    ユーザー
    ======================================================= */
 function renderUsers(){
-  const names=Object.keys(S.users);
+  const names=S.accounts.map(a=>a.name);
+  const cur=curName();
   $("#userList").innerHTML = names.length? names.map(n=>
-    `<button class="userbtn" data-n="${n}" aria-pressed="${n===S.cur}">${n}<span class="acts"><span class="x" data-ren="${n}">なまえ変更</span><span class="x" data-del="${n}">けす</span></span></button>`
+    `<button class="userbtn" data-n="${n}" aria-pressed="${n===cur}">${n}<span class="acts"><span class="x" data-ren="${n}">なまえ変更</span><span class="x" data-del="${n}">けす</span></span></button>`
   ).join("") : `<div style="font-size:13px;color:var(--usuzumi);line-height:1.7">まだ登録がありません。<br>下になまえを入れてください。</div>`;
   $$("#userList .userbtn").forEach(b=>b.onclick=e=>{
     if(e.target.dataset.del){
-      if(confirm(e.target.dataset.del+" の記録を消します。よろしいですか？")){
-        delete S.users[e.target.dataset.del];
-        if(S.cur===e.target.dataset.del)S.cur=Object.keys(S.users)[0]||null;
+      const nm=e.target.dataset.del;
+      if(confirm(nm+" の記録を消します。よろしいですか？")){
+        const a=accByName(nm);
+        if(a){ delete S.progress[a.id]; S.accounts=S.accounts.filter(x=>x.id!==a.id);
+          if(S.activeAccountId===a.id) S.activeAccountId=S.accounts[0]?S.accounts[0].id:null; }
         save();renderUsers();paintWho(); if(SY) push();
       }
       return;
@@ -840,23 +904,23 @@ function renderUsers(){
       const old=e.target.dataset.ren;
       const nv=(prompt("あたらしいなまえ",old)||"").trim();
       if(!nv||nv===old) return;
-      if(S.users[nv]){ alert("同じなまえがすでにあります。"); return; }
-      S.users[nv]=S.users[old]; delete S.users[old];
-      if(S.cur===old)S.cur=nv;
+      if(accByName(nv)){ alert("同じなまえがすでにあります。"); return; }
+      const a=accByName(old); if(a) a.name=nv;
       save();renderUsers();paintWho(); if(SY) push();
       return;
     }
-    S.cur=b.dataset.n;save();renderUsers();paintWho();$("#userMask").classList.add("hidden");
+    const a=accByName(b.dataset.n); if(a) S.activeAccountId=a.id;
+    save();renderUsers();paintWho();$("#userMask").classList.add("hidden");
   });
-  $("#whoName").textContent=S.cur||"だれ？";
+  $("#whoName").textContent=curName()||"だれ？";
 }
-function paintWho(){$("#whoName").textContent=S.cur||"だれ？";}
+function paintWho(){$("#whoName").textContent=curName()||"だれ？";}
 $("#whoBtn").onclick=()=>{renderUsers();$("#userMask").classList.remove("hidden");};
 $("#closeUser").onclick=()=>$("#userMask").classList.add("hidden");
 $("#addUser").onclick=()=>{
   const v=$("#newUser").value.trim();if(!v)return;
-  if(!S.users[v])S.users[v]={st:{},createdAt:new Date().toISOString()};
-  S.cur=v;$("#newUser").value="";save();renderUsers();paintWho(); if(SY) push();
+  const a=addAccount(v); S.activeAccountId=a.id;
+  $("#newUser").value="";save();renderUsers();paintWho(); if(SY) push();
 };
 $("#newUser").addEventListener("keydown",e=>{if(e.key==="Enter")$("#addUser").click();});
 
@@ -875,6 +939,7 @@ function buildPool(){
   }
   return pool;
 }
+let sessionStart=null, sessionMode="", sessionMasteredBefore=new Set();
 function start(setup){
   lastSetup=setup||null;
   let pool = setup ? setup : buildPool();
@@ -886,10 +951,15 @@ function start(setup){
   if(n>0)Q=Q.slice(0,Math.min(n,Q.length));
   Q=Q.map(d=>({d,mode:mode==="mix"?["fill","mean","rev"][Math.random()*3|0]:mode}));
   idx=0;ok=0;wrong=[];
+  // セッション記録用（§9 sessions[]）
+  sessionStart=new Date().toISOString();
+  sessionMode=(n>0?n+"問":"全問");
+  const items=curItems();
+  sessionMasteredBefore=new Set(Object.keys(items).filter(id=>items[id].mastered));
   show("quiz");render();
 }
 $("#startBtn").onclick=()=>{
-  if(!S.cur){renderUsers();$("#userMask").classList.remove("hidden");return;}
+  if(!curName()){renderUsers();$("#userMask").classList.remove("hidden");return;}
   start(null);
 };
 
@@ -961,11 +1031,27 @@ function finish(){
   const pct=Math.round(ok/Q.length*100);
   $("#rScore").innerHTML=`${ok}<span>/${Q.length}</span>`;
   $("#rMsg").textContent = pct===100?"全問正解！みごとです":pct>=80?"よくできました":pct>=50?"あと一息、復習しよう":"まずは一覧を読んでみよう";
-  $("#rNote").textContent=`正答率 ${pct}％ ／ ${S.cur} さん`;
+  $("#rNote").textContent=`正答率 ${pct}％ ／ ${curName()||""} さん`;
   $("#reviewCard").classList.toggle("hidden",wrong.length===0);
   $("#reviewList").innerHTML=wrong.map(d=>
     `<div class="rev"><div class="k">${d.f}</div>${d.y?`<div class="m">${d.y}</div>`:""}<div class="m">${d.m}</div></div>`).join("");
   $("#retryWrongBtn").classList.toggle("hidden",wrong.length===0);
+
+  // §9 セッション記録 → push で GAS が「セッション履歴」シートに追記する
+  const a=curAcc();
+  if(a){
+    const items=prog(a.id).items;
+    const nowMastered=Object.keys(items).filter(id=>items[id].mastered);
+    const newly=nowMastered.filter(id=>!sessionMasteredBefore.has(id));
+    prog(a.id).sessions.push({
+      startedAt:sessionStart, finishedAt:new Date().toISOString(),
+      mode:sessionMode, correct:ok, wrong:Q.length-ok,
+      newlyMastered:newly, wrongKpIds:wrong.map(d=>d.id),
+      totalMastered:nowMastered.length
+    });
+    if(prog(a.id).sessions.length>100) prog(a.id).sessions=prog(a.id).sessions.slice(-100);
+    saveDB(false);
+  }
   show("result");
   if(SY) push();   // 追補§5：セッション終了直後に自動push
 }
@@ -999,22 +1085,22 @@ function renderList(){
    きろく
    ======================================================= */
 function renderRec(){
-  if(!S.cur){$("#recStats").innerHTML=`<div style="font-size:14px;color:var(--usuzumi)">右上からお子さまを選んでください。</div>`;$("#recWeak").innerHTML="";return;}
-  const st=stats();
+  if(!curName()){$("#recStats").innerHTML=`<div style="font-size:14px;color:var(--usuzumi)">右上からお子さまを選んでください。</div>`;$("#recWeak").innerHTML="";return;}
+  const st=curItems();
   $("#recStats").innerHTML=[["ぜんぶ",DB]].concat(CATS.map((c,i)=>[c,DB.filter(d=>d.c===i)])).map(([n,arr])=>{
     const m=arr.filter(d=>mastered(d.id)).length;
     const p=Math.round(m/arr.length*100);
     return `<div class="stat"><div style="flex:1"><div class="l">${n}</div><div class="pbar"><i style="width:${p}%"></i></div></div><div class="r" style="margin-left:14px">${m}/${arr.length}　${p}%</div></div>`;
   }).join("");
-  const weak=DB.map(d=>({d,s:st[d.id]})).filter(o=>o.s&&o.s.x>0)
-    .sort((a,b)=>b.s.x-a.s.x||a.s.o-b.s.o).slice(0,10);
+  const weak=DB.map(d=>({d,s:st[d.id]})).filter(o=>o.s&&(o.s.totalWrong||0)>0)
+    .sort((a,b)=>(b.s.totalWrong||0)-(a.s.totalWrong||0)||(a.s.totalCorrect||0)-(b.s.totalCorrect||0)).slice(0,10);
   $("#recWeak").innerHTML=weak.length? weak.map(o=>
-    `<div class="stat"><div class="l" style="font-family:var(--mincho);font-size:16px">${o.d.f}</div><div class="r">×${o.s.x}　○${o.s.o}</div></div>`
+    `<div class="stat"><div class="l" style="font-family:var(--mincho);font-size:16px">${o.d.f}</div><div class="r">×${o.s.totalWrong||0}　○${o.s.totalCorrect||0}</div></div>`
   ).join("") : `<div style="font-size:14px;color:var(--usuzumi)">まだ記録がありません。まずは10問やってみましょう。</div>`;
 }
 $("#resetBtn").onclick=()=>{
-  if(!S.cur)return;
-  if(confirm(S.cur+" さんの記録をすべて消します。よろしいですか？")){S.users[S.cur]={st:{},createdAt:new Date().toISOString()};save();renderRec(); if(SY) push();}
+  const a=curAcc(); if(!a)return;
+  if(confirm(a.name+" さんの記録をすべて消します。よろしいですか？")){S.progress[a.id]={items:{},sessions:[]};save();renderRec(); if(SY) push();}
 };
 
 /* =======================================================
@@ -1055,7 +1141,7 @@ $("#fileImport").onchange=e=>{
   r.onload=()=>{
     let d; try{ d=JSON.parse(r.result); }catch(err){ alert("JSONとして読み込めませんでした。"); return; }
     if(d.app && d.app!==APP){ alert("このファイルは別のツールの記録です（"+d.app+"）。読み込めません。"); e.target.value=""; return; }
-    const names=Object.keys(d.users||{});
+    const names=Array.isArray(d.accounts)?d.accounts.map(a=>a.name):Object.keys(d.users||{});
     const when=d.updatedAt?new Date(d.updatedAt).toLocaleString("ja-JP"):"不明";
     openImportConfirm(names,when,d);
   };
@@ -1068,8 +1154,8 @@ function openImportConfirm(names,when,d){
   $("#importMask").classList.remove("hidden");
   $("#importOk").onclick=()=>{
     S=d; migrate();
+    if(!curName() && S.accounts[0]) S.activeAccountId=S.accounts[0].id;
     saveDB(false);                 // 置換後 updatedAt 更新（追補§3）
-    S.cur=(S.cur&&S.users[S.cur])?S.cur:Object.keys(S.users)[0]||null;
     paintWho();renderList();
     $("#importMask").classList.add("hidden");
     if(SY) push();                 // 置換後 push
@@ -1105,9 +1191,9 @@ $("#btnPullNow").onclick=async()=>{ await pull(); };
 
 /* 📋 全問一覧をDriveへ（追補§6） */
 function stateOf(it){
-  if(!it || ((it.o||0)+(it.x||0))===0) return "未出題";
-  if(it.k>=2) return "習得済み";
-  if((it.o||0)>0) return (it.o)+"回正解";
+  if(!it || ((it.totalCorrect||0)+(it.totalWrong||0))===0) return "未出題";
+  if(it.mastered) return "習得済み";
+  if((it.totalCorrect||0)>0) return (it.totalCorrect)+"回正解";
   return "誤答";
 }
 function jdate(iso){ if(!iso) return ""; const d=new Date(iso); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; }
@@ -1115,18 +1201,18 @@ function buildList(){
   const header=["名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
     "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"];
   const rows=[];
-  for(const name of Object.keys(S.users)){
-    const st=S.users[name].st||{};
+  for(const a of S.accounts){
+    const items=(S.progress[a.id]||{}).items||{};
     for(const d of DB){
-      const it=st[d.id];
-      const wl=(it&&it.wl)||[];
+      const it=items[d.id];
+      const wl=(it&&it.wrongLog)||[];
       const lastW=wl.length?wl[wl.length-1].at:null;
       rows.push([
-        name, CATS[d.c], "", d.f, d.y||"", "", stateOf(it),
-        it?it.o||0:0, it?it.x||0:0,
-        it&&it.bf?it.bf.A.w||0:0, it&&it.bf?it.bf.B.w||0:0,
-        wl.map(x=>x.ans).filter(Boolean).join(";"),
-        jdate(lastW), jdate(it?it.mAt:null)
+        a.name, CATS[d.c], "", d.f, d.y||"", "", stateOf(it),
+        it?it.totalCorrect||0:0, it?it.totalWrong||0:0,
+        it&&it.byFormat?it.byFormat.A.wrong||0:0, it&&it.byFormat?it.byFormat.B.wrong||0:0,
+        wl.map(x=>x.answered).filter(Boolean).join(";"),
+        jdate(lastW), jdate(it?it.masteredAt:null)
       ]);
     }
   }
@@ -1154,10 +1240,9 @@ $("#btnList").onclick=async()=>{
 
 /* ===== 起動 ===== */
 load();
-if(!S.cur)S.cur=Object.keys(S.users)[0]||null;
 paintWho();renderList();refreshSyncUI();initStatus();paintWarn();
 if(SY) pull();                              // 起動直後に pull（追補§5）
-if(!S.cur){renderUsers();$("#userMask").classList.remove("hidden");}
+if(!curName()){renderUsers();$("#userMask").classList.remove("hidden");}
 </script>
 </body>
 </html>
