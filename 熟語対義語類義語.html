@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>熟語クイズ｜中学受験</title>
+<style>
+:root{
+  --bg:#f4f6f9; --card:#fff; --ink:#1d2530; --sub:#5b6875; --line:#dde3ea;
+  --accent:#2f6bd8; --accent-d:#1f4ea8; --ok:#1c8a4a; --ng:#c62d3c;
+  --warn:#c77700; --mast:#2f6bd8; --half:#8fb4ee; --none:#e3e8ef;
+  --r:14px; --shadow:0 1px 3px rgba(20,30,50,.08),0 6px 18px rgba(20,30,50,.06);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP","Meiryo",system-ui,sans-serif;
+  font-size:16px; line-height:1.7; -webkit-text-size-adjust:100%;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 48px}
+h1{font-size:1.25rem;margin:.2em 0 .1em}
+h2{font-size:1.05rem;margin:1.4em 0 .5em;padding-left:.5em;border-left:4px solid var(--accent)}
+h3{font-size:.95rem;margin:1.1em 0 .4em;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px 0;box-shadow:var(--shadow)}
+.muted{color:var(--sub);font-size:.85rem}
+.center{text-align:center}
+button{font:inherit;font-weight:600;cursor:pointer;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:12px 14px;min-height:48px;transition:.12s}
+button:active{transform:scale(.985)}
+button:disabled{opacity:.45;cursor:default}
+.btn-p{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-p:hover{background:var(--accent-d)}
+.btn-s{background:#eef3fb;border-color:#cfdcf4;color:var(--accent-d)}
+.btn-d{background:#fff;border-color:#e6bcc1;color:var(--ng)}
+.btn-sm{padding:8px 12px;min-height:40px;font-size:.85rem;border-radius:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1 1 auto}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stack{display:flex;flex-direction:column;gap:8px}
+input[type=text],input[type=url],input[type=password],select{
+  font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px;width:100%;background:#fff;color:var(--ink);min-height:46px}
+label.fld{display:block;margin:10px 0 0;font-size:.85rem;color:var(--sub);font-weight:600}
+/* 状態バー */
+#syncBar{position:sticky;top:0;z-index:40;font-size:.82rem;padding:7px 12px;border-radius:0 0 10px 10px;background:#eef3fb;color:var(--accent-d);border:1px solid #cfdcf4;border-top:none;display:none}
+#syncBar.ok{background:#e8f6ee;color:#146b39;border-color:#bfe3cd}
+#syncBar.err{background:#fdecee;color:#a3232f;border-color:#f2c3c8}
+#syncBar.busy{background:#eef3fb;color:var(--accent-d)}
+#warnBar{display:none;font-size:.82rem;padding:8px 12px;background:#fff6e5;color:#8a5600;border:1px solid #f0dcb4;border-radius:10px;margin:8px 0}
+/* アカウント */
+.acc-pill{display:inline-flex;align-items:center;gap:6px;background:#eef3fb;border:1px solid #cfdcf4;color:var(--accent-d);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700}
+.acc-item{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--line);border-radius:12px;margin:6px 0;background:#fff}
+.acc-item.active{border-color:var(--accent);background:#f5f9ff}
+.acc-item .nm{flex:1;font-weight:700}
+/* 習得バー */
+.mbar{height:12px;border-radius:6px;background:var(--none);overflow:hidden;display:flex;margin:4px 0}
+.mbar i{display:block;height:100%}
+.mbar .m{background:var(--mast)} .mbar .h{background:var(--half)}
+.mrow{margin:10px 0}
+.mrow .hd{display:flex;justify-content:space-between;font-size:.85rem;gap:8px}
+.mrow .hd b{font-weight:700}
+/* カテゴリ選択 */
+.chk{display:flex;align-items:flex-start;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;margin:6px 0;background:#fff;cursor:pointer}
+.chk.on{border-color:var(--accent);background:#f5f9ff}
+.chk input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--accent);flex:0 0 auto}
+.chk .t{flex:1}
+.chk .t b{display:block}
+/* 出題 */
+.qhead{position:sticky;top:0;z-index:30;background:var(--bg);padding:8px 0 6px;border-bottom:1px solid var(--line)}
+.pbar{height:8px;background:var(--none);border-radius:4px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.qmeta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.8rem;color:var(--sub);margin-top:6px}
+.qmeta .ok{color:var(--ok);font-weight:700}
+.qmeta .ng{color:var(--ng);font-weight:700}
+.gauge{letter-spacing:2px}
+.qbox{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 14px;margin:12px 0;text-align:center;box-shadow:var(--shadow)}
+.qlabel{font-size:.78rem;color:var(--sub);font-weight:700;letter-spacing:.05em}
+.qword{font-size:2.1rem;font-weight:800;letter-spacing:.08em;margin:.25em 0 .1em;line-height:1.4}
+.qword.small{font-size:1.25rem;font-weight:700;letter-spacing:.02em;line-height:1.6}
+.qword ruby rt{font-size:.4em;font-weight:600;color:var(--sub)}
+.qask{font-size:.92rem;color:var(--sub);margin-top:.4em}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px;line-height:1.6;border:1px solid var(--line);background:#fff;font-weight:600}
+.opt:hover{border-color:var(--accent)}
+.opt .n{display:inline-block;min-width:1.6em;color:var(--sub);font-weight:800}
+.opt.correct{background:#e8f6ee;border-color:var(--ok);color:#0f5c30}
+.opt.wrong{background:#fdecee;border-color:var(--ng);color:#8f1f2a}
+.opt.dim{opacity:.5}
+.fb{border-radius:12px;padding:12px 14px;margin:10px 0;border:1px solid}
+.fb.ok{background:#e8f6ee;border-color:#bfe3cd}
+.fb.ng{background:#fdecee;border-color:#f2c3c8}
+.fb .hd{font-weight:800;margin-bottom:4px}
+.fb.ok .hd{color:#146b39} .fb.ng .hd{color:#a3232f}
+.fb .ex{font-size:.9rem;line-height:1.75}
+.fb .ex b{color:var(--ink)}
+.navrow{display:flex;gap:8px;margin-top:10px}
+.navrow button{flex:1}
+.reviewmark{background:#fff6e5;border:1px solid #f0dcb4;color:#8a5600;border-radius:10px;padding:8px 12px;font-size:.85rem;margin:8px 0}
+/* 結果 */
+.scoregrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.scoregrid div{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:10px 4px}
+.scoregrid b{display:block;font-size:1.4rem;line-height:1.2}
+.scoregrid span{font-size:.72rem;color:var(--sub)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+th{color:var(--sub);font-size:.78rem;white-space:nowrap;cursor:pointer;user-select:none}
+tr.hot td{background:#fff6e5}
+.badge{display:inline-block;font-size:.7rem;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.b-m{background:#e8f6ee;color:#146b39} .b-c{background:#eef3fb;color:var(--accent-d)}
+.b-n{background:#f0f2f5;color:var(--sub)} .b-w{background:#fdecee;color:#a3232f}
+.b-hot{background:#ffe9c2;color:#8a5600;margin-left:4px}
+.kpdetail{background:#f7f9fc;border-left:3px solid var(--accent);padding:8px 10px;margin:4px 0 8px;font-size:.82rem;border-radius:0 8px 8px 0}
+/* モーダル */
+.mask{position:fixed;inset:0;background:rgba(15,22,35,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:86vh;overflow:auto;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h3{margin-top:0;color:var(--ink);font-size:1.05rem}
+.hide{display:none!important}
+.sep{height:1px;background:var(--line);margin:14px 0}
+.tiny{font-size:.78rem;color:var(--sub);line-height:1.6}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.filters select{width:auto;flex:1 1 140px;min-height:42px;padding:8px 10px}
+@media(max-width:400px){.scoregrid{grid-template-columns:repeat(2,1fr)}.qword{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<div id="syncBar"></div>
+<div class="wrap">
+  <div id="warnBar"></div>
+  <div id="app"></div>
+</div>
+<div id="modalRoot"></div>
+<script>
+/* ===== 出題データ（熟語.pdf より抽出） ===== */
+const DATA = {"niji":[{"word":"勝負","yomi":"しょうぶ","meaning":"勝ちと負け。勝ち負けを争うこと","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A1-1"},{"word":"行進","yomi":"こうしん","meaning":"列を作って前へ進んで行くこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A1-2"},{"word":"青葉","yomi":"あおば","meaning":"青々としげった木の葉","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A1-3"},{"word":"雷鳴","yomi":"らいめい","meaning":"かみなりが鳴ること。またその音","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"A","src":"1-A1-4"},{"word":"長短","yomi":"ちょうたん","meaning":"長いことと短いこと。長所と短所","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A1-5"},{"word":"着席","yomi":"ちゃくせき","meaning":"席に着くこと。座ること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A1-6,4-A-2エ"},{"word":"水害","yomi":"すいがい","meaning":"大水によって受ける災害","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A1-7"},{"word":"不便","yomi":"ふべん","meaning":"都合が悪く使いにくいこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"1-A1-8"},{"word":"運送","yomi":"うんそう","meaning":"荷物などを運び送ること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A1-9"},{"word":"消火","yomi":"しょうか","meaning":"火事の火を消すこと","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A1-10"},{"word":"代々","yomi":"だいだい","meaning":"何代も続いて。代が変わってもずっと","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"A","src":"1-A1-11"},{"word":"知的","yomi":"ちてき","meaning":"知識や知性が感じられるようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"1-A1-12,3-A-18,4-A-6オ"},{"word":"日没","yomi":"にちぼつ","meaning":"太陽が沈むこと。日の入り","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"A","src":"1-A1-13"},{"word":"労組","yomi":"ろうそ","meaning":"労働組合の略。働く人がつくる団体","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"A","src":"1-A1-14"},{"word":"学習","yomi":"がくしゅう","meaning":"学び習うこと。勉強すること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A1-15"},{"word":"国体","yomi":"こくたい","meaning":"国民体育大会の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"A","src":"1-A1-16"},{"word":"暗室","yomi":"あんしつ","meaning":"光が入らないようにした暗い部屋","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A1-17"},{"word":"緑化","yomi":"りょっか","meaning":"木や草を植えて緑を増やすこと","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"1-A1-18,3-A-4"},{"word":"年々","yomi":"ねんねん","meaning":"年を追うごとに。毎年","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"A","src":"1-A1-19"},{"word":"国営","yomi":"こくえい","meaning":"国が事業を経営すること","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"A","src":"1-A1-20"},{"word":"明暗","yomi":"めいあん","meaning":"明るさと暗さ。喜びと悲しみ","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A1-21,4-A-3エ"},{"word":"衣服","yomi":"いふく","meaning":"身に着ける着物。衣類","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A1-22"},{"word":"未完","yomi":"みかん","meaning":"まだ完成していないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"1-A1-23,2-A-6,4-A-5オ"},{"word":"開会","yomi":"かいかい","meaning":"会を開き始めること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A1-24"},{"word":"天地","yomi":"てんち","meaning":"天と地。世の中。全世界","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A1-25"},{"word":"集散","yomi":"しゅうさん","meaning":"集まることと散ること","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A2-1"},{"word":"幸福","yomi":"こうふく","meaning":"めぐまれて満ち足りていること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A2-2"},{"word":"悪人","yomi":"あくにん","meaning":"悪いおこないをする人","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A2-3"},{"word":"作曲","yomi":"さっきょく","meaning":"曲を作ること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A2-4"},{"word":"暗黒","yomi":"あんこく","meaning":"まっくらなこと。真っ暗やみ","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A2-5,4-A-8ア"},{"word":"刻々","yomi":"こくこく","meaning":"時間が少しずつ過ぎていくようす","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"A","src":"1-A2-6"},{"word":"未知","yomi":"みち","meaning":"まだ知られていないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"1-A2-7"},{"word":"貯金","yomi":"ちょきん","meaning":"お金をためること。ためたお金","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A2-8"},{"word":"出欠","yomi":"しゅっけつ","meaning":"出席と欠席","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A2-9"},{"word":"急性","yomi":"きゅうせい","meaning":"病気などが急に起こって進むようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"1-A2-10,3-A-5"},{"word":"天授","yomi":"てんじゅ","meaning":"天が授けたもの。生まれつきの才能","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"A","src":"1-A2-11"},{"word":"生協","yomi":"せいきょう","meaning":"生活協同組合の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"A","src":"1-A2-12,4-A-7ア"},{"word":"苦楽","yomi":"くらく","meaning":"苦しみと楽しみ","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A2-13,4-A-3イ"},{"word":"入学","yomi":"にゅうがく","meaning":"学校に入って児童・生徒になること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A2-14"},{"word":"気絶","yomi":"きぜつ","meaning":"一時的に意識を失うこと","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"A","src":"1-A2-15"},{"word":"必然","yomi":"ひつぜん","meaning":"必ずそうなると決まっていること","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"1-A2-16,3-A-16"},{"word":"好感","yomi":"こうかん","meaning":"感じがよいと思う気持ち","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A2-17"},{"word":"原発","yomi":"げんぱつ","meaning":"原子力発電所の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"A","src":"1-A2-18,4-A-7エ"},{"word":"着陸","yomi":"ちゃくりく","meaning":"航空機などが陸地に降りること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A2-19"},{"word":"悲運","yomi":"ひうん","meaning":"悲しい運命。不幸なめぐりあわせ","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A2-20"},{"word":"善良","yomi":"ぜんりょう","meaning":"性質がすなおで正しいこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A2-21"},{"word":"速球","yomi":"そっきゅう","meaning":"野球で、速く投げられたボール","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A2-22"},{"word":"深海","yomi":"しんかい","meaning":"深い海。海の深いところ","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A2-23"},{"word":"往々","yomi":"おうおう","meaning":"そうなることがよくあるようす。しばしば","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"A","src":"1-A2-24"},{"word":"急速","yomi":"きゅうそく","meaning":"物事の進み方がとても速いこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A2-25,4-A-8ウ"},{"word":"終始","yomi":"しゅうし","meaning":"始めから終わりまで。ずっと同じであること","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A3-1"},{"word":"欠点","yomi":"けってん","meaning":"足りないところ。悪いところ","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A3-2,4-A-5イ"},{"word":"労働","yomi":"ろうどう","meaning":"体や頭を使って働くこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A3-3"},{"word":"挙手","yomi":"きょしゅ","meaning":"手を挙げること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A3-4"},{"word":"問答","yomi":"もんどう","meaning":"問うことと答えること。やりとり","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A3-5"},{"word":"求人","yomi":"きゅうじん","meaning":"働く人を探し募ること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A3-6"},{"word":"人造","yomi":"じんぞう","meaning":"人の手で造ること","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"A","src":"1-A3-7"},{"word":"不服","yomi":"ふふく","meaning":"納得できず従えない気持ち","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"1-A3-8"},{"word":"予知","yomi":"よち","meaning":"前もって知ること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A3-9"},{"word":"断然","yomi":"だんぜん","meaning":"きっぱりと。他とくらべて格段に","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"1-A3-10"},{"word":"回転","yomi":"かいてん","meaning":"くるくると回ること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A3-11"},{"word":"種々","yomi":"しゅじゅ","meaning":"いろいろ。さまざま","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"A","src":"1-A3-12"},{"word":"特急","yomi":"とっきゅう","meaning":"特別急行列車の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"A","src":"1-A3-13"},{"word":"発着","yomi":"はっちゃく","meaning":"出発と到着","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A3-14"},{"word":"道路","yomi":"どうろ","meaning":"人や車が通るみち","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A3-15"},{"word":"再開","yomi":"さいかい","meaning":"中断していたものを再び始めること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A3-16"},{"word":"日銀","yomi":"にちぎん","meaning":"日本銀行の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"A","src":"1-A3-17,4-A-7オ"},{"word":"降車","yomi":"こうしゃ","meaning":"車や電車から降りること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A3-18"},{"word":"液化","yomi":"えきか","meaning":"気体や固体が液体に変わること","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"1-A3-19,3-A-8"},{"word":"完成","yomi":"かんせい","meaning":"すっかりでき上がること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"1-A3-20"},{"word":"悲喜","yomi":"ひき","meaning":"悲しみと喜び","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-A3-21"},{"word":"無断","yomi":"むだん","meaning":"前もってことわりを入れないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"1-A3-22"},{"word":"脈々","yomi":"みゃくみゃく","meaning":"絶えることなく長く続いているようす","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"A","src":"1-A3-23"},{"word":"帰港","yomi":"きこう","meaning":"船が港に帰ること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-A3-24"},{"word":"救助","yomi":"きゅうじょ","meaning":"危ない目にあった人を助けること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-A3-25"},{"word":"発芽","yomi":"はつが","meaning":"種から芽が出ること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"1-B1-1"},{"word":"名実","yomi":"めいじつ","meaning":"名まえと中身","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B1-2"},{"word":"雨量","yomi":"うりょう","meaning":"降った雨の量","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"1-B1-3"},{"word":"従事","yomi":"じゅうじ","meaning":"その仕事にたずさわること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"1-B1-4,4-A-4イ"},{"word":"清潔","yomi":"せいけつ","meaning":"よごれがなくきれいなこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"1-B1-5,4-A-8エ"},{"word":"堂々","yomi":"どうどう","meaning":"立派で自信に満ちたようす","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"B","src":"1-B1-6"},{"word":"退化","yomi":"たいか","meaning":"進歩がとまり、以前より衰えること","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"B","src":"1-B1-7"},{"word":"転居","yomi":"てんきょ","meaning":"住まいを他へ移すこと。引っこし","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"1-B1-8"},{"word":"因果","yomi":"いんが","meaning":"原因と結果。前世からの報い","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B1-9"},{"word":"無限","yomi":"むげん","meaning":"かぎりがないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"B","src":"1-B1-10"},{"word":"農協","yomi":"のうきょう","meaning":"農業協同組合の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"B","src":"1-B1-11"},{"word":"頭痛","yomi":"ずつう","meaning":"頭が痛むこと。悩みの種","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"B","src":"1-B1-12"},{"word":"委任","yomi":"いにん","meaning":"仕事などを人にまかせること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"1-B1-13"},{"word":"未明","yomi":"みめい","meaning":"夜がまだ明けきらないころ","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"B","src":"1-B1-14"},{"word":"婦警","yomi":"ふけい","meaning":"婦人警察官の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"B","src":"1-B1-15"},{"word":"断続","yomi":"だんぞく","meaning":"切れたり続いたりすること","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B1-16"},{"word":"在宅","yomi":"ざいたく","meaning":"自分の家にいること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"1-B1-17"},{"word":"善行","yomi":"ぜんこう","meaning":"よいおこない","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"1-B1-18"},{"word":"収支","yomi":"しゅうし","meaning":"収入と支出。入るお金と出るお金","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B1-19"},{"word":"思考","yomi":"しこう","meaning":"筋道を立てて考えること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"1-B1-20"},{"word":"経過","yomi":"けいか","meaning":"時が過ぎること。物事のなりゆき","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"1-B2-1"},{"word":"改心","yomi":"かいしん","meaning":"悪い心を改めること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"1-B2-2"},{"word":"功罪","yomi":"こうざい","meaning":"手がらと罪。よい面と悪い面","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B2-3"},{"word":"特権","yomi":"とっけん","meaning":"特別に与えられた権利","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"1-B2-4"},{"word":"服従","yomi":"ふくじゅう","meaning":"人の言うことにおとなしく従うこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"1-B2-5"},{"word":"非道","yomi":"ひどう","meaning":"人の道にはずれていること","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"1-B2-6,2-A-18"},{"word":"官民","yomi":"かんみん","meaning":"政府と民間","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"1-B2-7,4-A-3オ"},{"word":"延々","yomi":"えんえん","meaning":"長々と続くようす","kata":"ア","kataName":"同じ漢字を重ねたもの","level":"B","src":"1-B2-8"},{"word":"無電","yomi":"むでん","meaning":"無線電信・無線電話の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"B","src":"1-B2-9"},{"word":"給食","yomi":"きゅうしょく","meaning":"学校などで食事を出すこと","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"1-B2-10"},{"word":"細大","yomi":"さいだい","meaning":"細かいことと大きいこと","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B2-11"},{"word":"電化","yomi":"でんか","meaning":"動力や熱源を電気に変えること","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"B","src":"1-B2-12"},{"word":"復旧","yomi":"ふっきゅう","meaning":"こわれたものを元どおりに直すこと","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"1-B2-13"},{"word":"貸借","yomi":"たいしゃく","meaning":"貸すことと借りること","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B2-14"},{"word":"名案","yomi":"めいあん","meaning":"すぐれた思いつき","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"1-B2-15"},{"word":"容易","yomi":"ようい","meaning":"たやすいこと。やさしいこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"1-B2-16"},{"word":"損得","yomi":"そんとく","meaning":"損と得。損害と利益","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"1-B2-17"},{"word":"年長","yomi":"ねんちょう","meaning":"年上であること","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"B","src":"1-B2-18"},{"word":"断念","yomi":"だんねん","meaning":"思い切ってあきらめること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"1-B2-19"},{"word":"提供","yomi":"ていきょう","meaning":"相手の役に立つように差し出すこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"1-B2-20"},{"word":"無職","yomi":"むしょく","meaning":"決まった職業についていないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-1"},{"word":"不純","yomi":"ふじゅん","meaning":"まじりけがあること。純粋でないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-2"},{"word":"未来","yomi":"みらい","meaning":"これから先の時。将来","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-3"},{"word":"無理","yomi":"むり","meaning":"道理に合わないこと。難しいことを行うこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-4"},{"word":"不平","yomi":"ふへい","meaning":"不満に思う気持ち","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-5"},{"word":"未決","yomi":"みけつ","meaning":"まだ決まっていないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-7"},{"word":"非行","yomi":"ひこう","meaning":"道にはずれた悪いおこない","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-8"},{"word":"無常","yomi":"むじょう","meaning":"すべては移り変わり、はかないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-9"},{"word":"非常","yomi":"ひじょう","meaning":"ふつうでないこと。差し迫った事態","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-9,4-A-5エ"},{"word":"不幸","yomi":"ふこう","meaning":"しあわせでないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-10"},{"word":"不漁","yomi":"ふりょう","meaning":"魚があまりとれないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-11"},{"word":"未練","yomi":"みれん","meaning":"あきらめきれない気持ち","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-12"},{"word":"無数","yomi":"むすう","meaning":"数えきれないほど多いこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-13"},{"word":"不和","yomi":"ふわ","meaning":"仲が悪いこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-14"},{"word":"非番","yomi":"ひばん","meaning":"当番でないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-15"},{"word":"非業","yomi":"ひごう","meaning":"思いがけない災難で命を落とすこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-16"},{"word":"無心","yomi":"むしん","meaning":"何も考えないこと。遠慮なくねだること","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-17"},{"word":"不作","yomi":"ふさく","meaning":"作物のできが悪いこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-19"},{"word":"未開","yomi":"みかい","meaning":"文明が進んでいないこと。切り開かれていないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-20,4-A-4ア"},{"word":"不利","yomi":"ふり","meaning":"都合が悪く損になること","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-21"},{"word":"無論","yomi":"むろん","meaning":"言うまでもなく。もちろん","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-22"},{"word":"未熟","yomi":"みじゅく","meaning":"十分に熟していないこと。腕前が未完成なこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-23"},{"word":"無念","yomi":"むねん","meaning":"くやしいこと。残念なこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-24"},{"word":"不覚","yomi":"ふかく","meaning":"油断して思わぬ失敗をすること","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-25"},{"word":"無縁","yomi":"むえん","meaning":"かかわりがないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-26"},{"word":"不吉","yomi":"ふきつ","meaning":"縁起が悪いこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-27"},{"word":"未然","yomi":"みぜん","meaning":"まだそうなっていないうち","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-28,3-A-14"},{"word":"非凡","yomi":"ひぼん","meaning":"ふつうよりずばぬけてすぐれていること","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-29"},{"word":"不可","yomi":"ふか","meaning":"よくないこと。してはいけないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"2-A-30"},{"word":"慢性","yomi":"まんせい","meaning":"病気などが長引いてなかなか治らないこと","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-1"},{"word":"詩的","yomi":"してき","meaning":"詩のような美しい味わいがあるようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-2"},{"word":"偶然","yomi":"ぐうぜん","meaning":"思いがけず起こるようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-3"},{"word":"雑然","yomi":"ざつぜん","meaning":"ごたごたと入り乱れているようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-6"},{"word":"陽性","yomi":"ようせい","meaning":"検査で反応があらわれること。明るい性質","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-7"},{"word":"法的","yomi":"ほうてき","meaning":"法律にもとづいているようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-9"},{"word":"進化","yomi":"しんか","meaning":"生物が長い時間をかけて変化すること","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-10"},{"word":"理性","yomi":"りせい","meaning":"筋道を立てて考え判断する力","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-11"},{"word":"当然","yomi":"とうぜん","meaning":"そうなるのがあたりまえなこと","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-12,4-A-6エ"},{"word":"私的","yomi":"してき","meaning":"おおやけでなく、個人にかかわるようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-13"},{"word":"静的","yomi":"せいてき","meaning":"動きがなく静かなようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-15"},{"word":"野性","yomi":"やせい","meaning":"自然のままの荒々しい性質","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-17"},{"word":"知性","yomi":"ちせい","meaning":"物事を考え判断する頭の働き","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-18"},{"word":"整然","yomi":"せいぜん","meaning":"きちんと整っているようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-19"},{"word":"劇的","yomi":"げきてき","meaning":"芝居のように印象が強く感動的なようす","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"3-A-20"},{"word":"旅客","yomi":"りょかく","meaning":"旅をする客","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-1ア"},{"word":"児童","yomi":"じどう","meaning":"小学校に通う子ども","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-1イ"},{"word":"年末","yomi":"ねんまつ","meaning":"一年の終わり","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-1ウ"},{"word":"悪事","yomi":"あくじ","meaning":"悪いおこない","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-1エ"},{"word":"曲線","yomi":"きょくせん","meaning":"曲がった線","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-1オ"},{"word":"寒冷","yomi":"かんれい","meaning":"寒くて冷えびえとしていること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-2ア"},{"word":"解放","yomi":"かいほう","meaning":"束縛を解いて自由にすること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-2イ"},{"word":"増加","yomi":"ぞうか","meaning":"数や量が増えること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-2ウ"},{"word":"豊富","yomi":"ほうふ","meaning":"ゆたかでたくさんあること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-2オ"},{"word":"遠近","yomi":"えんきん","meaning":"遠いところと近いところ","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"4-A-3ア"},{"word":"教育","yomi":"きょういく","meaning":"教え育てること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-3ウ"},{"word":"乗車","yomi":"じょうしゃ","meaning":"車や電車に乗ること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"4-A-4ウ"},{"word":"注意","yomi":"ちゅうい","meaning":"気をつけること。忠告すること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"4-A-4エ"},{"word":"講義","yomi":"こうぎ","meaning":"学問の内容を説き聞かせること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"4-A-4オ"},{"word":"無益","yomi":"むえき","meaning":"役に立たないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"4-A-5ア"},{"word":"不要","yomi":"ふよう","meaning":"いらないこと","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"4-A-5ウ"},{"word":"美化","yomi":"びか","meaning":"実際より美しくすること","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"4-A-6ア"},{"word":"天性","yomi":"てんせい","meaning":"生まれつきの性質","kata":"ク","kataName":"下に「的・性・然・化」がついたもの","level":"A","src":"4-A-6イ"},{"word":"無実","yomi":"むじつ","meaning":"罪がないのに疑われること","kata":"キ","kataName":"「不・無・非・未」がついて打ち消すもの","level":"A","src":"4-A-6ウ"},{"word":"組合","yomi":"くみあい","meaning":"同じ目的の人が集まってつくる団体","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-7イ"},{"word":"国連","yomi":"こくれん","meaning":"国際連合の略","kata":"ケ","kataName":"長い語句を簡略化した略語","level":"A","src":"4-A-7ウ"},{"word":"遺言","yomi":"ゆいごん","meaning":"死後のために言い残す言葉","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-8イ"},{"word":"開始","yomi":"かいし","meaning":"物事を始めること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-8オ"},{"word":"風雨","yomi":"ふうう","meaning":"風と雨。風をともなった雨","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-9ア"},{"word":"統一","yomi":"とういつ","meaning":"ばらばらのものを一つにまとめること","kata":null,"kataName":null,"level":"A","src":"4-A-9イ"},{"word":"山野","yomi":"さんや","meaning":"山と野原","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-9ウ"},{"word":"草木","yomi":"くさき","meaning":"草と木","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-9エ"},{"word":"兄弟","yomi":"きょうだい","meaning":"兄と弟。同じ親から生まれた者どうし","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-9オ"},{"word":"平地","yomi":"へいち","meaning":"平らな土地","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-10ア"},{"word":"残雪","yomi":"ざんせつ","meaning":"春まで消え残っている雪","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-10イ"},{"word":"冷水","yomi":"れいすい","meaning":"冷たい水","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-10ウ"},{"word":"貴重","yomi":"きちょう","meaning":"たいへん大切であること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"4-A-10エ"},{"word":"海流","yomi":"かいりゅう","meaning":"一定の方向に流れる海水の流れ","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"4-A-10オ"},{"word":"往来","yomi":"おうらい","meaning":"ゆきき。道路。通り","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"5-A-1"},{"word":"会心","yomi":"かいしん","meaning":"できばえに満足すること","kata":null,"kataName":null,"level":"A","src":"5-A-2"},{"word":"供給","yomi":"きょうきゅう","meaning":"要求に応じて物を与えること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"5-A-3"},{"word":"軽率","yomi":"けいそつ","meaning":"よく考えずに行う様子","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"5-A-4"},{"word":"好奇","yomi":"こうき","meaning":"変わった事に心ひかれること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"5-A-5"},{"word":"口頭","yomi":"こうとう","meaning":"口で言うこと","kata":null,"kataName":null,"level":"A","src":"5-A-6"},{"word":"失笑","yomi":"しっしょう","meaning":"思わずふきだすこと","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"5-A-7"},{"word":"需要","yomi":"じゅよう","meaning":"商品を買いたいという欲望","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"5-A-8"},{"word":"精進","yomi":"しょうじん","meaning":"心を打ちこみ努力すること","kata":null,"kataName":null,"level":"A","src":"5-A-9"},{"word":"調達","yomi":"ちょうたつ","meaning":"必要なものを取りそろえること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"5-A-10"},{"word":"動機","yomi":"どうき","meaning":"行動を起こさせた直接の原因","kata":null,"kataName":null,"level":"A","src":"5-A-11"},{"word":"独断","yomi":"どくだん","meaning":"自分の考えだけで決すること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"5-A-12"},{"word":"認識","yomi":"にんしき","meaning":"物事を認め、知ること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"5-A-13"},{"word":"悲観","yomi":"ひかん","meaning":"悪いほうへと考えがちなこと","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"5-A-14"},{"word":"故意","yomi":"こい","meaning":"わざとすること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"5-B-1"},{"word":"賛辞","yomi":"さんじ","meaning":"ほめる言葉","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"5-B-2"},{"word":"自負","yomi":"じふ","meaning":"自信を持ち、誇りに思うこと","kata":null,"kataName":null,"level":"B","src":"5-B-3"},{"word":"知己","yomi":"ちき","meaning":"自分をよく知っている人","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"5-B-4"},{"word":"嘲笑","yomi":"ちょうしょう","meaning":"ばかにして笑うこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"5-B-5"},{"word":"風潮","yomi":"ふうちょう","meaning":"一般の傾向。世のなりゆき","kata":null,"kataName":null,"level":"B","src":"5-B-6"},{"word":"風情","yomi":"ふぜい","meaning":"独特のおもむき。あじわい","kata":null,"kataName":null,"level":"B","src":"5-B-7"},{"word":"物色","yomi":"ぶっしょく","meaning":"適当なものや人を探すこと","kata":null,"kataName":null,"level":"B","src":"5-B-8"},{"word":"閉口","yomi":"へいこう","meaning":"すっかり困ること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"5-B-9"},{"word":"平生","yomi":"へいぜい","meaning":"ふだん。いつも","kata":null,"kataName":null,"level":"B","src":"5-B-10"},{"word":"由来","yomi":"ゆらい","meaning":"物事の来歴","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"5-B-11"},{"word":"律儀","yomi":"りちぎ","meaning":"義理がたい様子。実直","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"5-B-12"},{"word":"普及","yomi":"ふきゅう","meaning":"広く行きわたること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"5-B-13"},{"word":"偏見","yomi":"へんけん","meaning":"かたよった見方や考え","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"5-B-14"},{"word":"楽観","yomi":"らっかん","meaning":"明るい見通しをもつこと","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"5-B-15"},{"word":"会釈","yomi":"えしゃく","meaning":"軽く頭を下げて挨拶すること","kata":null,"kataName":null,"level":"B","src":"5-B-16"},{"word":"一笑","yomi":"いっしょう","meaning":"軽く笑ってまともに取り合わないこと","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"6-A-1"},{"word":"余念","yomi":"よねん","meaning":"ほかの考え。よけいな思い","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"6-A-2"},{"word":"意表","yomi":"いひょう","meaning":"思いもよらないところ。予想外","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"6-A-3"},{"word":"首尾","yomi":"しゅび","meaning":"初めと終わり。物事のなりゆきや結果","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"6-A-4"},{"word":"武者","yomi":"むしゃ","meaning":"よろいをつけて戦う武士","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"6-A-5"},{"word":"横行","yomi":"おうこう","meaning":"悪いものが好き勝手にのさばること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"6-A-6"},{"word":"左右","yomi":"さゆう","meaning":"ひだりとみぎ。思いのままに動かすこと","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"6-A-7"},{"word":"精通","yomi":"せいつう","meaning":"ある物事にくわしく通じていること","kata":null,"kataName":null,"level":"A","src":"6-A-8"},{"word":"横暴","yomi":"おうぼう","meaning":"勝手気ままで乱暴なふるまい","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"6-A-9"},{"word":"余地","yomi":"よち","meaning":"あまっている場所。ゆとり","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"6-A-10"},{"word":"仮説","yomi":"かせつ","meaning":"物事を説明するために仮に立てた考え","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"A","src":"6-A-11"},{"word":"過失","yomi":"かしつ","meaning":"不注意によるあやまち","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"6-A-12"},{"word":"善悪","yomi":"ぜんあく","meaning":"よいこととわるいこと","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"A","src":"6-A-13"},{"word":"報道","yomi":"ほうどう","meaning":"出来事を広く人々に知らせること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"6-A-14"},{"word":"模写","yomi":"もしゃ","meaning":"本物をまねてそのまま写しとること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"6-A-15"},{"word":"応急","yomi":"おうきゅう","meaning":"急な場合に間に合わせの手当てをすること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"A","src":"6-A-16"},{"word":"納得","yomi":"なっとく","meaning":"もっともだと認めて受け入れること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"A","src":"6-A-17"},{"word":"善後","yomi":"ぜんご","meaning":"あとの始末をうまくつけること","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"6-B-1"},{"word":"早晩","yomi":"そうばん","meaning":"おそかれ早かれ。いずれそのうち","kata":"ウ","kataName":"反対の意味の漢字を組み合わせたもの","level":"B","src":"6-B-2"},{"word":"英知","yomi":"えいち","meaning":"物事の本質を見抜くすぐれた知恵","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"6-B-3"},{"word":"余波","yomi":"よは","meaning":"出来事の影響があとまで残ること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"6-B-4"},{"word":"吟味","yomi":"ぎんみ","meaning":"内容をよく調べて確かめること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-5"},{"word":"体面","yomi":"たいめん","meaning":"世間に対する体裁。面目","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-6"},{"word":"愛想","yomi":"あいそ","meaning":"人あたりのよい態度やもてなし","kata":null,"kataName":null,"level":"B","src":"6-B-7"},{"word":"識別","yomi":"しきべつ","meaning":"種類や違いを見分けること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-8"},{"word":"末路","yomi":"まつろ","meaning":"栄えていたものが落ちぶれた最後","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"6-B-9"},{"word":"会得","yomi":"えとく","meaning":"よく理解して自分のものにすること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-10"},{"word":"吹聴","yomi":"ふいちょう","meaning":"言いふらして広めること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-11"},{"word":"小康","yomi":"しょうこう","meaning":"病気や争いが少しの間おさまること","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"6-B-12"},{"word":"没頭","yomi":"ぼっとう","meaning":"一つのことに熱中して打ちこむこと","kata":"カ","kataName":"上が動作で下がその目的・対象を表すもの","level":"B","src":"6-B-13"},{"word":"成就","yomi":"じょうじゅ","meaning":"願いや物事を成しとげること","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-14"},{"word":"狼狽","yomi":"ろうばい","meaning":"不意のことにあわてふためくこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-15"},{"word":"天分","yomi":"てんぶん","meaning":"生まれつき備わっている才能","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"6-B-16"},{"word":"自明","yomi":"じめい","meaning":"説明するまでもなく明らかなこと","kata":"エ","kataName":"上が主語で下が述語の関係にあるもの","level":"B","src":"6-B-17"},{"word":"晩年","yomi":"ばんねん","meaning":"人生の終わりに近いころ","kata":"オ","kataName":"上の漢字が下の漢字を修飾するもの","level":"B","src":"6-B-18"},{"word":"感銘","yomi":"かんめい","meaning":"深く感じて心に刻みこむこと","kata":"イ","kataName":"意味の似た漢字を重ねたもの","level":"B","src":"6-B-19"}],"sanji":[{"word":"赤信号","yomi":"あかしんごう","meaning":"交通信号の赤色。転じて、危険が迫っていることを示すしるし。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-例ア"},{"word":"新学期","yomi":"しんがっき","meaning":"学校で、新しく始まる学習期間。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-例ア"},{"word":"今世紀","yomi":"こんせいき","meaning":"現在進行している、この世紀。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-例ア"},{"word":"不用意","yomi":"ふようい","meaning":"前もっての用意や心構えがなく、注意が足りないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-例イ,2-A-2"},{"word":"無関係","yomi":"むかんけい","meaning":"たがいにかかわりがないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-例イ,2-A-1"},{"word":"非公開","yomi":"ひこうかい","meaning":"一般の人に公開せず、内部だけにとどめること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-例イ"},{"word":"科学者","yomi":"かがくしゃ","meaning":"科学の研究を専門にしている人。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-例ウ"},{"word":"救急車","yomi":"きゅうきゅうしゃ","meaning":"急病人やけが人を病院へ運ぶための車。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-例ウ"},{"word":"自主的","yomi":"じしゅてき","meaning":"他から言われず、自分の考えで進んで行う様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-例エ"},{"word":"人間性","yomi":"にんげんせい","meaning":"人間らしさ。人間が本来もっている性質。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-例エ"},{"word":"大中小","yomi":"だいちゅうしょう","meaning":"大きいもの・中くらいのもの・小さいものの三つの区分。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-例オ"},{"word":"雪月花","yomi":"せつげっか","meaning":"雪と月と花。四季おりおりの自然の美しい眺め。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-例オ,入試1-B-ク"},{"word":"発明家","yomi":"はつめいか","meaning":"今までにない物や方法を考え出す人。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-1"},{"word":"来年度","yomi":"らいねんど","meaning":"今の年度の次の年度。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-2"},{"word":"天地人","yomi":"てんちじん","meaning":"天と地と人。この世を成り立たせる三つの要素。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-3"},{"word":"国民性","yomi":"こくみんせい","meaning":"その国の国民に共通して見られる性質や気風。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-4"},{"word":"未解決","yomi":"みかいけつ","meaning":"問題や事件がまだ解決していないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-5,2-A-15"},{"word":"科学的","yomi":"かがくてき","meaning":"科学の考え方や方法にかなっている様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-6,3-A-7"},{"word":"不人情","yomi":"ふにんじょう","meaning":"思いやりがなく、人としての情が薄いこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-7"},{"word":"衣食住","yomi":"いしょくじゅう","meaning":"着る物・食べ物・住まい。暮らしの基本となる三つ。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-8,入試1-B-ア"},{"word":"地下鉄","yomi":"ちかてつ","meaning":"地下にトンネルを掘って走らせる鉄道。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-9"},{"word":"難問題","yomi":"なんもんだい","meaning":"解くのがとてもむずかしい問題。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-10"},{"word":"非公式","yomi":"ひこうしき","meaning":"おおやけの手続きや形式によらないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-11,2-A-3"},{"word":"上中下","yomi":"じょうちゅうげ","meaning":"上と中と下。三段階の区分。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-12"},{"word":"再調査","yomi":"さいちょうさ","meaning":"もう一度あらためて調べ直すこと。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-13"},{"word":"民主化","yomi":"みんしゅか","meaning":"物事の決め方を民主的なやり方に改めること。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-14"},{"word":"図書館","yomi":"としょかん","meaning":"本や資料を集めて人々に読ませ、貸し出す施設。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-15"},{"word":"正比例","yomi":"せいひれい","meaning":"一方が二倍三倍になると他方も二倍三倍になる関係。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-16"},{"word":"学者然","yomi":"がくしゃぜん","meaning":"いかにも学者らしく構えている様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-17,3-A-12"},{"word":"季節風","yomi":"きせつふう","meaning":"季節によって決まった向きに吹く風。モンスーン。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-18"},{"word":"不自由","yomi":"ふじゆう","meaning":"思うようにならず、不便なこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-19"},{"word":"真善美","yomi":"しんぜんび","meaning":"真と善と美。人間が求める三つの理想的な価値。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-20,入試1-B-ウ"},{"word":"原始林","yomi":"げんしりん","meaning":"人の手が入っていない、自然のままの森林。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-21"},{"word":"無記名","yomi":"むきめい","meaning":"氏名を書かないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-22,2-A-12"},{"word":"松竹梅","yomi":"しょうちくばい","meaning":"松と竹と梅。めでたいものとされる三つの植物。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-23"},{"word":"別世界","yomi":"べっせかい","meaning":"今いる所とはまるでちがう、別の世界。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-24"},{"word":"近代化","yomi":"きんだいか","meaning":"古い仕組みを改めて近代的なものにすること。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-25,3-A-2"},{"word":"合理的","yomi":"ごうりてき","meaning":"道理にかなっている様子。無理もむだもない様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-26,3-A-6,4-B-4"},{"word":"日用品","yomi":"にちようひん","meaning":"毎日の暮らしで使う品物。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-27"},{"word":"客観性","yomi":"きゃっかんせい","meaning":"自分の考えにかたよらず、だれが見てもそうだといえる性質。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"1-A-28"},{"word":"非合理","yomi":"ひごうり","meaning":"筋道が通らず、理屈に合わないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-29"},{"word":"電磁石","yomi":"でんじしゃく","meaning":"鉄心にコイルを巻き、電流を流すと磁石になる装置。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-30"},{"word":"愛読書","yomi":"あいどくしょ","meaning":"くり返し読むほど好んでいる本。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-31"},{"word":"真人間","yomi":"まにんげん","meaning":"まじめでまっとうな人間。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"A","src":"1-A-32"},{"word":"未成年","yomi":"みせいねん","meaning":"まだ成年に達していないこと。またその人。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"1-A-33,2-A-6"},{"word":"序破急","yomi":"じょはきゅう","meaning":"能や音楽などの、導入・展開・結びという三つの構成。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"A","src":"1-A-34"},{"word":"委員会","yomi":"いいんかい","meaning":"選ばれた委員が集まって物事を話し合う会。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"A","src":"1-A-35"},{"word":"未発達","yomi":"みはったつ","meaning":"まだ十分に発達していないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-4"},{"word":"不注意","yomi":"ふちゅうい","meaning":"注意が行き届かないこと。うっかりすること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-5"},{"word":"無責任","yomi":"むせきにん","meaning":"責任を果たそうとしないこと。いいかげんなこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-7"},{"word":"非常識","yomi":"ひじょうしき","meaning":"世間のふつうの考えからはずれていること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-8"},{"word":"非合法","yomi":"ひごうほう","meaning":"法律に反していること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-9"},{"word":"不可能","yomi":"ふかのう","meaning":"することができないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-10"},{"word":"未確認","yomi":"みかくにん","meaning":"まだたしかめられていないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-11"},{"word":"不案内","yomi":"ふあんない","meaning":"その土地や事情をよく知らないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-13"},{"word":"無理解","yomi":"むりかい","meaning":"相手の気持ちや事情をわかろうとしないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-14,入試2-B-ウ"},{"word":"非売品","yomi":"ひばいひん","meaning":"売り物ではない品物。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-16"},{"word":"無分別","yomi":"むふんべつ","meaning":"よく考えずに行動すること。思慮が足りないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-17"},{"word":"未完成","yomi":"みかんせい","meaning":"まだできあがっていないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-18"},{"word":"不心得","yomi":"ふこころえ","meaning":"心がけがよくないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-19"},{"word":"不自然","yomi":"ふしぜん","meaning":"わざとらしく、ありのままでない様子。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-20"},{"word":"無神経","yomi":"むしんけい","meaning":"人の気持ちを気にかけず、あつかましいこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-21"},{"word":"不正確","yomi":"ふせいかく","meaning":"正確でないこと。まちがいがあること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-22"},{"word":"未開拓","yomi":"みかいたく","meaning":"まだ切り開かれていないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-23"},{"word":"無意識","yomi":"むいしき","meaning":"自分で気づかないうちにそうしていること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-24"},{"word":"未発表","yomi":"みはっぴょう","meaning":"まだ世間に発表していないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-25"},{"word":"不始末","yomi":"ふしまつ","meaning":"後かたづけが悪いこと。よくない行いをすること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-26"},{"word":"不完全","yomi":"ふかんぜん","meaning":"欠けたところがあり、完全でないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-27"},{"word":"無制限","yomi":"むせいげん","meaning":"かぎりを設けないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-28"},{"word":"不親切","yomi":"ふしんせつ","meaning":"思いやりがなく、人にやさしくしないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-29"},{"word":"無表情","yomi":"むひょうじょう","meaning":"顔に感情があらわれないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-30"},{"word":"不得意","yomi":"ふとくい","meaning":"うまくできないこと。苦手なこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-31"},{"word":"無関心","yomi":"むかんしん","meaning":"心にかけず、興味をもたないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-32"},{"word":"不気味","yomi":"ぶきみ","meaning":"なんとなく気味が悪く、恐ろしい感じがすること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-33"},{"word":"無愛想","yomi":"ぶあいそう","meaning":"そっけなく、愛想がないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"A","src":"2-A-34"},{"word":"近代的","yomi":"きんだいてき","meaning":"古くさくなく、今の時代に合っている様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-1"},{"word":"可能性","yomi":"かのうせい","meaning":"これから実現できる見こみ。ありうる度合い。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-3"},{"word":"紳士然","yomi":"しんしぜん","meaning":"いかにも紳士らしく上品にふるまう様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-4"},{"word":"合理化","yomi":"ごうりか","meaning":"むだを省いて能率よく行えるように改めること。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-5"},{"word":"具体化","yomi":"ぐたいか","meaning":"考えなどを、はっきりした形にすること。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-8,4-B-2"},{"word":"抽象的","yomi":"ちゅうしょうてき","meaning":"具体的な形をもたず、頭の中だけで考えている様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-9"},{"word":"対照的","yomi":"たいしょうてき","meaning":"二つのちがいがきわだっている様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-10"},{"word":"社会性","yomi":"しゃかいせい","meaning":"社会の中で人とうまくかかわっていける性質。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-11"},{"word":"機械化","yomi":"きかいか","meaning":"人の手による作業を機械で行うようにすること。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-13"},{"word":"活動的","yomi":"かつどうてき","meaning":"よく動き回り、いきいきと行動する様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-14"},{"word":"安全性","yomi":"あんぜんせい","meaning":"危険がなく安全である度合い。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-15"},{"word":"健康的","yomi":"けんこうてき","meaning":"体によく、健康によいと感じられる様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"A","src":"3-A-16"},{"word":"画期的","yomi":"かっきてき","meaning":"新時代を感じさせる様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-1"},{"word":"経済的","yomi":"けいざいてき","meaning":"費用が少なくてすむ様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-3"},{"word":"正念場","yomi":"しょうねんば","meaning":"真価を発揮すべき大事な場面。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"4-B-5"},{"word":"無造作","yomi":"むぞうさ","meaning":"慎重に考えず気軽にすること。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"B","src":"4-B-6"},{"word":"一目散","yomi":"いちもくさん","meaning":"わき目もふらない様子。","kata":null,"kataName":null,"level":"B","src":"4-B-7"},{"word":"紙一重","yomi":"かみひとえ","meaning":"違いがごくわずかである様子。","kata":null,"kataName":null,"level":"B","src":"4-B-8"},{"word":"違和感","yomi":"いわかん","meaning":"ちぐはぐではっきりしない感じ。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"4-B-9"},{"word":"後天的","yomi":"こうてんてき","meaning":"生後、経験して身につけること。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-10"},{"word":"神経質","yomi":"しんけいしつ","meaning":"細かい点まで気にする様子。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"4-B-11"},{"word":"画一的","yomi":"かくいつてき","meaning":"どれも同じで変化がない様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-12"},{"word":"第三者","yomi":"だいさんしゃ","meaning":"その事柄に関係していない人。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"4-B-13"},{"word":"主観的","yomi":"しゅかんてき","meaning":"自分を中心に判断する様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-14"},{"word":"好敵手","yomi":"こうてきしゅ","meaning":"ちょうどよい競争相手。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"B","src":"4-B-15"},{"word":"先天的","yomi":"せんてんてき","meaning":"生まれながらに備わる様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-16"},{"word":"紅一点","yomi":"こういってん","meaning":"多くの男性中の一人の女性。","kata":null,"kataName":null,"level":"B","src":"4-B-17"},{"word":"殺風景","yomi":"さっぷうけい","meaning":"変化や味わいがない様子。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"B","src":"4-B-18"},{"word":"主体的","yomi":"しゅたいてき","meaning":"自分の意志で行動する様子。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-19"},{"word":"社交性","yomi":"しゃこうせい","meaning":"人とのつきあいを好む性質。","kata":"エ","kataName":"二字熟語＋「的・性・然・化」","level":"B","src":"4-B-20"},{"word":"飛行隊","yomi":"ひこうたい","meaning":"飛行機で編成された部隊。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"入試1-B-X"},{"word":"飛距離","yomi":"ひきょり","meaning":"飛んだ距離。ボールなどが飛んだ長さ。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"B","src":"入試1-B-Y"},{"word":"守破離","yomi":"しゅはり","meaning":"芸道の修行の段階。型を守り、破り、離れること。","kata":"オ","kataName":"三字が対等な組み合わせ","level":"B","src":"入試1-B-Z"},{"word":"青写真","yomi":"あおじゃしん","meaning":"もとは設計図の複写。転じて、将来のおおまかな計画。","kata":"ア","kataName":"一字の漢字＋二字熟語","level":"B","src":"入試1-B-イ"},{"word":"委任状","yomi":"いにんじょう","meaning":"物事の処理を人にまかせることを記した書類。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"入試1-B-エ"},{"word":"不安定","yomi":"ふあんてい","meaning":"落ち着かず、安定していないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"B","src":"入試1-B-オ"},{"word":"無常観","yomi":"むじょうかん","meaning":"この世のすべては移り変わるものだという見方。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"入試1-B-カ"},{"word":"千里眼","yomi":"せんりがん","meaning":"遠くの出来事や人の心を見通す不思議な力。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"入試1-B-キ"},{"word":"無器用","yomi":"ぶきよう","meaning":"手先の仕事などが下手なこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"B","src":"入試2-B-ア"},{"word":"無作法","yomi":"ぶさほう","meaning":"礼儀作法をわきまえていないこと。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"B","src":"入試2-B-イ"},{"word":"無計画","yomi":"むけいかく","meaning":"前もっての計画がないこと。行き当たりばったり。","kata":"イ","kataName":"「不・無・非・未」＋二字熟語","level":"B","src":"入試2-B-エ"},{"word":"記念品","yomi":"きねんひん","meaning":"思い出として残しておく品物。","kata":"ウ","kataName":"二字熟語＋一字の漢字","level":"B","src":"入試3-B"}],"yoji":[{"word":"異口同音","yomi":"いくどうおん","meaning":"多くの人々が口をそろえて同じことを言うこと。","level":"A","src":"1-A1-1,3-A-1,4-A-6,5-A-7,入試5-2,入試6-3,入試11-例,入試17-カ"},{"word":"一石二鳥","yomi":"いっせきにちょう","meaning":"一つのことをして二つの利益を得ること。一挙両得。","level":"A","src":"1-A1-2,2-A-12,入試13-エ"},{"word":"千差万別","yomi":"せんさばんべつ","meaning":"多くのものがそれぞれ違っていること。","level":"A","src":"1-A1-3,2-A-27,入試8"},{"word":"一朝一夕","yomi":"いっちょういっせき","meaning":"わずかな時日・期間のたとえ。","level":"A","src":"1-A1-4,2-A-13,入試3"},{"word":"有名無実","yomi":"ゆうめいむじつ","meaning":"評判ばかりで、内容・実質がともなわないこと。","level":"A","src":"1-A1-5,4-A-1"},{"word":"一日千秋","yomi":"いちじつせんしゅう","meaning":"一日がまるで千年にも感じられるほど、待ち遠しく思うこと。","level":"A","src":"1-A1-6,2-A-2"},{"word":"右往左往","yomi":"うおうさおう","meaning":"順序やまとまりもなくあちこちへ動き、うろたえ混乱すること。","level":"A","src":"1-A1-7,4-A-3,入試11-1,入試12-2"},{"word":"絶体絶命","yomi":"ぜったいぜつめい","meaning":"どうしても逃れる方法のない困難な立場にあること。","level":"A","src":"1-A1-8,5-A-13,入試12-5"},{"word":"大同小異","yomi":"だいどうしょうい","meaning":"細かい点では違いはあるが、だいたい同じであること。","level":"A","src":"1-A1-9,4-A-4,入試6-3,入試17-イ"},{"word":"一進一退","yomi":"いっしんいったい","meaning":"病状や情勢が良くなったり悪くなったりすること。","level":"A","src":"1-A1-10,2-A-9,3-A-3,入試3,入試4-ア,入試13-ア"},{"word":"我田引水","yomi":"がでんいんすい","meaning":"物事を自分の利益になるように強引に取り計らうこと。","level":"A","src":"1-A2-1,入試5-3,入試6-1,入試12-3,入試15,入試17-ク"},{"word":"千変万化","yomi":"せんぺんばんか","meaning":"物事がいろいろなふうに変化していくこと。","level":"A","src":"1-A2-2,2-A-28"},{"word":"三寒四温","yomi":"さんかんしおん","meaning":"三日ほど寒い日が続き、その後四日ほど暖かい日が続くという、冬から春先にかけての気候。","level":"A","src":"1-A2-3,2-A-18,入試2-5,入試13-オ"},{"word":"四苦八苦","yomi":"しくはっく","meaning":"いろいろなことが原因となって、人が非常に苦しむこと。","level":"A","src":"1-A2-4,2-A-21,入試13-ウ"},{"word":"単刀直入","yomi":"たんとうちょくにゅう","meaning":"前置きや遠回しな言い方をしないで、直ちに本題に入ること。","level":"A","src":"1-A2-5,5-A-15"},{"word":"以心伝心","yomi":"いしんでんしん","meaning":"無言でおたがいの心が通じ合うこと。","level":"A","src":"1-A2-6,5-A-6,入試1-2,入試9-2"},{"word":"一挙両得","yomi":"いっきょりょうとく","meaning":"一つのことをして二つの利益を得ること。一石二鳥。","level":"A","src":"1-A2-7,2-A-7,5-A-4,入試7-イ"},{"word":"一長一短","yomi":"いっちょういったん","meaning":"良い点もあるし、悪い点もあるということ。","level":"A","src":"1-A2-8,2-A-14,入試3"},{"word":"公明正大","yomi":"こうめいせいだい","meaning":"公平で、不正なかくしごともなく、少しも自分の利益を考えないこと。","level":"A","src":"1-A2-9,3-A-10,入試5-1,入試6-2"},{"word":"五里霧中","yomi":"ごりむちゅう","meaning":"すっかり迷って、どうしてよいかわからないこと。","level":"A","src":"1-A2-10,2-A-16,5-A-23,入試17-ケ"},{"word":"言語道断","yomi":"ごんごどうだん","meaning":"もってのほかであること。あきれて言葉も出ないこと。","level":"A","src":"1-A3-1,5-A-11"},{"word":"心機一転","yomi":"しんきいってん","meaning":"あることをきっかけに心持ちがすっかり変わること。","level":"A","src":"1-A3-2,5-A-2"},{"word":"自画自賛","yomi":"じがじさん","meaning":"自分で自分のことをほめること。","level":"A","src":"1-A3-3,5-A-1"},{"word":"大器晩成","yomi":"たいきばんせい","meaning":"大人物となる人は、大成するまでに時間がかかるものだということ。","level":"A","src":"1-A3-4,入試6-2"},{"word":"不言実行","yomi":"ふげんじっこう","meaning":"余計なことや理屈を言わずに、やるべきことを黙って行うこと。","level":"A","src":"1-A3-5"},{"word":"無我夢中","yomi":"むがむちゅう","meaning":"あることに熱中して、我を忘れること。","level":"A","src":"1-A3-6,3-A-14,5-A-18,入試6-1,入試17-オ"},{"word":"臨機応変","yomi":"りんきおうへん","meaning":"時と場合の変化に応じて、適切な処置を行うこと。","level":"A","src":"1-A3-7"},{"word":"意味深長","yomi":"いみしんちょう","meaning":"深い意味をふくんでいる様子。","level":"A","src":"1-A3-8,5-A-3"},{"word":"喜怒哀楽","yomi":"きどあいらく","meaning":"さまざまな人間の感情を簡潔に表した言葉。","level":"A","src":"1-A3-9"},{"word":"三々五々","yomi":"さんさんごご","meaning":"三人、五人というように、少人数が連れ立って行動する様子。","level":"A","src":"1-A3-10,2-A-19,入試3"},{"word":"七転八倒","yomi":"しちてんばっとう","meaning":"体の痛みや苦しみに耐えられず、のたうち回ること。","level":"A","src":"1-A4-1,2-A-23"},{"word":"取捨選択","yomi":"しゅしゃせんたく","meaning":"良いもの、必要なものをとり、悪いもの、不必要なものを捨てること。","level":"A","src":"1-A4-2"},{"word":"枝葉末節","yomi":"しようまっせつ","meaning":"大切ではない細かい部分や、根幹ではない部分。","level":"A","src":"1-A4-3"},{"word":"針小棒大","yomi":"しんしょうぼうだい","meaning":"物事を実際よりも大げさに言うこと。","level":"A","src":"1-A4-4,3-A-5,入試6-3"},{"word":"自給自足","yomi":"じきゅうじそく","meaning":"自分の必要なものを自分で生産し、まかなうこと。","level":"A","src":"1-A4-5"},{"word":"自業自得","yomi":"じごうじとく","meaning":"自分のした行為の報いを自分の身に受けること。","level":"A","src":"1-A4-6"},{"word":"弱肉強食","yomi":"じゃくにくきょうしょく","meaning":"強いものが弱いものの犠牲の上に栄えること。","level":"A","src":"1-A4-7,3-A-6,4-A-23"},{"word":"前代未聞","yomi":"ぜんだいみもん","meaning":"今までに聞いたこともないような珍しいこと。","level":"A","src":"1-A4-8,5-A-14"},{"word":"日進月歩","yomi":"にっしんげっぽ","meaning":"たえまなく進歩すること。","level":"A","src":"1-A4-9,4-A-17,入試4-ウ,入試10"},{"word":"馬耳東風","yomi":"ばじとうふう","meaning":"他人の意見や評判をまるで気にかけないで聞き流すこと。","level":"A","src":"1-A4-10,入試17-ア"},{"word":"百発百中","yomi":"ひゃっぱつひゃくちゅう","meaning":"予想や計画がいつも思ったとおりに実現すること。","level":"A","src":"1-A5-1,2-A-32,3-A-13,入試3,入試6-1"},{"word":"付和雷同","yomi":"ふわらいどう","meaning":"自分の判断によらず、軽々しく他人の意見に同調すること。","level":"A","src":"1-A5-2,3-A-12,5-A-17,入試17-エ"},{"word":"意気投合","yomi":"いきとうごう","meaning":"おたがいの気持ちがぴったりと合い、心が通い合うこと。","level":"A","src":"1-A5-3,入試12-1"},{"word":"一望千里","yomi":"いちぼうせんり","meaning":"見渡すかぎり、広々としている様子。","level":"A","src":"1-A5-4,2-A-4,3-A-2"},{"word":"一刻千金","yomi":"いっこくせんきん","meaning":"わずかな時間が千金にも値するほど貴重なこと。","level":"A","src":"1-A5-5,2-A-8"},{"word":"一心同体","yomi":"いっしんどうたい","meaning":"何人かの人がまるで一人の人のように考えも行動も同じであること。","level":"A","src":"1-A5-6,2-A-10,5-A-9,入試9-2"},{"word":"一心不乱","yomi":"いっしんふらん","meaning":"一つのことに心を集中し、他のことで心が乱れないこと。","level":"A","src":"1-A5-7"},{"word":"完全無欠","yomi":"かんぜんむけつ","meaning":"欠けるところや不満、不足な点が全くないこと。","level":"A","src":"1-A5-8"},{"word":"九死一生","yomi":"きゅうしいっしょう","meaning":"死ぬかと思った危険な状態から、やっとの思いで命拾いすること。","level":"A","src":"1-A5-9,4-A-20,入試14"},{"word":"空前絶後","yomi":"くうぜんぜつご","meaning":"過去に例がなく、これから将来においてもありそうにないこと。","level":"A","src":"1-A5-10,4-A-10,入試1-1,入試11-2"},{"word":"口頭試問","yomi":"こうとうしもん","meaning":"口で述べる形で答える試験。口述試験。","level":"A","src":"1-A6-1,5-A-10"},{"word":"公平無私","yomi":"こうへいむし","meaning":"物事を平等にあつかい、自分の利益や欲を求める心がないこと。","level":"A","src":"1-A6-2,4-A-11,5-A-21"},{"word":"古今東西","yomi":"ここんとうざい","meaning":"昔から今に至るまで、また、洋の東西を問わず、いつでもどこでも。","level":"A","src":"1-A6-3,3-A-15,4-A-21"},{"word":"再三再四","yomi":"さいさんさいし","meaning":"何度も繰り返して。","level":"A","src":"1-A6-4,2-A-17"},{"word":"七転八起","yomi":"しちてんはっき","meaning":"何度失敗してもくじけずに立ち上がり、努力を続けること。","level":"A","src":"1-A6-5,2-A-22"},{"word":"四六時中","yomi":"しろくじちゅう","meaning":"一日中。いつも。常に。","level":"A","src":"1-A6-6,2-A-26"},{"word":"青天白日","yomi":"せいてんはくじつ","meaning":"天気がよいこと。後ろ暗いところがないこと。","level":"A","src":"1-A6-7,5-A-12"},{"word":"適材適所","yomi":"てきざいてきしょ","meaning":"人を、その人の才能や能力にふさわしい地位や仕事におくこと。","level":"A","src":"1-A6-8"},{"word":"天変地異","yomi":"てんぺんちい","meaning":"地上や天空などの自然界に起こる異変。","level":"A","src":"1-A6-9,3-A-11,4-A-24"},{"word":"独立独歩","yomi":"どくりつどっぽ","meaning":"他人にたよらず、自分の信じるところを行うこと。","level":"A","src":"1-A6-10,入試2-1"},{"word":"南船北馬","yomi":"なんせんほくば","meaning":"たえず各地をせわしく旅行すること。","level":"A","src":"1-A7-1,4-A-16"},{"word":"八方美人","yomi":"はっぽうびじん","meaning":"だれからも悪く思われないように要領よくふるまう人。","level":"A","src":"1-A7-2,2-A-31"},{"word":"半信半疑","yomi":"はんしんはんぎ","meaning":"なかば信じ、なかば疑い、信じ切れない様子。","level":"A","src":"1-A7-3,5-A-5,入試17-ウ"},{"word":"文明開化","yomi":"ぶんめいかいか","meaning":"人間の知恵が開け、物質的にも精神的にも世の中が進歩すること。","level":"A","src":"1-A7-4,5-A-19"},{"word":"油断大敵","yomi":"ゆだんたいてき","meaning":"注意をおこたることは、失敗のもとになる恐ろしいことだということ。","level":"A","src":"1-A7-5,入試4-エ,入試6-3"},{"word":"悪口雑言","yomi":"あっこうぞうごん","meaning":"口ぎたなく人の悪口を言うこと。","level":"A","src":"1-A7-6"},{"word":"一部始終","yomi":"いちぶしじゅう","meaning":"物事のはじめから終わりまでの全部。","level":"A","src":"1-A7-7,2-A-3,3-A-9,4-A-8"},{"word":"一世一代","yomi":"いっせいちだい","meaning":"人の一生のうちでただ一度のこと。","level":"A","src":"1-A7-8,2-A-11,入試3"},{"word":"一刀両断","yomi":"いっとうりょうだん","meaning":"物事を思い切って処理することのたとえ。","level":"A","src":"1-A7-9"},{"word":"因果応報","yomi":"いんがおうほう","meaning":"過去および前世の行為の善悪に応じて、報いがあること。","level":"A","src":"1-A7-10,4-A-7,入試1-3"},{"word":"危機一髪","yomi":"ききいっぱつ","meaning":"髪の毛一筋ほどのところまで危険がせまっていること。危ない瀬戸際。","level":"A","src":"1-A8-1,2-A-15,3-A-4"},{"word":"起承転結","yomi":"きしょうてんけつ","meaning":"漢詩をまとめる構成法。広く文章や物事の組み立て、順序立てた構成。","level":"A","src":"1-A8-2,3-A-8,入試16"},{"word":"喜色満面","yomi":"きしょくまんめん","meaning":"うれしそうな表情が顔全体に広がること。","level":"A","src":"1-A8-3"},{"word":"広大無辺","yomi":"こうだいむへん","meaning":"広く、大きく、果てしのないこと。","level":"A","src":"1-A8-4"},{"word":"山川草木","yomi":"さんせんそうもく","meaning":"自然の大地、自然の景色全体を表す言葉。","level":"A","src":"1-A8-5"},{"word":"十人十色","yomi":"じゅうにんといろ","meaning":"好みや考えが、人それぞれに違うこと。各人各様。","level":"A","src":"1-A8-6,2-A-25,入試3"},{"word":"奇想天外","yomi":"きそうてんがい","meaning":"普通では思いつかない変わった考えや奇抜なこと。","level":"A","src":"1-A8-7"},{"word":"晴耕雨読","yomi":"せいこううどく","meaning":"世間のわずらわしい生活から離れ、のんびりと自由に生活すること。","level":"A","src":"1-A8-8,4-A-14,入試2-4"},{"word":"電光石火","yomi":"でんこうせっか","meaning":"きわめて短い時間やすばやい行動のたとえ。","level":"A","src":"1-A8-9"},{"word":"急転直下","yomi":"きゅうてんちょっか","meaning":"事態が急に変わって、結末、解決に至ること。","level":"A","src":"1-A8-10"},{"word":"二束三文","yomi":"にそくさんもん","meaning":"数が多くても、値段が非常に安いこと。","level":"A","src":"1-A9-1,2-A-30,3-A-7,5-A-16,入試12-4"},{"word":"三日坊主","yomi":"みっかぼうず","meaning":"あきっぽく、何をしても長続きしないこと。また、その人。","level":"A","src":"1-A9-2"},{"word":"用意周到","yomi":"よういしゅうとう","meaning":"十分な準備が行き届いていて、手ぬかりがないこと。","level":"A","src":"1-A9-3"},{"word":"老若男女","yomi":"ろうにゃくなんにょ","meaning":"年齢、性別のかかわりなく、全ての人々を表す言葉。","level":"A","src":"1-A9-4,4-A-19"},{"word":"一意専心","yomi":"いちいせんしん","meaning":"ひたすら、心を一つのことに集中して行うこと。","level":"A","src":"1-A9-5"},{"word":"一言半句","yomi":"いちごんはんく","meaning":"ほんの一言、ちょっとした短い言葉。","level":"A","src":"1-A9-6"},{"word":"一念発起","yomi":"いちねんほっき","meaning":"事を成しとげようと決心すること。","level":"A","src":"1-A9-7"},{"word":"雲散霧消","yomi":"うんさんむしょう","meaning":"物事が一度に消えてなくなること。","level":"A","src":"1-A9-8"},{"word":"起死回生","yomi":"きしかいせい","meaning":"非常に悪い状態から、良い状態に立ちもどらせること。","level":"A","src":"1-A9-9,4-A-9,入試2-6,入試11-3"},{"word":"温故知新","yomi":"おんこちしん","meaning":"昔のことをたずね求めて、そこから新しい知識を得ること。","level":"A","src":"1-A9-10"},{"word":"群集心理","yomi":"ぐんしゅうしんり","meaning":"大勢の人に交じったときの、一人でいるときと違った特別な心理。","level":"A","src":"1-A10-1,5-A-22"},{"word":"小春日和","yomi":"こはるびより","meaning":"冬の初めの頃の、春のようにおだやかで暖かい天気。","level":"A","src":"1-A10-2"},{"word":"自由自在","yomi":"じゆうじざい","meaning":"どのようにでも自分の思いどおりにできる様子。","level":"A","src":"1-A10-3"},{"word":"人事不省","yomi":"じんじふせい","meaning":"大病や重傷のために意識を失うこと。","level":"A","src":"1-A10-4"},{"word":"同工異曲","yomi":"どうこういきょく","meaning":"見かけは異なっているようであるが、内容はだいたい同じであること。","level":"A","src":"1-A10-5,4-A-22"},{"word":"破顔一笑","yomi":"はがんいっしょう","meaning":"顔をほころばせてにっこり笑うこと。","level":"A","src":"1-A10-6"},{"word":"立身出世","yomi":"りっしんしゅっせ","meaning":"社会的に高い地位につき、名声を得て、成功すること。","level":"A","src":"1-A10-7"},{"word":"半死半生","yomi":"はんしはんしょう","meaning":"死ぬか生きるかの境目の状態にあること。","level":"A","src":"1-A10-8"},{"word":"一挙一動","yomi":"いっきょいちどう","meaning":"一つ一つの動作や行い。","level":"A","src":"1-A10-9,2-A-6,入試3"},{"word":"黄金時代","yomi":"おうごんじだい","meaning":"勢力や活動が最も盛んで、栄えている時代。最盛期。","level":"A","src":"1-A10-10"},{"word":"一喜一憂","yomi":"いっきいちゆう","meaning":"喜んだり心配したりして、しきりに気をもむこと。","level":"B","src":"1-B1-1,2-A-5"},{"word":"牛飲馬食","yomi":"ぎゅういんばしょく","meaning":"はなはだしく多量に飲み食いすること。","level":"B","src":"1-B1-2"},{"word":"三拝九拝","yomi":"さんぱいきゅうはい","meaning":"人にしきりに物事をたのむこと。","level":"B","src":"1-B1-3,2-A-20"},{"word":"質実剛健","yomi":"しつじつごうけん","meaning":"派手さがなく真面目で、心身ともに強くたくましい様子。","level":"B","src":"1-B1-4"},{"word":"終始一貫","yomi":"しゅうしいっかん","meaning":"はじめから終わりまで、態度・行動などを変えず、貫き通すこと。","level":"B","src":"1-B1-5,2-A-24"},{"word":"創意工夫","yomi":"そういくふう","meaning":"自分で新しいものを考え出し、また、よい方法をあれこれ考えること。","level":"B","src":"1-B1-6"},{"word":"朝三暮四","yomi":"ちょうさんぼし","meaning":"目先の違いにこだわって結果が同じになることに気づかないこと。","level":"B","src":"1-B1-7,2-A-29,入試14"},{"word":"朝令暮改","yomi":"ちょうれいぼかい","meaning":"命令や法令がすぐに変わって一定しないこと。","level":"B","src":"1-B1-8"},{"word":"不眠不休","yomi":"ふみんふきゅう","meaning":"眠りも休みもしないで、あることをし続けること。","level":"B","src":"1-B1-9"},{"word":"花鳥風月","yomi":"かちょうふうげつ","meaning":"絵や詩歌の題材となる、さまざまな自然の風物を表す言葉。","level":"B","src":"1-B1-10"},{"word":"一期一会","yomi":"いちごいちえ","meaning":"一生に一度だけの出会い。その出会いを大切にすべきだということ。","level":"A","src":"2-A-1,入試9-2"},{"word":"竜頭蛇尾","yomi":"りゅうとうだび","meaning":"初めは勢いが盛んだが、終わりはふるわないこと。","level":"A","src":"4-A-2"},{"word":"有害無益","yomi":"ゆうがいむえき","meaning":"害になるばかりで、役に立つことは何もないこと。","level":"A","src":"4-A-5"},{"word":"縦横無尽","yomi":"じゅうおうむじん","meaning":"思いのままに、自由自在にふるまうこと。","level":"A","src":"4-A-12"},{"word":"主客転倒","yomi":"しゅかくてんとう","meaning":"物事の順序や立場が逆になること。","level":"A","src":"4-A-13"},{"word":"本末転倒","yomi":"ほんまつてんとう","meaning":"大事なこととささいなことを取りちがえること。","level":"A","src":"4-A-13"},{"word":"東奔西走","yomi":"とうほんせいそう","meaning":"いそがしくかけ回ること。","level":"A","src":"4-A-15,入試7-ウ"},{"word":"優勝劣敗","yomi":"ゆうしょうれっぱい","meaning":"力の強いものが勝ち、弱いものが負けること。","level":"A","src":"4-A-18"},{"word":"誠心誠意","yomi":"せいしんせいい","meaning":"真心をこめてものごとを行う様子。","level":"A","src":"5-A-8,入試2-3"},{"word":"戸別訪問","yomi":"こべつほうもん","meaning":"一けん一けんの家を順に訪ねて回ること。","level":"A","src":"5-A-20"},{"word":"生存競争","yomi":"せいぞんきょうそう","meaning":"生き残るために、生物どうしが争うこと。","level":"A","src":"5-A-24"},{"word":"難行苦行","yomi":"なんぎょうくぎょう","meaning":"つらい苦労を重ねること。","level":"B","src":"入試2-2"},{"word":"海千山千","yomi":"うみせんやません","meaning":"世の中の経験を積んで、ずるがしこいこと。また、その人。","level":"B","src":"入試3,入試14"},{"word":"三者三様","yomi":"さんしゃさんよう","meaning":"三人いれば三人とも、やり方や考え方がそれぞれ違うこと。","level":"B","src":"入試4-イ"},{"word":"無理難題","yomi":"むりなんだい","meaning":"とうてい実現できないような、無理な要求。","level":"B","src":"入試6-1"},{"word":"明鏡止水","yomi":"めいきょうしすい","meaning":"邪念がなく、澄みきって落ち着いた心の状態。","level":"B","src":"入試6-2"},{"word":"品行方正","yomi":"ひんこうほうせい","meaning":"行いや心がけが正しく、きちんとしていること。","level":"B","src":"入試6-2"},{"word":"山紫水明","yomi":"さんしすいめい","meaning":"自然の風景が清らかで美しいこと。","level":"B","src":"入試7-ア"},{"word":"有言実行","yomi":"ゆうげんじっこう","meaning":"言ったことを必ずやりとげること。","level":"B","src":"入試9-1"},{"word":"呉越同舟","yomi":"ごえつどうしゅう","meaning":"仲の悪い者同士が同じ場所にいること。","level":"B","src":"入試9-2,入試17-キ"},{"word":"二者択一","yomi":"にしゃたくいつ","meaning":"二つのうちから、どちらか一つを選ぶこと。","level":"B","src":"入試13-イ"},{"word":"公私混同","yomi":"こうしこんどう","meaning":"おおやけのことと自分のこととの区別をつけないこと。","level":"B","src":"入試16"},{"word":"得意満面","yomi":"とくいまんめん","meaning":"誇らしい気持ちが顔いっぱいにあらわれていること。","level":"B","src":"入試16"},{"word":"他言無用","yomi":"たごんむよう","meaning":"ほかの人に話してはいけないということ。","level":"B","src":"入試16"},{"word":"中途半端","yomi":"ちゅうとはんぱ","meaning":"物事が完成せず、どっちつかずであること。","level":"B","src":"入試17-例"},{"word":"大言壮語","yomi":"たいげんそうご","meaning":"物事を必要以上に大げさに言うこと。","level":"B","src":"入試17-コ"}],"taigi":[{"word":"赤字","yomi":"あかじ","antonym":"黒字","antonymYomi":"くろじ","note":"支出が収入を上回ること ⇔ 収入が支出を上回ること","level":"A","src":"A1-1"},{"word":"短所","yomi":"たんしょ","antonym":"長所","antonymYomi":"ちょうしょ","note":"劣っている点 ⇔ すぐれている点","level":"A","src":"A1-2"},{"word":"欠点","yomi":"けってん","antonym":"美点","antonymYomi":"びてん","note":"足りない点 ⇔ すぐれた点","level":"A","src":"A1-3"},{"word":"予習","yomi":"よしゅう","antonym":"復習","antonymYomi":"ふくしゅう","note":"授業の前に学ぶ ⇔ 授業の後に学び直す","level":"A","src":"A1-4"},{"word":"直線","yomi":"ちょくせん","antonym":"曲線","antonymYomi":"きょくせん","note":"まっすぐな線 ⇔ 曲がった線","level":"A","src":"A1-5"},{"word":"下校","yomi":"げこう","antonym":"登校","antonymYomi":"とうこう","note":"学校から帰る ⇔ 学校へ行く","level":"A","src":"A1-6"},{"word":"不利","yomi":"ふり","antonym":"有利","antonymYomi":"ゆうり","note":"条件が悪い ⇔ 条件がよい","level":"A","src":"A1-7"},{"word":"安心","yomi":"あんしん","antonym":"心配","antonymYomi":"しんぱい","altAntonyms":["不安"],"altAntonymYomi":["ふあん"],"note":"気がかりがない ⇔ 気がかりがある","level":"A","src":"A1-8"},{"word":"当番","yomi":"とうばん","antonym":"非番","antonymYomi":"ひばん","note":"役目に当たる日 ⇔ 当番でない日","level":"A","src":"A1-9"},{"word":"安全","yomi":"あんぜん","antonym":"危険","antonymYomi":"きけん","note":"あぶなくない ⇔ あぶない","level":"A","src":"A1-10"},{"word":"起点","yomi":"きてん","antonym":"終点","antonymYomi":"しゅうてん","note":"始まりの地点 ⇔ 終わりの地点","level":"A","src":"A1-11"},{"word":"戦争","yomi":"せんそう","antonym":"平和","antonymYomi":"へいわ","note":"武力で争う ⇔ 争いがない","level":"A","src":"A1-12"},{"word":"下山","yomi":"げざん","antonym":"登山","antonymYomi":"とざん","note":"山を下りる ⇔ 山に登る","level":"A","src":"A1-13"},{"word":"発車","yomi":"はっしゃ","antonym":"停車","antonymYomi":"ていしゃ","note":"車が出発する ⇔ 車が止まる","level":"A","src":"A1-14"},{"word":"高値","yomi":"たかね","antonym":"安値","antonymYomi":"やすね","note":"値段が高い ⇔ 値段が安い","level":"A","src":"A1-15"},{"word":"起立","yomi":"きりつ","antonym":"着席","antonymYomi":"ちゃくせき","note":"立ち上がる ⇔ 席につく","level":"A","src":"A1-16"},{"word":"出席","yomi":"しゅっせき","antonym":"欠席","antonymYomi":"けっせき","note":"集まりに出る ⇔ 集まりを休む","level":"A","src":"A1-17"},{"word":"満足","yomi":"まんぞく","antonym":"不満","antonymYomi":"ふまん","note":"十分だと思う ⇔ 物足りない","level":"A","src":"A1-18"},{"word":"開会","yomi":"かいかい","antonym":"閉会","antonymYomi":"へいかい","note":"会を始める ⇔ 会を終える","level":"A","src":"A1-19"},{"word":"晴天","yomi":"せいてん","antonym":"雨天","antonymYomi":"うてん","note":"晴れた天気 ⇔ 雨の天気","level":"A","src":"A1-20"},{"word":"西洋","yomi":"せいよう","antonym":"東洋","antonymYomi":"とうよう","note":"ヨーロッパやアメリカ ⇔ アジアの地域","level":"A","src":"A1-21"},{"word":"有名","yomi":"ゆうめい","antonym":"無名","antonymYomi":"むめい","note":"名が知られている ⇔ 名が知られていない","level":"A","src":"A1-22"},{"word":"少量","yomi":"しょうりょう","antonym":"多量","antonymYomi":"たりょう","note":"量が少ない ⇔ 量が多い","level":"A","src":"A1-23"},{"word":"下車","yomi":"げしゃ","antonym":"乗車","antonymYomi":"じょうしゃ","note":"車から降りる ⇔ 車に乗る","level":"A","src":"A1-24"},{"word":"悪意","yomi":"あくい","antonym":"好意","antonymYomi":"こうい","altAntonyms":["善意"],"altAntonymYomi":["ぜんい"],"note":"悪く思う心 ⇔ 好ましく思う心","level":"A","src":"A1-25"},{"word":"一部","yomi":"いちぶ","antonym":"全部","antonymYomi":"ぜんぶ","note":"中の一部分だけ ⇔ すべて","level":"A","src":"A1-26"},{"word":"早春","yomi":"そうしゅん","antonym":"晩春","antonymYomi":"ばんしゅん","note":"春の初めごろ ⇔ 春の終わりごろ","level":"A","src":"A1-27"},{"word":"入院","yomi":"にゅういん","antonym":"退院","antonymYomi":"たいいん","note":"病院に入る ⇔ 病院を出る","level":"A","src":"A1-28"},{"word":"幼虫","yomi":"ようちゅう","antonym":"成虫","antonymYomi":"せいちゅう","note":"育つ前の虫 ⇔ 育ちきった虫","level":"A","src":"A1-29"},{"word":"軽視","yomi":"けいし","antonym":"重視","antonymYomi":"じゅうし","note":"軽く見る ⇔ 重んじる","level":"A","src":"A1-30"},{"word":"成功","yomi":"せいこう","antonym":"失敗","antonymYomi":"しっぱい","note":"うまくいく ⇔ しくじる","level":"A","src":"A2-1"},{"word":"支出","yomi":"ししゅつ","antonym":"収入","antonymYomi":"しゅうにゅう","note":"出ていくお金 ⇔ 入ってくるお金","level":"A","src":"A2-2"},{"word":"単純","yomi":"たんじゅん","antonym":"複雑","antonymYomi":"ふくざつ","note":"こみいっていない ⇔ こみいっている","level":"A","src":"A2-3"},{"word":"発信","yomi":"はっしん","antonym":"受信","antonymYomi":"じゅしん","note":"情報を送る ⇔ 情報を受け取る","level":"A","src":"A2-4"},{"word":"寒流","yomi":"かんりゅう","antonym":"暖流","antonymYomi":"だんりゅう","note":"冷たい海流 ⇔ あたたかい海流","level":"A","src":"A2-5"},{"word":"進歩","yomi":"しんぽ","antonym":"退歩","antonymYomi":"たいほ","note":"よい方へ進む ⇔ 前より後戻りする","level":"A","src":"A2-6"},{"word":"入場","yomi":"にゅうじょう","antonym":"退場","antonymYomi":"たいじょう","note":"会場に入る ⇔ 会場を出る","level":"A","src":"A2-7"},{"word":"無害","yomi":"むがい","antonym":"有害","antonymYomi":"ゆうがい","note":"害がない ⇔ 害がある","level":"A","src":"A2-8"},{"word":"自然","yomi":"しぜん","antonym":"人工","antonymYomi":"じんこう","note":"ひとりでにできたもの ⇔ 人が作ったもの","level":"A","src":"A2-9"},{"word":"前進","yomi":"ぜんしん","antonym":"後退","antonymYomi":"こうたい","note":"前へ進む ⇔ 後ろへ下がる","level":"A","src":"A2-10"},{"word":"入学","yomi":"にゅうがく","antonym":"卒業","antonymYomi":"そつぎょう","note":"学校に入る ⇔ 学校を出る","level":"A","src":"A2-11"},{"word":"暗黒","yomi":"あんこく","antonym":"光明","antonymYomi":"こうみょう","note":"真っ暗なこと ⇔ 明るい光","level":"A","src":"A2-12"},{"word":"賛成","yomi":"さんせい","antonym":"反対","antonymYomi":"はんたい","note":"意見に同意する ⇔ 意見に逆らう","level":"A","src":"A2-13"},{"word":"勝利","yomi":"しょうり","antonym":"敗北","antonymYomi":"はいぼく","note":"勝つこと ⇔ 負けること","level":"A","src":"A2-14"},{"word":"利益","yomi":"りえき","antonym":"損失","antonymYomi":"そんしつ","altAntonyms":["損害"],"altAntonymYomi":["そんがい"],"note":"もうけが出ること ⇔ 損をすること","level":"A","src":"A2-15"},{"word":"全体","yomi":"ぜんたい","antonym":"部分","antonymYomi":"ぶぶん","note":"まとまり全部 ⇔ その中の一部","level":"A","src":"A2-16"},{"word":"進化","yomi":"しんか","antonym":"退化","antonymYomi":"たいか","note":"発達して変わる ⇔ 衰えて働きを失う","level":"A","src":"A2-17"},{"word":"原因","yomi":"げんいん","antonym":"結果","antonymYomi":"けっか","note":"もとになること ⇔ そこから生じたこと","level":"A","src":"A2-18"},{"word":"減少","yomi":"げんしょう","antonym":"増加","antonymYomi":"ぞうか","note":"数や量が減る ⇔ 数や量が増える","level":"A","src":"A2-19"},{"word":"内容","yomi":"ないよう","antonym":"形式","antonymYomi":"けいしき","note":"中身 ⇔ 外側の形やきまり","level":"A","src":"A2-20"},{"word":"拡大","yomi":"かくだい","antonym":"縮小","antonymYomi":"しゅくしょう","note":"広げて大きくする ⇔ ちぢめて小さくする","level":"A","src":"A2-21"},{"word":"理想","yomi":"りそう","antonym":"現実","antonymYomi":"げんじつ","note":"こうありたい姿 ⇔ 実際の姿","level":"A","src":"A2-22"},{"word":"害虫","yomi":"がいちゅう","antonym":"益虫","antonymYomi":"えきちゅう","note":"害をなす虫 ⇔ 役に立つ虫","level":"A","src":"A2-23"},{"word":"平等","yomi":"びょうどう","antonym":"差別","antonymYomi":"さべつ","note":"分けへだてない ⇔ 分けへだてる","level":"A","src":"A2-24"},{"word":"感情","yomi":"かんじょう","antonym":"理性","antonymYomi":"りせい","note":"気持ちの動き ⇔ 筋道立てて考える力","level":"A","src":"A2-25"},{"word":"容易","yomi":"ようい","antonym":"困難","antonymYomi":"こんなん","note":"たやすい ⇔ むずかしい","level":"A","src":"A2-26"},{"word":"祖先","yomi":"そせん","antonym":"子孫","antonymYomi":"しそん","note":"前の世代の人 ⇔ のちの世代の人","level":"A","src":"A2-27"},{"word":"合成","yomi":"ごうせい","antonym":"分解","antonymYomi":"ぶんかい","note":"合わせて一つにする ⇔ 分けてばらす","level":"A","src":"A2-28"},{"word":"解散","yomi":"かいさん","antonym":"集合","antonymYomi":"しゅうごう","note":"散り散りになる ⇔ 一か所に集まる","level":"A","src":"A2-29"},{"word":"直接","yomi":"ちょくせつ","antonym":"間接","antonymYomi":"かんせつ","note":"間に何もはさまない ⇔ 間に何かをはさむ","level":"A","src":"A2-30"},{"word":"往路","yomi":"おうろ","antonym":"復路","antonymYomi":"ふくろ","note":"行きの道 ⇔ 帰りの道","level":"A","src":"A3-1"},{"word":"団体","yomi":"だんたい","antonym":"個人","antonymYomi":"こじん","note":"人の集まり ⇔ ひとりの人","level":"A","src":"A3-2"},{"word":"生産","yomi":"せいさん","antonym":"消費","antonymYomi":"しょうひ","note":"物を作り出す ⇔ 使ってなくす","level":"A","src":"A3-3"},{"word":"正常","yomi":"せいじょう","antonym":"異常","antonymYomi":"いじょう","note":"ふつうの状態 ⇔ ふつうでない状態","level":"A","src":"A3-4"},{"word":"往信","yomi":"おうしん","antonym":"返信","antonymYomi":"へんしん","note":"こちらから出す通信 ⇔ 返ってくる通信","level":"A","src":"A3-5"},{"word":"保守","yomi":"ほしゅ","antonym":"革新","antonymYomi":"かくしん","note":"古いものを守る ⇔ 新しく改める","level":"A","src":"A3-6"},{"word":"投票","yomi":"とうひょう","antonym":"開票","antonymYomi":"かいひょう","note":"票を投じる ⇔ 票を開いて数える","level":"A","src":"A3-7"},{"word":"独唱","yomi":"どくしょう","antonym":"合唱","antonymYomi":"がっしょう","note":"ひとりで歌う ⇔ 大勢で声を合わせて歌う","level":"A","src":"A3-8"},{"word":"希望","yomi":"きぼう","antonym":"絶望","antonymYomi":"ぜつぼう","note":"望みをもつ ⇔ 望みを失う","level":"A","src":"A3-9"},{"word":"不潔","yomi":"ふけつ","antonym":"清潔","antonymYomi":"せいけつ","note":"きたない ⇔ きれい","level":"A","src":"A3-10"},{"word":"動脈","yomi":"どうみゃく","antonym":"静脈","antonymYomi":"じょうみゃく","note":"心臓から出る血管 ⇔ 心臓へ戻る血管","level":"A","src":"A3-11"},{"word":"予算","yomi":"よさん","antonym":"決算","antonymYomi":"けっさん","note":"前もって見積もる ⇔ あとで計算しめくくる","level":"A","src":"A3-12"},{"word":"不幸","yomi":"ふこう","antonym":"幸福","antonymYomi":"こうふく","note":"しあわせでない ⇔ しあわせ","level":"A","src":"A3-13"},{"word":"延長","yomi":"えんちょう","antonym":"短縮","antonymYomi":"たんしゅく","note":"長くのばす ⇔ 短くちぢめる","level":"A","src":"A3-14"},{"word":"輸入","yomi":"ゆにゅう","antonym":"輸出","antonymYomi":"ゆしゅつ","note":"外国から買い入れる ⇔ 外国へ売り出す","level":"A","src":"A3-15"},{"word":"公転","yomi":"こうてん","antonym":"自転","antonymYomi":"じてん","note":"他の天体の周りを回る ⇔ 自分自身が回る","level":"A","src":"A3-16"},{"word":"健康","yomi":"けんこう","antonym":"病気","antonymYomi":"びょうき","note":"体の調子がよい ⇔ 体の調子が悪い","level":"A","src":"A3-17"},{"word":"質問","yomi":"しつもん","antonym":"回答","antonymYomi":"かいとう","note":"問いかける ⇔ 答える","level":"A","src":"A3-18"},{"word":"落選","yomi":"らくせん","antonym":"当選","antonymYomi":"とうせん","altAntonyms":["入選"],"altAntonymYomi":["にゅうせん"],"note":"選ばれない ⇔ 選ばれる","level":"A","src":"A3-19"},{"word":"到着","yomi":"とうちゃく","antonym":"出発","antonymYomi":"しゅっぱつ","note":"目的地に着く ⇔ 出かけていく","level":"A","src":"A3-20"},{"word":"順調","yomi":"じゅんちょう","antonym":"不調","antonymYomi":"ふちょう","note":"調子よく進む ⇔ 調子が悪い","level":"A","src":"A3-21"},{"word":"許可","yomi":"きょか","antonym":"禁止","antonymYomi":"きんし","note":"認めて許す ⇔ してはいけないとする","level":"A","src":"A3-22"},{"word":"消極","yomi":"しょうきょく","antonym":"積極","antonymYomi":"せっきょく","note":"引っ込み思案 ⇔ 進んで行う","level":"A","src":"A3-23"},{"word":"偶然","yomi":"ぐうぜん","antonym":"必然","antonymYomi":"ひつぜん","note":"たまたま起こる ⇔ 必ずそうなる","level":"A","src":"A3-24"},{"word":"初期","yomi":"しょき","antonym":"末期","antonymYomi":"まっき","note":"始めのころ ⇔ 終わりのころ","level":"A","src":"A3-25"},{"word":"運動","yomi":"うんどう","antonym":"静止","antonymYomi":"せいし","note":"動くこと ⇔ 止まっていること","level":"A","src":"A3-26"},{"word":"需要","yomi":"じゅよう","antonym":"供給","antonymYomi":"きょうきゅう","note":"ほしいという求め ⇔ 品物を与え届けること","level":"A","src":"A3-27"},{"word":"温暖","yomi":"おんだん","antonym":"寒冷","antonymYomi":"かんれい","note":"気候があたたかい ⇔ 気候が寒い","level":"A","src":"A3-28"},{"word":"雑然","yomi":"ざつぜん","antonym":"整然","antonymYomi":"せいぜん","note":"ごちゃごちゃ ⇔ きちんと整う","level":"A","src":"A3-29"},{"word":"公用","yomi":"こうよう","antonym":"私用","antonymYomi":"しよう","note":"おおやけの用事 ⇔ 個人の用事","level":"A","src":"A3-30"},{"word":"陰気","yomi":"いんき","antonym":"陽気","antonymYomi":"ようき","note":"暗く沈んだ感じ ⇔ 明るく晴れやかな感じ","level":"B","src":"B1-1"},{"word":"義務","yomi":"ぎむ","antonym":"権利","antonymYomi":"けんり","note":"しなければならないこと ⇔ してよいと認められる力","level":"B","src":"B1-2"},{"word":"破壊","yomi":"はかい","antonym":"建設","antonymYomi":"けんせつ","note":"こわす ⇔ つくり上げる","level":"B","src":"B1-3"},{"word":"主観","yomi":"しゅかん","antonym":"客観","antonymYomi":"きゃっかん","note":"自分だけの見方 ⇔ 第三者の立場の見方","level":"B","src":"B1-4"},{"word":"悲観","yomi":"ひかん","antonym":"楽観","antonymYomi":"らっかん","note":"悪い方に考える ⇔ よい方に考える","level":"B","src":"B1-5"},{"word":"模倣","yomi":"もほう","antonym":"創造","antonymYomi":"そうぞう","altAntonyms":["独創"],"altAntonymYomi":["どくそう"],"note":"まねる ⇔ 新しく作り出す","level":"B","src":"B1-6"},{"word":"絶対","yomi":"ぜったい","antonym":"相対","antonymYomi":"そうたい","note":"他と比べようがない ⇔ 他と比べて成り立つ","level":"B","src":"B1-7"},{"word":"秘密","yomi":"ひみつ","antonym":"公開","antonymYomi":"こうかい","note":"かくしておく ⇔ 広く見せる","level":"B","src":"B1-8"},{"word":"抽象","yomi":"ちゅうしょう","antonym":"具体","antonymYomi":"ぐたい","altAntonyms":["具象"],"altAntonymYomi":["ぐしょう"],"note":"共通点を取り出す ⇔ 形がはっきりある","level":"B","src":"B1-9"},{"word":"欠乏","yomi":"けつぼう","antonym":"豊富","antonymYomi":"ほうふ","note":"足りない ⇔ たっぷりある","level":"B","src":"B1-10"},{"word":"浪費","yomi":"ろうひ","antonym":"節約","antonymYomi":"せつやく","altAntonyms":["倹約"],"altAntonymYomi":["けんやく"],"note":"むだづかいする ⇔ むだをはぶく","level":"B","src":"B1-11"},{"word":"民主","yomi":"みんしゅ","antonym":"専制","antonymYomi":"せんせい","altAntonyms":["独裁"],"altAntonymYomi":["どくさい"],"note":"国民が決める ⇔ 一人が思うままに決める","level":"B","src":"B1-12"},{"word":"反抗","yomi":"はんこう","antonym":"服従","antonymYomi":"ふくじゅう","note":"逆らう ⇔ 言いなりに従う","level":"B","src":"B1-13"},{"word":"辞任","yomi":"じにん","antonym":"就任","antonymYomi":"しゅうにん","altAntonyms":["着任"],"altAntonymYomi":["ちゃくにん"],"note":"役目をやめる ⇔ 役目につく","level":"B","src":"B1-14"},{"word":"可決","yomi":"かけつ","antonym":"否決","antonymYomi":"ひけつ","note":"議案を認める ⇔ 議案を退ける","level":"B","src":"B1-15"},{"word":"肯定","yomi":"こうてい","antonym":"否定","antonymYomi":"ひてい","note":"そうだと認める ⇔ そうではないとする","level":"B","src":"B1-16"},{"word":"冷水","yomi":"れいすい","antonym":"熱湯","antonymYomi":"ねっとう","altAntonyms":["温水"],"altAntonymYomi":["おんすい"],"note":"冷たい水 ⇔ 煮え立った湯","level":"B","src":"B1-17"},{"word":"精神","yomi":"せいしん","antonym":"肉体","antonymYomi":"にくたい","note":"心のはたらき ⇔ からだ","level":"B","src":"B1-18"},{"word":"質疑","yomi":"しつぎ","antonym":"応答","antonymYomi":"おうとう","note":"疑問を問いただす ⇔ それに答える","level":"B","src":"B1-19"},{"word":"官製","yomi":"かんせい","antonym":"私製","antonymYomi":"しせい","note":"政府が作る ⇔ 民間が作る","level":"B","src":"B1-20"},{"word":"円満","yomi":"えんまん","antonym":"不和","antonymYomi":"ふわ","note":"仲がよい ⇔ 仲が悪い","level":"B","src":"B1-21"},{"word":"干潮","yomi":"かんちょう","antonym":"満潮","antonymYomi":"まんちょう","note":"潮が最も引いた状態 ⇔ 潮が最も満ちた状態","level":"B","src":"B1-22"},{"word":"普通","yomi":"ふつう","antonym":"特別","antonymYomi":"とくべつ","note":"ありふれている ⇔ 特にちがう","level":"B","src":"B1-23"},{"word":"原則","yomi":"げんそく","antonym":"例外","antonymYomi":"れいがい","note":"基本となるきまり ⇔ きまりに当てはまらないもの","level":"B","src":"B1-24"},{"word":"自力","yomi":"じりき","antonym":"他力","antonymYomi":"たりき","note":"自分の力 ⇔ 他人の力","level":"B","src":"B1-25"},{"word":"原料","yomi":"げんりょう","antonym":"製品","antonymYomi":"せいひん","note":"作るもとの材料 ⇔ 作り上げた品物","level":"B","src":"B1-26"},{"word":"道理","yomi":"どうり","antonym":"非道","antonymYomi":"ひどう","altAntonyms":["無理"],"altAntonymYomi":["むり"],"note":"筋道が通る ⇔ 筋道に外れる","level":"B","src":"B1-27"},{"word":"得意","yomi":"とくい","antonym":"失意","antonymYomi":"しつい","note":"思い通りで満足 ⇔ 望みを失って沈む","level":"B","src":"B1-28"},{"word":"乾季","yomi":"かんき","antonym":"雨季","antonymYomi":"うき","note":"雨の少ない季節 ⇔ 雨の多い季節","level":"B","src":"B1-29"},{"word":"強健","yomi":"きょうけん","antonym":"病弱","antonymYomi":"びょうじゃく","note":"体が丈夫 ⇔ 体が弱い","level":"B","src":"B1-30"},{"word":"依存","yomi":"いぞん","antonym":"独立","antonymYomi":"どくりつ","note":"他に頼る ⇔ 自分の力で立つ","level":"B","src":"B2-1"},{"word":"分析","yomi":"ぶんせき","antonym":"総合","antonymYomi":"そうごう","note":"分けて細かく調べる ⇔ まとめて一つにする","level":"B","src":"B2-2"},{"word":"実践","yomi":"じっせん","antonym":"理論","antonymYomi":"りろん","note":"実際に行う ⇔ 筋道立てて組み立てた考え","level":"B","src":"B2-3"},{"word":"過去","yomi":"かこ","antonym":"未来","antonymYomi":"みらい","note":"過ぎ去った時 ⇔ これから来る時","level":"B","src":"B2-4"},{"word":"幹線","yomi":"かんせん","antonym":"支線","antonymYomi":"しせん","note":"主要な路線 ⇔ 枝分かれした路線","level":"B","src":"B2-5"},{"word":"文明","yomi":"ぶんめい","antonym":"原始","antonymYomi":"げんし","altAntonyms":["未開"],"altAntonymYomi":["みかい"],"note":"開けた世の中 ⇔ まだ開けていない状態","level":"B","src":"B2-6"},{"word":"過失","yomi":"かしつ","antonym":"故意","antonymYomi":"こい","note":"うっかりの失敗 ⇔ わざとすること","level":"B","src":"B2-7"},{"word":"遺失","yomi":"いしつ","antonym":"拾得","antonymYomi":"しゅうとく","note":"落としてなくす ⇔ 落とし物を拾う","level":"B","src":"B2-8"},{"word":"社会","yomi":"しゃかい","antonym":"個人","antonymYomi":"こじん","note":"人々の集まり ⇔ ひとりの人","level":"B","src":"B2-9"},{"word":"被告","yomi":"ひこく","antonym":"原告","antonymYomi":"げんこく","note":"裁判で訴えられた側 ⇔ 訴えた側","level":"B","src":"B2-10"},{"word":"慢性","yomi":"まんせい","antonym":"急性","antonymYomi":"きゅうせい","note":"長引く病気 ⇔ 急に起こる病気","level":"B","src":"B2-11"},{"word":"冷淡","yomi":"れいたん","antonym":"親切","antonymYomi":"しんせつ","note":"思いやりがない ⇔ 思いやりがある","level":"B","src":"B2-12"},{"word":"移動","yomi":"いどう","antonym":"固定","antonymYomi":"こてい","note":"場所を変える ⇔ 動かないようにする","level":"B","src":"B2-13"},{"word":"母音","yomi":"ぼいん","antonym":"子音","antonymYomi":"しいん","note":"アイウエオの音 ⇔ それ以外の音","level":"B","src":"B2-14"},{"word":"実物","yomi":"じつぶつ","antonym":"模型","antonymYomi":"もけい","note":"本物そのもの ⇔ かたどって作ったもの","level":"B","src":"B2-15"},{"word":"副業","yomi":"ふくぎょう","antonym":"本業","antonymYomi":"ほんぎょう","note":"片手間にする仕事 ⇔ 中心となる仕事","level":"B","src":"B2-16"},{"word":"動揺","yomi":"どうよう","antonym":"安定","antonymYomi":"あんてい","note":"揺れ動く ⇔ 落ち着いている","level":"B","src":"B2-17"},{"word":"質的","yomi":"してき","antonym":"量的","antonymYomi":"りょうてき","note":"中身から見た面 ⇔ 数や量から見た面","level":"B","src":"B2-18"},{"word":"消火","yomi":"しょうか","antonym":"点火","antonymYomi":"てんか","note":"火を消す ⇔ 火をつける","level":"B","src":"B2-19"},{"word":"失望","yomi":"しつぼう","antonym":"希望","antonymYomi":"きぼう","note":"望みを失う ⇔ 望みをもつ","level":"B","src":"B2-20"},{"word":"好転","yomi":"こうてん","antonym":"悪化","antonymYomi":"あっか","note":"よい方へ向かう ⇔ 悪い方へ向かう","level":"B","src":"B2-21"},{"word":"縦断","yomi":"じゅうだん","antonym":"横断","antonymYomi":"おうだん","note":"縦に通り抜ける ⇔ 横に通り抜ける","level":"B","src":"B2-22"},{"word":"与党","yomi":"よとう","antonym":"野党","antonymYomi":"やとう","note":"政権をになう政党 ⇔ 政権の外にある政党","level":"B","src":"B2-23"},{"word":"垂直","yomi":"すいちょく","antonym":"水平","antonymYomi":"すいへい","note":"まっすぐ立つ向き ⇔ 地面と平らな向き","level":"B","src":"B2-24"},{"word":"目的","yomi":"もくてき","antonym":"手段","antonymYomi":"しゅだん","note":"めざすところ ⇔ そのための方法","level":"B","src":"B2-25"},{"word":"及第","yomi":"きゅうだい","antonym":"落第","antonymYomi":"らくだい","note":"試験に受かる ⇔ 試験に落ちる","level":"B","src":"B2-26"},{"word":"終了","yomi":"しゅうりょう","antonym":"開始","antonymYomi":"かいし","note":"終わる ⇔ 始まる","level":"B","src":"B2-27"},{"word":"緯度","yomi":"いど","antonym":"経度","antonymYomi":"けいど","note":"南北の位置を表す ⇔ 東西の位置を表す","level":"B","src":"B2-28"},{"word":"時間","yomi":"じかん","antonym":"空間","antonymYomi":"くうかん","note":"時の流れ ⇔ 広がりの場","level":"B","src":"B2-29"},{"word":"警戒","yomi":"けいかい","antonym":"油断","antonymYomi":"ゆだん","note":"用心する ⇔ 気をゆるめる","level":"B","src":"B2-30"},{"word":"平凡","yomi":"へいぼん","antonym":"非凡","antonymYomi":"ひぼん","note":"ありふれている ⇔ 並外れてすぐれる","level":"B","src":"B3-1"},{"word":"偉人","yomi":"いじん","antonym":"凡人","antonymYomi":"ぼんじん","note":"すぐれた立派な人 ⇔ ごくふつうの人","level":"B","src":"B3-2"},{"word":"正式","yomi":"せいしき","antonym":"略式","antonymYomi":"りゃくしき","note":"正しい手続きによる ⇔ 手続きを省いた形","level":"B","src":"B3-3"},{"word":"定説","yomi":"ていせつ","antonym":"異説","antonymYomi":"いせつ","note":"広く認められた説 ⇔ それとちがう説","level":"B","src":"B3-4"},{"word":"同性","yomi":"どうせい","antonym":"異性","antonymYomi":"いせい","note":"同じ性 ⇔ ちがう性","level":"B","src":"B3-5"},{"word":"怠惰","yomi":"たいだ","antonym":"勤勉","antonymYomi":"きんべん","note":"なまける ⇔ よく働き努める","level":"B","src":"B3-6"},{"word":"本流","yomi":"ほんりゅう","antonym":"支流","antonymYomi":"しりゅう","note":"川の中心の流れ ⇔ 枝分かれした流れ","level":"B","src":"B3-7"},{"word":"訳書","yomi":"やくしょ","antonym":"原書","antonymYomi":"げんしょ","note":"訳した本 ⇔ もとの言語の本","level":"B","src":"B3-8"},{"word":"夏至","yomi":"げし","antonym":"冬至","antonymYomi":"とうじ","note":"昼が最も長い日 ⇔ 昼が最も短い日","level":"B","src":"B3-9"},{"word":"鋭角","yomi":"えいかく","antonym":"鈍角","antonymYomi":"どんかく","note":"九十度より小さい角 ⇔ 九十度より大きい角","level":"B","src":"B3-10"},{"word":"都心","yomi":"としん","antonym":"郊外","antonymYomi":"こうがい","altAntonyms":["田舎"],"altAntonymYomi":["いなか"],"note":"都市の中心部 ⇔ 都市の周辺部","level":"B","src":"B3-11"},{"word":"片道","yomi":"かたみち","antonym":"往復","antonymYomi":"おうふく","note":"行きだけ ⇔ 行きと帰り","level":"B","src":"B3-12"},{"word":"苦手","yomi":"にがて","antonym":"得手","antonymYomi":"えて","note":"うまくできない ⇔ 得意でうまい","level":"B","src":"B3-13"},{"word":"利息","yomi":"りそく","antonym":"元本","antonymYomi":"がんぽん","altAntonyms":["元金"],"altAntonymYomi":["がんきん"],"note":"貸し借りで生じるお金 ⇔ もとになるお金","level":"B","src":"B3-14"},{"word":"不備","yomi":"ふび","antonym":"完備","antonymYomi":"かんび","note":"足りない点がある ⇔ 十分にそろっている","level":"B","src":"B3-15"},{"word":"凶作","yomi":"きょうさく","antonym":"豊作","antonymYomi":"ほうさく","note":"作物がとれない ⇔ 作物がよくとれる","level":"B","src":"B3-16"},{"word":"外科","yomi":"げか","antonym":"内科","antonymYomi":"ないか","note":"手術で治す診療科 ⇔ 薬などで治す診療科","level":"B","src":"B3-17"},{"word":"惨敗","yomi":"ざんぱい","antonym":"圧勝","antonymYomi":"あっしょう","note":"さんざんに負ける ⇔ 大差で勝つ","level":"B","src":"B3-18"},{"word":"鎖国","yomi":"さこく","antonym":"開国","antonymYomi":"かいこく","note":"国を閉ざす ⇔ 国を開いて交わる","level":"B","src":"B3-19"},{"word":"共有","yomi":"きょうゆう","antonym":"私有","antonymYomi":"しゆう","altAntonyms":["専有"],"altAntonymYomi":["せんゆう"],"note":"みんなでもつ ⇔ 個人がもつ","level":"B","src":"B3-20"},{"word":"韻文","yomi":"いんぶん","antonym":"散文","antonymYomi":"さんぶん","note":"リズムを整えた文 ⇔ ふつうの文章","level":"B","src":"B3-21"},{"word":"快楽","yomi":"かいらく","antonym":"苦痛","antonymYomi":"くつう","note":"心地よさ ⇔ 苦しみ","level":"B","src":"B3-22"},{"word":"現象","yomi":"げんしょう","antonym":"本質","antonymYomi":"ほんしつ","note":"表に現れた姿 ⇔ もともとの中身","level":"B","src":"B3-23"},{"word":"地味","yomi":"じみ","antonym":"派手","antonymYomi":"はで","note":"目立たない ⇔ 目立って華やか","level":"B","src":"B3-24"},{"word":"先天","yomi":"せんてん","antonym":"後天","antonymYomi":"こうてん","note":"生まれつきの ⇔ 生まれた後に身につく","level":"B","src":"B3-25"},{"word":"敵対","yomi":"てきたい","antonym":"友好","antonymYomi":"ゆうこう","note":"敵として争う ⇔ 仲よくつき合う","level":"B","src":"B3-26"},{"word":"白昼","yomi":"はくちゅう","antonym":"深夜","antonymYomi":"しんや","note":"真昼 ⇔ 真夜中","level":"B","src":"B3-27"},{"word":"私服","yomi":"しふく","antonym":"制服","antonymYomi":"せいふく","note":"ふだん着 ⇔ 決められた服","level":"B","src":"B3-28"},{"word":"興奮","yomi":"こうふん","antonym":"冷静","antonymYomi":"れいせい","note":"気が高ぶる ⇔ 落ち着いている","level":"B","src":"B3-29"},{"word":"晩成","yomi":"ばんせい","antonym":"早熟","antonymYomi":"そうじゅく","note":"遅れて大成する ⇔ 早く育ち成熟する","level":"B","src":"B3-30"},{"word":"粗雑","yomi":"そざつ","antonym":"精密","antonymYomi":"せいみつ","note":"大ざっぱ ⇔ 細かく正確","level":"B","src":"B3-31"},{"word":"先頭","yomi":"せんとう","antonym":"後尾","antonymYomi":"こうび","altAntonyms":["末尾"],"altAntonymYomi":["まつび"],"note":"列の一番前 ⇔ 列の一番後ろ","level":"B","src":"B3-32"},{"word":"沈黙","yomi":"ちんもく","antonym":"発言","antonymYomi":"はつげん","note":"だまっている ⇔ 口に出して言う","level":"B","src":"B3-33"},{"word":"内政","yomi":"ないせい","antonym":"外交","antonymYomi":"がいこう","note":"国内の政治 ⇔ 外国とのつき合い","level":"B","src":"B3-34"},{"word":"右翼","yomi":"うよく","antonym":"左翼","antonymYomi":"さよく","note":"保守的な立場 ⇔ 革新的な立場","level":"B","src":"B3-35"}],"ruigi":[{"word":"意外","yomi":"いがい","synonym":"案外","synonymYomi":"あんがい","note":"思っていたことと実際とがちがう様子","level":"A","src":"A1-1"},{"word":"心配","yomi":"しんぱい","synonym":"不安","synonymYomi":"ふあん","note":"先のことが気になって落ち着かない気持ち","level":"A","src":"A1-2"},{"word":"決意","yomi":"けつい","synonym":"決心","synonymYomi":"けっしん","note":"心をきっぱりと決めること","level":"A","src":"A1-3"},{"word":"進歩","yomi":"しんぽ","synonym":"向上","synonymYomi":"こうじょう","note":"前よりよい状態へ進むこと","level":"A","src":"A1-4"},{"word":"自然","yomi":"しぜん","synonym":"天然","synonymYomi":"てんねん","note":"人の手が加わっていないこと","level":"A","src":"A1-5"},{"word":"長所","yomi":"ちょうしょ","synonym":"美点","synonymYomi":"びてん","note":"人や物のすぐれているところ","level":"A","src":"A1-6"},{"word":"短所","yomi":"たんしょ","synonym":"欠点","synonymYomi":"けってん","note":"人や物のおとっているところ","level":"A","src":"A1-7"},{"word":"永遠","yomi":"えいえん","synonym":"永久","synonymYomi":"えいきゅう","altSynonyms":["久遠"],"altSynonymYomi":["くおん"],"note":"いつまでも果てしなく続くこと","level":"A","src":"A1-8"},{"word":"音信","yomi":"おんしん","synonym":"消息","synonymYomi":"しょうそく","note":"人のようすを伝えるたより","level":"A","src":"A1-9"},{"word":"発明","yomi":"はつめい","synonym":"発見","synonymYomi":"はっけん","note":"今までにないものを新たに見つけ出すこと","level":"A","src":"A1-10"},{"word":"材料","yomi":"ざいりょう","synonym":"原料","synonymYomi":"げんりょう","note":"物をつくるもとになるもの","level":"A","src":"A1-11"},{"word":"祖先","yomi":"そせん","synonym":"先祖","synonymYomi":"せんぞ","note":"その家系の代々の人々","level":"A","src":"A1-12"},{"word":"見学","yomi":"けんがく","synonym":"見物","synonymYomi":"けんぶつ","note":"実際にその場へ行って見ること","level":"A","src":"A1-13"},{"word":"先生","yomi":"せんせい","synonym":"教師","synonymYomi":"きょうし","altSynonyms":["教員"],"altSynonymYomi":["きょういん"],"note":"学問や技術を教える人","level":"A","src":"A1-14"},{"word":"去年","yomi":"きょねん","synonym":"昨年","synonymYomi":"さくねん","note":"今年の一つ前の年","level":"A","src":"A1-15"},{"word":"方向","yomi":"ほうこう","synonym":"方角","synonymYomi":"ほうがく","note":"向いている方・向き","level":"A","src":"A1-16"},{"word":"苦労","yomi":"くろう","synonym":"苦心","synonymYomi":"くしん","note":"物事のために骨を折ること","level":"A","src":"A1-17"},{"word":"両親","yomi":"りょうしん","synonym":"父母","synonymYomi":"ふぼ","note":"父と母のこと","level":"A","src":"A1-18"},{"word":"同意","yomi":"どうい","synonym":"賛成","synonymYomi":"さんせい","note":"相手の考えをよいと認めること","level":"A","src":"A1-19"},{"word":"航路","yomi":"こうろ","synonym":"海路","synonymYomi":"かいろ","altSynonyms":["空路"],"altSynonymYomi":["くうろ"],"note":"船や飛行機の通り道","level":"A","src":"A1-20"},{"word":"用意","yomi":"ようい","synonym":"準備","synonymYomi":"じゅんび","note":"前もってととのえておくこと","level":"A","src":"A1-21"},{"word":"親切","yomi":"しんせつ","synonym":"厚意","synonymYomi":"こうい","note":"相手を思いやるあたたかい心","level":"A","src":"A1-22"},{"word":"辞書","yomi":"じしょ","synonym":"辞典","synonymYomi":"じてん","note":"ことばの意味を調べる本","level":"A","src":"A1-23"},{"word":"完全","yomi":"かんぜん","synonym":"無欠","synonymYomi":"むけつ","note":"欠けたところがまったくないこと","level":"A","src":"A1-24"},{"word":"不満","yomi":"ふまん","synonym":"不平","synonymYomi":"ふへい","altSynonyms":["不服"],"altSynonymYomi":["ふふく"],"note":"満足できず納得がいかないこと","level":"A","src":"A1-25"},{"word":"区別","yomi":"くべつ","synonym":"差別","synonymYomi":"さべつ","note":"ちがいによって分けること","level":"A","src":"A1-26"},{"word":"公平","yomi":"こうへい","synonym":"公正","synonymYomi":"こうせい","altSynonyms":["平等"],"altSynonymYomi":["びょうどう"],"note":"かたよりがなく正しいこと","level":"A","src":"A1-27"},{"word":"文明","yomi":"ぶんめい","synonym":"文化","synonymYomi":"ぶんか","note":"人間が築き上げた生活のあり方","level":"A","src":"A1-28"},{"word":"有名","yomi":"ゆうめい","synonym":"著名","synonymYomi":"ちょめい","altSynonyms":["高名"],"altSynonymYomi":["こうめい"],"note":"世間に広く名が知られていること","level":"A","src":"A1-29"},{"word":"体験","yomi":"たいけん","synonym":"経験","synonymYomi":"けいけん","note":"実際にやってみて身につけること","level":"A","src":"A1-30"},{"word":"一生","yomi":"いっしょう","synonym":"生涯","synonymYomi":"しょうがい","altSynonyms":["終生"],"altSynonymYomi":["しゅうせい"],"note":"生まれてから死ぬまでの間","level":"A","src":"A2-1"},{"word":"改良","yomi":"かいりょう","synonym":"改善","synonymYomi":"かいぜん","note":"悪いところを直してよくすること","level":"A","src":"A2-2"},{"word":"志願","yomi":"しがん","synonym":"志望","synonymYomi":"しぼう","note":"自分から進んでそうしたいと望むこと","level":"A","src":"A2-3"},{"word":"母国","yomi":"ぼこく","synonym":"祖国","synonymYomi":"そこく","altSynonyms":["故国"],"altSynonymYomi":["ここく"],"note":"自分が生まれ育った国","level":"A","src":"A2-4"},{"word":"容易","yomi":"ようい","synonym":"平易","synonymYomi":"へいい","altSynonyms":["簡易"],"altSynonymYomi":["かんい"],"note":"たやすくやさしいこと","level":"A","src":"A2-5"},{"word":"手紙","yomi":"てがみ","synonym":"書面","synonymYomi":"しょめん","note":"用件を書いて相手に届けるもの","level":"A","src":"A2-6"},{"word":"原始","yomi":"げんし","synonym":"未開","synonymYomi":"みかい","note":"文明がまだ進んでいない状態","level":"A","src":"A2-7"},{"word":"親友","yomi":"しんゆう","synonym":"知己","synonymYomi":"ちき","note":"心を許し合った親しい友","level":"A","src":"A2-8"},{"word":"帰省","yomi":"きせい","synonym":"帰郷","synonymYomi":"ききょう","note":"ふるさとへ帰ること","level":"A","src":"A2-9"},{"word":"方法","yomi":"ほうほう","synonym":"手段","synonymYomi":"しゅだん","note":"目的を果たすためのやり方","level":"A","src":"A2-10"},{"word":"納得","yomi":"なっとく","synonym":"承知","synonymYomi":"しょうち","altSynonyms":["合点"],"altSynonymYomi":["がてん"],"note":"事情をよく理解して認めること","level":"A","src":"A2-11"},{"word":"拡大","yomi":"かくだい","synonym":"拡張","synonymYomi":"かくちょう","note":"範囲や規模を広げて大きくすること","level":"A","src":"A2-12"},{"word":"休養","yomi":"きゅうよう","synonym":"静養","synonymYomi":"せいよう","altSynonyms":["保養"],"altSynonymYomi":["ほよう"],"note":"心身を休めて元気を取りもどすこと","level":"A","src":"A2-13"},{"word":"重要","yomi":"じゅうよう","synonym":"重大","synonymYomi":"じゅうだい","altSynonyms":["大切"],"altSynonymYomi":["たいせつ"],"note":"とくに大事であること","level":"A","src":"A2-14"},{"word":"未来","yomi":"みらい","synonym":"将来","synonymYomi":"しょうらい","note":"これから先の時","level":"A","src":"A2-15"},{"word":"感情","yomi":"かんじょう","synonym":"心情","synonymYomi":"しんじょう","note":"心に起こる思いや気持ち","level":"A","src":"A2-16"},{"word":"他国","yomi":"たこく","synonym":"外国","synonymYomi":"がいこく","altSynonyms":["異国"],"altSynonymYomi":["いこく"],"note":"自分の国以外の国","level":"A","src":"A2-17"},{"word":"規則","yomi":"きそく","synonym":"規定","synonymYomi":"きてい","altSynonyms":["規約"],"altSynonymYomi":["きやく"],"note":"守るべきものとして決められた約束","level":"A","src":"A2-18"},{"word":"失望","yomi":"しつぼう","synonym":"失意","synonymYomi":"しつい","note":"望みを失ってがっかりすること","level":"A","src":"A2-19"},{"word":"休憩","yomi":"きゅうけい","synonym":"休息","synonymYomi":"きゅうそく","note":"途中でひと休みすること","level":"A","src":"A2-20"},{"word":"首府","yomi":"しゅふ","synonym":"首都","synonymYomi":"しゅと","note":"その国の中央政府がある都市","level":"A","src":"A2-21"},{"word":"光景","yomi":"こうけい","synonym":"風景","synonymYomi":"ふうけい","altSynonyms":["景色"],"altSynonymYomi":["けしき"],"note":"目の前に広がるながめ・ありさま","level":"A","src":"A2-22"},{"word":"天気","yomi":"てんき","synonym":"天候","synonymYomi":"てんこう","note":"その時々の空のようす","level":"A","src":"A2-23"},{"word":"立身","yomi":"りっしん","synonym":"出世","synonymYomi":"しゅっせ","note":"社会的に高い地位につくこと","level":"A","src":"A2-24"},{"word":"単純","yomi":"たんじゅん","synonym":"簡単","synonymYomi":"かんたん","note":"こみいっていないこと","level":"A","src":"A2-25"},{"word":"悪評","yomi":"あくひょう","synonym":"不評","synonymYomi":"ふひょう","note":"世間の評判が悪いこと","level":"A","src":"A2-26"},{"word":"改革","yomi":"かいかく","synonym":"革新","synonymYomi":"かくしん","altSynonyms":["改新"],"altSynonymYomi":["かいしん"],"note":"制度などを新しく改めること","level":"A","src":"A2-27"},{"word":"例外","yomi":"れいがい","synonym":"特別","synonymYomi":"とくべつ","note":"ふつうの決まりから外れていること","level":"A","src":"A2-28"},{"word":"内容","yomi":"ないよう","synonym":"実質","synonymYomi":"じっしつ","note":"中に含まれている中身","level":"A","src":"A2-29"},{"word":"平生","yomi":"へいぜい","synonym":"日常","synonymYomi":"にちじょう","altSynonyms":["平素"],"altSynonymYomi":["へいそ"],"note":"ふだん・いつものこと","level":"A","src":"A2-30"},{"word":"本意","yomi":"ほんい","synonym":"真意","synonymYomi":"しんい","altSynonyms":["本心"],"altSynonymYomi":["ほんしん"],"note":"本当に思っている気持ち","level":"A","src":"A3-1"},{"word":"真実","yomi":"しんじつ","synonym":"真相","synonymYomi":"しんそう","note":"うそいつわりのない本当のこと","level":"A","src":"A3-2"},{"word":"真心","yomi":"まごころ","synonym":"誠意","synonymYomi":"せいい","note":"いつわりのない正直な心","level":"A","src":"A3-3"},{"word":"持続","yomi":"じぞく","synonym":"継続","synonymYomi":"けいぞく","note":"同じ状態がずっと続くこと","level":"A","src":"A3-4"},{"word":"企画","yomi":"きかく","synonym":"計画","synonymYomi":"けいかく","note":"前もって物事の筋道を考えること","level":"A","src":"A3-5"},{"word":"任務","yomi":"にんむ","synonym":"使命","synonymYomi":"しめい","note":"果たすべき役目","level":"A","src":"A3-6"},{"word":"修正","yomi":"しゅうせい","synonym":"改正","synonymYomi":"かいせい","altSynonyms":["訂正"],"altSynonymYomi":["ていせい"],"note":"よくないところを直すこと","level":"A","src":"A3-7"},{"word":"関心","yomi":"かんしん","synonym":"興味","synonymYomi":"きょうみ","note":"物事に心が引かれること","level":"A","src":"A3-8"},{"word":"救援","yomi":"きゅうえん","synonym":"救出","synonymYomi":"きゅうしゅつ","altSynonyms":["救済"],"altSynonymYomi":["きゅうさい"],"note":"困っている人を助けること","level":"A","src":"A3-9"},{"word":"推量","yomi":"すいりょう","synonym":"推測","synonymYomi":"すいそく","note":"見当をつけておしはかること","level":"A","src":"A3-10"},{"word":"達成","yomi":"たっせい","synonym":"成就","synonymYomi":"じょうじゅ","note":"目的をなしとげること","level":"A","src":"A3-11"},{"word":"郷里","yomi":"きょうり","synonym":"故郷","synonymYomi":"こきょう","note":"生まれ育った土地","level":"A","src":"A3-12"},{"word":"忠言","yomi":"ちゅうげん","synonym":"忠告","synonymYomi":"ちゅうこく","note":"真心から相手の過ちを注意すること","level":"A","src":"A3-13"},{"word":"生育","yomi":"せいいく","synonym":"発育","synonymYomi":"はついく","note":"育って大きくなること","level":"A","src":"A3-14"},{"word":"製造","yomi":"せいぞう","synonym":"製作","synonymYomi":"せいさく","note":"品物をつくること","level":"A","src":"A3-15"},{"word":"死去","yomi":"しきょ","synonym":"死亡","synonymYomi":"しぼう","note":"人が亡くなること","level":"A","src":"A3-16"},{"word":"質問","yomi":"しつもん","synonym":"質疑","synonymYomi":"しつぎ","note":"分からない点を問いただすこと","level":"A","src":"A3-17"},{"word":"死者","yomi":"ししゃ","synonym":"故人","synonymYomi":"こじん","note":"亡くなった人","level":"A","src":"A3-18"},{"word":"辞職","yomi":"じしょく","synonym":"辞任","synonymYomi":"じにん","note":"自分から職や役目をやめること","level":"A","src":"A3-19"},{"word":"気質","yomi":"きしつ","synonym":"気性","synonymYomi":"きしょう","note":"生まれつきもっている性格","level":"A","src":"A3-20"},{"word":"相違","yomi":"そうい","synonym":"差異","synonymYomi":"さい","altSynonyms":["異同"],"altSynonymYomi":["いどう"],"note":"二つのものの間のちがい","level":"A","src":"A3-21"},{"word":"適当","yomi":"てきとう","synonym":"適切","synonymYomi":"てきせつ","note":"その場によく当てはまること","level":"A","src":"A3-22"},{"word":"信頼","yomi":"しんらい","synonym":"信用","synonymYomi":"しんよう","note":"相手を信じて頼りにすること","level":"A","src":"A3-23"},{"word":"異議","yomi":"いぎ","synonym":"異論","synonymYomi":"いろん","note":"他とはちがう意見","level":"A","src":"A3-24"},{"word":"凶作","yomi":"きょうさく","synonym":"不作","synonymYomi":"ふさく","note":"作物のできが悪いこと","level":"A","src":"A3-25"},{"word":"看病","yomi":"かんびょう","synonym":"看護","synonymYomi":"かんご","note":"病人の世話をすること","level":"A","src":"A3-26"},{"word":"都市","yomi":"とし","synonym":"都会","synonymYomi":"とかい","note":"人や建物が集まったにぎやかな土地","level":"A","src":"A3-27"},{"word":"順調","yomi":"じゅんちょう","synonym":"好調","synonymYomi":"こうちょう","note":"物事が調子よく進むこと","level":"A","src":"A3-28"},{"word":"広告","yomi":"こうこく","synonym":"宣伝","synonymYomi":"せんでん","note":"商品などを世間に広く知らせること","level":"A","src":"A3-29"},{"word":"公開","yomi":"こうかい","synonym":"公表","synonymYomi":"こうひょう","note":"広く世の中に知らせること","level":"A","src":"A3-30"},{"word":"刊行","yomi":"かんこう","synonym":"出版","synonymYomi":"しゅっぱん","altSynonyms":["発行"],"altSynonymYomi":["はっこう"],"note":"書物を印刷して世に出すこと","level":"B","src":"B-1"},{"word":"結果","yomi":"けっか","synonym":"結末","synonymYomi":"けつまつ","note":"物事の終わりのありさま","level":"B","src":"B-2"},{"word":"原因","yomi":"げんいん","synonym":"理由","synonymYomi":"りゆう","note":"物事がそうなったもとのわけ","level":"B","src":"B-3"},{"word":"利用","yomi":"りよう","synonym":"活用","synonymYomi":"かつよう","note":"役に立つようにうまく使うこと","level":"B","src":"B-4"},{"word":"失礼","yomi":"しつれい","synonym":"無礼","synonymYomi":"ぶれい","altSynonyms":["非礼"],"altSynonymYomi":["ひれい"],"note":"礼儀にはずれたふるまい","level":"B","src":"B-5"},{"word":"宿命","yomi":"しゅくめい","synonym":"運命","synonymYomi":"うんめい","note":"生まれつき定まっているめぐり合わせ","level":"B","src":"B-6"},{"word":"快活","yomi":"かいかつ","synonym":"活発","synonymYomi":"かっぱつ","altSynonyms":["明朗"],"altSynonymYomi":["めいろう"],"note":"明るく元気な様子","level":"B","src":"B-7"},{"word":"円満","yomi":"えんまん","synonym":"温厚","synonymYomi":"おんこう","note":"人柄がおだやかで角が立たないこと","level":"B","src":"B-8"},{"word":"効能","yomi":"こうのう","synonym":"効用","synonymYomi":"こうよう","note":"ききめ・役に立つはたらき","level":"B","src":"B-9"},{"word":"情勢","yomi":"じょうせい","synonym":"形勢","synonymYomi":"けいせい","note":"移り変わっていく物事のようす","level":"B","src":"B-10"},{"word":"公務","yomi":"こうむ","synonym":"公用","synonymYomi":"こうよう","note":"役所や公の仕事","level":"B","src":"B-11"},{"word":"所有","yomi":"しょゆう","synonym":"所持","synonymYomi":"しょじ","altSynonyms":["保持"],"altSynonymYomi":["ほじ"],"note":"自分のものとして持っていること","level":"B","src":"B-12"},{"word":"返事","yomi":"へんじ","synonym":"応答","synonymYomi":"おうとう","note":"呼びかけや問いに答えること","level":"B","src":"B-13"},{"word":"風格","yomi":"ふうかく","synonym":"格調","synonymYomi":"かくちょう","note":"人や作品にそなわる品位","level":"B","src":"B-14"},{"word":"事前","yomi":"じぜん","synonym":"未然","synonymYomi":"みぜん","note":"物事がまだ起こらないうち","level":"B","src":"B-15"},{"word":"貧乏","yomi":"びんぼう","synonym":"貧困","synonymYomi":"ひんこん","note":"財産がなく生活が苦しいこと","level":"B","src":"B-16"},{"word":"進展","yomi":"しんてん","synonym":"発展","synonymYomi":"はってん","note":"物事が進んで広がっていくこと","level":"B","src":"B-17"},{"word":"倹約","yomi":"けんやく","synonym":"節約","synonymYomi":"せつやく","note":"むだを省いて費用を切りつめること","level":"B","src":"B-18"},{"word":"欠乏","yomi":"けつぼう","synonym":"不足","synonymYomi":"ふそく","note":"必要な分が足りないこと","level":"B","src":"B-19"},{"word":"口調","yomi":"くちょう","synonym":"語調","synonymYomi":"ごちょう","note":"ものの言い方の調子","level":"B","src":"B-20"},{"word":"留学","yomi":"りゅうがく","synonym":"遊学","synonymYomi":"ゆうがく","note":"よその土地や外国へ行って学ぶこと","level":"B","src":"B-21"},{"word":"特殊","yomi":"とくしゅ","synonym":"特別","synonymYomi":"とくべつ","note":"ふつうとはちがっていること","level":"B","src":"B-22"},{"word":"留守","yomi":"るす","synonym":"不在","synonymYomi":"ふざい","note":"その場や家にいないこと","level":"B","src":"B-23"},{"word":"給料","yomi":"きゅうりょう","synonym":"給与","synonymYomi":"きゅうよ","altSynonyms":["賃金"],"altSynonymYomi":["ちんぎん"],"note":"働いた対価として支払われるお金","level":"B","src":"B-24"},{"word":"感心","yomi":"かんしん","synonym":"感服","synonymYomi":"かんぷく","note":"立派さに深く心を動かされること","level":"B","src":"B-25"},{"word":"寛大","yomi":"かんだい","synonym":"寛容","synonymYomi":"かんよう","note":"心が広く人のあやまちを許すこと","level":"B","src":"B-26"},{"word":"去就","yomi":"きょしゅう","synonym":"進退","synonymYomi":"しんたい","note":"地位にとどまるか去るかということ","level":"B","src":"B-27"},{"word":"誤解","yomi":"ごかい","synonym":"曲解","synonymYomi":"きょっかい","note":"相手の意味を取りちがえること","level":"B","src":"B-28"},{"word":"動作","yomi":"どうさ","synonym":"挙動","synonymYomi":"きょどう","note":"体の動かし方・ふるまい","level":"B","src":"B-29"},{"word":"努力","yomi":"どりょく","synonym":"精進","synonymYomi":"しょうじん","note":"目的に向けて一心にはげむこと","level":"B","src":"B-30"}]};
+</script>
+<script>
+/* ============================================================
+   熟語クイズ  —  共通仕様書 v1.0 ＋ 追補 v1.1（クラウド同期編）準拠
+   ============================================================ */
+'use strict';
+
+const APP        = 'kj-quiz-kokugo-jukugo';   // 追補§1 ツール識別子（変更しないこと）
+const APP_TITLE  = '熟語';
+const SCHEMA_VER = 1;
+const MASTERY_STREAK = 2;                     // v1.0 §3 要確認① 既定値2
+const WRONGLOG_MAX   = 20;                    // v1.0 §9-1
+const REQUEUE_WRONG  = 3;                     // v1.0 §4
+const REQUEUE_UNMAST = 6;
+const MAX_REPEAT     = 4;                     // 1セッション内の同一KP再出題上限
+const SYNC_LSKEY = APP + ':sync';             // 追補§2（同期対象に含めない）
+
+/* ---------- カテゴリー定義 ---------- */
+const CATS = [
+  {id:'niji',  name:'二字熟語', short:'二字', fa:'熟語 → 意味',   fb:'意味 → 熟語',   kind:'mean'},
+  {id:'sanji', name:'三字熟語', short:'三字', fa:'熟語 → 意味',   fb:'意味 → 熟語',   kind:'mean'},
+  {id:'yoji',  name:'四字熟語', short:'四字', fa:'熟語 → 意味',   fb:'意味 → 熟語',   kind:'mean'},
+  {id:'taigi', name:'対義語',   short:'対義', fa:'語 → 対義語',   fb:'対義語 → 語',   kind:'pair', rel:'⇔'},
+  {id:'ruigi', name:'類義語',   short:'類義', fa:'語 → 類義語',   fb:'類義語 → 語',   kind:'pair', rel:'≒'},
+];
+const CAT = Object.fromEntries(CATS.map(c=>[c.id,c]));
+
+/* ---------- KP（知識ポイント）の構築 ---------- */
+const KPS = [];
+function pushKP(o){ KPS.push(o); }
+(function buildKPs(){
+  (DATA.niji||[]).forEach(d=>pushKP({
+    id:'kp_niji_'+d.word, cat:'niji', level:d.level, mark:d.kata||'',
+    front:d.word, frontYomi:d.yomi||'', back:d.meaning, backYomi:'',
+    extra:d.kata?('組み立ての型：'+d.kata+'　'+(d.kataName||'')):''
+  }));
+  (DATA.sanji||[]).forEach(d=>pushKP({
+    id:'kp_sanji_'+d.word, cat:'sanji', level:d.level, mark:d.kata||'',
+    front:d.word, frontYomi:d.yomi||'', back:d.meaning, backYomi:'',
+    extra:d.kata?('組み立ての型：'+d.kata+'　'+(d.kataName||'')):''
+  }));
+  (DATA.yoji||[]).forEach(d=>pushKP({
+    id:'kp_yoji_'+d.word, cat:'yoji', level:d.level, mark:'',
+    front:d.word, frontYomi:d.yomi||'', back:d.meaning, backYomi:'', extra:''
+  }));
+  (DATA.taigi||[]).forEach(d=>pushKP({
+    id:'kp_taigi_'+d.word, cat:'taigi', level:d.level, mark:'',
+    front:d.word, frontYomi:d.yomi||'', back:d.antonym, backYomi:d.antonymYomi||'',
+    alts:d.altAntonyms||[], extra:d.note||''
+  }));
+  (DATA.ruigi||[]).forEach(d=>pushKP({
+    id:'kp_ruigi_'+d.word, cat:'ruigi', level:d.level, mark:'',
+    front:d.word, frontYomi:d.yomi||'', back:d.synonym, backYomi:d.synonymYomi||'',
+    alts:d.altSynonyms||[], extra:d.note||''
+  }));
+})();
+const KPMAP = Object.fromEntries(KPS.map(k=>[k.id,k]));
+const KP_BY_CAT = {}; CATS.forEach(c=>KP_BY_CAT[c.id]=KPS.filter(k=>k.cat===c.id));
+
+/* ============================================================
+   保存レイヤ（v1.0 §9 ／ 追補§2）
+   ============================================================ */
+let LS_OK = true;
+let memStore = {};
+function lsGet(k){
+  try{ return localStorage.getItem(k); }catch(e){ LS_OK=false; return (k in memStore)?memStore[k]:null; }
+}
+function lsSet(k,v){
+  try{ localStorage.setItem(k,v); }catch(e){ LS_OK=false; memStore[k]=v; }
+}
+(function probeLS(){
+  try{ localStorage.setItem(APP+':probe','1'); localStorage.removeItem(APP+':probe'); }
+  catch(e){ LS_OK=false; }
+})();
+
+function newDB(){
+  return {app:APP, version:SCHEMA_VER, activeAccountId:null, accounts:[], progress:{}, updatedAt:null};
+}
+function migrate(d){
+  if(!d || typeof d!=='object') return newDB();
+  d.app = APP;
+  if(typeof d.version!=='number') d.version = SCHEMA_VER;
+  if(d.version < SCHEMA_VER){ d.version = SCHEMA_VER; }   // 将来のマイグレーション挿入点
+  d.accounts = Array.isArray(d.accounts)?d.accounts:[];
+  d.progress = (d.progress && typeof d.progress==='object')?d.progress:{};
+  d.accounts.forEach(a=>{
+    if(!d.progress[a.id]) d.progress[a.id] = {items:{}, sessions:[]};
+    if(!d.progress[a.id].items) d.progress[a.id].items = {};
+    if(!Array.isArray(d.progress[a.id].sessions)) d.progress[a.id].sessions = [];
+  });
+  if(d.activeAccountId && !d.accounts.some(a=>a.id===d.activeAccountId)) d.activeAccountId=null;
+  return d;
+}
+let db = newDB();
+function loadDB(){
+  const raw = lsGet(APP);
+  if(!raw){ db = newDB(); return; }
+  try{ db = migrate(JSON.parse(raw)); }catch(e){ db = newDB(); }
+}
+/* 追補§2: 保存のたびに updatedAt を更新（クラウド取り込み時は上書きしない） */
+function saveDB(keepUpdatedAt){
+  if(!keepUpdatedAt) db.updatedAt = new Date().toISOString();
+  db.app = APP;
+  try{ lsSet(APP, JSON.stringify(db)); }catch(e){}
+}
+function newItem(){
+  return {streak:0, mastered:false, masteredAt:null, lastFormat:null,
+          totalCorrect:0, totalWrong:0,
+          byFormat:{A:{correct:0,wrong:0}, B:{correct:0,wrong:0}},
+          wrongLog:[], lastSeenAt:null};
+}
+function accProg(accId){
+  if(!db.progress[accId]) db.progress[accId] = {items:{}, sessions:[]};
+  return db.progress[accId];
+}
+function getItem(accId,kpId){
+  const p = accProg(accId);
+  if(!p.items[kpId]) p.items[kpId] = newItem();
+  const it = p.items[kpId];
+  if(!it.byFormat) it.byFormat = {A:{correct:0,wrong:0},B:{correct:0,wrong:0}};
+  if(!it.wrongLog) it.wrongLog = [];
+  return it;
+}
+function activeAcc(){ return db.accounts.find(a=>a.id===db.activeAccountId)||null; }
+
+/* 追補§5-1: 記録の有無判定 */
+function dbHasRecords(d){
+  if(!d || !d.progress) return false;
+  for(const aid in d.progress){
+    const p = d.progress[aid]; if(!p) continue;
+    if(Array.isArray(p.sessions) && p.sessions.length>0) return true;
+    const items = p.items||{};
+    for(const k in items){
+      const it = items[k];
+      if(((it.totalCorrect|0)+(it.totalWrong|0))>0) return true;
+    }
+  }
+  return false;
+}
+
+/* ============================================================
+   同期（追補§4 API契約 — サーバー側は変更不可）
+   ============================================================ */
+let syncCfg = null;   // {url,key,lastSync}
+function loadSyncCfg(){
+  try{ const r = lsGet(SYNC_LSKEY); syncCfg = r?JSON.parse(r):null; }catch(e){ syncCfg=null; }
+  if(syncCfg && !syncCfg.url) syncCfg=null;
+}
+function saveSyncCfg(){
+  if(syncCfg) lsSet(SYNC_LSKEY, JSON.stringify(syncCfg));
+  else { try{ localStorage.removeItem(SYNC_LSKEY); }catch(e){ delete memStore[SYNC_LSKEY]; } }
+}
+function syncEnabled(){ return !!(syncCfg && syncCfg.url && syncCfg.key); }
+
+const GAS_BAD = 'GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください';
+function setBar(state,msg){
+  const el = document.getElementById('syncBar');
+  if(!syncEnabled() && state!=='force'){ el.style.display='none'; return; }
+  el.style.display='block';
+  el.className = state==='ok'?'ok':state==='err'?'err':'busy';
+  const ls = (syncCfg&&syncCfg.lastSync)?('｜最終同期 '+fmtDT(syncCfg.lastSync)):'';
+  const icon = state==='ok'?'☁✓':state==='err'?'☁⚠':'☁…';
+  el.textContent = icon+' '+msg+ls;
+}
+async function gasFetch(opt){
+  let res, txt;
+  try{
+    res = await fetch(opt.url, opt.init);
+    txt = await res.text();
+  }catch(e){ const err=new Error('offline'); err.kind='offline'; throw err; }
+  let j;
+  try{ j = JSON.parse(txt); }catch(e){ const err=new Error(GAS_BAD); err.kind='gas'; throw err; }
+  if(!j || typeof j!=='object'){ const err=new Error(GAS_BAD); err.kind='gas'; throw err; }
+  return j;
+}
+function syncErrMsg(e){
+  if(e && e.kind==='offline') return 'オフライン（ローカルには保存済み）';
+  return (e&&e.message)?e.message:'同期エラー';
+}
+/* 追補§4-2 記録の保存(push) */
+async function syncPush(silent){
+  if(!syncEnabled()) return {ok:false};
+  if(!silent) setBar('busy','クラウドに保存中');
+  try{
+    const j = await gasFetch({url:syncCfg.url, init:{
+      method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({key:syncCfg.key, data:db})
+    }});
+    if(j.ok){ syncCfg.lastSync=new Date().toISOString(); saveSyncCfg(); setBar('ok','クラウド保存ずみ'); return {ok:true}; }
+    setBar('err', j.error||'保存に失敗しました'); return {ok:false,error:j.error};
+  }catch(e){ setBar('err', syncErrMsg(e)); return {ok:false,error:syncErrMsg(e)}; }
+}
+/* 追補§4-1 記録の取得(pull) ＋ §5 勝敗ルール */
+async function syncPull(silent){
+  if(!syncEnabled()) return {ok:false};
+  if(!silent) setBar('busy','クラウドと同期中');
+  let j;
+  try{
+    j = await gasFetch({url: syncCfg.url+(syncCfg.url.includes('?')?'&':'?')
+        +'key='+encodeURIComponent(syncCfg.key)+'&app='+encodeURIComponent(APP), init:{method:'GET'}});
+  }catch(e){ setBar('err', syncErrMsg(e)); return {ok:false,error:syncErrMsg(e)}; }
+  if(!j.ok){ setBar('err', j.error||'取得に失敗しました'); return {ok:false,error:j.error}; }
+
+  const cloud = j.data ? migrate(j.data) : null;
+  syncCfg.lastSync = new Date().toISOString(); saveSyncCfg();
+
+  if(!cloud){                                        // §5-5 クラウドが空 → push
+    const r = await syncPush(true);
+    setBar(r.ok?'ok':'err', r.ok?'クラウドに初回保存しました':(r.error||'保存に失敗しました'));
+    return {ok:true, action:'push'};
+  }
+  const lh = dbHasRecords(db), ch = dbHasRecords(cloud);
+  let adopt = false;
+  if(!lh && ch)      adopt = true;                   // §5-2 無条件でクラウド採用
+  else if(lh && !ch) adopt = false;                  // §5-2 逆なら無条件push
+  else if(lh && ch)  adopt = (new Date(cloud.updatedAt||0) > new Date(db.updatedAt||0)); // §5-3
+  else               adopt = true;                   // 両方とも記録なし → クラウドに寄せる
+
+  if(adopt){
+    const merged = mergeLocalOnlyAccounts(cloud, db);  // §5-4 アカウント合流
+    const prevActiveName = (activeAcc()||{}).name;
+    db = merged.db;
+    if(prevActiveName){
+      const hit = db.accounts.find(a=>a.name===prevActiveName);
+      if(hit) db.activeAccountId = hit.id;
+    }
+    if(!db.activeAccountId && db.accounts[0]) db.activeAccountId = db.accounts[0].id;
+    // 追補§2 取り込みだけなら updatedAt を上書きしない。
+    // ただし §5-4 の合流が起きたときは「この端末で内容が増えた」ので updatedAt を進める
+    // （進めないと、合流結果を他端末が古いデータとみなして上書きしてしまう）
+    saveDB(!merged.merged);
+    if(merged.merged){ await syncPush(true); setBar('ok','クラウドの記録と合流しました'); }
+    else setBar('ok','クラウドの記録を取り込みました');
+    return {ok:true, action:'adopt'};
+  }else{
+    const r = await syncPush(true);
+    setBar(r.ok?'ok':'err', r.ok?'この端末の記録をクラウドに保存しました':(r.error||'保存に失敗しました'));
+    return {ok:true, action:'push'};
+  }
+}
+/* §5-4 ローカルにしかないアカウント（名前で判定）を消さずに合流 */
+function mergeLocalOnlyAccounts(cloud, local){
+  let merged = false;
+  const names = new Set(cloud.accounts.map(a=>a.name));
+  local.accounts.forEach(a=>{
+    if(names.has(a.name)) return;
+    let id = a.id;
+    while(cloud.accounts.some(x=>x.id===id)) id = 'acc_'+Math.random().toString(36).slice(2,9);
+    cloud.accounts.push({id, name:a.name, createdAt:a.createdAt});
+    cloud.progress[id] = local.progress[a.id] || {items:{}, sessions:[]};
+    merged = true;
+  });
+  return {db:cloud, merged};
+}
+/* 追補§4-3 全問一覧の書き出し */
+async function syncPushList(rows, header){
+  if(!syncEnabled()) return {ok:false};
+  setBar('busy','全問一覧を書き出し中');
+  try{
+    const j = await gasFetch({url:syncCfg.url, init:{
+      method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({key:syncCfg.key, app:APP, list:{header, rows}})
+    }});
+    if(j.ok){ setBar('ok','全問一覧をスプレッドシートに書き出しました'); return {ok:true}; }
+    setBar('err', j.error||'書き出しに失敗しました'); return {ok:false,error:j.error};
+  }catch(e){ setBar('err', syncErrMsg(e)); return {ok:false,error:syncErrMsg(e)}; }
+}
+
+/* ============================================================
+   ユーティリティ
+   ============================================================ */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pad(n){ return n<10?'0'+n:''+n; }
+function fmtDT(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) return '—';
+  return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+function fmtD(iso){ if(!iso) return ''; const d=new Date(iso); if(isNaN(d)) return '';
+  return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
+function fmtFile(){ const d=new Date(); return ''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate()); }
+function uid(p){ return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function shuffle(a){ const r=a.slice(); for(let i=r.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [r[i],r[j]]=[r[j],r[i]]; } return r; }
+function ruby(word, yomi){
+  if(!yomi) return esc(word);
+  return '<ruby>'+esc(word)+'<rt>'+esc(yomi)+'</rt></ruby>';
+}
+function stateOf(it){
+  if(!it || (it.totalCorrect|0)+(it.totalWrong|0)===0) return {t:'未出題', cls:'b-n'};
+  if(it.mastered) return {t:'習得済み', cls:'b-m'};
+  if((it.streak|0)>0) return {t:it.streak+'回正解', cls:'b-c'};
+  return {t:'誤答', cls:'b-w'};
+}
+
+/* ============================================================
+   出題生成
+   ============================================================ */
+function qText(kp, fmt){
+  const c = CAT[kp.cat];
+  if(c.kind==='mean'){
+    return fmt==='A'
+      ? {label:c.name+'　'+c.fa, word:kp.front, yomi:kp.frontYomi, big:true,  ask:'この熟語の意味は？'}
+      : {label:c.name+'　'+c.fb, word:kp.back,  yomi:'',            big:false, ask:'この意味を表す'+c.name+'は？'};
+  }
+  const rel = c.id==='taigi'?'対義語':'類義語';
+  return fmt==='A'
+    ? {label:c.name+'　'+c.fa, word:kp.front, yomi:kp.frontYomi, big:true, ask:'この語の'+rel+'は？'}
+    : {label:c.name+'　'+c.fb, word:kp.back,  yomi:kp.backYomi,   big:true, ask:'この語の'+rel+'は？'};
+}
+function answerOf(kp, fmt){ return fmt==='A' ? kp.back : kp.front; }
+function makeChoices(kp, fmt){
+  const correct = answerOf(kp, fmt);
+  const pool = KP_BY_CAT[kp.cat].filter(k=>k.id!==kp.id);
+  const same = shuffle(pool.filter(k=>k.level===kp.level));
+  const rest = shuffle(pool.filter(k=>k.level!==kp.level));
+  const bad = new Set([correct]);
+  if(kp.alts) kp.alts.forEach(a=>bad.add(a));
+  const out=[];
+  for(const k of same.concat(rest)){
+    const v = answerOf(k, fmt);
+    if(bad.has(v)) continue;
+    bad.add(v); out.push(v);
+    if(out.length===3) break;
+  }
+  return shuffle(out.concat([correct]));
+}
+function isCorrect(kp, fmt, picked){
+  if(picked===answerOf(kp,fmt)) return true;
+  if(fmt==='A' && kp.alts && kp.alts.includes(picked)) return true;   // 併記解答も正解扱い
+  return false;
+}
+function explainOf(kp){
+  const c = CAT[kp.cat];
+  let s;
+  if(c.kind==='mean'){
+    s = '<b>'+ruby(kp.front, kp.frontYomi)+'</b>　'+esc(kp.back);
+  }else{
+    s = '<b>'+ruby(kp.front,kp.frontYomi)+'</b> '+c.rel+' <b>'+ruby(kp.back,kp.backYomi)+'</b>';
+    if(kp.alts && kp.alts.length) s += '　（'+esc(kp.alts.join('・'))+' も可）';
+  }
+  if(kp.extra) s += '<br><span class="muted">'+esc(kp.extra)+'</span>';
+  return s;
+}
+/* ============================================================
+   セッション（v1.0 §2 出題モード／§3 習得判定／§4 復習キュー／§5 ナビ）
+   ============================================================ */
+let S = null;
+
+function pickKPs(catIds, levels, n, mode, onlyIds){
+  let pool = KPS.filter(k=>catIds.includes(k.cat) && levels.includes(k.level));
+  if(onlyIds) pool = pool.filter(k=>onlyIds.includes(k.id));
+  const acc = db.activeAccountId;
+  if(mode==='all') return shuffle(pool).map(k=>k.id);
+  // 習得済みを除外
+  const cand = pool.filter(k=>!(accProg(acc).items[k.id]||{}).mastered);
+  const now = Date.now();
+  const scored = cand.map(k=>{
+    const it = accProg(acc).items[k.id]||{};
+    const wrong = it.totalWrong|0;
+    const unseen = ((it.totalCorrect|0)+(it.totalWrong|0))===0;
+    const since = it.lastSeenAt ? (now-new Date(it.lastSeenAt).getTime())/86400000 : 9999;
+    // 優先順位: ①誤答回数が多い ②未出題 ③最終出題からの経過が長い
+    return {id:k.id, s: wrong*1000 + (unseen?500:0) + Math.min(since,365), r:Math.random()};
+  });
+  scored.sort((a,b)=> (b.s-a.s) || (a.r-b.r));
+  return scored.slice(0, n).map(x=>x.id);
+}
+function initialFormat(kpId){
+  const it = accProg(db.activeAccountId).items[kpId];
+  if(it && it.lastFormat) return it.lastFormat==='A'?'B':'A';
+  return Math.random()<.5?'A':'B';
+}
+function startSession(opt){
+  const acc = db.activeAccountId;
+  const n = opt.mode==='10q'?10 : opt.mode==='20q'?20 : Infinity;
+  const kpIds = pickKPs(opt.cats, opt.levels, n, opt.mode, opt.onlyIds);
+  if(!kpIds.length) return null;
+  const base = {};
+  kpIds.forEach(id=>{
+    const it = accProg(acc).items[id]||newItem();
+    base[id] = {streak:it.streak|0, mastered:!!it.mastered, lastFormat:it.lastFormat||null,
+                lastCorrectFormat:(it.streak|0)>0?(it.lastFormat||null):null};
+  });
+  const q = kpIds.map(id=>({kpId:id, fmt:initialFormat(id), req:false, src:-1}));
+  S = {
+    mode:opt.mode, cats:opt.cats, levels:opt.levels, label:opt.label||'',
+    kpIds, base, queue:(opt.mode==='all'? q : shuffle(q)),
+    log:[], cur:null, viewIdx:null, appear:{}, needReview:new Set(),
+    startedAt:new Date().toISOString(),
+    requested:(n===Infinity?kpIds.length:n), shortfall:(n!==Infinity && kpIds.length<n)
+  };
+  nextQ();
+  return S;
+}
+function replay(){
+  const st = {};
+  S.kpIds.forEach(id=>{ const b=S.base[id]; st[id]={streak:b.streak, mastered:b.mastered,
+    lastCorrectFormat:b.lastCorrectFormat, correct:0, wrong:0, justMastered:false}; });
+  S.log.forEach(e=>{
+    const s = st[e.kpId]; if(!s) return;
+    if(e.correct){
+      s.correct++;
+      if(s.streak===0){ s.streak=1; s.lastCorrectFormat=e.fmt; }
+      else if(e.fmt!==s.lastCorrectFormat){ s.streak++; s.lastCorrectFormat=e.fmt; }
+      if(s.streak>=MASTERY_STREAK && !s.mastered){ s.mastered=true; s.justMastered=true; }
+    }else{
+      s.wrong++; s.streak=0; s.mastered=false; s.lastCorrectFormat=null;
+    }
+  });
+  return st;
+}
+function nextQ(){
+  S.viewIdx = null;
+  if(!S.queue.length){ S.cur=null; return; }
+  const q = S.queue.shift();
+  const kp = KPMAP[q.kpId];
+  S.appear[q.kpId] = (S.appear[q.kpId]|0)+1;
+  S.cur = {kpId:q.kpId, fmt:q.fmt, choices:makeChoices(kp,q.fmt), src:q.src};
+}
+/* v1.0 §4 復習キュー：挿入位置が埋まっていれば直後の空きスロットへ */
+function enqueue(kpId, fmt, offset, srcIdx){
+  let i = Math.min(offset-1, S.queue.length);
+  if(i<0) i=0;
+  while(i<S.queue.length && S.queue[i].req) i++;
+  S.queue.splice(i,0,{kpId, fmt, req:true, src:srcIdx});
+}
+function dropRequeueBySrc(srcIdx){
+  S.queue = S.queue.filter(q=>!(q.req && q.src===srcIdx));
+}
+function scheduleFrom(idx){
+  const e = S.log[idx];
+  if(S.mode==='all') return;                              // §2-2 再投入なし
+  if((S.appear[e.kpId]|0) >= MAX_REPEAT){ if(!e.correct||replay()[e.kpId].mastered===false) S.needReview.add(e.kpId); return; }
+  const st = replay()[e.kpId];
+  if(st.mastered) return;                                 // §4 習得達成 → 再投入しない
+  const nf = e.fmt==='A'?'B':'A';                         // 直前と必ず異なる形式
+  enqueue(e.kpId, nf, e.correct?REQUEUE_UNMAST:REQUEUE_WRONG, idx);
+}
+function answerQ(picked){
+  const kp = KPMAP[S.cur.kpId];
+  const ok = isCorrect(kp, S.cur.fmt, picked);
+  S.log.push({kpId:S.cur.kpId, fmt:S.cur.fmt, choices:S.cur.choices, picked, correct:ok, at:new Date().toISOString()});
+  scheduleFrom(S.log.length-1);
+  return ok;
+}
+function reAnswer(idx, picked){
+  const e = S.log[idx];
+  const kp = KPMAP[e.kpId];
+  dropRequeueBySrc(idx);
+  e.picked = picked;
+  e.correct = isCorrect(kp, e.fmt, picked);
+  e.at = new Date().toISOString();
+  scheduleFrom(idx);
+}
+function sessTotals(){
+  let c=0,w=0; S.log.forEach(e=>{ e.correct?c++:w++; });
+  return {c,w, total:S.log.length + (S.cur?1:0) + S.queue.length, idx:S.log.length+1};
+}
+function remainWords(){
+  const st = replay();
+  if(S.mode==='all'){
+    const seen = new Set(S.log.map(e=>e.kpId));
+    return S.kpIds.length - seen.size;
+  }
+  return S.kpIds.filter(id=>!st[id].mastered).length;
+}
+
+/* 成績の確定（v1.0 §5-2：全問終了時にのみ記録） */
+function commitSession(){
+  const acc = db.activeAccountId;
+  const p = accProg(acc);
+  const newlyMastered = [], wrongKpIds = new Set(), sessionWrongCount = {};
+  let c=0,w=0;
+  S.log.forEach(e=>{
+    const it = getItem(acc, e.kpId);
+    const f = (e.fmt==='A')?'A':'B';
+    it.lastSeenAt = e.at;
+    it.lastFormat = e.fmt;
+    if(e.correct){
+      c++; it.totalCorrect++; it.byFormat[f].correct++;
+      if(it.streak===0){ it.streak=1; }
+      else if(it._lcf!==e.fmt){ it.streak++; }
+      it._lcf = e.fmt;
+      if(it.streak>=MASTERY_STREAK && !it.mastered){
+        it.mastered = true; it.masteredAt = e.at; newlyMastered.push(e.kpId);
+      }
+    }else{
+      w++; it.totalWrong++; it.byFormat[f].wrong++;
+      it.streak = 0; it.mastered = false; it._lcf = null;
+      it.wrongLog.push({at:e.at, format:e.fmt, answered:e.picked});
+      if(it.wrongLog.length>WRONGLOG_MAX) it.wrongLog = it.wrongLog.slice(-WRONGLOG_MAX);
+      wrongKpIds.add(e.kpId);
+      sessionWrongCount[e.kpId] = (sessionWrongCount[e.kpId]|0)+1;
+    }
+  });
+  Object.values(p.items).forEach(it=>{ delete it._lcf; });
+  p.sessions.push({
+    startedAt:S.startedAt, finishedAt:new Date().toISOString(),
+    mode:S.mode, correct:c, wrong:w,
+    newlyMastered, wrongKpIds:[...wrongKpIds], sessionWrongCount
+  });
+  saveDB();
+  syncPush(true);                                  // 追補§5 セッション終了の保存直後に自動push
+  return {c, w, newlyMastered, wrongKpIds:[...wrongKpIds]};
+}
+/* ============================================================
+   UI
+   ============================================================ */
+const $ = id=>document.getElementById(id);
+let VIEW = 'home';
+let RESULT = null;
+let PICK = {cats:CATS.map(c=>c.id), levels:['A','B']};
+let LISTF = {cat:'', state:'', sort:'wrong'};
+let openKp = null;
+
+/* ---------- モーダル ---------- */
+function modal(html, opts){
+  opts = opts||{};
+  $('modalRoot').innerHTML = '<div class="mask" id="mask"><div class="modal">'+html+'</div></div>';
+  if(!opts.sticky) $('mask').addEventListener('click', e=>{ if(e.target.id==='mask') closeModal(); });
+}
+function closeModal(){ $('modalRoot').innerHTML=''; }
+function alertM(title, body, cb){
+  modal('<h3>'+esc(title)+'</h3><div class="tiny" style="font-size:.9rem">'+body+'</div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn-p" id="mOk">OK</button></div>');
+  $('mOk').onclick = ()=>{ closeModal(); if(cb) cb(); };
+}
+function confirmM(title, body, okLabel, cb, danger){
+  modal('<h3>'+esc(title)+'</h3><div class="tiny" style="font-size:.9rem">'+body+'</div>'+
+    '<div class="row" style="margin-top:14px"><button id="mNo">キャンセル</button>'+
+    '<button class="'+(danger?'btn-d':'btn-p')+'" id="mYes">'+esc(okLabel)+'</button></div>', {sticky:true});
+  $('mNo').onclick = closeModal;
+  $('mYes').onclick = ()=>{ closeModal(); cb(); };
+}
+
+/* ---------- 描画ルート ---------- */
+function render(){
+  const w = $('warnBar');
+  if(!LS_OK){
+    w.style.display='block';
+    w.innerHTML = syncEnabled()
+      ? '☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます'
+      : '⚠ この端末（ブラウザ設定）では記録を保存できません。学習は続けられますが、閉じると記録は消えます。クラウド同期を設定すると記録を残せます。';
+  }else w.style.display='none';
+
+  if(!db.accounts.length || !db.activeAccountId) VIEW = 'accounts';
+  const app = $('app');
+  if(VIEW==='accounts') app.innerHTML = viewAccounts();
+  else if(VIEW==='quiz') app.innerHTML = viewQuiz();
+  else if(VIEW==='result') app.innerHTML = viewResult();
+  else if(VIEW==='list') app.innerHTML = '<h1>全問一覧</h1><p class="muted">'+esc(activeAcc().name)+'</p>'+listCard(false);
+  else app.innerHTML = viewHome();
+  bind();
+  window.scrollTo(0, VIEW==='quiz'?0:window.scrollY);
+}
+
+/* ============================================================
+   アカウント画面（v1.0 §1）
+   ============================================================ */
+function viewAccounts(){
+  let h = '<h1>'+APP_TITLE+'クイズ</h1><p class="muted">中学受験・国語　二字／三字／四字熟語・対義語・類義語</p>';
+  h += '<div class="card"><h3 style="margin-top:0">だれが学習しますか？</h3>';
+  if(!db.accounts.length) h += '<p class="muted">まだアカウントがありません。名前を入れて追加してください。</p>';
+  db.accounts.forEach(a=>{
+    const p = accProg(a.id), items=p.items||{};
+    const mast = Object.values(items).filter(i=>i.mastered).length;
+    h += '<div class="acc-item'+(a.id===db.activeAccountId?' active':'')+'">'+
+      '<span class="nm">'+esc(a.name)+'</span>'+
+      '<span class="muted" style="font-size:.78rem">習得 '+mast+'／'+KPS.length+'</span>'+
+      '<button class="btn-sm" data-act="accRename" data-id="'+a.id+'">名前</button>'+
+      '<button class="btn-sm btn-d" data-act="accDel" data-id="'+a.id+'">削除</button>'+
+      '<button class="btn-sm btn-p" data-act="accUse" data-id="'+a.id+'">選ぶ</button></div>';
+  });
+  h += '<div class="sep"></div><label class="fld">新しいアカウント</label>'+
+    '<div class="row" style="margin-top:6px"><input type="text" id="newAcc" placeholder="例：長男" style="flex:2 1 60%">'+
+    '<button class="btn-p" data-act="accAdd" style="flex:1 1 30%">＋ 追加</button></div></div>';
+  if(db.accounts.length && db.activeAccountId) h += '<div class="row"><button data-act="go" data-v="home">← もどる</button></div>';
+  h += mgmtPanel();
+  return h;
+}
+
+/* ============================================================
+   ホーム画面
+   ============================================================ */
+function catCount(cid, levels){ return KP_BY_CAT[cid].filter(k=>levels.includes(k.level)).length; }
+function statFor(cid, level){
+  const items = accProg(db.activeAccountId).items;
+  const list = KP_BY_CAT[cid].filter(k=>!level || k.level===level);
+  let m=0,h=0;
+  list.forEach(k=>{ const it=items[k.id]; if(!it) return;
+    if(it.mastered) m++; else if((it.streak|0)>0) h++; });
+  return {total:list.length, mast:m, half:h};
+}
+function bar(s){
+  const p1 = s.total? s.mast/s.total*100:0, p2 = s.total? s.half/s.total*100:0;
+  return '<div class="mbar"><i class="m" style="width:'+p1.toFixed(1)+'%"></i><i class="h" style="width:'+p2.toFixed(1)+'%"></i></div>';
+}
+function viewHome(){
+  const acc = activeAcc();
+  const sel = PICK.cats, lv = PICK.levels;
+  const nSel = sel.reduce((a,c)=>a+catCount(c,lv),0);
+
+  let h = '<div class="row" style="align-items:center;margin-top:4px">'+
+    '<h1 style="flex:1 1 auto;margin:0">'+APP_TITLE+'クイズ</h1>'+
+    '<span class="acc-pill">👤 '+esc(acc.name)+'</span>'+
+    '<button class="btn-sm" data-act="go" data-v="accounts" style="flex:0 0 auto">切替</button></div>'+
+    '<p class="muted" style="margin:.3em 0 0">全'+KPS.length+'語　二字'+KP_BY_CAT.niji.length+
+    '／三字'+KP_BY_CAT.sanji.length+'／四字'+KP_BY_CAT.yoji.length+
+    '／対義語'+KP_BY_CAT.taigi.length+'／類義語'+KP_BY_CAT.ruigi.length+'</p>';
+
+  /* --- 出題設定 --- */
+  h += '<div class="card"><h3 style="margin-top:0">① どの分野を学習する？</h3>';
+  CATS.forEach(c=>{
+    const on = sel.includes(c.id), st = statFor(c.id,null);
+    h += '<label class="chk'+(on?' on':'')+'"><input type="checkbox" data-act="cat" data-id="'+c.id+'"'+(on?' checked':'')+'>'+
+      '<span class="t"><b>'+c.name+'　<span class="muted" style="font-weight:400">'+catCount(c.id,lv)+'語</span></b>'+
+      '<span class="muted" style="font-size:.8rem">形式A '+c.fa+'　／　形式B '+c.fb+'</span>'+
+      bar(st)+'<span class="muted" style="font-size:.78rem">習得 '+st.mast+'／'+st.total+'（'+(st.total?Math.round(st.mast/st.total*100):0)+'%）</span>'+
+      '</span></label>';
+  });
+  h += '<div class="sep"></div><h3 style="margin-top:0">② レベル</h3><div class="row">'+
+    ['A','B'].map(l=>'<button class="'+(lv.includes(l)?'btn-p':'')+'" data-act="lv" data-id="'+l+'">レベル'+l+
+      (l==='A'?'（基本）':'（発展）')+'</button>').join('')+'</div>';
+  h += '<div class="sep"></div><h3 style="margin-top:0">③ モードをえらぶ</h3>'+
+    '<p class="muted" style="margin:.2em 0 .6em;font-size:.82rem">10問／20問モードは「1語につき形式A・Bの両方」に正解すると習得です（実際の出題数は約2倍）。</p>'+
+    '<div class="stack">'+
+    '<button class="btn-p" data-act="start" data-m="10q"'+(nSel?'':' disabled')+'>▶ 10問モード（10語＝約20問）</button>'+
+    '<button class="btn-p" data-act="start" data-m="20q"'+(nSel?'':' disabled')+'>▶ 20問モード（20語＝約40問）</button>'+
+    '<button class="btn-s" data-act="start" data-m="all"'+(nSel?'':' disabled')+'>🏁 全問モード（'+nSel+'語を1周・実力確認）</button>'+
+    '</div>';
+  if(!nSel) h += '<p class="muted" style="color:var(--ng)">分野とレベルを1つ以上えらんでください。</p>';
+  h += '</div>';
+
+  /* --- 習得状況（v1.0 §6-2） --- */
+  const all = {total:0,mast:0,half:0};
+  CATS.forEach(c=>{ const s=statFor(c.id,null); all.total+=s.total; all.mast+=s.mast; all.half+=s.half; });
+  h += '<div class="card"><h3 style="margin-top:0">習得状況</h3>'+
+    '<div class="mrow"><div class="hd"><b>総合</b><span>'+all.mast+' ／ '+all.total+'（'+(all.total?Math.round(all.mast/all.total*100):0)+'%）</span></div>'+bar(all)+'</div><div class="sep"></div>';
+  CATS.forEach(c=>{
+    ['A','B'].forEach(l=>{
+      const s = statFor(c.id,l); if(!s.total) return;
+      h += '<div class="mrow"><div class="hd"><b>'+c.short+'・レベル'+l+'</b><span>'+s.mast+' ／ '+s.total+'（'+Math.round(s.mast/s.total*100)+'%）</span></div>'+bar(s)+'</div>';
+    });
+  });
+  h += '<p class="tiny" style="margin-top:10px">■ 濃色＝習得済み　■ 中間色＝1回正解　□ 淡色＝未着手・誤答</p>'+
+    '<div class="row" style="margin-top:8px"><button class="btn-sm" data-act="showList">📊 全問一覧を見る</button></div></div>';
+
+  /* --- 間違いランキング（v1.0 §9-2） --- */
+  const items = accProg(db.activeAccountId).items;
+  const rank = KPS.map(k=>({k, it:items[k.id]})).filter(x=>x.it && (x.it.totalWrong|0)>0)
+    .sort((a,b)=>(b.it.totalWrong-a.it.totalWrong)||(b.it.totalWrong-a.it.totalWrong)).slice(0,15);
+  h += '<div class="card"><h3 style="margin-top:0">間違いランキング</h3>';
+  if(!rank.length) h += '<p class="muted">まだ誤答の記録はありません。</p>';
+  else{
+    h += '<table><tbody>';
+    rank.forEach((x,i)=>{
+      const st = stateOf(x.it);
+      h += '<tr><td style="width:1.6em;color:var(--sub)">'+(i+1)+'</td>'+
+        '<td><b>'+esc(x.k.front)+'</b><br><span class="muted" style="font-size:.75rem">'+CAT[x.k.cat].short+'</span></td>'+
+        '<td style="white-space:nowrap"><span class="badge b-w">誤答'+x.it.totalWrong+'回</span>'+
+        (x.it.totalWrong>=2?'<span class="badge b-hot">⚠️2回以上ミス</span>':'')+
+        '<br><span class="badge '+st.cls+'" style="margin-top:3px">'+st.t+'</span></td></tr>';
+    });
+    h += '</tbody></table>'+
+      '<div class="row" style="margin-top:10px"><button class="btn-p" data-act="startWrong">▶ 間違えた語だけで復習する</button></div>';
+  }
+  h += '</div>';
+
+  h += mgmtPanel();
+  h += '<p class="tiny center" style="margin-top:20px">'+esc(APP)+'　／　共通仕様 v1.0＋追補 v1.1 準拠</p>';
+  return h;
+}
+
+/* ---------- 記録データの管理パネル（追補§3・必須UI） ---------- */
+function mgmtPanel(){
+  const on = syncEnabled();
+  let h = '<div class="card"><h3 style="margin-top:0">記録データの管理</h3>';
+  h += '<p class="tiny" id="mgmtState">'+(on
+      ? '☁ 同期先：'+esc((syncCfg.url||'').replace(/^https?:\/\//,'').slice(0,42))+'…　最終同期 '+fmtDT(syncCfg.lastSync)
+      : '☁ クラウド同期は未設定です（この端末にだけ記録が残ります）')+'</p>';
+  h += '<div class="stack">'+
+    '<button data-act="expJson">📤 記録を書き出す（JSON）</button>'+
+    '<button data-act="impJson">📥 記録を読み込む</button>'+
+    '<button class="btn-s" data-act="syncCfg">☁ クラウド同期設定</button>'+
+    (on?'<button class="btn-s" data-act="syncNow">🔄 今すぐ同期</button>':'')+
+    (on?'<button class="btn-s" data-act="pushList">📋 全問一覧をDriveへ</button>':'')+
+    '</div>';
+  h += '<div class="sep"></div><div class="row">'+
+    '<button class="btn-sm btn-d" data-act="resetAcc">このアカウントの記録をリセット</button>'+
+    '<button class="btn-sm btn-d" data-act="resetAll">全データをリセット</button></div>';
+  h += '<input type="file" id="impFile" accept="application/json,.json" class="hide"></div>';
+  return h;
+}
+
+/* ============================================================
+   出題画面（v1.0 §6-1／§5 ナビゲーション）
+   ============================================================ */
+function viewQuiz(){
+  const t = sessTotals();
+  const reviewing = S.viewIdx!==null;
+  const e = reviewing ? S.log[S.viewIdx] : null;
+  const kpId = reviewing ? e.kpId : S.cur.kpId;
+  const fmt  = reviewing ? e.fmt  : S.cur.fmt;
+  const kp = KPMAP[kpId];
+  const q = qText(kp, fmt);
+  const choices = reviewing ? e.choices : S.cur.choices;
+  const st = replay()[kpId];
+  const idxShown = reviewing ? (S.viewIdx+1) : t.idx;
+
+  let h = '<div class="qhead"><div class="pbar"><i style="width:'+(t.total?idxShown/t.total*100:0).toFixed(1)+'%"></i></div>'+
+    '<div class="qmeta"><span><b>'+idxShown+'問目</b> / 全'+t.total+'問</span>'+
+    '<span>あと'+remainWords()+'語</span>'+
+    '<span class="ok">正解 '+t.c+'</span><span class="ng">誤答 '+t.w+'</span>'+
+    '<span class="gauge">習得 '+'●'.repeat(Math.min(st.streak,MASTERY_STREAK))+'○'.repeat(Math.max(0,MASTERY_STREAK-st.streak))+
+      (st.mastered?' 済':'')+'</span>'+
+    '<span style="margin-left:auto"><button class="btn-sm" data-act="quitQuiz">中断</button></span></div></div>';
+
+  if(reviewing){
+    h += '<div class="reviewmark">🔍 レビュー表示（'+(S.viewIdx===S.log.length-1
+      ? 'この問題は解き直せます' : '閲覧のみ')+'）</div>';
+  }
+  h += '<div class="qbox"><div class="qlabel">'+esc(q.label)+'</div>'+
+    '<div class="qword'+(q.big?'':' small')+'">'+(q.big?ruby(q.word,q.yomi):esc(q.word))+'</div>'+
+    '<div class="qask">'+esc(q.ask)+'</div></div>';
+
+  const answered = reviewing || (S.cur && S.cur.done);
+  const picked = reviewing ? e.picked : (S.cur?S.cur.picked:null);
+  const correctVal = answerOf(kp,fmt);
+  choices.forEach((ch,i)=>{
+    let cls='opt';
+    if(answered){
+      const isC = isCorrect(kp,fmt,ch);
+      if(isC) cls+=' correct';
+      else if(ch===picked) cls+=' wrong';
+      else cls+=' dim';
+    }
+    h += '<button class="'+cls+'" data-act="pick" data-v="'+esc(ch)+'"'+(answered&&!(reviewing&&S.viewIdx===S.log.length-1)?' disabled':'')+'>'+
+      '<span class="n">'+'①②③④'[i]+'</span>'+esc(ch)+'</button>';
+  });
+
+  if(answered){
+    const ok = reviewing ? e.correct : S.cur.ok;
+    h += '<div class="fb '+(ok?'ok':'ng')+'"><div class="hd">'+(ok?'⭕ 正解！':'❌ 不正解　正解は「'+esc(correctVal)+'」')+'</div>'+
+      '<div class="ex">'+explainOf(kp)+'</div></div>';
+  }
+
+  h += '<div class="navrow">'+
+    '<button data-act="back"'+((reviewing? S.viewIdx<=0 : S.log.length<1)?' disabled':'')+'>← 前の問題</button>'+
+    (reviewing
+      ? '<button class="btn-p" data-act="fwd">'+(S.viewIdx>=S.log.length-1?'出題にもどる →':'次へ →')+'</button>'
+      : (S.cur&&S.cur.done ? '<button class="btn-p" data-act="nextq">次の問題 →</button>' : '<button disabled>選んでください</button>'))+
+    '</div>';
+  return h;
+}
+
+/* ============================================================
+   結果画面（v1.0 §7）
+   ============================================================ */
+function viewResult(){
+  const R = RESULT;
+  const rate = (R.c+R.w)?Math.round(R.c/(R.c+R.w)*100):0;
+  let h = '<h1>結果</h1><p class="muted">'+esc(activeAcc().name)+'　'+esc(R.modeLabel)+'　'+fmtDT(R.at)+'</p>';
+  h += '<div class="card"><div class="scoregrid">'+
+    '<div><b style="color:var(--ok)">'+R.c+'</b><span>正解</span></div>'+
+    '<div><b style="color:var(--ng)">'+R.w+'</b><span>誤答</span></div>'+
+    '<div><b>'+rate+'%</b><span>正答率</span></div>'+
+    '<div><b style="color:var(--accent)">'+R.newlyMastered.length+'</b><span>新たに習得</span></div></div>';
+  if(R.needReview.length) h += '<p class="tiny" style="margin-top:10px;color:var(--warn)">⚠ 再出題の上限に達したため、'+
+    R.needReview.map(id=>esc(KPMAP[id].front)).join('・')+' は「要復習」です。</p>';
+  h += '</div>';
+
+  /* 間違えた問題一覧（今回分） */
+  const wrongs = R.log.filter(e=>!e.correct);
+  h += '<div class="card"><h3 style="margin-top:0">間違えた問題（今回）</h3>';
+  if(!wrongs.length) h += '<p class="muted">ありません。全問正解です！</p>';
+  else{
+    h += '<table><thead><tr><th>知識ポイント</th><th>形式</th><th>自分の解答</th><th>正解</th></tr></thead><tbody>';
+    wrongs.forEach(e=>{
+      const kp = KPMAP[e.kpId], q = qText(kp,e.fmt);
+      h += '<tr><td><b>'+esc(kp.front)+'</b><br><span class="muted" style="font-size:.75rem">'+CAT[kp.cat].short+'</span></td>'+
+        '<td class="muted" style="font-size:.75rem">'+esc(e.fmt+'：'+(e.fmt==='A'?CAT[kp.cat].fa:CAT[kp.cat].fb))+'</td>'+
+        '<td style="color:var(--ng)">'+esc(e.picked)+'</td><td style="color:var(--ok)">'+esc(answerOf(kp,e.fmt))+'</td></tr>'+
+        '<tr><td colspan="4"><div class="kpdetail">'+explainOf(kp)+'</div></td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '</div>';
+
+  h += listCard(true);
+  h += '<div class="row" style="margin-top:12px"><button class="btn-p" data-act="go" data-v="home">ホームへもどる</button></div>';
+  return h;
+}
+
+/* ---------- カテゴリー別 全問一覧（v1.0 §7-3） ---------- */
+function listRows(){
+  const items = accProg(db.activeAccountId).items;
+  let rows = KPS.map(k=>{
+    const it = items[k.id]||newItem();
+    return {k, it, st:stateOf(it), wrong:it.totalWrong|0, correct:it.totalCorrect|0};
+  });
+  if(LISTF.cat) rows = rows.filter(r=>r.k.cat===LISTF.cat);
+  if(LISTF.state) rows = rows.filter(r=>{
+    if(LISTF.state==='mastered') return r.it.mastered;
+    if(LISTF.state==='wrong')    return !r.it.mastered && r.wrong>0;
+    if(LISTF.state==='hot')      return r.wrong>=2;
+    if(LISTF.state==='new')      return r.correct+r.wrong===0;
+    return true;
+  });
+  const ord = {niji:0,sanji:1,yoji:2,taigi:3,ruigi:4};
+  if(LISTF.sort==='wrong')      rows.sort((a,b)=>b.wrong-a.wrong || ord[a.k.cat]-ord[b.k.cat]);
+  else if(LISTF.sort==='cat')   rows.sort((a,b)=>ord[a.k.cat]-ord[b.k.cat] || a.k.level.localeCompare(b.k.level));
+  else if(LISTF.sort==='state') rows.sort((a,b)=>(b.it.mastered?1:0)-(a.it.mastered?1:0) || b.correct-a.correct);
+  return rows;
+}
+function listCard(inResult){
+  const rows = listRows();
+  let h = '<div class="card" id="listCard"><h3 style="margin-top:0">カテゴリー別 全問一覧</h3>'+
+   '<div class="filters">'+
+   '<select data-act="f" data-k="cat"><option value="">全カテゴリー</option>'+
+     CATS.map(c=>'<option value="'+c.id+'"'+(LISTF.cat===c.id?' selected':'')+'>'+c.name+'</option>').join('')+'</select>'+
+   '<select data-act="f" data-k="state"><option value="">すべての状態</option>'+
+     [['mastered','習得済み'],['wrong','誤答あり'],['hot','2回以上ミス'],['new','未出題']]
+       .map(o=>'<option value="'+o[0]+'"'+(LISTF.state===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+   '<select data-act="f" data-k="sort">'+
+     [['wrong','誤答数の多い順'],['cat','カテゴリー順'],['state','習得順']]
+       .map(o=>'<option value="'+o[0]+'"'+(LISTF.sort===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+   '</div>';
+  h += '<p class="muted" style="font-size:.8rem">'+rows.length+'語　（行をタップすると内訳を表示）</p>';
+  h += '<table><thead><tr><th>知識ポイント</th><th>状態</th><th>正/誤</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const hot = r.wrong>=2;
+    h += '<tr class="'+(hot?'hot':'')+'" data-act="kp" data-id="'+esc(r.k.id)+'">'+
+      '<td><b>'+esc(r.k.front)+'</b> <span class="muted" style="font-size:.72rem">'+esc(r.k.frontYomi)+'</span>'+
+      '<br><span class="muted" style="font-size:.72rem">'+CAT[r.k.cat].short+'・'+r.k.level+'</span></td>'+
+      '<td><span class="badge '+r.st.cls+'">'+r.st.t+'</span>'+(hot?'<br><span class="badge b-hot">⚠️'+r.wrong+'回ミス</span>':'')+'</td>'+
+      '<td style="white-space:nowrap">'+r.correct+' / '+r.wrong+'</td></tr>';
+    if(openKp===r.k.id){
+      const it = r.it;
+      const fa = CAT[r.k.cat].fa, fb = CAT[r.k.cat].fb;
+      let d = explainOf(r.k)+'<br>';
+      d += '形式A（'+esc(fa)+'）：正解'+it.byFormat.A.correct+'／誤答'+it.byFormat.A.wrong+'　';
+      d += '形式B（'+esc(fb)+'）：正解'+it.byFormat.B.correct+'／誤答'+it.byFormat.B.wrong;
+      if(it.wrongLog.length){
+        d += '<br>過去の誤答：'+it.wrongLog.slice(-8).map(w=>esc(w.answered)+'<span class="muted">('+w.format+'/'+fmtD(w.at)+')</span>').join('、');
+      }
+      if(it.masteredAt) d += '<br>習得日：'+fmtD(it.masteredAt);
+      h += '<tr><td colspan="3"><div class="kpdetail">'+d+'</div></td></tr>';
+    }
+  });
+  h += '</tbody></table>';
+  h += '<div class="row" style="margin-top:12px"><button class="btn-s" data-act="csv">⬇ CSVでダウンロード</button>'+
+    (syncEnabled()?'<button class="btn-s" data-act="pushList">📋 全問一覧をDriveへ</button>':'')+'</div>';
+  if(!inResult) h += '<div class="row" style="margin-top:8px"><button data-act="go" data-v="home">閉じる</button></div>';
+  h += '</div>';
+  return h;
+}
+/* ============================================================
+   イベント配線
+   ============================================================ */
+function bind(){
+  document.querySelectorAll('[data-act]').forEach(el=>{
+    const a = el.dataset.act;
+    if(el.tagName==='SELECT'){ el.onchange = ()=>{ LISTF[el.dataset.k]=el.value; render(); }; return; }
+    if(el.tagName==='INPUT' && el.type==='checkbox'){ el.onchange = ()=>ACT[a](el); return; }
+    el.onclick = (ev)=>{ ev.stopPropagation(); ACT[a] && ACT[a](el); };
+  });
+}
+const ACT = {
+  go(el){ VIEW = el.dataset.v; openKp=null; render(); },
+  cat(el){
+    const id = el.dataset.id;
+    PICK.cats = el.checked ? [...new Set([...PICK.cats,id])] : PICK.cats.filter(x=>x!==id);
+    render();
+  },
+  lv(el){
+    const l = el.dataset.id;
+    let n = PICK.levels.includes(l) ? PICK.levels.filter(x=>x!==l) : [...PICK.levels,l];
+    if(!n.length) n = [l];
+    PICK.levels = n; render();
+  },
+  f(){},
+  kp(el){ openKp = (openKp===el.dataset.id)?null:el.dataset.id; render(); },
+  showList(){ VIEW='list'; openKp=null; render(); },
+
+  /* ---- アカウント ---- */
+  accAdd(){
+    const v = ($('newAcc').value||'').trim();
+    if(!v) return alertM('入力してください','名前を入れてから「追加」を押してください。');
+    if(db.accounts.some(a=>a.name===v)) return alertM('同じ名前があります','別の名前にしてください。');
+    const id = uid('acc');
+    db.accounts.push({id, name:v, createdAt:new Date().toISOString()});
+    db.progress[id] = {items:{}, sessions:[]};
+    db.activeAccountId = id;
+    saveDB(); syncPush(true);                       // 追補§5 アカウント追加でpush
+    VIEW='home'; render();
+  },
+  accUse(el){ db.activeAccountId = el.dataset.id; saveDB(); VIEW='home'; render(); },
+  accRename(el){
+    const a = db.accounts.find(x=>x.id===el.dataset.id); if(!a) return;
+    modal('<h3>名前を変える</h3><input type="text" id="rnV" value="'+esc(a.name)+'">'+
+      '<div class="row" style="margin-top:14px"><button id="rnC">キャンセル</button><button class="btn-p" id="rnO">変更</button></div>');
+    $('rnC').onclick = closeModal;
+    $('rnO').onclick = ()=>{
+      const v = ($('rnV').value||'').trim(); if(!v) return;
+      a.name = v; closeModal(); saveDB(); syncPush(true); render();
+    };
+  },
+  accDel(el){
+    const a = db.accounts.find(x=>x.id===el.dataset.id); if(!a) return;
+    confirmM('アカウントを削除しますか？','<b>'+esc(a.name)+'</b> の学習記録もすべて消えます。この操作は取り消せません。','削除する',()=>{
+      db.accounts = db.accounts.filter(x=>x.id!==a.id);
+      delete db.progress[a.id];
+      if(db.activeAccountId===a.id) db.activeAccountId = db.accounts[0]?db.accounts[0].id:null;
+      saveDB(); syncPush(true); render();
+    }, true);
+  },
+
+  /* ---- 出題 ---- */
+  start(el){
+    const m = el.dataset.m;
+    const s = startSession({mode:m, cats:PICK.cats, levels:PICK.levels});
+    if(!s) return alertM('出題できません','選んだ条件に出題できる語がありません（すべて習得済みかもしれません）。<br>「全問モード」なら習得済みも出題できます。');
+    const start = ()=>{ VIEW='quiz'; render(); };
+    if(S.shortfall) alertM('出題数のお知らせ','出題できる語が '+S.kpIds.length+' 語しかないため、その数で出題します。', start);
+    else start();
+  },
+  startWrong(){
+    const items = accProg(db.activeAccountId).items;
+    const ids = KPS.filter(k=>((items[k.id]||{}).totalWrong|0)>0).map(k=>k.id);
+    if(!ids.length) return;
+    const s = startSession({mode:'all', cats:CATS.map(c=>c.id), levels:['A','B'], onlyIds:ids, label:'間違い復習'});
+    if(!s) return;
+    VIEW='quiz'; render();
+  },
+  pick(el){
+    const v = el.dataset.v;
+    if(S.viewIdx!==null){                         // §5-1 直前1問のみ再解答可
+      if(S.viewIdx!==S.log.length-1) return;
+      reAnswer(S.viewIdx, v); render(); return;
+    }
+    if(S.cur.done) return;
+    const ok = answerQ(v);
+    S.cur.done = true; S.cur.picked = v; S.cur.ok = ok;
+    render();
+  },
+  nextq(){
+    nextQ();
+    if(!S.cur){ finishSession(); return; }
+    render();
+  },
+  back(){
+    if(S.viewIdx===null) S.viewIdx = S.log.length-1;
+    else if(S.viewIdx>0) S.viewIdx--;
+    render();
+  },
+  fwd(){
+    if(S.viewIdx===null) return;
+    if(S.viewIdx>=S.log.length-1) S.viewIdx = null;
+    else S.viewIdx++;
+    render();
+  },
+  quitQuiz(){
+    confirmM('学習を中断しますか？','とちゅうでやめると<b>今回の成績は記録されません</b>（習得状況も変わりません）。','中断する',()=>{
+      S=null; VIEW='home'; render();
+    }, true);
+  },
+
+  /* ---- 記録データの管理（追補§3） ---- */
+  expJson(){
+    const blob = new Blob([JSON.stringify(db,null,1)], {type:'application/json'});
+    dl(blob, APP_TITLE+'記録_'+fmtFile()+'.json');
+  },
+  impJson(){ $('impFile').value=''; $('impFile').click(); },
+  csv(){ downloadCSV(); },
+  pushList(){ doPushList(); },
+  syncNow(){ syncPull().then(()=>render()); },
+  syncCfg(){ syncModal(); },
+  resetAcc(){
+    const a = activeAcc(); if(!a) return;
+    confirmM('記録をリセットしますか？','<b>'+esc(a.name)+'</b> の学習記録（習得状況・履歴）をすべて消します。','リセットする',()=>{
+      db.progress[a.id] = {items:{}, sessions:[]};
+      saveDB(); syncPush(true); render();
+    }, true);
+  },
+  resetAll(){
+    confirmM('全データをリセットしますか？','すべてのアカウントと学習記録を消します。この操作は取り消せません。','全部消す',()=>{
+      db = newDB(); saveDB(); syncPush(true); VIEW='accounts'; render();
+    }, true);
+  },
+};
+
+function finishSession(){
+  const r = commitSession();
+  RESULT = {c:r.c, w:r.w, newlyMastered:r.newlyMastered, log:S.log.slice(),
+    needReview:[...S.needReview], at:new Date().toISOString(),
+    modeLabel: S.label || (S.mode==='all'?'全問モード':S.mode==='10q'?'10問モード':'20問モード')};
+  S = null; VIEW='result'; openKp=null; render();
+}
+
+/* ---------- ダウンロード ---------- */
+function dl(blob, name){
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(u); a.remove(); }, 1000);
+}
+function csvCell(v){ v = String(v==null?'':v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+function qLabelFor(kp){
+  const c = CAT[kp.cat];
+  return c.kind==='mean' ? '「'+kp.front+'」の意味は？' : '「'+kp.front+'」の'+(c.id==='taigi'?'対義語':'類義語')+'は？';
+}
+function lastAnswerOf(it){
+  if(!it || (it.totalCorrect|0)+(it.totalWrong|0)===0) return '';
+  if(it.mastered || (it.streak|0)>0) return '（正解）';
+  const w = it.wrongLog[it.wrongLog.length-1];
+  return w?w.answered:'';
+}
+/* v1.0 §7-4 CSV（UTF-8 BOM付き・13列） */
+function downloadCSV(){
+  const items = accProg(db.activeAccountId).items;
+  const header = ['カテゴリー','知識ポイント','問題文','正解','直近の解答','状態','累計正解数','累計誤答数',
+                  '形式A誤答数','形式B誤答数','過去の誤答内容','最終誤答日','習得日'];
+  const rows = KPS.map(k=>{
+    const it = items[k.id]||newItem();
+    const lw = it.wrongLog[it.wrongLog.length-1];
+    return [CAT[k.cat].name, k.front, qLabelFor(k), k.back, lastAnswerOf(it), stateOf(it).t,
+      it.totalCorrect|0, it.totalWrong|0, it.byFormat.A.wrong|0, it.byFormat.B.wrong|0,
+      it.wrongLog.map(w=>w.answered).join(';'), lw?fmtD(lw.at):'', it.masteredAt?fmtD(it.masteredAt):''];
+  }).sort((a,b)=>b[7]-a[7]);
+  const csv = [header, ...rows].map(r=>r.map(csvCell).join(',')).join('\r\n');
+  dl(new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'}), '結果_'+activeAcc().name+'_'+fmtFile()+'.csv');
+}
+/* 追補§6 全問一覧をDriveへ（14列・全アカウント×全KP） */
+const LIST_HEADER = ['名前','カテゴリー','記号','知識ポイント','よみがな','重要度','状態',
+  '累計正解数','累計誤答数','形式A誤答数','形式B誤答数','過去の誤答内容','最終誤答日','習得日'];
+function buildListRows(){
+  const rows = [];
+  db.accounts.forEach(a=>{
+    const items = accProg(a.id).items;
+    KPS.forEach(k=>{
+      const it = items[k.id]||newItem();
+      const lw = it.wrongLog[it.wrongLog.length-1];
+      rows.push([a.name, CAT[k.cat].name, k.mark||'', k.front, k.frontYomi||'', 'レベル'+k.level, stateOf(it).t,
+        it.totalCorrect|0, it.totalWrong|0, it.byFormat.A.wrong|0, it.byFormat.B.wrong|0,
+        it.wrongLog.map(w=>w.answered).join(';'), lw?fmtD(lw.at):'', it.masteredAt?fmtD(it.masteredAt):'']);
+    });
+  });
+  return rows;
+}
+async function doPushList(){
+  if(!syncEnabled()) return;
+  await syncPull(true);                                   // 追補§6 空上書き防止：必ず先にpull
+  if(!dbHasRecords(db)){
+    return alertM('書き出しを中止しました',
+      'この端末にもクラウドにも学習記録がありません。<br>空のデータで既存の一覧シートを上書きしないよう、書き出しを中止しました。<br><br>先に学習するか、記録のある端末で同期してからお試しください。');
+  }
+  const r = await syncPushList(buildListRows(), LIST_HEADER);
+  render();
+  if(!r.ok) alertM('書き出しに失敗しました', esc(r.error||'もう一度お試しください。'));
+}
+
+/* ---------- インポート（追補§3） ---------- */
+function handleImport(file){
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    let d;
+    try{ d = JSON.parse(rd.result); }catch(e){ return alertM('読み込めません','JSONファイルとして読めませんでした。'); }
+    if(!d || d.app!==APP){
+      return alertM('このツールの記録ではありません','ファイルの app は「'+esc((d&&d.app)||'不明')+'」です。<br>このツール（'+esc(APP)+'）の記録ファイルを選んでください。');
+    }
+    const names = (d.accounts||[]).map(a=>a.name).join('、')||'（なし）';
+    confirmM('記録を置き換えますか？',
+      'アカウント：<b>'+esc(names)+'</b><br>保存日時：<b>'+fmtDT(d.updatedAt)+'</b><br><br>'+
+      '現在この端末にある記録は<b>すべて置き換えられます</b>。',
+      '置き換える', async ()=>{
+        db = migrate(d);
+        saveDB();                                   // 追補§3 置換後 updatedAt更新＋push
+        await syncPush(true);
+        VIEW = db.activeAccountId?'home':'accounts'; render();
+        alertM('読み込みました','記録を置き換えました。');
+      }, true);
+  };
+  rd.readAsText(file);
+}
+
+/* ---------- 同期設定モーダル（追補§3・§7） ---------- */
+function syncModal(){
+  const on = syncEnabled();
+  modal('<h3>☁ クラウド同期設定</h3>'+
+    '<p class="tiny">Google Apps Script のウェブアプリURL（<b>/exec</b> で終わるもの）と合言葉を入力してください。'+
+    'この情報はこの端末の中だけに保存され、ほかには送信されません。</p>'+
+    '<label class="fld">GASのURL</label><input type="url" id="sUrl" placeholder="https://script.google.com/macros/s/～/exec" value="'+esc(on?syncCfg.url:'')+'">'+
+    '<label class="fld">合言葉</label><input type="password" id="sKey" placeholder="合言葉" value="'+esc(on?syncCfg.key:'')+'">'+
+    '<div class="row" style="margin-top:16px"><button id="sC">閉じる</button>'+
+    (on?'<button class="btn-d" id="sD">同期を解除</button>':'')+
+    '<button class="btn-p" id="sS">保存して同期</button></div>', {sticky:true});
+  $('sC').onclick = closeModal;
+  if(on) $('sD').onclick = ()=>{
+    confirmM('同期を解除しますか？','この端末の同期設定（URLと合言葉）を消します。学習記録はこの端末に残ります。','解除する',()=>{
+      syncCfg=null; saveSyncCfg(); setBar('force',''); $('syncBar').style.display='none'; render();
+    }, true);
+  };
+  $('sS').onclick = async ()=>{
+    const url = ($('sUrl').value||'').trim(), key = ($('sKey').value||'').trim();
+    if(!/^https?:\/\/.+\/exec$/.test(url)) return alertM('URLを確認してください','GASのウェブアプリURLは <b>https://…/exec</b> の形（末尾が /exec）です。');
+    if(!key) return alertM('合言葉を入れてください','サーバー側と同じ合言葉を入力してください。');
+    syncCfg = {url, key, lastSync:(syncCfg&&syncCfg.lastSync)||null};
+    saveSyncCfg(); closeModal();
+    await syncPull();                                // 追補§5 同期設定の保存直後にpull
+    render();
+  };
+}
+
+/* ============================================================
+   起動
+   ============================================================ */
+(async function boot(){
+  loadDB(); loadSyncCfg();
+  render();
+  $('impFile') && ($('impFile').onchange = e=>{ if(e.target.files[0]) handleImport(e.target.files[0]); });
+  document.addEventListener('change', e=>{
+    if(e.target && e.target.id==='impFile' && e.target.files[0]) handleImport(e.target.files[0]);
+  });
+  if(syncEnabled()){ setBar('busy','クラウドと同期中'); await syncPull(true); render(); }  // 追補§5 起動直後にpull
+  window.addEventListener('beforeunload', e=>{
+    if(VIEW==='quiz' && S && S.log.length){ e.preventDefault(); e.returnValue=''; }        // v1.0 §5-2
+  });
+})();
+</script>
+</body>
+</html>
