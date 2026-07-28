@@ -117,6 +117,17 @@ svg.jp .hit2{fill:#e0a800;stroke:#fff;stroke-width:1.4}
 svg.jp text{font-size:13px;fill:#2b2b2b;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:3.2px;stroke-linejoin:round}
 .legend{font-size:.76rem;color:var(--sub);padding:2px 6px 4px}
 
+/* おぼえるカード・ヒント */
+.card.teach{border:2px solid var(--accent2);background:linear-gradient(180deg,#fffdf8,#fff)}
+.card.teach .qmain{text-align:center}
+.teachbody{background:#faf7f1;border-radius:12px;padding:12px;margin-top:10px;font-size:.95rem;line-height:1.8}
+.hints{margin-top:12px;background:#fff9e8;border:1px solid #f0d99a;border-radius:12px;padding:10px 12px;
+  font-size:.88rem;text-align:left;color:#6b5400}
+.setcard{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+.setcard ol{margin:6px 0 6px 1.2em;padding:0}
+.setcard li{margin:3px 0}
+.setcard .kn{font-weight:800;font-size:1.05rem}
+.rulebox{background:#f0e8dc;border-radius:12px;padding:12px;font-size:.92rem;line-height:1.8}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .filters select{width:auto;min-width:120px;padding:8px}
 @media(max-width:420px){ .qmain{font-size:1.9rem} .choice{font-size:1.05rem} }
@@ -300,6 +311,31 @@ const KP_BY_ID = {}; KPS.forEach(function(k){ KP_BY_ID[k.id]=k; });
 const CATS = ["東北","関東","中部","近畿","中国","四国","九州","複合語"];
 const ALL_PREFS = Object.keys(PREF_LL);
 const FMT_LABEL = {A:"旧国名 → 都道府県", B:"都道府県 → 旧国名"};
+
+/* 「前・中・後／上・下」のセット暗記データ */
+const SET_RULE = "むかしの都（京都）に<b>近い方から「前」→「中」→「後」</b>、<b>近い方が「上」</b>とよびました。ならび順を地図でおぼえると、まとめて覚えられます。";
+const SETS = [
+ {t:"越（こし）の国", ks:["越前","越中","越後"],
+  note:"福井 → 富山 → 新潟。日本海ぞいに、都に近い方からならんでいます。「上越新幹線」の「越」は越後（新潟県）。"},
+ {t:"吉備（きび）の国", ks:["備前","備中","備後","美作"],
+  note:"備前・備中・美作が岡山県、備後だけ広島県。美作は「備」がつかないので、まとめて岡山＝備前・備中・美作と覚えます。"},
+ {t:"陸奥（みちのく）", ks:["陸前","陸中","陸奥"],
+  note:"宮城 → 岩手 → 青森。3つあわせて「三陸海岸」。岩代・磐城（福島）とあわせて、むかしは全部まとめて「陸奥」とよびました。"},
+ {t:"出羽（でわ）", ks:["羽前","羽後"],
+  note:"山形 → 秋田。2つあわせて「出羽」。「奥羽山脈」の「奥」＝陸奥、「羽」＝出羽です。"},
+ {t:"総（ふさ）の国", ks:["上総","下総","安房"],
+  note:"上総が南、下総が北。地図では逆に見えますが、むかしは東京湾を船でわたったので、南のほうが都に近く「上」でした。3つあわせて「房総半島」。"},
+ {t:"毛野（けの）の国", ks:["上野","下野"],
+  note:"上野は群馬県、下野は栃木県。「上野」は「こうずけ」と読むのがねらわれます。"},
+ {t:"筑紫（つくし）の国", ks:["筑前","筑後"],
+  note:"どちらも福岡県。北が筑前（筑前煮）、南が筑後（筑後川）。「筑豊炭田」の「筑」＝筑前、「豊」＝豊前。"},
+ {t:"豊（とよ）の国", ks:["豊前","豊後"],
+  note:"豊前は福岡県と大分県、豊後は大分県。豊後水道・豊後梅。"},
+ {t:"肥（ひ）の国", ks:["肥前","肥後"],
+  note:"肥前は佐賀県・長崎県、肥後は熊本県（肥後象がん）。あいだに筑後・筑前をはさんでいます。"},
+ {t:"丹（たん）の国", ks:["丹波","丹後"],
+  note:"丹波は京都府南部と兵庫県、丹後は京都府北部（丹後半島・丹後ちりめん）。都に近い方が丹波です。"}
+];
 
 /* =============== §10 保存・§12 同期・§13 合流 =============== */
 let MEMORY_ONLY = false;      // localStorageが使えない環境
@@ -645,7 +681,31 @@ function makeQuestion(kp, fmt){
       q.choices = shuffle(ds.concat([kp.name])).map(function(v){return {v:v,label:v};});
     }
   }
+  q.hints = buildHints(kp, fmt);
   return q;
+}
+function firstEx(s){ return (s||"").split("・")[0]; }
+function buildHints(kp, fmt){
+  if(kp.type==="compound"){
+    if(fmt==="A") return [
+      "ふくまれる旧国名は "+kp.kunis.length+"つ です",
+      "1つめは「"+kp.kunis[0]+"」です",
+      kp.desc.split("。")[0]+"。"];
+    return [
+      kp.desc.split("。")[0]+"。",
+      "よみは「"+kp.yomi.charAt(0)+"」からはじまります",
+      "よみは「"+kp.yomi+"」です"];
+  }
+  const ex = kp.geo ? firstEx(kp.geo) : (kp.hist ? firstEx(kp.hist) : "");
+  if(fmt==="A") return [
+    "この旧国名は "+kp.cat+"地方 にあります",
+    ex ? "「"+ex+"」ということばでも知られています" : "よみは「"+kp.yomi+"」です",
+    "答えの都道府県は「"+kp.main.charAt(0)+"」からはじまります"];
+  const same = KPS.filter(function(x){ return x.type==="kuni" && x.prefNames.indexOf(kp.main)>=0; }).length;
+  return [
+    "答えのよみは「"+kp.yomi.charAt(0)+"」からはじまります"+(same>1? "（この県には旧国名が"+same+"つあります）":""),
+    ex ? "「"+ex+"」ということばでも知られています" : "よみは"+kp.yomi.length+"文字です",
+    "よみは「"+kp.yomi+"」です"];
 }
 
 /* ---- §3-1 出題対象の選定 ---- */
@@ -665,10 +725,23 @@ function attentionKPs(){
   const p=acc();
   return KPS.filter(function(k){ return (item(k.id,p).postMasterWrong||0)>=1; }).map(function(k){return k.id;});
 }
+function unseenKPs(){
+  const p=acc();
+  return KPS.filter(function(k){ const it=item(k.id,p);
+    return !it.mastered && (it.totalCorrect||0)+(it.totalWrong||0)===0; }).map(function(k){return k.id;});
+}
+/* おぼえるモード：まだ見たことのないKPを優先して選ぶ */
+function pickLearnKPs(n){
+  const un = unseenKPs();
+  if(un.length>=n) return shuffle(un).slice(0,n);
+  const rest = pickKPs(n).filter(function(id){ return un.indexOf(id)<0; });
+  return un.concat(rest).slice(0,n);
+}
 
 /* ---- セッション ---- */
 let S = null;
-function startSession(mode, kpIdsOverride){
+function startSession(mode, kpIdsOverride, opts){
+  opts = opts || {};
   const p = acc(); if(!p) return;
   let kpIds;
   if(kpIdsOverride) kpIds = kpIdsOverride.slice();
@@ -681,7 +754,8 @@ function startSession(mode, kpIdsOverride){
   const short = (mode==="10問"||mode==="20問") && kpIds.length<want;
 
   S = {mode:mode, startedAt:nowISO(), queue:[], idx:0, view:0, answers:[],
-       work:{}, masteredStart:{}, rq:{}, needReview:{}, short:short, wanted:want, got:kpIds.length};
+       work:{}, masteredStart:{}, rq:{}, needReview:{}, short:short, wanted:want, got:kpIds.length,
+       teach:!!opts.teach, title:opts.title||"", hintCount:0, guessCount:0};
   kpIds.forEach(function(id){
     S.work[id] = clone(item(id,p));
     if(S.work[id].mastered) S.masteredStart[id]=1;
@@ -707,6 +781,15 @@ function startSession(mode, kpIdsOverride){
     S.queue = pass1.concat(pass2);
   }
   S.queue.forEach(function(e){ e.q = makeQuestion(KP_BY_ID[e.kpId], e.fmt); });
+
+  /* 【おぼえるモード】初見のことばは、最初の1回だけカードで見せてから出題する */
+  const marked={};
+  S.queue.forEach(function(e){
+    if(marked[e.kpId]) return;
+    const it=S.work[e.kpId];
+    const unseen = (it.totalCorrect||0)+(it.totalWrong||0)===0 && !it.mastered;
+    if(opts.teach || unseen){ e.teach=true; marked[e.kpId]=1; }
+  });
   go("quiz");
 }
 
@@ -743,9 +826,12 @@ function undoAnswer(i){
   }
   S.answers[i]=null;
 }
-function applyAnswer(i, chosen){
+function applyAnswer(i, chosen, opts){
+  opts = opts || {};
   const e = S.queue[i], kp = KP_BY_ID[e.kpId], it = S.work[e.kpId];
   const ok = (chosen === e.q.answer);
+  /* ヒントを使った正解・「まぐれ」申告の正解は、習得カウント(streak)を進めない */
+  const noStreak = (e.hints||0) > 0 || !!opts.noStreak;
   const snap = clone(it);
   const at = nowISO();
   const wasMastered = it.mastered;
@@ -762,7 +848,7 @@ function applyAnswer(i, chosen){
     it.lastSeenAt = at;
     if(ok){
       it.totalCorrect++; it.byFormat[e.fmt].correct++;
-      if(!it.mastered){
+      if(!it.mastered && !noStreak){
         if(!(it.lastFormat===e.fmt && it.streak>0)) it.streak++;   // 同形式の連続では進めない
         if(it.streak >= requiredStreak(it)){ it.mastered=true; it.masteredAt=at; }
       }
@@ -785,6 +871,7 @@ function applyAnswer(i, chosen){
        これにより10問モードの実出題数は基本20問（§3-1）に保たれる。 */
   }
   S.answers[i] = {ok:ok, chosen:chosen, snapshot:snap, inserted:inserted,
+                  noStreak:noStreak, guess:!!opts.guess, hints:(e.hints||0),
                   newlyMastered: (!wasMastered && it.mastered)};
   return ok;
 }
@@ -799,6 +886,26 @@ function onChoice(val){
   applyAnswer(i, val);
   render();
 }
+/* 【ヒント】段階的に開く。使った時点で習得カウントは進めない */
+function useHint(){
+  const i=S.view, e=S.queue[i];
+  if(S.answers[i]) return;
+  if((e.hints||0) >= e.q.hints.length) return;
+  e.hints = (e.hints||0)+1; S.hintCount++;
+  render();
+}
+/* 【まぐれ申告】正解を取り消さずに、習得カウントだけ進めなかったことにする */
+function markGuess(){
+  const i=S.view, a=S.answers[i];
+  if(!a || !a.ok || a.guess || i!==S.idx) return;
+  const chosen=a.chosen;
+  undoAnswer(i);
+  applyAnswer(i, chosen, {noStreak:true, guess:true});
+  S.guessCount++;
+  render();
+}
+/* 【おぼえるカード】読んだら問題へ */
+function taught(){ S.queue[S.view].taught = true; render(); }
 function nextQ(){
   if(S.view < S.idx){ S.view = S.idx; render(); return; }
   if(!S.answers[S.idx]) return;
@@ -831,7 +938,9 @@ function finishSession(){
   p.sessions = p.sessions.slice(0,100);
   saveDB();
   LAST_RESULT = {rec:rec, answers:S.answers.slice(), queue:S.queue.slice(),
-                 needReview:Object.keys(S.needReview), mode:S.mode};
+                 needReview:Object.keys(S.needReview), mode:S.mode,
+                 hintCount:S.hintCount, guessCount:S.guessCount, title:S.title,
+                 taught:S.queue.filter(function(e){return e.teach;}).length};
   S = null;
   go("result");
   pushNow(true);                                                  // §13-1 終了直後に自動push
@@ -871,7 +980,7 @@ const MAPCFG={minLng:127,maxLng:146,minLat:30,maxLat:46,S:32,K:0.81};
 function proj(lat,lng){
   return [ (lng-MAPCFG.minLng)*MAPCFG.K*MAPCFG.S, (MAPCFG.maxLat-lat)*MAPCFG.S ];
 }
-function svgMap(hits, subs){
+function svgMap(hits, subs, labelMap){
   const W=Math.round((MAPCFG.maxLng-MAPCFG.minLng)*MAPCFG.K*MAPCFG.S);
   const H=Math.round((MAPCFG.maxLat-MAPCFG.minLat)*MAPCFG.S);
   let s = "<svg class='jp' viewBox='0 0 "+W+" "+H+"' role='img' aria-label='日本地図'>";
@@ -896,7 +1005,7 @@ function svgMap(hits, subs){
     placed.push({x:x,y:y});
     s += "<line x1='"+c[0].toFixed(1)+"' y1='"+c[1].toFixed(1)+"' x2='"+(x-2).toFixed(1)+"' y2='"+(y-4).toFixed(1)+
          "' stroke='#8b5e34' stroke-width='0.8'/>";
-    s += "<text x='"+x.toFixed(1)+"' y='"+y.toFixed(1)+"'>"+esc(pn)+"</text>";
+    s += "<text x='"+x.toFixed(1)+"' y='"+y.toFixed(1)+"'>"+esc((labelMap&&labelMap[pn])||pn)+"</text>";
   });
   return s+"</svg>";
 }
@@ -935,6 +1044,13 @@ function homeHTML(){
   h += "<div class='card'><div class='row'><b>ぜんたいの習得</b><div class='spacer'></div>"+
        "<span class='muted'>習得済み "+mastered+" / 全 "+KPS.length+"（"+pct+"%）</span></div>"+
        "<div class='bar' style='margin-top:6px'><i style='width:"+pct+"%'></i></div></div>";
+
+  const unseen = unseenKPs();
+  h += "<div class='card'><h2 style='margin-top:0'>まだ覚えていないことばを覚える</h2>"+
+       "<button class='btn wide' style='background:#2e7d55' data-a='learn'>📖 おぼえるモード"+
+         (unseen.length? "（まだ見ていない "+unseen.length+"語）" : "（見ていないことばはもうありません）")+"</button>"+
+       "<button class='btn wide sec' data-a='sets'>🧩 セットで覚える（前・中・後／上・下）</button>"+
+       "<div class='muted tiny' style='margin-top:6px'>おぼえるモードは、はじめてのことばを<b>カードで見せてから</b>出題します。あてずっぽうで進まないぶん、記録も正確になります。</div></div>";
 
   h += "<div class='card'><h2 style='margin-top:0'>学習をはじめる</h2>"+
        "<button class='btn wide' data-a='start10'>▶ 10問モード（10語＝20問）</button>"+
@@ -990,6 +1106,42 @@ function homeHTML(){
     "<div class='muted tiny' style='margin-top:8px'>ツール識別子：<code>"+APP+"</code></div></div>";
 
   h += "<div class='card'><h2 style='margin-top:0'>ぜんぶの一覧</h2>"+listHTML("home")+"</div>";
+  return h;
+}
+
+/* =============== セットで覚える（前・中・後／上・下） =============== */
+function setKPs(s){
+  return s.ks.map(function(n){ return KPS.filter(function(k){return k.name===n;})[0]; }).filter(Boolean);
+}
+function setLabels(ks){
+  const lm={}, num="①②③④⑤";
+  ks.forEach(function(k,i){
+    const t=num.charAt(i)+k.name;
+    lm[k.main]= lm[k.main] ? lm[k.main]+"・"+t : t;
+  });
+  return lm;
+}
+function setsHTML(){
+  let h = "<div class='row'><h1 style='margin:0'>セットで覚える</h1><div class='spacer'></div>"+
+          "<button class='btn gray sm' data-a='home'>← ホーム</button></div>";
+  h += "<div class='card'><div class='rulebox'>"+SET_RULE+"</div></div>";
+  SETS.forEach(function(s,i){
+    const ks = setKPs(s);
+    let m=0; ks.forEach(function(k){ if(item(k.id).mastered) m++; });
+    h += "<div class='setcard'><div class='row'><b style='font-size:1.05rem'>"+esc(s.t)+"</b>"+
+      "<div class='spacer'></div><span class='muted tiny'>習得 "+m+"/"+ks.length+"</span></div>"+
+      "<ol>"+ks.map(function(k){
+        return "<li><span class='kn'>"+esc(k.name)+"</span>（"+esc(k.yomi)+"）… "+esc(prefsLabel(k))+
+          (k.geo? " <span class='muted tiny'>"+esc(firstEx(k.geo))+"</span>":"")+"</li>"; }).join("")+"</ol>"+
+      "<div class='muted tiny'>"+esc(s.note)+"</div>"+
+      "<div class='mapwrap'>"+svgMap([ks[0].main],
+          ks.slice(1).map(function(k){return k.main;}).filter(function(v,n,a){ return a.indexOf(v)===n && v!==ks[0].main; }),
+          setLabels(ks))+
+        "<div class='legend'>● 赤＝①"+esc(ks[0].name)+"（都に近い方）／● 黄＝そのつづき</div></div>"+
+      "<button class='btn sm' style='margin-top:10px' data-set='"+i+"'>▶ このセットだけで出題する</button></div>";
+  });
+  h += "<div class='card'><div class='muted tiny'>【注】かつて陸奥・陸中・陸前・岩代・磐城をまとめて「陸奥」、羽前・羽後をまとめて「出羽」とよんでいたことがあります。</div></div>";
+  h += "<button class='btn gray' data-a='home'>← ホームへ</button>";
   return h;
 }
 
@@ -1080,6 +1232,19 @@ function quizHTML(){
     h += "<div class='warnbar'>出題できることばが"+S.got+"語しかないため、"+S.got+"語で出題します。</div>";
   }
 
+  /* 【おぼえるカード】まだ見たことのないことばは、先にカードで見せる */
+  if(e.teach && !e.taught && !ans){
+    h += "<div class='card teach'><div class='row'><span class='qlabel'>📖 はじめてのことば</span>"+
+      "<span class='spacer'></span><span class='muted tiny'>読んでから問題にすすみます</span></div>"+
+      "<div class='qmain"+(kp.type==="compound"?" small":"")+"' style='margin-top:10px'>"+esc(kp.name)+"</div>"+
+      "<div class='qyomi' style='text-align:center;font-size:1.05rem'>（"+esc(kp.yomi)+"）</div>"+
+      "<div class='teachbody'>"+expHTML(kp)+"</div>"+
+      mapBlock(kp)+
+      "<button class='btn wide' style='margin-top:12px' data-a='taught'>おぼえた！ 問題へ →</button></div>";
+    h += "<div class='row' style='margin-top:14px'><button class='btn gray sm' data-a='abort'>とちゅうでやめる</button></div>";
+    return h;
+  }
+
   h += "<div class='qbox'><span class='qlabel'>"+esc(q.label)+"</span>"+
     "<div class='qtext'>"+esc(q.text)+"</div>"+
     "<div class='qmain"+(q.big?"":" small")+"'>"+esc(q.main)+"</div>"+
@@ -1095,13 +1260,29 @@ function quizHTML(){
         return "<button class='"+cls+"' data-c='"+esc(c.v)+"'>"+esc(c.label)+
           (c.yomi? "<span class='yomi'>"+esc(c.yomi)+"</span>":"")+"</button>";
       }).join("")+
-    "</div></div>";
+    "</div>";
+
+  /* 【ヒント】段階的に開く */
+  const hn = e.hints||0;
+  if(hn>0){
+    h += "<div class='hints'>"+q.hints.slice(0,hn).map(function(t,n){
+      return "<div>💡 ヒント"+(n+1)+"：<b>"+esc(t)+"</b></div>"; }).join("")+
+      (ans? "" : "<div class='tiny' style='margin-top:4px'>ヒントを使ったので、この問題は習得のカウントを進めません。</div>")+"</div>";
+  }
+  if(!ans && hn < q.hints.length){
+    h += "<button class='btn gray sm' style='margin-top:10px' data-a='hint'>💡 ヒントを見る（"+(hn+1)+"/"+q.hints.length+"）</button>";
+  }
+  h += "</div>";
 
   if(ans){
     h += "<div class='fb "+(ans.ok?"ok":"ng")+"'>"+
       "<b>"+(ans.ok? "◯ せいかい！":"✕ ざんねん…　正解は「"+esc(q.answer)+"」")+"</b>"+
       (ans.newlyMastered? " <span class='badge g'>習得！</span>":"")+
+      (ans.ok && ans.noStreak? " <span class='badge w'>習得カウントなし</span>":"")+
       "<div class='exp'>"+expHTML(kp)+"</div></div>";
+    if(ans.ok && !ans.noStreak && S.view===S.idx){
+      h += "<div class='row' style='margin-top:8px'><button class='btn gray sm' data-a='guess'>🤔 いまのはまぐれ（習得カウントに入れない）</button></div>";
+    }
     h += mapBlock(kp);
   }
 
@@ -1143,7 +1324,11 @@ function resultHTML(){
     "<div style='flex:1'><div class='muted tiny'>正答率</div><div style='font-size:1.6rem;font-weight:800'>"+rate+"%</div></div>"+
     "<div style='flex:1'><div class='muted tiny'>新しく習得</div><div style='font-size:1.6rem;font-weight:800;color:var(--accent)'>"+R.rec.newlyMastered.length+"</div></div>"+
     "</div>"+
-    "<div class='muted tiny' style='margin-top:6px'>これまでの習得は合計 "+R.rec.totalMastered+" / "+KPS.length+" 語です。</div></div>";
+    "<div class='muted tiny' style='margin-top:6px'>これまでの習得は合計 "+R.rec.totalMastered+" / "+KPS.length+" 語です。"+
+      (R.taught? "　今回はじめて見たことば "+R.taught+"語。":"")+
+      (R.hintCount? "　ヒント "+R.hintCount+"回。":"")+
+      (R.guessCount? "　まぐれ申告 "+R.guessCount+"回。":"")+
+      ((R.hintCount||R.guessCount)? "（この問題は習得カウントに入れていません）":"")+"</div></div>";
 
   if(R.rec.newlyMastered.length){
     h += "<div class='card'><h2 style='margin-top:0'>今回あたらしく習得したことば</h2>"+
@@ -1205,6 +1390,7 @@ function render(){
   let h="";
   if(CURRENT==="accounts") h=accountsHTML();
   else if(CURRENT==="quiz" && S) h=quizHTML();
+  else if(CURRENT==="sets") h=setsHTML();
   else if(CURRENT==="result") h=resultHTML();
   else { CURRENT="home"; h=homeHTML(); }
   $("app").innerHTML=h;
@@ -1229,12 +1415,24 @@ function bind(){
       .sort(function(a,b){ return (item(b.id,p).totalWrong||0)-(item(a.id,p).totalWrong||0); })
       .slice(0,9).map(function(k){return k.id;});
     startSession("10問",[id].concat(others)); }; });
+  app.querySelectorAll("[data-set]").forEach(function(b){ b.onclick=function(){
+    const s=SETS[+b.getAttribute("data-set")];
+    startSession("10問", setKPs(s).map(function(k){return k.id;}), {teach:true, title:s.t}); }; });
   app.querySelectorAll("[data-f]").forEach(function(s){ s.onchange=function(){
     FILTER[s.getAttribute("data-f")]=s.value; render(); }; });
 }
 function action(a){
   if(a==="accounts") return go("accounts");
   if(a==="home") return go("home");
+  if(a==="sets") return go("sets");
+  if(a==="learn"){
+    const ids = pickLearnKPs(10);
+    if(!ids.length) return alert("いま出題できることばがありません。");
+    return startSession("10問", ids, {teach:true});   // §10 modeは既存の4値に寄せる
+  }
+  if(a==="hint") return useHint();
+  if(a==="guess") return markGuess();
+  if(a==="taught") return taught();
   if(a==="start10") return startSession("10問");
   if(a==="start20") return startSession("20問");
   if(a==="startall") return startSession("全問");
