@@ -562,8 +562,6 @@ const STORAGE_KEY = APP_ID;
 const SYNC_KEY = APP_ID + ":sync";
 const PREV_V3_KEY = "kj-quiz-rekishi-nendai"; // this tool's own previous (pre-sync) key
 const OLD_V2_KEY = "rekishi100_quiz_v1";       // earlier still (pre-spec) key
-const SCHEMA_VERSION = 2;
-
 const MASTERY_STREAK = 2;      // consecutive correct answers, in DIFFERENT formats, to master a KP
 const WRONG_REQUEUE_GAP = 3;   // wrong answer -> reappears after this many other problems
 const PARTIAL_REQUEUE_GAP = 6; // correct-but-not-yet-mastered -> reappears after this many
@@ -585,7 +583,12 @@ function eraForYear(y){
 function eraName(y){ return ERA_BOUNDARIES[eraForYear(y)][1]; }
 
 // ---------------------------------------------------------------------
-// storage: load / save / migrate
+// storage: load / save / migrate  (v1.2: v1.0 §9 schema -- accounts as
+// {id,name,createdAt}, progress keyed by account id, not by name. This is
+// required for the sync server to pick up sessions[] into the session-
+// history sheet; a name-keyed store silently fails that part while list
+// export -- which ships its own header/rows and doesn't depend on this
+// schema -- kept working, which is exactly the symptom being fixed here.)
 // ---------------------------------------------------------------------
 function blankItemStat(){
   return {
@@ -596,24 +599,63 @@ function blankItemStat(){
   };
 }
 function blankAccountProgress(){
-  return { items: {}, quizzesTaken: 0, sessions: [] };
+  return { items: {}, sessions: [] };
+}
+function genAccountId(){
+  return "acc_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 function blankStore(){
+  const accounts = DEFAULT_ACCOUNTS.map(name => ({ id: genAccountId(), name, createdAt: nowIso() }));
   const progress = {};
-  DEFAULT_ACCOUNTS.forEach(a=>{ progress[a] = blankAccountProgress(); });
-  return { app: APP_ID, version: SCHEMA_VERSION, accounts: DEFAULT_ACCOUNTS.slice(), progress, updatedAt: null };
+  accounts.forEach(a => { progress[a.id] = blankAccountProgress(); });
+  return { app: APP_ID, version: 1, updatedAt: null, activeAccountId: null, accounts, progress };
+}
+
+// Detects the pre-v1.2 shape (accounts as plain name strings, progress
+// keyed by name) and converts it to the id-based schema without losing
+// anything. Safe to call on an already-upgraded store (no-op).
+function upgradeToIdSchema(store){
+  if(!store) return store;
+  const accountsAreIdShaped = Array.isArray(store.accounts) && store.accounts.length > 0
+    && typeof store.accounts[0] === "object" && store.accounts[0] && "id" in store.accounts[0];
+  if(accountsAreIdShaped){
+    // still make sure every listed id has a progress bucket, and nothing orphaned is lost
+    store.accounts.forEach(a=>{ if(!store.progress[a.id]) store.progress[a.id] = blankAccountProgress(); });
+    if(store.activeAccountId === undefined) store.activeAccountId = null;
+    if(store.version === undefined) store.version = 1;
+    return store;
+  }
+  const oldNames = Array.isArray(store.accounts) ? store.accounts : Object.keys(store.progress || {});
+  const accounts = [];
+  const progress = {};
+  oldNames.forEach(name=>{
+    const id = genAccountId();
+    accounts.push({ id, name, createdAt: nowIso() });
+    const oldAcc = (store.progress && store.progress[name]) || {};
+    progress[id] = {
+      items: oldAcc.items || {},
+      sessions: Array.isArray(oldAcc.sessions) ? oldAcc.sessions : [],
+    };
+  });
+  return {
+    app: store.app || APP_ID,
+    version: 1,
+    updatedAt: store.updatedAt || null,
+    activeAccountId: null,
+    accounts, progress,
+  };
 }
 
 function migrateFromV2(oldRaw){
   // Best-effort port of the oldest (v2, pre common-spec) schema so 音/昂/暁 keep their history.
   let old;
   try{ old = JSON.parse(oldRaw); }catch(e){ return null; }
-  const store = blankStore();
+  const nameKeyedStore = { app: APP_ID, accounts: DEFAULT_ACCOUNTS.slice(), progress: {}, updatedAt: null };
   DEFAULT_ACCOUNTS.forEach(a=>{
     const oldAcc = old[a];
+    const acc = blankAccountProgress();
+    nameKeyedStore.progress[a] = acc;
     if(!oldAcc) return;
-    const acc = store.progress[a];
-    acc.quizzesTaken = oldAcc.quizzesTaken || 0;
     const allIdxKeys = new Set([
       ...Object.keys(oldAcc.items || {}),
       ...Object.keys(oldAcc.favorites || {}),
@@ -635,7 +677,7 @@ function migrateFromV2(oldRaw){
       };
     });
   });
-  return store;
+  return upgradeToIdSchema(nameKeyedStore);
 }
 
 // Whether this browser can actually persist to localStorage (some private-
@@ -655,16 +697,16 @@ function loadStore(){
   if(!LOCAL_STORAGE_OK) return blankStore();
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
+    if(raw) return upgradeToIdSchema(JSON.parse(raw));
   }catch(e){}
-  // try this tool's own previous (pre-sync) key
+  // try this tool's own previous (pre-id-schema) key
   try{
     const prevRaw = localStorage.getItem(PREV_V3_KEY);
     if(prevRaw){
       const prev = JSON.parse(prevRaw);
       prev.app = APP_ID;
       if(prev.updatedAt === undefined) prev.updatedAt = null;
-      return prev;
+      return upgradeToIdSchema(prev);
     }
   }catch(e){}
   // fall back further to the original (pre common-spec) key
@@ -694,52 +736,39 @@ function saveStore(opts){
 }
 
 let STORE = loadStore();
-normalizeAccounts();
-
-// Ensures STORE.accounts (the live, editable account list) always exists and
-// always matches reality -- this runs on every load, including for data
-// saved by earlier versions of this tool that predate add/delete accounts,
-// so nobody's existing 音/昂/暁 records are ever dropped by this refactor.
-function normalizeAccounts(){
-  if(!STORE.progress) STORE.progress = {};
-  if(!Array.isArray(STORE.accounts) || STORE.accounts.length === 0){
-    const fromProgress = Object.keys(STORE.progress);
-    STORE.accounts = fromProgress.length ? fromProgress : DEFAULT_ACCOUNTS.slice();
-  }
-  // Any account name that already has a progress bucket but wasn't listed
-  // (can happen with older saves) gets included too, never dropped.
-  Object.keys(STORE.progress).forEach(name=>{
-    if(!STORE.accounts.includes(name)) STORE.accounts.push(name);
-  });
-  STORE.accounts.forEach(name=>{
-    if(!STORE.progress[name]) STORE.progress[name] = blankAccountProgress();
-  });
-}
 
 function accountList(){ return STORE.accounts; }
+function findAccountByName(name){ return STORE.accounts.find(a => a.name === name); }
+function findAccountById(id){ return STORE.accounts.find(a => a.id === id); }
+function accountName(id){
+  const a = findAccountById(id);
+  return a ? a.name : "(不明)";
+}
 
 function addAccount(name){
   name = (name || "").trim();
   if(!name) return { ok: false, error: "名前を入力してください。" };
   if(name.length > 12) return { ok: false, error: "名前は12文字以内にしてください。" };
-  if(STORE.accounts.includes(name)) return { ok: false, error: "同じ名前のアカウントがすでにあります。" };
-  STORE.accounts.push(name);
-  STORE.progress[name] = blankAccountProgress();
+  if(findAccountByName(name)) return { ok: false, error: "同じ名前のアカウントがすでにあります。" };
+  const id = genAccountId();
+  STORE.accounts.push({ id, name, createdAt: nowIso() });
+  STORE.progress[id] = blankAccountProgress();
   saveStore();
   pushOnly(); // spec: push after account add/rename/delete
-  return { ok: true };
+  return { ok: true, id };
 }
 
-function deleteAccount(name){
-  STORE.accounts = STORE.accounts.filter(a => a !== name);
-  delete STORE.progress[name];
+function deleteAccount(id){
+  STORE.accounts = STORE.accounts.filter(a => a.id !== id);
+  delete STORE.progress[id];
+  if(STORE.activeAccountId === id) STORE.activeAccountId = null;
   saveStore();
   pushOnly();
 }
 
-function getCommittedStats(account){
-  if(!STORE.progress[account]) STORE.progress[account] = blankAccountProgress();
-  return STORE.progress[account];
+function getCommittedStats(accountId){
+  if(!STORE.progress[accountId]) STORE.progress[accountId] = blankAccountProgress();
+  return STORE.progress[accountId];
 }
 function getItemStat(progress, dataIdx){
   if(!progress.items[dataIdx]) progress.items[dataIdx] = blankItemStat();
@@ -749,7 +778,7 @@ function getItemStat(progress, dataIdx){
 // copy so nothing is persisted until the session is completed in full.
 function currentProgress(){
   if(state.session) return state.session.pendingProgress;
-  return getCommittedStats(state.account);
+  return getCommittedStats(state.accountId);
 }
 function isMastered(progress, dataIdx){
   const s = progress.items[dataIdx];
@@ -915,7 +944,7 @@ let state = {
 };
 
 function startSession(mode){
-  const committed = getCommittedStats(state.account);
+  const committed = getCommittedStats(state.accountId);
   const pendingProgress = deepClone(committed);
   const kpIndices = selectSessionKPs(mode, committed);
   const requestedN = mode === "all" ? DATA.length : (mode === "10q" ? 10 : 20);
@@ -1009,21 +1038,27 @@ function redoAnswer(correct, answeredText){
   state.session.reviewIndex = null;
 }
 
+function modeLabel(mode){
+  return mode === "10q" ? "10問" : mode === "20q" ? "20問" : "全問";
+}
+
 function finishSession(){
   const sess = state.session;
-  STORE.progress[state.account] = sess.pendingProgress;
-  const acc = STORE.progress[state.account];
-  acc.quizzesTaken = (acc.quizzesTaken || 0) + 1;
+  STORE.progress[state.accountId] = sess.pendingProgress;
+  const acc = STORE.progress[state.accountId];
   acc.sessions = acc.sessions || [];
+  const wrongKpIds = Array.from(new Set(sess.log.filter(l => !l.correct).map(l => String(l.dataIdx))));
   acc.sessions.push({
-    startedAt: sess.startedAt, finishedAt: nowIso(), mode: sess.mode,
+    startedAt: sess.startedAt, finishedAt: nowIso(), mode: modeLabel(sess.mode),
     correct: sess.score, wrong: sess.wrongCount,
-    newlyMastered: Array.from(sess.newlyMastered),
+    newlyMastered: Array.from(sess.newlyMastered).map(String),
+    wrongKpIds,
+    totalMastered: masteredCount(acc),
   });
-  if(acc.sessions.length > 50) acc.sessions = acc.sessions.slice(-50);
+  if(acc.sessions.length > 100) acc.sessions = acc.sessions.slice(-100);
   saveStore();
   state.screen = "result";
-  pushOnly(); // spec: push automatically right after a session's save
+  pushOnly(); // spec: push automatically right after a session's save -- this is what lets the session land in the GAS session-history sheet
 }
 
 function confirmLeaveSession(){
@@ -1080,7 +1115,7 @@ function exportCsv(account){
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `結果_${account}_${todayStamp()}.csv`;
+  a.download = `結果_${accountName(account)}_${todayStamp()}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1169,37 +1204,135 @@ async function pushListToCloud(cfg, list){
   });
 }
 
-// Merges any local-only accounts (matched by name) into an adopted cloud
-// record set, so a fresh device that already made local progress never
-// silently loses it when the cloud copy wins.
-function adoptCloud(cloudData){
-  const merged = deepClone(cloudData);
-  merged.app = APP_ID;
-  if(!merged.progress) merged.progress = {};
-  if(!Array.isArray(merged.accounts)) merged.accounts = Object.keys(merged.progress);
-  let mergeHappened = false;
-  const allNames = new Set([...(STORE.accounts||[]), ...merged.accounts]);
+function mergeItemStat(a, b){
+  if(!a) return deepClone(b);
+  if(!b) return deepClone(a);
+  const fA = { correct: Math.max((a.byFormat&&a.byFormat.A.correct)||0, (b.byFormat&&b.byFormat.A.correct)||0),
+               wrong:   Math.max((a.byFormat&&a.byFormat.A.wrong)||0,   (b.byFormat&&b.byFormat.A.wrong)||0) };
+  const fB = { correct: Math.max((a.byFormat&&a.byFormat.B.correct)||0, (b.byFormat&&b.byFormat.B.correct)||0),
+               wrong:   Math.max((a.byFormat&&a.byFormat.B.wrong)||0,   (b.byFormat&&b.byFormat.B.wrong)||0) };
+  const mastered = !!(a.mastered || b.mastered);
+  let masteredAt = null;
+  const masteredCandidates = [a.mastered && a.masteredAt, b.mastered && b.masteredAt].filter(Boolean);
+  if(masteredCandidates.length) masteredAt = masteredCandidates.sort()[0];
+
+  const aSeen = a.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
+  const bSeen = b.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
+  const newer = aSeen >= bSeen ? a : b;
+
+  const seen = new Set();
+  const wrongLog = [];
+  [...(a.wrongLog||[]), ...(b.wrongLog||[])].forEach(w=>{
+    const key = w.at + "|" + w.format + "|" + w.answered;
+    if(!seen.has(key)){ seen.add(key); wrongLog.push(w); }
+  });
+  wrongLog.sort((x,y)=> new Date(x.at) - new Date(y.at));
+  const trimmedWrongLog = wrongLog.length > WRONG_LOG_MAX ? wrongLog.slice(-WRONG_LOG_MAX) : wrongLog;
+
+  return {
+    streak: Math.max(a.streak||0, b.streak||0),
+    mastered, masteredAt,
+    lastFormat: newer.lastFormat || a.lastFormat || b.lastFormat || null,
+    totalCorrect: Math.max(a.totalCorrect||0, b.totalCorrect||0),
+    totalWrong: Math.max(a.totalWrong||0, b.totalWrong||0),
+    byFormat: { A: fA, B: fB },
+    wrongLog: trimmedWrongLog,
+    lastSeenAt: newer.lastSeenAt || a.lastSeenAt || b.lastSeenAt || null,
+    favorite: !!(a.favorite || b.favorite),
+  };
+}
+
+function mergeAccountProgress(a, b){
+  if(!a) return deepClone(b || blankAccountProgress());
+  if(!b) return deepClone(a);
+  const items = {};
+  const allIdx = new Set([...Object.keys(a.items||{}), ...Object.keys(b.items||{})]);
+  allIdx.forEach(idx=>{ items[idx] = mergeItemStat((a.items||{})[idx], (b.items||{})[idx]); });
+  const sessionsMap = new Map();
+  [...(a.sessions||[]), ...(b.sessions||[])].forEach(s=>{
+    if(!sessionsMap.has(s.finishedAt)) sessionsMap.set(s.finishedAt, s);
+  });
+  let sessions = Array.from(sessionsMap.values()).sort((x,y)=> new Date(x.finishedAt) - new Date(y.finishedAt));
+  if(sessions.length > 100) sessions = sessions.slice(-100);
+  return { items, sessions };
+}
+
+// Always-merge cloud adoption per addendum v1.2 §5-3: never "newer wins"
+// wholesale -- accounts are matched by NAME (ids are per-device and may
+// legitimately differ), and each matched account's stats are combined
+// (max counters, OR'd mastered flag, unioned wrongLog, sessions de-duped
+// by finishedAt) rather than one side clobbering the other. This is what
+// lets two devices, used alternately, converge instead of only ever
+// pushing past each other.
+function mergeWithCloud(cloudData){
+  const cloud = deepClone(cloudData);
+  cloud.app = APP_ID;
+  if(!Array.isArray(cloud.accounts)) cloud.accounts = [];
+  if(!cloud.progress) cloud.progress = {};
+
+  const localByName = new Map(STORE.accounts.map(a=>[a.name, a]));
+  const cloudByName = new Map(cloud.accounts.map(a=>[a.name, a]));
+  const allNames = new Set([...localByName.keys(), ...cloudByName.keys()]);
+
+  const mergedAccounts = [];
+  const mergedProgress = {};
+  let changed = false;
+  const idReassignments = {};
+
   allNames.forEach(name=>{
-    const localAcc = STORE.progress[name];
-    const localHasThis = localAcc && dbHasRecords({ progress: { [name]: localAcc } });
-    const cloudHasThis = merged.progress[name] && dbHasRecords({ progress: { [name]: merged.progress[name] } });
-    // An account name that's missing from the cloud copy, or present there
-    // but with no real records while the local copy does have some, counts
-    // as "local-only" and must be carried over rather than silently dropped.
-    if(localHasThis && !cloudHasThis){
-      merged.progress[name] = localAcc;
-      if(!merged.accounts.includes(name)) merged.accounts.push(name);
-      mergeHappened = true;
+    const localAcc = localByName.get(name);
+    const cloudAcc = cloudByName.get(name);
+    const canonical = cloudAcc || localAcc; // prefer the cloud's id/createdAt as canonical when both sides have this account
+    mergedAccounts.push(canonical);
+    const localProg = localAcc ? STORE.progress[localAcc.id] : null;
+    const cloudProg = cloudAcc ? cloud.progress[cloudAcc.id] : null;
+    const mergedProg = mergeAccountProgress(localProg, cloudProg);
+    mergedProgress[canonical.id] = mergedProg;
+    if(localAcc && cloudAcc && localAcc.id !== cloudAcc.id){
+      idReassignments[localAcc.id] = cloudAcc.id;
+    }
+    if(!cloudAcc || JSON.stringify(cloudProg) !== JSON.stringify(mergedProg)){
+      changed = true;
     }
   });
+
+  const merged = {
+    app: APP_ID, version: 1,
+    updatedAt: cloud.updatedAt || null,
+    activeAccountId: STORE.activeAccountId,
+    accounts: mergedAccounts,
+    progress: mergedProgress,
+  };
+  if(merged.activeAccountId && idReassignments[merged.activeAccountId]){
+    merged.activeAccountId = idReassignments[merged.activeAccountId];
+  }
+  // keep the currently logged-in account (if any) pointing at valid data
+  // even if its canonical id changed during this merge
+  if(state.accountId && idReassignments[state.accountId]){
+    state.accountId = idReassignments[state.accountId];
+  }
+
   STORE = merged;
-  saveStore({ preserveUpdatedAt: true });
-  return mergeHappened;
+  saveStore({ preserveUpdatedAt: !changed });
+  return changed;
+}
+
+function syncSummaryMessage(prefix){
+  const accCount = STORE.accounts.length;
+  let totalAnswered = 0, totalMastered = 0;
+  STORE.accounts.forEach(a=>{
+    const p = STORE.progress[a.id];
+    if(!p) return;
+    totalMastered += masteredCount(p);
+    Object.values(p.items||{}).forEach(it=>{ totalAnswered += (it.totalCorrect||0) + (it.totalWrong||0); });
+  });
+  return `${prefix}（${accCount}人・出題済み${totalAnswered}・習得${totalMastered}）`;
 }
 
 // Push-only: used for the deterministic "local just changed" triggers
-// (session finished, import replaced data) where local is unambiguously
-// the freshest copy and a full pull/merge would be the wrong move.
+// (session finished, import replaced data, account added/deleted) where
+// local is unambiguously the freshest copy and a full pull/merge would be
+// the wrong move.
 async function pushOnly(){
   const cfg = loadSyncConfig();
   if(!cfg) return;
@@ -1212,7 +1345,7 @@ async function pushOnly(){
   }catch(e){ handleSyncError(e); }
 }
 
-// Full pull + win/lose merge, per addendum §5.
+// Full pull + always-merge, per addendum v1.2 §5.
 async function doSync(){
   const cfg = loadSyncConfig();
   if(!cfg) return;
@@ -1224,24 +1357,28 @@ async function doSync(){
 
     if(!cloudData){
       await pushToCloud(cfg, STORE);
-    } else if(!localHas && cloudHas){
-      const merged = adoptCloud(cloudData);
-      if(merged) await pushToCloud(cfg, STORE);
-    } else if(localHas && !cloudHas){
-      await pushToCloud(cfg, STORE);
-    } else if(localHas && cloudHas){
-      const localTime = STORE.updatedAt ? new Date(STORE.updatedAt).getTime() : 0;
-      const cloudTime = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : 0;
-      if(cloudTime > localTime){
-        const merged = adoptCloud(cloudData);
-        if(merged) await pushToCloud(cfg, STORE);
-      } else {
-        await pushToCloud(cfg, STORE);
-      }
+      cfg.lastSync = nowIso(); saveSyncConfig(cfg);
+      setSyncStatus("success", localHas ? "☁ クラウドに進捗が無かったので送りました" : "☁✓ クラウド保存ずみ");
+      return;
     }
+    if(!localHas && cloudHas){
+      mergeWithCloud(cloudData);
+      cfg.lastSync = nowIso(); saveSyncConfig(cfg);
+      setSyncStatus("success", syncSummaryMessage("☁✓ クラウドから取り込みました"));
+      return;
+    }
+    if(localHas && !cloudHas){
+      await pushToCloud(cfg, STORE);
+      cfg.lastSync = nowIso(); saveSyncConfig(cfg);
+      setSyncStatus("success", "☁ クラウドに進捗が無かったので送りました");
+      return;
+    }
+    // both sides have records -> always merge, never let one side just clobber the other
+    const changed = mergeWithCloud(cloudData);
+    if(changed) await pushToCloud(cfg, STORE);
     cfg.lastSync = nowIso();
     saveSyncConfig(cfg);
-    setSyncStatus("success", "☁✓ クラウド保存ずみ");
+    setSyncStatus("success", syncSummaryMessage("☁✓ クラウドと合流しました"));
   }catch(e){ handleSyncError(e); }
 }
 
@@ -1274,10 +1411,10 @@ function handleImportFile(file){
       render();
       return;
     }
-    const importedAccounts = Array.isArray(parsed.accounts) ? parsed.accounts : Object.keys(parsed.progress || {});
-    const accountSummaries = importedAccounts.map(name=>{
-      const acc = parsed.progress && parsed.progress[name];
-      const has = acc && dbHasRecords({ progress: { [name]: acc } });
+    parsed = upgradeToIdSchema(parsed); // accept exports made before the id-based schema too
+    const accountSummaries = parsed.accounts.map(({id, name})=>{
+      const acc = parsed.progress && parsed.progress[id];
+      const has = acc && dbHasRecords({ progress: { [id]: acc } });
       return `${name}：${has ? "記録あり" : "記録なし"}`;
     }).join(" / ");
     state.modal = {
@@ -1297,6 +1434,10 @@ function confirmImportReplace(){
   STORE.app = APP_ID;
   saveStore(); // updatedAt refreshed -- this is now a fresh local change
   state.modal = null;
+  if(state.accountId && !findAccountById(state.accountId)){
+    state.accountId = null;
+    state.screen = "login";
+  }
   render();
   pushOnly(); // spec: push right after an import replace
 }
@@ -1320,8 +1461,8 @@ function buildFullKpList(){
     "過去の誤答内容","最終誤答日","習得日",
   ];
   const rows = [];
-  STORE.accounts.forEach(name=>{
-    const acc = STORE.progress[name] || blankAccountProgress();
+  STORE.accounts.forEach(({id, name})=>{
+    const acc = STORE.progress[id] || blankAccountProgress();
     DATA.forEach((d,idx)=>{
       const [item, year] = d;
       const s = acc.items[idx];
@@ -1343,17 +1484,9 @@ async function exportListToDrive(){
   if(!cfg) return;
   setSyncStatus("pending", "☁… 一覧を書き出し中");
   try{
-    // anti-empty-overwrite: always pull the latest first
+    // anti-empty-overwrite: always pull (and merge) the latest first
     const cloudData = await pullFromCloud(cfg);
-    const localHas = dbHasRecords(STORE);
-    const cloudHas = dbHasRecords(cloudData);
-    if(!localHas && cloudHas){
-      adoptCloud(cloudData);
-    } else if(localHas && cloudHas){
-      const localTime = STORE.updatedAt ? new Date(STORE.updatedAt).getTime() : 0;
-      const cloudTime = cloudData.updatedAt ? new Date(cloudData.updatedAt).getTime() : 0;
-      if(cloudTime > localTime) adoptCloud(cloudData);
-    }
+    if(cloudData) mergeWithCloud(cloudData);
     if(!dbHasRecords(STORE)){
       state.modal = { type: "listBlocked" };
       setSyncStatus("idle", "");
@@ -1511,12 +1644,13 @@ function renderModalOverlay(){
   }
 
   if(m.type === 'deleteAccountConfirm'){
-    const acc = STORE.progress[m.name] || blankAccountProgress();
-    const hasRecords = dbHasRecords({ progress: { [m.name]: acc } });
+    const acc = STORE.progress[m.id] || blankAccountProgress();
+    const hasRecords = dbHasRecords({ progress: { [m.id]: acc } });
+    const sessionCount = (acc.sessions || []).length;
     overlay.innerHTML = `
       <div class="modal-box">
         <h3>「${m.name}」を削除しますか？</h3>
-        <p>挑戦回数：${acc.quizzesTaken || 0}回${hasRecords ? '<br><b style="color:var(--shuiro);">この操作は元に戻せません。学習の記録もすべて削除されます。</b>' : '（記録はまだありません）'}</p>
+        <p>挑戦回数：${sessionCount}回${hasRecords ? '<br><b style="color:var(--shuiro);">この操作は元に戻せません。学習の記録もすべて削除されます。</b>' : '（記録はまだありません）'}</p>
         <div class="modal-btn-row">
           <button class="sync-btn warn" id="deleteAccountConfirmBtn">削除する</button>
           <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
@@ -1524,7 +1658,7 @@ function renderModalOverlay(){
       </div>
     `;
     document.getElementById('deleteAccountConfirmBtn').onclick = ()=>{
-      deleteAccount(m.name);
+      deleteAccount(m.id);
       state.modal = null;
       render();
     };
@@ -1548,8 +1682,8 @@ function renderScreen(){
         <div class="avatar-grid">
           ${STORE.accounts.map(a=>`
             <div class="avatar-tile">
-              <button class="avatar-delete-btn" data-name="${a}" title="このアカウントを削除">✕</button>
-              <button class="avatar-btn" data-name="${a}">${a}<span class="kana">タップして開始</span></button>
+              <button class="avatar-delete-btn" data-id="${a.id}" data-name="${a.name}" title="このアカウントを削除">✕</button>
+              <button class="avatar-btn" data-id="${a.id}">${a.name}<span class="kana">タップして開始</span></button>
             </div>
           `).join("")}
           <div class="avatar-tile">
@@ -1560,7 +1694,9 @@ function renderScreen(){
     `;
     app.querySelectorAll('.avatar-btn').forEach(btn=>{
       btn.onclick = ()=>{
-        state.account = btn.dataset.name;
+        state.accountId = btn.dataset.id;
+        STORE.activeAccountId = btn.dataset.id;
+        saveStore();
         state.screen = "home";
         render();
       };
@@ -1568,7 +1704,7 @@ function renderScreen(){
     app.querySelectorAll('.avatar-delete-btn').forEach(btn=>{
       btn.onclick = (e)=>{
         e.stopPropagation();
-        state.modal = { type: "deleteAccountConfirm", name: btn.dataset.name };
+        state.modal = { type: "deleteAccountConfirm", id: btn.dataset.id, name: btn.dataset.name };
         render();
       };
     });
@@ -1580,12 +1716,12 @@ function renderScreen(){
   }
 
   accountBar.style.display = "flex";
-  document.getElementById('accountNamePill').textContent = state.account;
+  document.getElementById('accountNamePill').textContent = accountName(state.accountId);
   document.getElementById('switchAccountBtn').onclick = ()=>{
     if(!confirmLeaveSession()) return;
     state.session = null;
     state.screen = "login";
-    state.account = null;
+    state.accountId = null;
     render();
   };
 
@@ -1625,7 +1761,7 @@ function renderEraBars(progress){
 
 function renderHome(app){
   renderTimelineMap(null);
-  const progress = getCommittedStats(state.account);
+  const progress = getCommittedStats(state.accountId);
   const syncCfg = loadSyncConfig();
   const totalAnswered = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect+s.totalWrong,0);
   const totalCorrect = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect,0);
@@ -1657,10 +1793,10 @@ function renderHome(app){
   app.innerHTML = `
     <div class="card center-card">
       ${!LOCAL_STORAGE_OK ? renderStorageWarning() : ''}
-      <div class="qtype-tag">${state.account} さんの成績</div>
-      <div class="question-text">${state.account} さん、ようこそ</div>
+      <div class="qtype-tag">${accountName(state.accountId)} さんの成績</div>
+      <div class="question-text">${accountName(state.accountId)} さん、ようこそ</div>
       <div class="stat-grid">
-        <div class="stat-box"><div class="num">${progress.quizzesTaken||0}</div><div class="label">挑戦回数</div></div>
+        <div class="stat-box"><div class="num">${(progress.sessions||[]).length}</div><div class="label">挑戦回数</div></div>
         <div class="stat-box"><div class="num">${overallPct}%</div><div class="label">全体正解率</div></div>
         <div class="stat-box"><div class="num">${sourcePool}</div><div class="label">出題元数</div></div>
         <div class="stat-box"><div class="num">${mastered}</div><div class="label">復習不要数</div></div>
@@ -1717,7 +1853,7 @@ function renderHome(app){
   document.getElementById('lenBtn20').onclick = ()=>{ startSession("20q"); render(); };
   document.getElementById('lenBtnAll').onclick = ()=>{ startSession("all"); render(); };
   document.getElementById('favBtn').onclick = ()=>{ state.screen = "favorites"; render(); };
-  document.getElementById('csvBtn').onclick = ()=>exportCsv(state.account);
+  document.getElementById('csvBtn').onclick = ()=>exportCsv(state.accountId);
 
   document.getElementById('exportJsonBtn').onclick = exportJsonDb;
   const importInput = document.getElementById('importJsonFile');
@@ -1942,7 +2078,7 @@ function renderResult(app){
   else if(pct>=50) comment = "半分以上正解！この調子で復習を";
   else comment = "語呂合わせを見直してもう一度挑戦しよう";
 
-  const progress = getCommittedStats(state.account);
+  const progress = getCommittedStats(state.accountId);
   const wrongEntries = sess.log.filter(l=>!l.correct);
   const reviewHtml = wrongEntries.length ? wrongEntries.map(l=>{
     const d = DATA[l.dataIdx];
@@ -1958,7 +2094,7 @@ function renderResult(app){
   const eraFilterOptions = ['すべて', ...ERA_BOUNDARIES.map(e=>e[1])];
   app.innerHTML = `
     <div class="card center-card">
-      <div class="qtype-tag">${state.account} さんの結果（${sess.mode==='all'?'全問モード':sess.mode==='10q'?'10問モード':'20問モード'}）</div>
+      <div class="qtype-tag">${accountName(state.accountId)} さんの結果（${sess.mode==='all'?'全問モード':sess.mode==='10q'?'10問モード':'20問モード'}）</div>
       <div class="result-score">${sess.score}<span> / ${total} 問正解</span></div>
       <div class="result-comment">${comment}</div>
       <div class="result-comment" style="color:var(--moss);">今回新しく習得：${sess.newlyMastered.size}問</div>
@@ -1988,7 +2124,7 @@ function renderResult(app){
     state.screen = "home";
     render();
   };
-  document.getElementById('csvBtnResult').onclick = ()=>exportCsv(state.account);
+  document.getElementById('csvBtnResult').onclick = ()=>exportCsv(state.accountId);
   app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
     btn.onclick = ()=>{
       const nowFav = toggleFavorite(Number(btn.dataset.idx));
@@ -2035,7 +2171,7 @@ function renderResult(app){
 
 function renderFavorites(app){
   renderTimelineMap(null);
-  const progress = getCommittedStats(state.account);
+  const progress = getCommittedStats(state.accountId);
   const favIdxs = Object.keys(progress.items).map(Number).filter(idx=>progress.items[idx].favorite).sort((a,b)=>DATA[a][1]-DATA[b][1]);
   const listHtml = favIdxs.length ? favIdxs.map(idx=>{
     const d = DATA[idx];
@@ -2048,7 +2184,7 @@ function renderFavorites(app){
   }).join("") : `<div class="fav-empty">まだお気に入りはありません。クイズ中に★ボタンで登録できます。</div>`;
   app.innerHTML = `
     <div class="card">
-      <div class="qtype-tag">${state.account} さんのお気に入り</div>
+      <div class="qtype-tag">${accountName(state.accountId)} さんのお気に入り</div>
       <div class="question-text">忘れそう・気になる問題</div>
       <div class="review-list">${listHtml}</div>
       <div class="btn-row"><button class="ghost-btn" id="backHomeBtn">成績ページにもどる</button></div>
