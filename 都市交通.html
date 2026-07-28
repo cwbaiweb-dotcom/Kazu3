@@ -778,16 +778,77 @@ let VIEW=null, viewingHistory=false, histIdx=0;  // 「前の問題を見る」�
 /* ============ アカウント（プロフィール）機能 ============ */
 const APP='kj-quiz-shakai-toshikoutsu';   // ツール識別子（変更不可）
 const TOOL_NAME='日本の都市と交通クイズ';
-const DBKEY='koutsuQuiz_profiles_v1';
+const DBKEY_OLD='koutsuQuiz_profiles_v1'; // 旧localStorageキー（移行元）
 let STORE_OK=true;
 try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); }catch(e){ STORE_OK=false; }
 let DB={app:APP, updatedAt:'', activeId:null, users:{}};
-function loadDB(){ if(!STORE_OK) return; try{ const s=localStorage.getItem(DBKEY); if(s) DB=JSON.parse(s); }catch(e){} DB.app=APP; DB.users=DB.users||{}; normalizeUsers(); }
+function freshDB(){ return {app:APP, updatedAt:'', activeId:null, users:{}}; }
+function slashFromISO(iso){ if(!iso) return ''; const d=new Date(iso); if(isNaN(d)) return ''; return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
+
+// 内部モデル → v1.0§9スキーマ（保存・同期に使う形）
+function toSchema9(D){
+  const out={app:APP, version:1, updatedAt:D.updatedAt||new Date().toISOString(),
+    activeAccountId:D.activeId||null, accounts:[], progress:{}};
+  Object.values(D.users||{}).forEach(u=>{
+    out.accounts.push({id:u.id, name:u.name, createdAt:u.createdAt||'', pin:u.pin||'',
+      bestStreak:(u.stats&&u.stats.bestStreak)||0, login:u.login||{last:'',streak:0}});
+    const items={};
+    const kset=new Set([].concat(Object.keys(u.prog||{}),Object.keys(u.masteredKP||{}),Object.keys(u.miss||{}),Object.keys(u.seen||{})));
+    kset.forEach(kid=>{
+      const p=u.prog[kid]||{};
+      items[kid]={ streak:0, mastered:!!(u.masteredKP&&u.masteredKP[kid]), masteredAt:p.mAt||null, lastFormat:null,
+        totalCorrect:p.c||0, totalWrong:(p.w||0)||(u.miss&&u.miss[kid])||0,
+        byFormat:{A:{correct:p.cA||0,wrong:p.wA||0}, B:{correct:p.cB||0,wrong:p.wB||0}},
+        wrongLog:(p.wrongLog||[]).slice(-20), lastSeenAt:p.lastSeenAt|| (u.seen&&u.seen[kid]?'':null) };
+    });
+    out.progress[u.id]={items, sessions:(u.sessions||[]).slice(-100), fav:u.fav||{}};
+  });
+  return out;
+}
+// v1.0§9スキーマ → 内部モデル（stats/cats/miss/seen/masteredKP は導出）
+function fromSchema9(s){
+  const D={app:APP, updatedAt:s.updatedAt||'', activeId:s.activeAccountId||null, users:{}};
+  (s.accounts||[]).forEach(a=>{
+    const pg=(s.progress&&s.progress[a.id])||{items:{},sessions:[],fav:{}};
+    const u={ id:a.id, name:a.name, pin:a.pin||'', createdAt:a.createdAt||'',
+      stats:{answered:0,correct:0,bestStreak:a.bestStreak||0}, cats:{},
+      masteredKP:{}, miss:{}, seen:{}, fav:pg.fav||{}, prog:{}, sessions:(pg.sessions||[]).slice(),
+      login:a.login||{last:'',streak:0} };
+    Object.keys(pg.items||{}).forEach(kid=>{
+      const it=pg.items[kid]||{}; const bf=it.byFormat||{A:{},B:{}};
+      const tc=it.totalCorrect||0, tw=it.totalWrong||0;
+      u.prog[kid]={ c:tc, w:tw,
+        cA:(bf.A&&bf.A.correct)||0, wA:(bf.A&&bf.A.wrong)||0,
+        cB:(bf.B&&bf.B.correct)||0, wB:(bf.B&&bf.B.wrong)||0,
+        wrongLog:(it.wrongLog||[]).slice(), mAt:it.masteredAt||'', mday: it.masteredAt?slashFromISO(it.masteredAt):'',
+        lwrong: (it.wrongLog&&it.wrongLog.length)?slashFromISO(it.wrongLog[it.wrongLog.length-1].at):'', lastSeenAt:it.lastSeenAt||'' };
+      if(it.mastered) u.masteredKP[kid]=true;
+      if(tw>0) u.miss[kid]=tw;
+      if(it.lastSeenAt || tc+tw>0) u.seen[kid]=true;
+      u.stats.answered+=tc+tw; u.stats.correct+=tc;
+      const cid=KP[kid]?KP[kid].cid:null;
+      if(cid!=null){ const c=(u.cats[cid]=u.cats[cid]||{ok:0,total:0}); c.ok+=tc; c.total+=tc+tw; }
+    });
+    D.users[a.id]=u;
+  });
+  return D;
+}
+function loadDB(){
+  if(!STORE_OK){ DB=freshDB(); return; }
+  let raw=null; try{ raw=localStorage.getItem(APP); }catch(e){}
+  if(raw){ try{ DB=fromSchema9(JSON.parse(raw)); }catch(e){ DB=freshDB(); } }
+  else {
+    let old=null; try{ old=localStorage.getItem(DBKEY_OLD); }catch(e){}
+    if(old){ try{ const o=JSON.parse(old); DB={app:APP, updatedAt:o.updatedAt||'', activeId:o.activeId||null, users:o.users||{}}; }catch(e){ DB=freshDB(); } }
+    else DB=freshDB();
+  }
+  DB.app=APP; DB.users=DB.users||{}; normalizeUsers();
+}
 // skipStamp=true のときは updatedAt を上書きしない（クラウドから取り込んだデータの保存時）
 function saveDB(skipStamp){
   DB.app=APP;
   if(!skipStamp) DB.updatedAt=new Date().toISOString();
-  if(STORE_OK){ try{ localStorage.setItem(DBKEY, JSON.stringify(DB)); }catch(e){} }
+  if(STORE_OK){ try{ localStorage.setItem(APP, JSON.stringify(toSchema9(DB))); }catch(e){} }
   if(!skipStamp) schedulePush();   // ローカル変更 → クラウドへ（設定済みのとき）
 }
 function activeUser(){ return DB.activeId ? DB.users[DB.activeId] : null; }
@@ -805,22 +866,33 @@ function touchLogin(u){
 }
 function newUser(name,pin){
   const id='u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  return {id, name:name, pin:pin||'', createdAt:fmtDate(0),
+  return {id, name:name, pin:pin||'', createdAt:new Date().toISOString(),
     stats:{answered:0,correct:0,bestStreak:0},
-    cats:{}, masteredKP:{}, miss:{}, seen:{}, fav:{}, prog:{}, login:{last:'',streak:0}};
+    cats:{}, masteredKP:{}, miss:{}, seen:{}, fav:{}, prog:{}, sessions:[], login:{last:'',streak:0}};
 }
 function normalizeUsers(){
   Object.values(DB.users).forEach(u=>{
     u.stats=u.stats||{answered:0,correct:0,bestStreak:0};
     u.cats=u.cats||{};
     u.masteredKP=u.masteredKP||{}; u.miss=u.miss||{}; u.seen=u.seen||{}; u.fav=u.fav||{};
-    u.prog=u.prog||{};   // KPごとの詳細記録
+    u.prog=u.prog||{}; u.sessions=u.sessions||[];
     u.login=u.login||{last:'',streak:0};
+    // prog エントリの新フィールドを補完（旧 log[] → wrongLog[] へ移行）
+    Object.keys(u.prog).forEach(kid=>{
+      const p=u.prog[kid];
+      if(p.cA==null) p.cA=0; if(p.cB==null) p.cB=0;
+      if(p.wA==null) p.wA=0; if(p.wB==null) p.wB=0;
+      if(!p.wrongLog){ p.wrongLog = (p.log||[]).map(a=>({at:'',format:'',answered:a})); }
+      delete p.log;
+      if(p.mAt==null) p.mAt='';
+      if(p.lastSeenAt==null) p.lastSeenAt='';
+      if(p.mday==null) p.mday=''; if(p.lwrong==null) p.lwrong='';
+    });
   });
 }
 // 知識ポイントごとの記録エントリ
 function progOf(u,kpId){
-  return (u.prog[kpId] = u.prog[kpId] || {c:0,w:0,wA:0,wB:0,log:[],mday:'',lwrong:''});
+  return (u.prog[kpId] = u.prog[kpId] || {c:0,w:0,cA:0,wA:0,cB:0,wB:0,wrongLog:[],mday:'',mAt:'',lwrong:'',lastSeenAt:''});
 }
 
 /* ============ クラウド同期（Google Drive / GAS）============ */
@@ -833,17 +905,22 @@ function loadSync(){ try{ const s=localStorage.getItem(SYNCKEY); if(s) syncCfg=O
 function saveSync(){ try{ localStorage.setItem(SYNCKEY, JSON.stringify(syncCfg)); }catch(e){} }
 function syncOn(){ return !!(syncCfg && syncCfg.url); }
 
-function dbHasRecords(d){
-  if(!d || !d.users) return false;
-  return Object.values(d.users).some(u=>{
-    if(u.stats && u.stats.answered>0) return true;
-    if(u.prog && Object.values(u.prog).some(p=>((p.c||0)+(p.w||0))>0)) return true;
-    if(u.masteredKP && Object.keys(u.masteredKP).length>0) return true;
-    if(u.miss && Object.keys(u.miss).length>0) return true;
-    return false;
-  });
+// §9(progress) でも内部(users)でも判定可（sessions≥1 または item に正誤>0）
+function dbHasRecords(x){
+  if(!x) return false;
+  if(x.progress){
+    return Object.values(x.progress).some(pg=>
+      (pg.sessions&&pg.sessions.length>0) ||
+      (pg.items&&Object.values(pg.items).some(it=>((it.totalCorrect||0)+(it.totalWrong||0))>0)) );
+  }
+  if(x.users){
+    return Object.values(x.users).some(u=>
+      (u.sessions&&u.sessions.length>0) || (u.stats&&u.stats.answered>0) ||
+      (u.prog&&Object.values(u.prog).some(p=>((p.c||0)+(p.w||0))>0)) );
+  }
+  return false;
 }
-function backupLocal(){ try{ localStorage.setItem(BACKUPKEY, JSON.stringify(DB)); }catch(e){} }
+function backupLocal(){ try{ localStorage.setItem(BACKUPKEY, JSON.stringify(toSchema9(DB))); }catch(e){} }
 
 function setSyncStatus(msg, kind){   // kind: ok / err / proc
   const el=document.getElementById('syncStatus'); if(!el) return;
@@ -871,7 +948,7 @@ async function pushCloud(){
   let res;
   try{
     res=await fetch(syncCfg.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({key:syncCfg.key, data:DB})});
+      body:JSON.stringify({key:syncCfg.key, data:toSchema9(DB)})});   // §9スキーマで送る（sessions[]含む）
   }catch(e){ setSyncStatus('☁ オフライン（ローカルには保存済み）','err'); return false; }
   let j; try{ j=JSON.parse(await res.text()); }catch(e){ setSyncStatus(GAS_BAD,'err'); return false; }
   if(!j.ok){ setSyncStatus(mapSyncError(j.error),'err'); return false; }
@@ -880,21 +957,88 @@ async function pushCloud(){
   return true;
 }
 
-// クラウド採用（ローカルにしかないアカウントは名前で合流・採用前にバックアップ）
-function adoptCloud(cloud){
-  backupLocal();
-  const activeName = activeUser() ? activeUser().name : null;
-  const cloudNames = new Set(Object.values(cloud.users||{}).map(u=>u.name));
-  let merged=false;
-  Object.values(DB.users||{}).forEach(lu=>{
-    if(!cloudNames.has(lu.name)){ cloud.users[lu.id]=lu; merged=true; }  // ローカル限定アカウントを残す
+// 項目マージ（数値は大きい方・masteredは論理和・wrongLogは統合）
+function mergeItemProg(a,b){
+  const g=(x,y)=>Math.max(x||0,y||0);
+  a.c=g(a.c,b.c); a.w=g(a.w,b.w);
+  a.cA=g(a.cA,b.cA); a.wA=g(a.wA,b.wA); a.cB=g(a.cB,b.cB); a.wB=g(a.wB,b.wB);
+  if(b.mAt && (!a.mAt || b.mAt<a.mAt)) a.mAt=b.mAt;
+  if(a.mAt) a.mday=slashFromISO(a.mAt);
+  if((b.lastSeenAt||'')>(a.lastSeenAt||'')) a.lastSeenAt=b.lastSeenAt;
+  // wrongLog 統合（at+answeredで重複排除・最新20件）
+  const logs=[].concat(a.wrongLog||[], b.wrongLog||[]);
+  const seen=new Set(), uniq=[];
+  logs.forEach(l=>{ const k=(l.at||'')+'|'+(l.answered||''); if(!seen.has(k)){ seen.add(k); uniq.push(l);} });
+  uniq.sort((x,y)=>((x.at||'')<(y.at||'')?-1:1));
+  a.wrongLog=uniq.slice(-20);
+  a.lwrong = a.wrongLog.length?slashFromISO(a.wrongLog[a.wrongLog.length-1].at):a.lwrong;
+}
+// クラウドユーザー(cu)をローカルユーザー(lu)へ統合
+function mergeUserInto(lu, cu){
+  Object.keys(cu.prog||{}).forEach(kid=>{
+    if(!lu.prog[kid]) lu.prog[kid]=cu.prog[kid];
+    else mergeItemProg(lu.prog[kid], cu.prog[kid]);
   });
-  DB = cloud; DB.app=APP; DB.users=DB.users||{};
+  Object.keys(cu.masteredKP||{}).forEach(k=>{ if(cu.masteredKP[k]) lu.masteredKP[k]=true; });
+  Object.keys(cu.fav||{}).forEach(k=>{ if(cu.fav[k]) lu.fav[k]=true; });
+  // sessions 統合（finishedAtで重複排除・最新100件）
+  const seen=new Set((lu.sessions||[]).map(s=>s.finishedAt));
+  (cu.sessions||[]).forEach(s=>{ if(!seen.has(s.finishedAt)){ lu.sessions.push(s); seen.add(s.finishedAt); } });
+  lu.sessions.sort((a,b)=>((a.finishedAt||'')<(b.finishedAt||'')?-1:1));
+  if(lu.sessions.length>100) lu.sessions=lu.sessions.slice(-100);
+  // login は連続日数の大きい方
+  if((cu.login&&cu.login.streak||0)>(lu.login&&lu.login.streak||0)) lu.login=cu.login;
+  if(!lu.pin && cu.pin) lu.pin=cu.pin;
+}
+// stats/cats/miss/seen を prog から再計算
+function recomputeUser(u){
+  u.stats.answered=0; u.stats.correct=0; u.cats={};
+  Object.keys(u.prog).forEach(kid=>{
+    const p=u.prog[kid]; const tc=p.c||0, tw=p.w||0;
+    u.stats.answered+=tc+tw; u.stats.correct+=tc;
+    if(tw>0) u.miss[kid]=tw; else delete u.miss[kid];
+    if(p.lastSeenAt || tc+tw>0) u.seen[kid]=true;
+    const cid=KP[kid]?KP[kid].cid:null;
+    if(cid!=null){ const c=(u.cats[cid]=u.cats[cid]||{ok:0,total:0}); c.ok+=tc; c.total+=tc+tw; }
+  });
+}
+// canonical化（変更検出用）
+function canonS9(s){
+  const o={app:s.app,accounts:(s.accounts||[]).slice().sort((a,b)=>a.name<b.name?-1:1).map(a=>({id:a.id,name:a.name})),progress:{}};
+  Object.keys(s.progress||{}).sort().forEach(id=>{
+    const pg=s.progress[id]; const items={};
+    Object.keys(pg.items||{}).sort().forEach(k=>{ const it=pg.items[k];
+      items[k]={m:!!it.mastered,tc:it.totalCorrect||0,tw:it.totalWrong||0,
+        a:(it.byFormat&&it.byFormat.A)||{},b:(it.byFormat&&it.byFormat.B)||{},wl:(it.wrongLog||[]).length}; });
+    o.progress[id]={items, sessions:(pg.sessions||[]).map(x=>x.finishedAt).sort(), fav:Object.keys(pg.fav||{}).sort()};
+  });
+  return JSON.stringify(o);
+}
+// 合流（§5-3）：クラウド(§9)を内部へ統合。ローカルが何か足していれば true
+function mergeCloud(cloud9){
+  backupLocal();
+  const cloud=fromSchema9(cloud9);   // 内部モデル化
+  const localByName={}; Object.values(DB.users).forEach(u=>localByName[u.name]=u);
+  const activeName = activeUser()?activeUser().name:null;
+  Object.values(cloud.users).forEach(cu=>{
+    const lu=localByName[cu.name];
+    if(!lu){ DB.users[cu.id]=cu; localByName[cu.name]=cu; }   // クラウド限定アカウントを追加
+    else mergeUserInto(lu, cu);
+  });
   if(activeName){ const f=Object.values(DB.users).find(u=>u.name===activeName); if(f) DB.activeId=f.id; }
-  if(!DB.activeId || !DB.users[DB.activeId]){ const ids=Object.keys(DB.users); DB.activeId=ids[0]||null; }
+  if(!DB.activeId || !DB.users[DB.activeId]){ const k=Object.keys(DB.users); DB.activeId=k[0]||null; }
   normalizeUsers();
-  saveDB(true);          // 取り込み保存（updatedAtは据え置き）
-  return merged;
+  Object.values(DB.users).forEach(recomputeUser);
+  DB.updatedAt = cloud9.updatedAt || DB.updatedAt;   // 変わらなければクラウドのupdatedAtを維持
+  const changed = canonS9(toSchema9(DB)) !== canonS9(cloud9);
+  saveDB(true);      // 取り込み保存（updatedAtは据え置き）
+  return changed;
+}
+function mergeSummary(){
+  const accs=Object.values(DB.users);
+  let seen=0, mastered=0;
+  accs.forEach(u=>{ seen+=Object.keys(u.seen||{}).length; mastered+=Object.keys(u.masteredKP||{}).length; });
+  return `${accs.length}人・出題済み${seen}・習得${mastered}`;
 }
 
 async function pullCloud(manual){
@@ -907,21 +1051,15 @@ async function pullCloud(manual){
   if(!j.ok){ setSyncStatus(mapSyncError(j.error),'err'); return; }
   const cloud=j.data;
   const localHas=dbHasRecords(DB), cloudHas=dbHasRecords(cloud);
-  let msg='☁✓ 同期しました';
-  if(!cloud){                                   // クラウド空 → push
-    await pushCloud(); renderAll(); return;
-  }
-  if(!localHas && cloudHas){                     // ローカル空・クラウド有 → 無条件採用
-    const m=adoptCloud(cloud); if(m) await pushCloud(); msg='☁✓ クラウドから取り込みました';
+  let msg;
+  if(!cloud){                                    // クラウド空 → push
+    await pushCloud(); msg='☁ クラウドに進捗が無かったので送りました';
   } else if(localHas && !cloudHas){              // ローカル有・クラウド空 → push
-    await pushCloud(); msg='☁✓ この端末の記録をアップしました';
-  } else if(localHas && cloudHas){               // 両方有 → updatedAtの新しい方
-    const cu=cloud.updatedAt||'', lu=DB.updatedAt||'';
-    if(cu>lu){ const m=adoptCloud(cloud); if(m) await pushCloud(); msg='☁✓ クラウド（新しい方）を採用しました'; }
-    else if(cu<lu){ await pushCloud(); msg='☁✓ この端末（新しい方）をアップしました'; }
-    else { msg='☁✓ 同期済み（変更なし）'; }
-  } else {                                        // 両方記録なし
-    await pushCloud();
+    await pushCloud(); msg='☁ クラウドに進捗が無かったので送りました';
+  } else {                                        // それ以外は必ず「合流」（§5-3）
+    const changed=mergeCloud(cloud);
+    if(changed) await pushCloud();
+    msg=`☁✓ クラウドと合流しました（${mergeSummary()}）`;
   }
   syncCfg.lastSync=new Date().toISOString(); saveSync();
   setSyncStatus(`${msg}｜最終同期 ${fmtStamp(syncCfg.lastSync)}`,'ok');
@@ -982,7 +1120,7 @@ function clearSync(){
 
 /* ---- 書き出し / 読み込み ---- */
 function exportJSON(){
-  const blob=new Blob([JSON.stringify(DB)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify(toSchema9(DB))],{type:'application/json'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
   const d=new Date(); const ymd=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
   a.href=url; a.download=`${TOOL_NAME}記録_${ymd}.json`;
@@ -999,7 +1137,9 @@ function importJSON(input){
     let data; try{ data=JSON.parse(reader.result); }catch(e){ alert('JSONの読み込みに失敗しました。'); return; }
     if(!data || data.app!==APP){ alert('このツールの記録ファイルではありません（app不一致）。'); return; }
     _importData=data;
-    const names=Object.values(data.users||{}).map(u=>u.name).join('、')||'（アカウントなし）';
+    const nameArr = data.accounts ? (data.accounts||[]).map(a=>a.name)   // §9
+                                  : Object.values(data.users||{}).map(u=>u.name); // 旧内部
+    const names=nameArr.join('、')||'（アカウントなし）';
     const when=data.updatedAt?fmtStamp(data.updatedAt):'不明';
     openModal(`
       <h3>📥 記録を読み込む</h3>
@@ -1015,7 +1155,9 @@ function importJSON(input){
 function doImport(){
   if(!_importData){ closeModal(); return; }
   backupLocal();
-  DB=_importData; DB.app=APP; DB.users=DB.users||{};
+  DB = _importData.accounts ? fromSchema9(_importData)       // §9
+        : {app:APP, updatedAt:_importData.updatedAt||'', activeId:_importData.activeId||null, users:_importData.users||{}}; // 旧内部
+  DB.app=APP; DB.users=DB.users||{};
   if(!DB.activeId || !DB.users[DB.activeId]){ const ids=Object.keys(DB.users); DB.activeId=ids[0]||null; }
   normalizeUsers();
   saveDB();                 // 置換 → updatedAt更新 ＋ push
@@ -1039,10 +1181,11 @@ function buildListPayload(){
   Object.values(DB.users).forEach(u=>{
     CATS.forEach(c=>{
       KPS_BY_CAT[c.id].forEach(id=>{
-        const kp=KP[id]; const pr=u.prog[id]||{c:0,w:0,wA:0,wB:0,log:[],mday:'',lwrong:''};
+        const kp=KP[id]; const pr=u.prog[id]||{c:0,w:0,wA:0,wB:0,wrongLog:[],mday:'',lwrong:''};
+        const wrongTxt=(pr.wrongLog||[]).map(w=>w.answered).filter(Boolean).join(';');
         rows.push([ u.name, kp.cat, '', kp.term, kp.reading||'', '',
           statusOf(u,id), pr.c||0, pr.w||0, pr.wA||0, pr.wB||0,
-          (pr.log||[]).join(';'), pr.lwrong||'', pr.mday||'' ]);
+          wrongTxt, pr.lwrong||'', pr.mday||'' ]);
       });
     });
   });
@@ -1171,7 +1314,7 @@ function toggleFav(){
 function startFavReview(){
   const ids=favIds();
   if(ids.length===0){ alert('お気に入りはまだありません。問題の右上の「☆ お気に入り」で登録してね。'); return; }
-  beginSession(shuffle(ids.slice()), true);
+  beginSession(shuffle(ids.slice()), true, false, 'お気に入り');
 }
 
 /* ---- プロフィール画面 ---- */
@@ -1358,7 +1501,7 @@ function downloadList(){
 function startReview(){
   const ids=reviewKpIds();
   if(ids.length===0){ alert('復習する苦手はありません。'); return; }
-  beginSession(shuffle(ids.slice()), true);
+  beginSession(shuffle(ids.slice()), true, false, '苦手復習');
 }
 
 // 開始画面のカテゴリー生成
@@ -1398,7 +1541,7 @@ function startQuiz(){
   const u=activeUser();
   if(quizLen===0){
     // 「すべて」＝力だめしテスト：えらんだ分野の全語を1語1問ずつ（習得済みも含む）
-    beginSession(shuffle(ids.slice()), false, true);
+    beginSession(shuffle(ids.slice()), false, true, '全問');
     return;
   }
   // 練習モード：習得済みの語は出さない
@@ -1406,16 +1549,19 @@ function startQuiz(){
   if(ids.length===0){ alert('選んだ分野は、すべて習得済みです！🎉\nほかの分野を選ぶか、成績画面からリセットしてね。'); return; }
   ids=shuffle(ids.slice());
   const n = Math.min(quizLen, ids.length);
-  beginSession(ids.slice(0,n), false, false);
+  beginSession(ids.slice(0,n), false, false, n+'問');
 }
 
 /* ---- セッション・エンジン ---- */
-function beginSession(kpIds, review, test){
+function beginSession(kpIds, review, test, modeLabel){
+  const u=activeUser();
+  const startMastered = new Set(u ? Object.keys(u.masteredKP) : []);
   SESS={ kpIds:kpIds.slice(), items:{}, queue:shuffle(kpIds.slice()), qi:0,
     answered:0, correct:0, mastered:0, dropped:0, streak:0, best:0,
     perCat:{}, wrongList:[], review:!!review, test:!!test,
     totalKp:kpIds.length, totalQ:kpIds.length, current:null,
-    history:[], masteredThis:[], missThis:{}, seenThis:{}, events:[], committed:false };
+    history:[], masteredThis:[], missThis:{}, seenThis:{}, events:[], committed:false,
+    startedAt:new Date().toISOString(), startMastered, modeLabel: modeLabel || (test?'全問':(kpIds.length+'問')) };
   kpIds.forEach(id=>SESS.items[id]={streak:0, asked:0, lastKey:null, done:false, dropped:false});
   VIEW=null; viewingHistory=false; answered=false;
   showScreen('quiz');
@@ -1627,15 +1773,30 @@ function commitSession(){
   Object.keys(SESS.perCat).forEach(cid=>{ const p=SESS.perCat[cid]; const c=(u.cats[cid]=u.cats[cid]||{ok:0,total:0}); c.ok+=p.ok; c.total+=p.total; });
   Object.keys(SESS.seenThis).forEach(id=>{ u.seen[id]=true; });
   Object.keys(SESS.missThis).forEach(id=>{ u.miss[id]=(u.miss[id]||0)+SESS.missThis[id]; });
-  // KPごとの詳細記録（累計正解/誤答・形式A/B別・誤答内容ログ・最終誤答日）
-  const ds=todaySlash();
+  // KPごとの詳細記録（累計正解/誤答・形式A/B別の正誤・誤答内容ログ・最終誤答日・最終閲覧）
+  const ds=todaySlash(), nowISO=new Date().toISOString();
   SESS.events.forEach(ev=>{
     const pr=progOf(u, ev.kpId);
-    if(ev.correct){ pr.c++; }
-    else { pr.w++; if(ev.form==='A') pr.wA++; else pr.wB++; if(ev.chosen) pr.log.push(ev.chosen); pr.lwrong=ds; }
+    pr.lastSeenAt=nowISO;
+    if(ev.correct){ pr.c++; if(ev.form==='A') pr.cA=(pr.cA||0)+1; else pr.cB=(pr.cB||0)+1; }
+    else {
+      pr.w++; if(ev.form==='A') pr.wA++; else pr.wB++;
+      pr.wrongLog.push({at:nowISO, format:ev.form, answered:ev.chosen||''});
+      if(pr.wrongLog.length>20) pr.wrongLog=pr.wrongLog.slice(-20);
+      pr.lwrong=ds;
+    }
   });
   // 習得日
-  SESS.masteredThis.forEach(id=>{ u.masteredKP[id]=true; const pr=progOf(u,id); if(!pr.mday) pr.mday=ds; });
+  SESS.masteredThis.forEach(id=>{ u.masteredKP[id]=true; const pr=progOf(u,id); if(!pr.mAt){ pr.mAt=nowISO; pr.mday=ds; } });
+  // セッション履歴を1件追記（結果画面到達時）＝ 履歴シートに載る条件
+  const newlyMastered = SESS.masteredThis.filter(id=>!SESS.startMastered.has(id));
+  u.sessions.push({
+    startedAt: SESS.startedAt, finishedAt: nowISO, mode: SESS.modeLabel,
+    correct: SESS.correct, wrong: Math.max(0, SESS.answered - SESS.correct),
+    newlyMastered, wrongKpIds: Object.keys(SESS.missThis),
+    totalMastered: Object.keys(u.masteredKP).length
+  });
+  if(u.sessions.length>100) u.sessions=u.sessions.slice(-100);
   saveDB();
 }
 
