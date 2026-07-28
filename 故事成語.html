@@ -273,6 +273,15 @@
   }
   .setRow button.danger{border-color:var(--shu);color:var(--shu);}
 
+  /* 記録データの管理・同期 */
+  .syncStatus{font-size:.78rem;border-radius:8px;padding:8px 12px;margin-bottom:10px;line-height:1.6;background:#EEE8DA;color:var(--ink-soft);}
+  .syncStatus.ok{background:var(--matsu-soft);color:var(--matsu);border:1px solid #BCD9C5;}
+  .syncStatus.err{background:var(--shu-soft);color:var(--shu);border:1px solid #E8C2C0;}
+  .syncStatus.busy{background:var(--ai-pale);color:var(--ai);}
+  .dataBtns{display:flex;flex-wrap:wrap;gap:8px;}
+  .dataBtns button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-size:.82rem;cursor:pointer;font-family:inherit;color:var(--ink);}
+  #storageWarn{background:#FBEFE0;border-bottom:1px solid #E8D3B0;color:#7A5A22;font-size:.78rem;padding:8px 14px;line-height:1.6;}
+
   /* モーダル */
   #modalBack{
     display:none;position:fixed;inset:0;background:rgba(43,43,51,.5);z-index:50;
@@ -306,6 +315,7 @@
   </div>
   <button id="userChip">👤 ─</button>
 </header>
+<div id="storageWarn" style="display:none;"></div>
 
 <main>
   <!-- ホーム -->
@@ -359,6 +369,19 @@
     <div class="footNav">
       <button id="listBtn">📖 一覧</button>
       <button id="settingsBtn">⚙️ 設定</button>
+    </div>
+
+    <div class="card" id="dataPanel" style="margin-top:14px;">
+      <h2>記録データの管理</h2>
+      <div class="syncStatus" id="syncStatus">☁ 同期未設定</div>
+      <div class="dataBtns">
+        <button id="exportJsonBtn">📤 記録を書き出す（JSON）</button>
+        <button id="importJsonBtn">📥 記録を読み込む</button>
+        <button id="syncSetBtn">☁ クラウド同期設定</button>
+        <button id="syncNowBtn" style="display:none;">🔄 今すぐ同期</button>
+        <button id="listDriveBtn" style="display:none;">📋 全問一覧をDriveへ</button>
+      </div>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
     </div>
   </section>
 
@@ -504,8 +527,12 @@
 
 <script>
 /* ================= 定数（仕様書 v1.0） ================= */
-const APP_KEY="kj-quiz-kokugo-kojiseigo";
+const APP_KEY="kj-quiz-kokugo-kojiseigo";   // ツール識別子（追補v1.1§1・変更不可）
+const TOOL_LABEL="故事成語";
+const SYNC_KEY=APP_KEY+":sync";             // 同期設定（dbとは別キー・同期対象外）
 const SCHEMA_VERSION=1;
+const SESSIONS_MAX=100;                     // sessions保持上限（追補v1.2§3）
+const MODE_LABEL={"10q":"10問","20q":"20問","all":"全問"};
 const MASTERY_STREAK=2;      // 習得に必要な連続正解数（異なる形式で）
 const REQUEUE_WRONG=3;       // 誤答 → 3問後に再出題
 const REQUEUE_CORRECT=6;     // 正解したが未習得 → 6問後に再出題
@@ -585,8 +612,9 @@ const LV_NAME={A:"レベルA",B:"レベルB",C:"その他"};
 const FMT_NAME={A:"成語→意味",B:"意味→成語"};
 
 /* ================= 保存（localStorage・使えない環境ではメモリに退避） ================= */
+let STORAGE_OK=true;
 const store=(()=>{try{const t="__t__";localStorage.setItem(t,"1");localStorage.removeItem(t);return localStorage;}
- catch(e){const m={};return{getItem:k=>(k in m?m[k]:null),setItem:(k,v)=>{m[k]=String(v);},removeItem:k=>{delete m[k];}};}})();
+ catch(e){STORAGE_OK=false;const m={};return{getItem:k=>(k in m?m[k]:null),setItem:(k,v)=>{m[k]=String(v);},removeItem:k=>{delete m[k];}};}})();
 
 function nowIso(){
   const d=new Date(), p=n=>String(n).padStart(2,"0");
@@ -600,7 +628,32 @@ function newItemState(){
     wrongLog:[],lastSeenAt:null};
 }
 function defaultDb(){
-  return {app:APP_KEY,version:SCHEMA_VERSION,activeAccountId:null,accounts:[],progress:{}};
+  return {app:APP_KEY,version:SCHEMA_VERSION,updatedAt:null,activeAccountId:null,accounts:[],progress:{}};
+}
+/* スキーマの補正（pull・インポート・起動時に通す） */
+function normalizeDb(d){
+  if(!d||typeof d!=="object")d={};
+  d.app=APP_KEY;
+  d.version=d.version||SCHEMA_VERSION;
+  if(!("updatedAt" in d))d.updatedAt=null;
+  if(!("activeAccountId" in d))d.activeAccountId=null;
+  if(!Array.isArray(d.accounts))d.accounts=[];
+  if(!d.progress||typeof d.progress!=="object")d.progress={};
+  d.accounts.forEach(a=>{
+    if(!d.progress[a.id])d.progress[a.id]={items:{},sessions:[]};
+    const p=d.progress[a.id];
+    if(!p.items||typeof p.items!=="object")p.items={};
+    if(!Array.isArray(p.sessions))p.sessions=[];
+    Object.keys(p.items).forEach(k=>{
+      const it=Object.assign(newItemState(),p.items[k]);
+      if(!it.byFormat)it.byFormat={A:{correct:0,wrong:0},B:{correct:0,wrong:0}};
+      if(!it.byFormat.A)it.byFormat.A={correct:0,wrong:0};
+      if(!it.byFormat.B)it.byFormat.B={correct:0,wrong:0};
+      if(!Array.isArray(it.wrongLog))it.wrongLog=[];
+      p.items[k]=it;
+    });
+  });
+  return d;
 }
 function loadDb(){
   let db=null;
@@ -609,10 +662,14 @@ function loadDb(){
     db=defaultDb();
     migrateV1(db);           // 旧版（v1）からの移行
   }
-  if(db.version!==SCHEMA_VERSION){ db.version=SCHEMA_VERSION; }  // 将来のマイグレーション枠
-  return db;
+  return normalizeDb(db);
 }
-function saveDb(){ try{store.setItem(APP_KEY,JSON.stringify(DB));}catch(e){} }
+/* 追補v1.1§2：保存のたびに updatedAt を設定。
+   クラウドから取り込んだデータの保存時は fromCloud=true で上書きしない */
+function saveDb(fromCloud){
+  if(!fromCloud)DB.updatedAt=new Date().toISOString();
+  try{store.setItem(APP_KEY,JSON.stringify(DB));}catch(e){}
+}
 
 /* 旧版（ksg_users / ksg_prog_◯◯）からの移行 */
 function migrateV1(db){
@@ -888,13 +945,17 @@ function finishSession(){
   SESS.history.filter(h=>!h.ok).forEach(h=>{sessionWrongCount[h.kpId]=(sessionWrongCount[h.kpId]||0)+1;});
   // 永続化
   DB.progress[acc.id].items=SESS.items;
-  DB.progress[acc.id].sessions.push({
-    startedAt:SESS.startedAt,finishedAt:nowIso(),mode:SESS.mode,
+  const totalMastered=Object.values(SESS.items).filter(it=>it.mastered).length;
+  const sessList=DB.progress[acc.id].sessions;
+  sessList.push({
+    startedAt:SESS.startedAt,finishedAt:nowIso(),mode:MODE_LABEL[SESS.mode]||SESS.mode,
     correct,wrong,newlyMastered:newly,
     wrongKpIds:[...new Set(SESS.history.filter(h=>!h.ok).map(h=>h.kpId))],
-    sessionWrongCount
+    totalMastered,sessionWrongCount
   });
+  if(sessList.length>SESSIONS_MAX)sessList.splice(0,sessList.length-SESSIONS_MAX);
   saveDb();
+  pushDb();   // セッション終了直後の自動push（追補v1.1§5）
   lastResult={
     mode:SESS.mode,correct,wrong,newly,
     wrongRecords:SESS.history.filter(h=>!h.ok),
@@ -1049,11 +1110,11 @@ function addUser(){
   const v=$("newUserName").value.trim();
   if(!v)return;
   if(DB.accounts.some(a=>a.name===v)){$("newUserName").value="";return;}
-  const id="acc_"+String(Date.now());
+  const id="acc_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   DB.accounts.push({id,name:v,createdAt:nowIso()});
   DB.activeAccountId=id;
   DB.progress[id]={items:{},sessions:[]};
-  saveDb();$("newUserName").value="";renderHome();
+  saveDb();pushDb();$("newUserName").value="";renderHome();
 }
 function itemStateClass(it){
   if(!it)return "unseen";
@@ -1238,7 +1299,7 @@ function renderSettings(){
     const rn=document.createElement("button");rn.textContent="リネーム";
     rn.onclick=async()=>{
       const v=await showModal("リネーム","新しいなまえを入力してください",{input:a.name,okLabel:"変更",danger:false});
-      if(v){a.name=v;saveDb();renderSettings();renderHome();}
+      if(v){a.name=v;saveDb();pushDb();renderSettings();renderHome();}
     };
     const del=document.createElement("button");del.textContent="削除";del.className="danger";
     del.onclick=async()=>{
@@ -1247,7 +1308,7 @@ function renderSettings(){
         DB.accounts=DB.accounts.filter(x=>x.id!==a.id);
         delete DB.progress[a.id];
         if(DB.activeAccountId===a.id)DB.activeAccountId=DB.accounts.length?DB.accounts[0].id:null;
-        saveDb();renderSettings();renderHome();
+        saveDb();pushDb();renderSettings();renderHome();
       }
     };
     row.appendChild(rn);row.appendChild(del);
@@ -1310,18 +1371,291 @@ $("csvBtn").onclick=downloadCsv;
 $("resetAccBtn").onclick=async()=>{
   const acc=activeAcc();if(!acc)return;
   const ok=await showModal("記録のリセット",`「${esc(acc.name)}」の習得状況・履歴をすべて消します。よろしいですか？`,{okLabel:"リセット"});
-  if(ok){DB.progress[acc.id]={items:{},sessions:[]};saveDb();renderHome();renderSettings();}
+  if(ok){DB.progress[acc.id]={items:{},sessions:[]};saveDb();pushDb();renderHome();renderSettings();}
 };
 $("resetAllBtn").onclick=async()=>{
   const ok=await showModal("すべてリセット","全アカウント・全データを消します。<br>この操作は取り消せません。",{okLabel:"すべて消す"});
-  if(ok){DB=defaultDb();saveDb();renderHome();renderSettings();}
+  if(ok){DB=defaultDb();saveDb();pushDb();renderHome();renderSettings();renderDataPanel();}
 };
 window.addEventListener("beforeunload",e=>{
   if(SESS){e.preventDefault();e.returnValue="";}
 });
 
+/* ================= クラウド同期（追補v1.1／v1.2） ================= */
+let SYNC=(()=>{try{return JSON.parse(store.getItem(SYNC_KEY)||"null");}catch(e){return null;}})();
+let lastSyncMsg="";
+function saveSync(){try{store.setItem(SYNC_KEY,JSON.stringify(SYNC));}catch(e){}}
+function syncConfigured(){return !!(SYNC&&SYNC.url&&SYNC.key);}
+function fmtDateTime(iso){
+  const d=new Date(iso); if(isNaN(d))return "";
+  const p=n=>String(n).padStart(2,"0");
+  return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${p(d.getMinutes())}`;
+}
+function ymd(iso){const d=new Date(iso);return isNaN(d)?"":`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;}
+function setSync(kind,msg){
+  lastSyncMsg=msg;
+  const el=$("syncStatus");
+  el.className="syncStatus "+kind;
+  const ls=SYNC&&SYNC.lastSync?("｜最終同期 "+fmtDateTime(SYNC.lastSync)):"";
+  el.textContent=msg+ls;
+}
+function renderDataPanel(){
+  const cfg=syncConfigured();
+  $("syncNowBtn").style.display=cfg?"":"none";
+  $("listDriveBtn").style.display=cfg?"":"none";
+  if(!lastSyncMsg)setSync(cfg?"ok":"","☁"+(cfg?"✓ 同期設定済み":" 同期未設定（この端末のみに保存）"));
+}
+function updateStorageWarn(){
+  const el=$("storageWarn");
+  if(STORAGE_OK){el.style.display="none";return;}
+  el.style.display="block";
+  el.textContent=syncConfigured()
+    ?"☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます"
+    :"⚠ この環境ではブラウザに記録を保存できません（このセッション中のみ有効）。クラウド同期を設定すると記録を残せます";
+}
+
+/* API契約（追補v1.1§4・サーバー変更不可）：応答は text→JSON.parse */
+async function gasFetch(opts){
+  try{
+    let res;
+    if(opts.method==="GET"){
+      res=await fetch(SYNC.url+"?key="+encodeURIComponent(SYNC.key)+"&app="+encodeURIComponent(APP_KEY));
+    }else{
+      res=await fetch(SYNC.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:opts.body});
+    }
+    const text=await res.text();
+    try{return JSON.parse(text);}
+    catch(e){return {ok:false,error:"GASの応答が不正です。GASのコードを最新版に貼り替え、『デプロイを管理→新バージョン』で更新してください"};}
+  }catch(e){return {ok:false,offline:true,error:"オフライン（ローカルには保存済み）"};}
+}
+function dbHasRecords(d){
+  if(!d||!Array.isArray(d.accounts))return false;
+  return d.accounts.some(a=>{
+    const p=d.progress&&d.progress[a.id];
+    if(!p)return false;
+    if(Array.isArray(p.sessions)&&p.sessions.length>0)return true;
+    return p.items&&Object.values(p.items).some(it=>((it.totalCorrect||0)+(it.totalWrong||0))>0);
+  });
+}
+/* 項目単位の合流（v1.2§5-3：大きい方・OR・ログ統合） */
+function mergeItem(a,b){
+  const aLater=String(a.lastSeenAt||"")>=String(b.lastSeenAt||"");
+  const later=aLater?a:b;
+  const out=newItemState();
+  out.streak=Math.max(a.streak||0,b.streak||0);
+  out.mastered=!!(a.mastered||b.mastered);
+  out.masteredAt=a.masteredAt||b.masteredAt||null;
+  out.lastFormat=later.lastFormat||a.lastFormat||b.lastFormat||null;
+  out.streakFormat=later.streakFormat||a.streakFormat||b.streakFormat||null;
+  out.totalCorrect=Math.max(a.totalCorrect||0,b.totalCorrect||0);
+  out.totalWrong=Math.max(a.totalWrong||0,b.totalWrong||0);
+  const gf=(x,f,k)=>((x.byFormat||{})[f]||{})[k]||0;
+  out.byFormat={
+    A:{correct:Math.max(gf(a,"A","correct"),gf(b,"A","correct")),wrong:Math.max(gf(a,"A","wrong"),gf(b,"A","wrong"))},
+    B:{correct:Math.max(gf(a,"B","correct"),gf(b,"B","correct")),wrong:Math.max(gf(a,"B","wrong"),gf(b,"B","wrong"))}
+  };
+  const seen=new Set();
+  const logs=[...(a.wrongLog||[]),...(b.wrongLog||[])].filter(l=>{
+    const k=(l.at||"")+"|"+(l.format||"")+"|"+(l.answered||"");
+    if(seen.has(k))return false; seen.add(k); return true;
+  });
+  logs.sort((x,y)=>String(x.at)<String(y.at)?-1:1);
+  out.wrongLog=logs.slice(-WRONGLOG_MAX);
+  out.lastSeenAt=aLater?(a.lastSeenAt||b.lastSeenAt||null):(b.lastSeenAt||a.lastSeenAt||null);
+  if(out.mastered&&out.streak<MASTERY_STREAK)out.streak=MASTERY_STREAK;
+  return out;
+}
+/* クラウドを土台にローカルを合流（v1.2§5：名前で突き合わせ・必ず合流） */
+function mergeDbs(base,local){
+  const db=normalizeDb(deepCopy(base));
+  const snap=d=>JSON.stringify({a:d.accounts.map(x=>x.name).sort(),p:d.progress});
+  const before=snap(db);
+  (local.accounts||[]).forEach(la=>{
+    const lp=(local.progress&&local.progress[la.id])||{items:{},sessions:[]};
+    const ex=db.accounts.find(a=>a.name===la.name);
+    if(!ex){
+      db.accounts.push(deepCopy(la));
+      db.progress[la.id]=deepCopy(lp);
+    }else{
+      const tp=db.progress[ex.id]||(db.progress[ex.id]={items:{},sessions:[]});
+      Object.keys(lp.items||{}).forEach(kpId=>{
+        tp.items[kpId]=tp.items[kpId]?mergeItem(tp.items[kpId],lp.items[kpId]):deepCopy(lp.items[kpId]);
+      });
+      const done=new Set((tp.sessions||[]).map(x=>x.finishedAt));
+      (lp.sessions||[]).forEach(x=>{if(!done.has(x.finishedAt)){tp.sessions.push(deepCopy(x));done.add(x.finishedAt);}});
+      tp.sessions.sort((x,y)=>String(x.finishedAt)<String(y.finishedAt)?-1:1);
+      if(tp.sessions.length>SESSIONS_MAX)tp.sessions.splice(0,tp.sessions.length-SESSIONS_MAX);
+    }
+  });
+  const lact=(local.accounts||[]).find(a=>a.id===local.activeAccountId);
+  if(lact){const f=db.accounts.find(a=>a.name===lact.name);if(f)db.activeAccountId=f.id;}
+  if(!db.activeAccountId||!db.accounts.some(a=>a.id===db.activeAccountId))
+    db.activeAccountId=db.accounts.length?db.accounts[0].id:null;
+  const changed=snap(db)!==before;
+  const stats={seen:0,mastered:0};
+  Object.values(db.progress).forEach(p=>Object.values(p.items||{}).forEach(it=>{
+    if(((it.totalCorrect||0)+(it.totalWrong||0))>0)stats.seen++;
+    if(it.mastered)stats.mastered++;
+  }));
+  return {db,changed,stats};
+}
+async function doPush(){
+  if(!syncConfigured())return null;
+  setSync("busy","☁… クラウドに送信中");
+  const r=await gasFetch({method:"POST",body:JSON.stringify({key:SYNC.key,data:DB})});
+  if(r.ok){SYNC.lastSync=nowIso();saveSync();setSync("ok","☁✓ クラウド保存ずみ");}
+  else if(r.offline)setSync("err","☁⚠ オフライン（ローカルには保存済み）");
+  else setSync("err","☁⚠ "+(r.error||"エラー"));
+  return r;
+}
+function pushDb(){ if(syncConfigured())doPush(); }   // 非同期・失敗しても学習続行
+async function pullNow(trigger){
+  if(!syncConfigured())return null;
+  setSync("busy","☁… 同期中");
+  const r=await gasFetch({method:"GET"});
+  if(!r.ok){
+    if(r.offline)setSync("err","☁⚠ オフライン（ローカルには保存済み）");
+    else setSync("err","☁⚠ "+(r.error||"エラー"));
+    return r;
+  }
+  const cloud=r.data?normalizeDb(r.data):null;
+  const localHas=dbHasRecords(DB), cloudHas=cloud?dbHasRecords(cloud):false;
+  if(!cloud||!cloudHas){
+    /* クラウドが空 or 記録なし → ローカルに記録があれば無条件push */
+    if(localHas){
+      const p=await doPush();
+      if(p&&p.ok)setSync("ok","☁✓ クラウドに進捗が無かったので送りました");
+    }else{
+      SYNC.lastSync=nowIso();saveSync();setSync("ok","☁✓ 同期しました（まだ記録はありません）");
+    }
+  }else{
+    /* クラウドに記録あり → クラウドを土台に必ず合流（v1.2§5） */
+    const m=mergeDbs(cloud,DB);
+    DB=m.db;
+    if(m.changed){ saveDb(); await doPush(); }
+    else saveDb(true);            // 取り込みのみ：updatedAtを上書きしない
+    SYNC.lastSync=nowIso();saveSync();
+    setSync("ok",localHas
+      ?`☁✓ クラウドと合流しました（${DB.accounts.length}人・出題済み${m.stats.seen}・習得${m.stats.mastered}）`
+      :`☁✓ クラウドの記録を取り込みました（${DB.accounts.length}人・習得${m.stats.mastered}）`);
+    renderHome();
+  }
+  renderDataPanel();
+  return r;
+}
+
+/* ---- 全問一覧をDriveへ（追補v1.1§6：14列・空上書き防止のため必ず先にpull） ---- */
+async function exportListToDrive(){
+  if(!syncConfigured())return;
+  await pullNow("pre-export");
+  if(!dbHasRecords(DB)){
+    await showModal("書き出し中止","まだ記録が無いため、全問一覧の書き出しを中止しました。<br>（空データで既存の一覧シートを上書きしないための保護です）",{okLabel:"OK",danger:false});
+    return;
+  }
+  setSync("busy","☁… 一覧を書き出し中");
+  const header=["名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
+    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"];
+  const rows=[];
+  DB.accounts.forEach(acc=>{
+    const items=(DB.progress[acc.id]||{}).items||{};
+    DATA.forEach(kp=>{
+      const it=items[kp.id]||newItemState();
+      const cls=itemStateClass(items[kp.id]||null);
+      const st={mastered:"習得済み",progress:it.totalCorrect+"回正解",wrong:"誤答",unseen:"未出題"}[cls];
+      const lastWrong=it.wrongLog.length?it.wrongLog[it.wrongLog.length-1]:null;
+      rows.push([acc.name,LV_NAME[kp.lv],"",kp.w,kp.r,"",st,
+        it.totalCorrect,it.totalWrong,it.byFormat.A.wrong,it.byFormat.B.wrong,
+        it.wrongLog.map(l=>l.answered).join(";"),
+        lastWrong?ymd(lastWrong.at):"", it.masteredAt?ymd(it.masteredAt):""]);
+    });
+  });
+  const r=await gasFetch({method:"POST",body:JSON.stringify({key:SYNC.key,app:APP_KEY,list:{header,rows}})});
+  if(r.ok){SYNC.lastSync=nowIso();saveSync();setSync("ok","☁✓ 全問一覧をスプレッドシートに書き出しました");}
+  else if(r.offline)setSync("err","☁⚠ オフラインのため書き出せませんでした");
+  else setSync("err","☁⚠ "+(r.error||"エラー"));
+}
+
+/* ---- JSONの書き出し・読み込み（追補v1.1§3） ---- */
+function exportJson(){
+  const d=new Date(),p=n=>String(n).padStart(2,"0");
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`${TOOL_LABEL}記録_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.json`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+}
+async function importJsonObject(obj){
+  if(!obj||obj.app!==APP_KEY){
+    await showModal("読み込みエラー","このファイルは「故事成語クイズ」の記録ではありません。<br>（ツール識別子 app が一致しません）",{okLabel:"OK",danger:false});
+    return;
+  }
+  const names=(obj.accounts||[]).map(a=>a.name).join("・")||"（アカウントなし）";
+  const ok=await showModal("記録の読み込み",
+    `いまの記録をこのファイルの内容で<b>置き換え</b>ます。よろしいですか？<br><br>アカウント：${esc(names)}<br>保存日時：${obj.updatedAt?esc(fmtDateTime(obj.updatedAt)):"不明"}`,
+    {okLabel:"置き換える"});
+  if(!ok)return;
+  DB=normalizeDb(obj);
+  saveDb();            // 置換後は updatedAt を更新（v1.1§3）
+  pushDb();
+  renderHome();renderDataPanel();
+}
+
+/* ---- 同期設定モーダル ---- */
+function openSyncSettings(){
+  $("mTitle").textContent="☁ クラウド同期設定";
+  $("mBody").innerHTML=
+    '<div style="font-size:.8rem;line-height:1.7;margin-bottom:10px;color:var(--ink-soft);">Google Apps Script のURL（<b>/exec</b> で終わるもの）と合言葉を入力してください。設定はこの端末にだけ保存されます。</div>'
+    +'<input id="syncUrlIn" type="text" placeholder="https://script.google.com/…/exec" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.88rem;font-family:inherit;margin-bottom:10px;" value="'+esc(SYNC&&SYNC.url?SYNC.url:"")+'">'
+    +'<input id="syncKeyIn" type="password" placeholder="合言葉" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.88rem;font-family:inherit;margin-bottom:10px;" value="'+esc(SYNC&&SYNC.key?SYNC.key:"")+'">'
+    +(syncConfigured()?'<button id="syncClearBtn" style="border:1.5px solid var(--shu);color:var(--shu);background:#fff;border-radius:8px;padding:8px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;">同期を解除</button>':"");
+  $("mInput").style.display="none";
+  $("mOk").textContent="保存して同期";
+  $("mOk").style.background="var(--ai)";
+  $("modalBack").classList.add("show");
+  modalCb=async ok=>{
+    $("modalBack").classList.remove("show");
+    if(!ok)return;
+    const url=$("syncUrlIn").value.trim(), key=$("syncKeyIn").value.trim();
+    if(!url||!key){setSync("err","☁⚠ URLと合言葉の両方を入力してください");return;}
+    if(!/\/exec$/.test(url)){setSync("err","☁⚠ URLは /exec で終わる形式にしてください");return;}
+    SYNC={url,key,lastSync:SYNC&&SYNC.lastSync?SYNC.lastSync:null};
+    saveSync();updateStorageWarn();renderDataPanel();
+    await pullNow("settings");   // 保存直後にpull（追補v1.1§5）
+  };
+  const cb=$("syncClearBtn");
+  if(cb)cb.onclick=()=>{
+    $("modalBack").classList.remove("show");
+    SYNC=null;lastSyncMsg="";
+    try{store.removeItem(SYNC_KEY);}catch(e){}
+    updateStorageWarn();renderDataPanel();
+  };
+}
+
+/* ---- パネルのイベント ---- */
+$("exportJsonBtn").onclick=exportJson;
+$("importJsonBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=e=>{
+  const f=e.target.files&&e.target.files[0];
+  e.target.value="";
+  if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    let obj=null;
+    try{obj=JSON.parse(rd.result);}catch(err){}
+    importJsonObject(obj);
+  };
+  rd.readAsText(f);
+};
+$("syncSetBtn").onclick=openSyncSettings;
+$("syncNowBtn").onclick=()=>pullNow("manual");
+$("listDriveBtn").onclick=exportListToDrive;
+
 /* 初期化 */
 renderHome();
+renderDataPanel();
+updateStorageWarn();
+if(syncConfigured())pullNow("startup");   // 起動直後のpull（追補v1.1§5）
 
 </script>
 </body>
