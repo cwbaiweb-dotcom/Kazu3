@@ -234,6 +234,41 @@ input,select{font-family:inherit;font-size:16px}
 .m-primary{background:var(--ai);color:#FFF8ED}
 .m-danger{background:var(--shu);color:#FFF8ED}
 .m-ghost{background:var(--washi-deep);color:var(--sumi)}
+
+/* 覚えるモード */
+.study-tools{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.study-tools select{background:var(--card);border:1.5px solid var(--line);border-radius:9px;padding:9px;
+  font-size:12.5px;font-weight:700;color:var(--sumi);width:100%}
+.view-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--line);border-radius:10px;
+  overflow:hidden;background:var(--card);margin-bottom:12px}
+.view-toggle button{padding:9px;font-size:12.5px;font-weight:700;color:var(--usuzumi)}
+.view-toggle button.on{background:var(--ai);color:#FFF8ED}
+.s-count{display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;color:var(--usuzumi);margin-bottom:8px}
+.s-count .track{height:6px}
+.scard{background:var(--card);border:1.5px solid var(--line);border-radius:15px;padding:26px 20px;
+  position:relative;overflow:hidden;min-height:190px;display:flex;flex-direction:column;justify-content:center;
+  text-align:center;cursor:pointer;width:100%}
+.scard::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--kincha)}
+.s-badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.s-word{font-family:var(--serif);font-size:40px;font-weight:700;letter-spacing:.04em;line-height:1.3}
+.s-word em{display:block;font-style:normal;font-size:13px;color:var(--usuzumi);font-family:var(--sans);
+  font-weight:400;letter-spacing:.1em;margin-top:6px}
+.s-mean{font-size:18px;font-weight:600;line-height:1.8;text-align:left}
+.s-hint{margin-top:16px;font-size:11px;color:var(--usuzumi);letter-spacing:.14em;font-weight:700}
+.s-back{display:none;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);text-align:left}
+.s-back.show{display:block;animation:fade .22s ease}
+.s-ans{font-family:var(--serif);font-size:28px;font-weight:700;text-align:center;line-height:1.35}
+.s-ans span{font-size:14px;color:var(--usuzumi);font-weight:400;font-family:var(--sans);margin-left:7px}
+.s-bmean{font-size:15px;line-height:1.75;margin-top:4px}
+.s-ex{margin-top:11px;background:var(--washi-deep);border-radius:9px;padding:10px 13px;font-size:13.5px;line-height:1.75}
+.s-ex b{color:var(--ai-deep)}
+.s-ex::before{content:"例文 ";font-size:10px;font-weight:700;color:var(--usuzumi);letter-spacing:.14em}
+.s-nav{display:grid;grid-template-columns:1fr 1.5fr;gap:8px;margin-top:11px}
+.s-nav button{border-radius:12px;padding:14px;font-size:15px;font-weight:700}
+.s-prev{background:var(--card);border:1.5px solid var(--line);color:var(--sumi)}
+.s-next{background:var(--ai);color:#FFF8ED;box-shadow:0 3px 0 var(--ai-deep)}
+.s-next:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ai-deep)}
+.s-prev:disabled{opacity:.35}
 footer{margin-top:32px;text-align:center;font-size:10.5px;color:var(--usuzumi);letter-spacing:.08em;line-height:1.7}
 @media (max-width:380px){.q-word{font-size:31px}.seg button{font-size:11.5px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -275,6 +310,7 @@ footer{margin-top:32px;text-align:center;font-size:10.5px;color:var(--usuzumi);l
 
     <div class="start-area">
       <button class="big-btn" id="startBtn">スタート</button>
+      <button class="sub-btn" onclick="openStudy()">📖 覚えるモード（クイズなしで確認）</button>
     </div>
 
     <div class="lbl">間違いランキング</div>
@@ -295,6 +331,50 @@ footer{margin-top:32px;text-align:center;font-size:10.5px;color:var(--usuzumi);l
       </div>
     </div>
     <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+  </div>
+
+
+  <!-- ================= 覚えるモード ================= -->
+  <div class="screen" id="sc-study">
+    <div class="lbl">覚えるモード<span style="letter-spacing:0;font-weight:400;margin-left:8px">記録には影響しません</span></div>
+    <div class="study-tools">
+      <select id="stCat" onchange="studyRebuild()"></select>
+      <select id="stScope" onchange="studyRebuild()">
+        <option value="">すべての言葉</option>
+        <option value="unmastered">未習得だけ</option>
+        <option value="wrong">間違えた言葉だけ</option>
+        <option value="mastered">習得済みだけ</option>
+      </select>
+      <select id="stOrder" onchange="studyRebuild()">
+        <option value="seq">収録順</option>
+        <option value="shuffle">シャッフル</option>
+        <option value="wrong">誤答が多い順</option>
+        <option value="kana">五十音順</option>
+      </select>
+      <select id="stFace" onchange="studyRebuild()">
+        <option value="word">ことば → 意味</option>
+        <option value="meaning">意味 → ことば</option>
+      </select>
+    </div>
+    <div class="view-toggle">
+      <button id="vwCard" onclick="studyView('card')">カードでめくる</button>
+      <button id="vwList" onclick="studyView('list')">いちらんで見る</button>
+    </div>
+    <div id="studyCardWrap">
+      <div class="s-count">
+        <span id="stCount"></span>
+        <div class="track" style="flex:1"><i id="stBar"></i></div>
+      </div>
+      <button class="scard" id="studyCard" onclick="studyFlip()"></button>
+      <div class="s-nav">
+        <button class="s-prev" id="stPrev" onclick="studyMove(-1)">← 前へ</button>
+        <button class="s-next" id="stNext" onclick="studyNext()">めくる</button>
+      </div>
+    </div>
+    <div id="studyListWrap" style="display:none"></div>
+    <div class="start-area">
+      <button class="big-btn" onclick="go('home')">ホームにもどる</button>
+    </div>
   </div>
 
   <!-- ================= クイズ ================= -->
@@ -1389,6 +1469,30 @@ function showResult(){
   go("result");
 }
 
+function kpRowsHTML(list, items, pfx){
+  return list.map(w=>{
+    const it = items[w.id] || newItem();
+    const s = stateOf(it);
+    const bc = s==="mastered" ? "m" : s==="partial" ? "p" : s==="new" ? "n" : "x";
+    const danger = it.totalWrong>=2;
+    const cat = CATMAP[w.c];
+    let detail = "<div class='kp-detail' id='"+pfx+esc(w.id)+"'>";
+    detail += "<div><span class='k'>意味</span>　"+esc(w.m)+"</div>";
+    detail += "<div><span class='k'>例文</span>　"+w.e+"</div>";
+    detail += "<div><span class='k'>形式別</span>　"+FMT.A.label+"：正"+it.byFormat.A.correct+"／誤"+it.byFormat.A.wrong+
+              "　　"+FMT.B.label+"：正"+it.byFormat.B.correct+"／誤"+it.byFormat.B.wrong+"</div>";
+    if(it.wrongLog.length)
+      detail += "<div><span class='k'>過去の誤答</span>　"+it.wrongLog.map(l=>esc(l.answered)+"（"+fmtDate(l.at)+"）").join("／")+"</div>";
+    if(it.masteredAt) detail += "<div><span class='k'>習得日</span>　"+fmtDate(it.masteredAt)+"</div>";
+    detail += "</div>";
+    return "<div class='kp-row"+(danger?" danger":"")+"' onclick=\"toggleKp('"+pfx+"','"+esc(w.id)+"')\">"+
+      "<div class='kp-top'><span class='kp-w'>"+esc(w.w)+"</span>"+
+      "<span class='kp-cat' style='background:"+cat.color+"'>"+cat.mark+"</span>"+
+      "<span class='badge "+bc+"'>"+stateText(it)+"</span>"+
+      (it.totalWrong>0 ? "<span class='badge "+(danger?"warn":"x")+"'>"+(danger?"⚠️2回以上ミス ":"")+"誤答"+it.totalWrong+"回</span>" : "")+
+      "</div><div class='kp-mean'>"+esc(w.m)+"</div>"+detail+"</div>";
+  }).join("");
+}
 function renderAllList(){
   const items = prog().items;
   const fc = $("fCat").value, fs = $("fState").value, so = $("fSort").value;
@@ -1405,34 +1509,11 @@ function renderAllList(){
   if(so==="wrong") list.sort((a,b)=>g(b).totalWrong-g(a).totalWrong || a.w.localeCompare(b.w,"ja"));
   else if(so==="cat") list.sort((a,b)=>CATEGORIES.findIndex(c=>c.id===a.c)-CATEGORIES.findIndex(c=>c.id===b.c));
   else list.sort((a,b)=>a.y.localeCompare(b.y,"ja"));
-
   const box = $("allList");
   if(list.length===0){ box.innerHTML="<div class='panel' style='text-align:center;color:var(--usuzumi);font-size:13px'>該当する言葉はありません。</div>"; return; }
-  box.innerHTML = list.map(w=>{
-    const it = g(w);
-    const s = stateOf(it);
-    const bc = s==="mastered" ? "m" : s==="partial" ? "p" : s==="new" ? "n" : "x";
-    const danger = it.totalWrong>=2;
-    const cat = CATMAP[w.c];
-    const lastWrong = it.wrongLog.length ? it.wrongLog[it.wrongLog.length-1] : null;
-    let detail = "<div class='kp-detail' id='d_"+esc(w.id)+"'>";
-    detail += "<div><span class='k'>意味</span>　"+esc(w.m)+"</div>";
-    detail += "<div><span class='k'>例文</span>　"+w.e+"</div>";
-    detail += "<div><span class='k'>形式別</span>　"+FMT.A.label+"：正"+it.byFormat.A.correct+"／誤"+it.byFormat.A.wrong+
-              "　　"+FMT.B.label+"：正"+it.byFormat.B.correct+"／誤"+it.byFormat.B.wrong+"</div>";
-    if(it.wrongLog.length)
-      detail += "<div><span class='k'>過去の誤答</span>　"+it.wrongLog.map(l=>esc(l.answered)+"（"+fmtDate(l.at)+"）").join("／")+"</div>";
-    if(it.masteredAt) detail += "<div><span class='k'>習得日</span>　"+fmtDate(it.masteredAt)+"</div>";
-    detail += "</div>";
-    return "<div class='kp-row"+(danger?" danger":"")+"' onclick=\"toggleKp('"+esc(w.id)+"')\">"+
-      "<div class='kp-top'><span class='kp-w'>"+esc(w.w)+"</span>"+
-      "<span class='kp-cat' style='background:"+cat.color+"'>"+cat.mark+"</span>"+
-      "<span class='badge "+bc+"'>"+stateText(it)+"</span>"+
-      (it.totalWrong>0 ? "<span class='badge "+(danger?"warn":"x")+"'>"+(danger?"⚠️2回以上ミス ":"")+"誤答"+it.totalWrong+"回</span>" : "")+
-      "</div><div class='kp-mean'>"+esc(w.m)+"</div>"+detail+"</div>";
-  }).join("");
+  box.innerHTML = kpRowsHTML(list, items, "d_");
 }
-function toggleKp(id){ const d=$("d_"+id); if(d) d.classList.toggle("open"); }
+function toggleKp(pfx,id){ const d=$(pfx+id); if(d) d.classList.toggle("open"); }
 
 /* ---------- CSV（§7-4） ---------- */
 function csvCell(v){ const s=String(v==null?"":v); return '"'+s.replace(/"/g,'""')+'"'; }
@@ -1453,6 +1534,112 @@ function downloadCSV(){
   const name = "結果_" + (acc()?acc().name:"記録") + "_" + stamp8() + ".csv";
   download(name, csv, "text/csv;charset=utf-8");
 }
+
+
+/* ============================================================
+   覚えるモード（学習記録には一切書き込まない読み取り専用）
+   ============================================================ */
+let ST = { list:[], idx:0, open:false, view:"card" };
+
+function openStudy(){
+  if(!acc()){ go("account"); return; }
+  const sel = $("stCat");
+  if(sel.options.length===0){
+    sel.innerHTML = "<option value=''>すべてのカテゴリー</option>" +
+      CATEGORIES.map(c=>"<option value='"+c.id+"'>"+c.name+"</option>").join("");
+  }
+  sel.value = uiCat || "";
+  studyView(ST.view);
+  studyRebuild();
+  go("study");
+}
+function studyView(v){
+  ST.view = v;
+  $("vwCard").classList.toggle("on", v==="card");
+  $("vwList").classList.toggle("on", v==="list");
+  $("studyCardWrap").style.display = v==="card" ? "block" : "none";
+  $("studyListWrap").style.display = v==="list" ? "block" : "none";
+  if(v==="list") renderStudyList();
+}
+function studyRebuild(){
+  const items = prog().items;
+  const cat = $("stCat").value, scope = $("stScope").value, order = $("stOrder").value;
+  const g = w => items[w.id] || newItem();
+  let list = cat ? WORDS.filter(w=>w.c===cat) : WORDS.slice();
+  if(scope==="unmastered") list = list.filter(w=>!g(w).mastered);
+  else if(scope==="mastered") list = list.filter(w=>g(w).mastered);
+  else if(scope==="wrong")   list = list.filter(w=>g(w).totalWrong>0);
+  if(order==="shuffle") list = shuffle(list);
+  else if(order==="wrong") list = list.slice().sort((a,b)=>g(b).totalWrong-g(a).totalWrong || a.y.localeCompare(b.y,"ja"));
+  else if(order==="kana") list = list.slice().sort((a,b)=>a.y.localeCompare(b.y,"ja"));
+  ST.list = list; ST.idx = 0; ST.open = false;
+  if(ST.view==="list") renderStudyList(); else renderStudy();
+}
+function renderStudyList(){
+  const items = prog().items;
+  const box = $("studyListWrap");
+  box.innerHTML = ST.list.length===0
+    ? "<div class='panel' style='text-align:center;color:var(--usuzumi);font-size:13px'>該当する言葉はありません。</div>"
+    : kpRowsHTML(ST.list, items, "ds_");
+}
+function studyFlip(){ if(ST.list.length===0) return; ST.open = !ST.open; renderStudy(); }
+function studyNext(){
+  if(ST.list.length===0) return;
+  if(!ST.open){ ST.open = true; renderStudy(); return; }
+  studyMove(1);
+}
+function studyMove(d){
+  if(ST.list.length===0) return;
+  const n = ST.idx + d;
+  if(n<0 || n>=ST.list.length) return;
+  ST.idx = n; ST.open = false; renderStudy();
+}
+function renderStudy(){
+  const card = $("studyCard");
+  const total = ST.list.length;
+  if(total===0){
+    $("stCount").textContent = "0 / 0";
+    $("stBar").style.width = "0%";
+    card.innerHTML = "<div style='color:var(--usuzumi);font-size:14px;line-height:1.8'>該当する言葉がありません。<br>上の条件を変えてください。</div>";
+    $("stPrev").disabled = true; $("stNext").disabled = true;
+    return;
+  }
+  $("stNext").disabled = false;
+  const w = ST.list[ST.idx];
+  const it = prog().items[w.id] || newItem();
+  const cat = CATMAP[w.c];
+  const face = $("stFace").value;
+  $("stCount").textContent = (ST.idx+1) + " / " + total;
+  $("stBar").style.width = ((ST.idx+1)/total*100) + "%";
+  $("stPrev").disabled = ST.idx===0;
+  $("stNext").textContent = !ST.open ? "めくる" : (ST.idx===total-1 ? "おわり" : "次へ →");
+
+  const badges = "<div class='s-badges'>"+
+    "<span class='kp-cat' style='background:"+cat.color+"'>"+cat.mark+"</span>"+
+    "<span class='badge "+(it.mastered?"m":stateOf(it)==="partial"?"p":stateOf(it)==="new"?"n":"x")+"'>"+stateText(it)+"</span>"+
+    (it.totalWrong>0 ? "<span class='badge "+(it.totalWrong>=2?"warn":"x")+"'>誤答"+it.totalWrong+"回</span>" : "")+
+    "</div>";
+
+  let front, back;
+  if(face==="word"){
+    front = "<div class='s-word'>"+esc(w.w)+"</div>";
+    back  = "<div class='s-bmean'>"+esc(w.m)+"</div>";
+    if(w.k!==w.w) back = "<div style='text-align:center;color:var(--usuzumi);font-family:var(--serif);font-size:16px;margin-bottom:6px'>【"+esc(w.k)+"】</div>" + back;
+  }else{
+    front = "<div class='s-mean'>"+esc(w.m)+"</div>";
+    back  = "<div class='s-ans'>"+esc(w.w)+(w.k!==w.w ? "<span>【"+esc(w.k)+"】</span>" : "")+"</div>";
+  }
+  card.innerHTML = badges + front +
+    (ST.open
+      ? "<div class='s-back show'>"+back+"<div class='s-ex'>"+w.e+"</div></div>"
+      : "<div class='s-hint'>タップして"+(face==="word"?"意味":"ことば")+"を見る</div>");
+}
+document.addEventListener("keydown", e=>{
+  if(!$("sc-study").classList.contains("active")) return;
+  if(e.key==="ArrowLeft"){ studyMove(-1); e.preventDefault(); }
+  else if(e.key==="ArrowRight"){ studyNext(); e.preventDefault(); }
+  else if(e.key===" "){ studyFlip(); e.preventDefault(); }
+});
 
 /* ============================================================
    起動

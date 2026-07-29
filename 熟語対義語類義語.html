@@ -118,6 +118,26 @@ tr.hot td{background:#fff6e5}
 .tiny{font-size:.78rem;color:var(--sub);line-height:1.6}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .filters select{width:auto;flex:1 1 140px;min-height:42px;padding:8px 10px}
+/* 覚えるモード */
+.tabs{display:flex;gap:6px;background:#e9eef6;padding:4px;border-radius:12px;margin:10px 0}
+.tabs button{flex:1;background:transparent;border:none;min-height:42px;color:var(--sub);border-radius:9px}
+.tabs button.on{background:#fff;color:var(--accent-d);box-shadow:0 1px 3px rgba(20,30,50,.12)}
+.scard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 16px;margin:12px 0;
+  text-align:center;box-shadow:var(--shadow);min-height:236px;display:flex;flex-direction:column;justify-content:center;
+  touch-action:pan-y;user-select:none}
+.scard .front{font-size:2.2rem;font-weight:800;letter-spacing:.08em;line-height:1.5}
+.scard .front.small{font-size:1.3rem;font-weight:700;letter-spacing:.02em;line-height:1.7}
+.scard .front ruby rt{font-size:.38em;font-weight:600;color:var(--sub)}
+.scard .back{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:1.05rem;line-height:1.8}
+.scard .back .big{font-size:1.9rem;font-weight:800;letter-spacing:.08em;display:block;margin-bottom:4px}
+.scard .back ruby rt{font-size:.4em;font-weight:600;color:var(--sub)}
+.scard .tapme{margin-top:20px;color:var(--accent);font-weight:700;font-size:.9rem}
+.scard.marked{border-color:#e8b84b;box-shadow:0 0 0 2px #f7e2ac inset,var(--shadow)}
+.sheet td.hid{cursor:pointer}
+.sheet td.hid .m{display:inline-block;background:#f2b6be;color:transparent;border-radius:5px;padding:0 4px;min-width:4em}
+.sheet td.hid.open .m{background:transparent;color:inherit}
+.sheet tr.mk td:first-child{box-shadow:inset 3px 0 0 #e8b84b}
+.seenmark{color:var(--ok);font-weight:800}
 @media(max-width:400px){.scoregrid{grid-template-columns:repeat(2,1fr)}.qword{font-size:1.8rem}}
 </style>
 </head>
@@ -634,6 +654,179 @@ function commitSession(){
   return {c, w, newlyMastered, wrongKpIds:[...wrongKpIds]};
 }
 /* ============================================================
+   覚えるモード（テストではないので習得判定には一切影響しない）
+   進捗は progress[acc].study に分けて保存する（items は触らない）
+   ============================================================ */
+let STUDY = {tab:'card', target:'all', order:'book', dir:'front',
+             idx:0, open:false, sheetOpen:{}, list:null, dirty:false};
+
+function studyStore(){
+  const p = accProg(db.activeAccountId);
+  if(!p.study || typeof p.study!=='object') p.study = {};
+  if(!p.study.seen)   p.study.seen   = {};
+  if(!p.study.marked) p.study.marked = {};
+  return p.study;
+}
+function markSeen(kpId){
+  const st = studyStore();
+  if(!st.seen[kpId]){ st.seen[kpId] = new Date().toISOString(); studySave(); }
+}
+let studyTimer = null;
+function studySave(){
+  STUDY.dirty = true;
+  clearTimeout(studyTimer);
+  studyTimer = setTimeout(()=>saveDB(), 1200);
+}
+function studyLeave(){
+  clearTimeout(studyTimer);
+  if(STUDY.dirty){ saveDB(); syncPush(true); STUDY.dirty=false; }
+}
+
+const STUDY_TARGETS = [
+  ['all',   'すべての語'],
+  ['unmast','まだ習得していない語'],
+  ['wrong', 'テストで間違えた語'],
+  ['unseen','まだ見ていない語'],
+  ['marked','🔖 チェックした語'],
+];
+const STUDY_ORDERS = [['book','本の順（レベルA→B）'],['shuffle','シャッフル'],['wrong','誤答の多い順']];
+
+function studyList(rebuild){
+  if(STUDY.list && !rebuild) return STUDY.list;
+  const items = accProg(db.activeAccountId).items;
+  const st = studyStore();
+  let l = KPS.filter(k=>PICK.cats.includes(k.cat) && PICK.levels.includes(k.level));
+  const T = STUDY.target;
+  if(T==='unmast') l = l.filter(k=>!(items[k.id]||{}).mastered);
+  else if(T==='wrong')  l = l.filter(k=>((items[k.id]||{}).totalWrong|0)>0);
+  else if(T==='unseen') l = l.filter(k=>!st.seen[k.id]);
+  else if(T==='marked') l = l.filter(k=>st.marked[k.id]);
+  const ord = {niji:0,sanji:1,yoji:2,taigi:3,ruigi:4};
+  if(STUDY.order==='shuffle') l = shuffle(l);
+  else if(STUDY.order==='wrong') l = l.slice().sort((a,b)=>
+      (((items[b.id]||{}).totalWrong|0)-((items[a.id]||{}).totalWrong|0)) || ord[a.cat]-ord[b.cat]);
+  else l = l.slice().sort((a,b)=> ord[a.cat]-ord[b.cat] || a.level.localeCompare(b.level));
+  STUDY.list = l;
+  if(STUDY.idx >= l.length) STUDY.idx = 0;
+  return l;
+}
+/* 覚えるモードの表裏 */
+function cardFace(kp){
+  const c = CAT[kp.cat];
+  const meanCat = (c.kind==='mean');
+  if(STUDY.dir==='front'){
+    return {
+      fLabel: c.name+'　'+(meanCat?'熟語':'語'),
+      fHtml : ruby(kp.front, kp.frontYomi), fBig:true,
+      bLabel: meanCat?'意味':(c.id==='taigi'?'対義語':'類義語'),
+      bHtml : meanCat ? esc(kp.back) : '<span class="big">'+ruby(kp.back,kp.backYomi)+'</span>'
+    };
+  }
+  return {
+    fLabel: c.name+'　'+(meanCat?'意味':(c.id==='taigi'?'対義語':'類義語')),
+    fHtml : meanCat ? esc(kp.back) : ruby(kp.back, kp.backYomi), fBig: !meanCat,
+    bLabel: meanCat?'熟語':'もとの語',
+    bHtml : '<span class="big">'+ruby(kp.front,kp.frontYomi)+'</span>'
+  };
+}
+function studyExtra(kp){
+  let s = '';
+  if(kp.alts && kp.alts.length) s += '<div class="muted" style="font-size:.85rem">'+esc(kp.alts.join('・'))+' も可</div>';
+  if(kp.extra) s += '<div class="muted" style="font-size:.85rem">'+esc(kp.extra)+'</div>';
+  return s;
+}
+
+function viewStudy(){
+  const st = studyStore();
+  const list = studyList();
+  let h = '<div class="row" style="align-items:center;margin-top:4px">'+
+    '<h1 style="flex:1 1 auto;margin:0">覚えるモード</h1>'+
+    '<button class="btn-sm" data-act="leaveStudy" style="flex:0 0 auto">← ホーム</button></div>'+
+    '<p class="muted" style="margin:.3em 0 0">テストではないので、正解数や習得状況は変わりません。</p>';
+
+  h += '<div class="card"><div class="filters">'+
+    '<select data-act="sset" data-k="target">'+STUDY_TARGETS.map(o=>
+      '<option value="'+o[0]+'"'+(STUDY.target===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+    '<select data-act="sset" data-k="order">'+STUDY_ORDERS.map(o=>
+      '<option value="'+o[0]+'"'+(STUDY.order===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
+    '<select data-act="sset" data-k="dir">'+
+      '<option value="front"'+(STUDY.dir==='front'?' selected':'')+'>熟語・語　→　意味</option>'+
+      '<option value="back"'+(STUDY.dir==='back'?' selected':'')+'>意味　→　熟語・語</option></select>'+
+    '</div>'+
+    '<p class="tiny">分野とレベルはホームの①②の設定を使います（現在 '+
+      PICK.cats.map(c=>CAT[c].short).join('・')+'／レベル'+PICK.levels.join('・')+'）</p>'+
+    '<div class="tabs">'+
+      '<button class="'+(STUDY.tab==='card'?'on':'')+'" data-act="stab" data-v="card">🃏 カードめくり</button>'+
+      '<button class="'+(STUDY.tab==='sheet'?'on':'')+'" data-act="stab" data-v="sheet">📋 暗記シート</button>'+
+    '</div></div>';
+
+  if(!list.length){
+    return h + '<div class="card center"><p class="muted">条件に合う語がありません。<br>絞り込みやホームの分野・レベルを変えてみてください。</p></div>';
+  }
+  return h + (STUDY.tab==='card' ? studyCard(list, st) : studySheet(list, st));
+}
+
+/* ---------- カードめくり ---------- */
+function studyCard(list, st){
+  const kp = list[Math.min(STUDY.idx, list.length-1)];
+  const f = cardFace(kp);
+  const seenN = list.filter(k=>st.seen[k.id]).length;
+  const mk = !!st.marked[kp.id];
+
+  let h = '<div class="mbar"><i class="m" style="width:'+((STUDY.idx+1)/list.length*100).toFixed(1)+'%"></i></div>'+
+    '<div class="qmeta"><span><b>'+(STUDY.idx+1)+'</b> / '+list.length+' 語</span>'+
+    '<span>'+CAT[kp.cat].name+'・レベル'+kp.level+'</span>'+
+    '<span class="seenmark">見た '+seenN+'</span>'+
+    (st.seen[kp.id]?'<span class="muted">✓ 確認ずみ</span>':'')+'</div>';
+
+  h += '<div class="scard'+(mk?' marked':'')+'" id="scard" data-act="flip">'+
+    '<div class="qlabel">'+esc(f.fLabel)+'</div>'+
+    '<div class="front'+(f.fBig?'':' small')+'">'+f.fHtml+'</div>';
+  if(STUDY.open){
+    h += '<div class="back"><div class="qlabel">'+esc(f.bLabel)+'</div>'+f.bHtml+studyExtra(kp)+'</div>';
+  }else{
+    h += '<div class="tapme">タップして答えを見る</div>';
+  }
+  h += '</div>';
+
+  h += '<div class="navrow">'+
+    '<button data-act="sprev"'+(STUDY.idx<=0?' disabled':'')+'>← 前</button>'+
+    '<button class="'+(mk?'btn-p':'btn-s')+'" data-act="smark" style="flex:0 0 22%;font-size:1.1rem" '+
+      'title="あとで見直したい語に印をつけます">🔖'+(mk?'✓':'')+'</button>'+
+    '<button class="btn-p" data-act="snext">'+(STUDY.idx>=list.length-1?'最初へ ↻':'次 →')+'</button></div>'+
+    '<p class="tiny center" style="margin-top:10px">カードを左右にスワイプしても進めます。'+
+    (STUDY.open?'':'　まず自分で答えを思い出してから開いてみましょう。')+'</p>';
+  return h;
+}
+
+/* ---------- 暗記シート ---------- */
+function studySheet(list, st){
+  const meanSideHidden = (STUDY.dir==='front');   // 表→裏なら右列（意味側）を隠す
+  let h = '<div class="card"><div class="row" style="margin-bottom:8px">'+
+    '<button class="btn-sm btn-s" data-act="sheetAll" data-v="1">全部見せる</button>'+
+    '<button class="btn-sm btn-s" data-act="sheetAll" data-v="0">全部かくす</button>'+
+    '<button class="btn-sm" data-act="sheetSeen">✓ 表示中を確認ずみにする</button></div>'+
+    '<p class="tiny">'+list.length+'語　—　ピンクの部分をタップすると1つずつ見えます。</p>'+
+    '<table class="sheet"><thead><tr><th style="width:38%">'+
+      (meanSideHidden?'熟語・語':'意味・対応する語')+'</th><th>'+
+      (meanSideHidden?'意味・対応する語':'熟語・語')+'</th></tr></thead><tbody>';
+
+  list.forEach(k=>{
+    const c = CAT[k.cat], meanCat = (c.kind==='mean');
+    const left  = meanSideHidden ? ruby(k.front,k.frontYomi)
+                                 : (meanCat?esc(k.back):ruby(k.back,k.backYomi));
+    const right = meanSideHidden ? (meanCat?esc(k.back):ruby(k.back,k.backYomi))
+                                 : ruby(k.front,k.frontYomi);
+    const open = !!STUDY.sheetOpen[k.id];
+    h += '<tr class="'+(st.marked[k.id]?'mk':'')+'">'+
+      '<td>'+left+'<br><span class="muted" style="font-size:.7rem">'+c.short+'・'+k.level+
+        (st.seen[k.id]?'　<span class="seenmark">✓</span>':'')+'</span></td>'+
+      '<td class="hid'+(open?' open':'')+'" data-act="sheetCell" data-id="'+esc(k.id)+'"><span class="m">'+right+'</span></td></tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
+}
+/* ============================================================
    UI
    ============================================================ */
 const $ = id=>document.getElementById(id);
@@ -678,6 +871,7 @@ function render(){
   if(VIEW==='accounts') app.innerHTML = viewAccounts();
   else if(VIEW==='quiz') app.innerHTML = viewQuiz();
   else if(VIEW==='result') app.innerHTML = viewResult();
+  else if(VIEW==='study') app.innerHTML = viewStudy();
   else if(VIEW==='list') app.innerHTML = '<h1>全問一覧</h1><p class="muted">'+esc(activeAcc().name)+'</p>'+listCard(false);
   else app.innerHTML = viewHome();
   bind();
@@ -760,6 +954,17 @@ function viewHome(){
     '</div>';
   if(!nSel) h += '<p class="muted" style="color:var(--ng)">分野とレベルを1つ以上えらんでください。</p>';
   h += '</div>';
+
+  /* --- 覚えるモード --- */
+  const sst = studyStore();
+  const seenN = KPS.filter(k=>sel.includes(k.cat) && lv.includes(k.level) && sst.seen[k.id]).length;
+  const markN = KPS.filter(k=>sst.marked[k.id]).length;
+  h += '<div class="card"><h3 style="margin-top:0">覚えるモード</h3>'+
+    '<p class="muted" style="margin:.2em 0 .8em;font-size:.85rem">テストの前に、意味を見ながら覚えるためのモードです。'+
+    '正解数や習得状況には影響しません。</p>'+
+    '<button class="btn-s" data-act="study" style="width:100%"'+(nSel?'':' disabled')+'>📖 覚えるモードをひらく</button>'+
+    '<p class="tiny" style="margin-top:8px">選択中の'+nSel+'語のうち <b>'+seenN+'語</b> を確認ずみ'+
+    (markN?'　／　🔖 チェック中 '+markN+'語':'')+'</p></div>';
 
   /* --- 習得状況（v1.0 §6-2） --- */
   const all = {total:0,mast:0,half:0};
@@ -990,13 +1195,34 @@ function listCard(inResult){
 function bind(){
   document.querySelectorAll('[data-act]').forEach(el=>{
     const a = el.dataset.act;
-    if(el.tagName==='SELECT'){ el.onchange = ()=>{ LISTF[el.dataset.k]=el.value; render(); }; return; }
+    if(el.tagName==='SELECT'){
+      el.onchange = ()=>{
+        if(a==='sset'){ STUDY[el.dataset.k]=el.value; STUDY.idx=0; STUDY.open=false; STUDY.list=null; }
+        else LISTF[el.dataset.k]=el.value;
+        render();
+      };
+      return;
+    }
     if(el.tagName==='INPUT' && el.type==='checkbox'){ el.onchange = ()=>ACT[a](el); return; }
     el.onclick = (ev)=>{ ev.stopPropagation(); ACT[a] && ACT[a](el); };
   });
+  bindSwipe();
+}
+/* カードの左右スワイプ */
+function bindSwipe(){
+  const c = $('scard'); if(!c) return;
+  let x0=null, y0=null;
+  c.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; y0=e.touches[0].clientY; }, {passive:true});
+  c.addEventListener('touchend', e=>{
+    if(x0===null) return;
+    const dx = e.changedTouches[0].clientX-x0, dy = e.changedTouches[0].clientY-y0;
+    x0=null;
+    if(Math.abs(dx)<50 || Math.abs(dx)<Math.abs(dy)*1.5) return;
+    if(dx<0) ACT.snext(); else ACT.sprev();
+  }, {passive:true});
 }
 const ACT = {
-  go(el){ VIEW = el.dataset.v; openKp=null; render(); },
+  go(el){ if(VIEW==='study') studyLeave(); VIEW = el.dataset.v; openKp=null; render(); },
   cat(el){
     const id = el.dataset.id;
     PICK.cats = el.checked ? [...new Set([...PICK.cats,id])] : PICK.cats.filter(x=>x!==id);
@@ -1011,6 +1237,53 @@ const ACT = {
   f(){},
   kp(el){ openKp = (openKp===el.dataset.id)?null:el.dataset.id; render(); },
   showList(){ VIEW='list'; openKp=null; render(); },
+
+  /* ---- 覚えるモード（習得判定には影響しない） ---- */
+  study(){ STUDY.list=null; STUDY.idx=0; STUDY.open=false; VIEW='study'; render(); },
+  leaveStudy(){ studyLeave(); VIEW='home'; render(); },
+  sset(){},
+  stab(el){ STUDY.tab = el.dataset.v; STUDY.open=false; render(); },
+  flip(){
+    const list = studyList();
+    if(!list.length) return;
+    STUDY.open = !STUDY.open;
+    if(STUDY.open) markSeen(list[STUDY.idx].id);
+    render();
+  },
+  snext(){
+    const list = studyList(); if(!list.length) return;
+    markSeen(list[STUDY.idx].id);
+    STUDY.idx = (STUDY.idx+1) % list.length;
+    STUDY.open = false; render();
+  },
+  sprev(){
+    const list = studyList(); if(!list.length) return;
+    STUDY.idx = Math.max(0, STUDY.idx-1); STUDY.open=false; render();
+  },
+  smark(){
+    const list = studyList(); if(!list.length) return;
+    const id = list[STUDY.idx].id, st = studyStore();
+    if(st.marked[id]) delete st.marked[id]; else st.marked[id] = true;
+    studySave(); render();
+  },
+  sheetCell(el){
+    const id = el.dataset.id;
+    if(STUDY.sheetOpen[id]) delete STUDY.sheetOpen[id];
+    else { STUDY.sheetOpen[id] = true; markSeen(id); }
+    render();
+  },
+  sheetAll(el){
+    const list = studyList();
+    if(el.dataset.v==='1'){ list.forEach(k=>STUDY.sheetOpen[k.id]=true); }
+    else STUDY.sheetOpen = {};
+    render();
+  },
+  sheetSeen(){
+    const list = studyList();
+    Object.keys(STUDY.sheetOpen).forEach(id=>markSeen(id));
+    if(!Object.keys(STUDY.sheetOpen).length) list.forEach(k=>markSeen(k.id));
+    STUDY.list = null; render();
+  },
 
   /* ---- アカウント ---- */
   accAdd(){

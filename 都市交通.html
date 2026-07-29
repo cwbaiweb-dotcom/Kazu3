@@ -122,6 +122,20 @@
   .mapbox .route{fill:none;stroke:#2563eb;stroke-width:2;stroke-dasharray:5 4;stroke-linecap:round;opacity:.85;}
   .histBanner{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;border-radius:10px;
     padding:8px 12px;font-size:.82rem;font-weight:700;margin-bottom:10px;text-align:center;}
+  /* 覚えるモード */
+  .membtn{display:block;width:100%;border:none;border-radius:16px;cursor:pointer;margin-top:10px;
+    font-size:1.05rem;font-weight:800;color:#fff;padding:15px;
+    background:linear-gradient(135deg,#0ea5e9,#14b8a6);box-shadow:0 6px 16px rgba(14,165,233,.3);}
+  .membtn:active{transform:translateY(1px);}
+  .memshuffle{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:10px;
+    font-size:.82rem;color:var(--sub);font-weight:600;cursor:pointer;}
+  .memshuffle input{width:18px;height:18px;accent-color:var(--blue);}
+  .memterm{font-size:2rem;font-weight:900;text-align:center;margin:14px 0 6px;color:var(--ink);}
+  .memterm rt{font-size:.4em;color:var(--sub);}
+  .meminfo{font-size:1.05rem;line-height:1.9;text-align:center;color:#334155;
+    background:#f8fafc;border-radius:12px;padding:14px 16px;margin:6px 0;}
+  .meminfo b{color:var(--blue);}
+  #memorize .navrow{margin-top:16px;}
   /* データ管理パネル */
   .datapanel{margin-top:16px;border:1px solid var(--line);border-radius:14px;padding:4px 14px;background:#fbfcfe;}
   .datapanel summary{cursor:pointer;font-weight:800;font-size:.92rem;padding:8px 0;color:#334155;}
@@ -309,6 +323,8 @@
     </div>
     <p class="lenhint">※<b>10語・20語</b>＝ちがう形で2回連続正解すると「習得」になる練習モード（1語＝約2問）。<br>※<b>すべて</b>＝えらんだ分野の全部を<b>1語1問ずつ</b>出す力だめし（テスト）。全部解けるか挑戦！</p>
     <button class="bigbtn" id="startBtn" onclick="startQuiz()">スタート ▶</button>
+    <button class="membtn" onclick="startMemorize()">🧠 覚えるモード（答えを見て暗記）</button>
+    <label class="memshuffle"><input type="checkbox" onchange="memShuffle=this.checked"> 覚えるモードをシャッフルする</label>
 
     <!-- 記録データの管理 -->
     <details class="datapanel" id="dataPanel">
@@ -354,6 +370,29 @@
     <p class="lead" id="listLegend">習得＝ちがう形で2回連続正解できた語。<span class="lg mm">習得✅</span> <span class="lg ll">学習中</span> <span class="lg nn">未</span> <span class="lg w2">✕2以上</span> <span class="lg fv">⭐お気に入り</span></p>
     <div id="listBody"></div>
     <button class="quitbtn wide" onclick="backToStart()">← もどる</button>
+  </section>
+
+  <!-- MEMORIZE (覚えるモード) -->
+  <section id="memorize" class="hidden">
+    <div class="hud">
+      <span class="pill">🧠 覚えるモード</span>
+      <span class="pill sc"><b id="memNum">1 / 1</b></span>
+    </div>
+    <div class="progress"><div id="memBar"></div></div>
+    <div class="card">
+      <div class="qtoprow">
+        <span class="qtag" id="memTag">分野</span>
+        <button class="favbtn" id="memFav" onclick="memToggleFav()">☆ お気に入り</button>
+      </div>
+      <div class="memterm" id="memTerm"></div>
+      <div class="meminfo" id="memInfo"></div>
+      <div class="mapbox" id="memMap"></div>
+      <div class="navrow">
+        <button class="quitbtn" id="memPrev" onclick="memNav(-1)">← 前へ</button>
+        <button class="nextbtn" id="memNext" onclick="memNav(1)">次へ ▶</button>
+        <button class="quitbtn" onclick="backToStart()">終了</button>
+      </div>
+    </div>
   </section>
 
   <!-- QUIZ -->
@@ -730,6 +769,9 @@ SHINKANSEN.forEach(s=>TERM_READING[s.t]=s.r);
 HIGHWAY.forEach(h=>TERM_READING[h.t]=h.r);
 TUNNEL.forEach(t=>TERM_READING[t.t]=t.r);
 EAST.concat(WEST).forEach(c=>TERM_READING[c[0]]=c[1]);
+// 都市名→説明（覚えるモード用）
+const CITY_DESC={};
+EAST.concat(WEST).forEach(c=>CITY_DESC[c[0]]=c[2]);
 // 問題キー → 知識ポイントID・用語
 function kpInfo(key){
   if(key.startsWith('cf:')) { const n=key.slice(3); return {id:'kp:city:'+n, term:n}; }
@@ -1237,7 +1279,7 @@ function recordAnswer(q,correct){
 function isMasteredKP(u,kpId){ return u && !!u.masteredKP[kpId]; }
 
 /* ---- 画面切り替え ---- */
-function hideAll(){ ['start','quiz','result','profile','stats','list'].forEach(id=>{const e=document.getElementById(id); if(e) e.classList.add('hidden');}); }
+function hideAll(){ ['start','quiz','result','profile','stats','list','memorize'].forEach(id=>{const e=document.getElementById(id); if(e) e.classList.add('hidden');}); }
 function showScreen(id){ hideAll(); document.getElementById(id).classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
 
 /* ---- アカウントバー ---- */
@@ -1315,6 +1357,65 @@ function startFavReview(){
   const ids=favIds();
   if(ids.length===0){ alert('お気に入りはまだありません。問題の右上の「☆ お気に入り」で登録してね。'); return; }
   beginSession(shuffle(ids.slice()), true, false, 'お気に入り');
+}
+
+/* ============ 覚えるモード（答えを見て暗記・テストではない）============ */
+let MEM={ids:[], i:0};
+// 1知識ポイントの要点（用語・よみ・特徴・地図）を組み立てる
+function kpSummary(kpId){
+  const kp=KP[kpId]; const t=kp.term, r=kp.reading;
+  let info='';
+  if(kp.id.startsWith('kp:city:')){
+    info=CITY_DESC[t]||'';
+  } else if(kp.id.startsWith('kp:sk:')){
+    const s=SHINKANSEN.find(x=>x.t===t);
+    if(s){ info=`起点：<b>${s.start}</b> ／ 終点：<b>${s.end}</b><br>愛称：${s.nick.join('・')}`+(s.note?`<br>${s.note}`:''); }
+  } else if(kp.id.startsWith('kp:hw:')){
+    const h=HIGHWAY.find(x=>x.t===t);
+    if(h){ info=`起点：<b>${h.start}</b> ／ 終点：<b>${h.end}</b>`+(h.note?`<br>${h.note}`:''); }
+  } else if(kp.id.startsWith('kp:tn:')){
+    const tn=TUNNEL.find(x=>x.t===t);
+    if(tn){ info=`<b>${tn.a}</b> と <b>${tn.b}</b> を結ぶ<br>${tn.note}（${tn.year}開通）`; }
+  }
+  return {tag:kp.cat, cid:kp.cid, term:t, reading:r, info, pins:kp.pins||[]};
+}
+function startMemorize(){
+  const cids=selectedCids();
+  if(cids.length===0){ alert('分野を1つ以上えらんでね。'); return; }
+  let ids=[]; cids.forEach(cid=>{ ids=ids.concat(KPS_BY_CAT[cid]); });   // 分野順・全語（習得済みも含む）
+  if(memShuffle) ids=shuffle(ids.slice());
+  MEM={ids, i:0};
+  showScreen('memorize');
+  renderMem();
+}
+let memShuffle=false;
+function renderMem(){
+  const id=MEM.ids[MEM.i]; const s=kpSummary(id);
+  document.getElementById('memNum').textContent=(MEM.i+1)+' / '+MEM.ids.length;
+  document.getElementById('memBar').style.width=`${((MEM.i+1)/MEM.ids.length)*100}%`;
+  const tag=document.getElementById('memTag'); tag.textContent=s.tag; tag.className=`qtag c${s.cid}`;
+  document.getElementById('memTerm').innerHTML=ruby(s.term, s.reading);
+  document.getElementById('memInfo').innerHTML=s.info;
+  document.getElementById('memMap').innerHTML = s.pins.length ? mapSVG(s.pins) : '';
+  // お気に入りボタン
+  const fb=document.getElementById('memFav'); const u=activeUser(); const on=u&&u.fav[id];
+  fb.textContent = on?'★ お気に入り':'☆ お気に入り'; fb.classList.toggle('on',!!on);
+  document.getElementById('memPrev').disabled = MEM.i<=0;
+  const nextBtn=document.getElementById('memNext');
+  nextBtn.textContent = MEM.i>=MEM.ids.length-1 ? 'おわり ✓' : '次へ ▶';
+}
+function memNav(d){
+  const ni=MEM.i+d;
+  if(ni<0) return;
+  if(ni>=MEM.ids.length){ backToStart(); return; }
+  MEM.i=ni; renderMem();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function memToggleFav(){
+  const id=MEM.ids[MEM.i]; const u=activeUser();
+  if(!u){ alert('お気に入りはプロフィールに保存されます。まずプロフィールを作成してね。'); return; }
+  if(u.fav[id]) delete u.fav[id]; else u.fav[id]=true;
+  saveDB(); renderMem();
 }
 
 /* ---- プロフィール画面 ---- */

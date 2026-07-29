@@ -188,6 +188,26 @@
   .modal .mrow .btn{flex:1}
   .modal .desc{font-size:12.5px;color:var(--ink-light);line-height:1.8;margin-bottom:8px}
   .modal .desc b{color:var(--ink)}
+
+  /* ---------- learn（覚えるモード） ---------- */
+  .lbar{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-light);margin-bottom:8px}
+  .lmark{font-weight:700}
+  .lmark.m2{color:var(--midori)}
+  .lmark.mx{color:var(--shu)}
+  .lmark.m0{color:#C9C2B0}
+  .lchips{display:flex;gap:8px;margin-bottom:12px}
+  .lcard{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:28px 18px;min-height:300px;display:flex;flex-direction:column;
+    justify-content:center;text-align:center;cursor:pointer;margin-bottom:12px;
+    box-shadow:0 2px 6px rgba(70,50,20,.07);
+  }
+  .lcard .cat{font-size:11px;color:var(--gold);letter-spacing:.3em;margin-bottom:16px}
+  .lcard .idm{font-size:31px;font-weight:600;letter-spacing:.06em;line-height:1.7}
+  .lcard .mean{margin-top:20px;font-size:14.5px;line-height:1.9;color:var(--ink);background:var(--shu-soft);border-radius:10px;padding:12px 14px;text-align:left}
+  .lcard .hint{margin-top:20px;font-size:12px;color:var(--ink-light);letter-spacing:.1em}
+  .lnav{display:flex;gap:10px}
+  .lnav .btn{flex:1}
 </style>
 </head>
 <body>
@@ -224,6 +244,7 @@
     <div class="startbtns">
       <button class="btn shu" onclick="startNormal()">クイズをはじめる</button>
       <button class="btn primary" onclick="startWeak()">苦手だけ復習する</button>
+      <button class="btn ghost" onclick="startLearn()">カードで覚える（覚えるモード）</button>
       <button class="btn ghost" onclick="showList()">慣用句一覧をみる</button>
     </div>
     <div class="card">
@@ -290,6 +311,27 @@
       <button class="btn primary" onclick="startNormal()">もう一度挑戦</button>
       <button class="btn ghost" onclick="goHome()">ホームへもどる</button>
     </div>
+  </section>
+
+  <!-- ============ LEARN ============ -->
+  <section id="learn" class="screen">
+    <div class="lbar">
+      <span id="lnum"></span>
+      <span class="lmark" id="lmark"></span>
+      <button class="quit" onclick="goHome()">やめる</button>
+    </div>
+    <div class="progress"><i id="lpbar" style="width:0%"></i></div>
+    <div class="lchips">
+      <button class="chip" id="lFilterBtn" onclick="toggleLearnFilter()">未習得だけ</button>
+      <button class="chip" onclick="shuffleLearn()">シャッフル</button>
+    </div>
+    <div class="lcard" id="lcard" onclick="toggleReveal()"></div>
+    <div class="lnav">
+      <button class="btn ghost" id="lPrev" onclick="learnMove(-1)">◀ まえ</button>
+      <button class="btn shu" id="lRevealBtn" onclick="toggleReveal()">答えをみる</button>
+      <button class="btn ghost" id="lNext" onclick="learnMove(1)">つぎ ▶</button>
+    </div>
+    <p class="note">カードをタップすると答えと意味が出るよ。覚えるモードは見るだけだから、成績には記録されないよ。クイズで2回連続正解するとマスター◎！</p>
   </section>
 
   <!-- ============ LIST ============ -->
@@ -1188,6 +1230,70 @@ function renderResult(){
     mc.style.display="none";rb.style.display="none";
   }
   show("result");
+}
+
+/* ---------------- 覚えるモード（成績には記録しない） ---------------- */
+let learn=null;
+function learnBuildList(unmOnly){
+  let l=catPool();
+  if(unmOnly)l=l.filter(i=>{const it=pView(i);return !(it&&it.mastered);});
+  /* ならび：苦手 → 未出題 → 挑戦中 → マスター済み */
+  const w=i=>{
+    const it=pView(i);
+    if(it&&it.totalWrong>0&&!it.mastered)return 0;
+    if(!it||!it.lastSeenAt)return 1;
+    if(it.mastered)return 3;
+    return 2;
+  };
+  return l.sort((a,b)=>w(a)-w(b)||a-b);
+}
+function startLearn(){
+  const list=learnBuildList(false);
+  if(!list.length){alert("表示できる言葉がありません。");return;}
+  learn={list,idx:0,revealed:false,unmOnly:false};
+  show("learn");renderLearn();
+}
+function toggleLearnFilter(){
+  const un=!learn.unmOnly;
+  const list=learnBuildList(un);
+  if(!list.length){alert("未習得の言葉はありません。全部マスター、すばらしい！");return;}
+  const cur=learn.list[learn.idx];
+  learn.unmOnly=un;learn.list=list;
+  const ni=list.indexOf(cur);
+  learn.idx=ni>=0?ni:0;
+  learn.revealed=false;
+  renderLearn();
+}
+function shuffleLearn(){shuffle(learn.list);learn.idx=0;learn.revealed=false;renderLearn();}
+function learnMove(d){
+  const n=learn.idx+d;
+  if(n<0||n>=learn.list.length)return;
+  learn.idx=n;learn.revealed=false;renderLearn();
+}
+function toggleReveal(){learn.revealed=!learn.revealed;renderLearn();}
+function renderLearn(){
+  const kp=learn.list[learn.idx],d=DATA[kp],it=pView(kp);
+  byId("lnum").textContent=`${learn.idx+1} ／ ${learn.list.length} 枚`;
+  byId("lpbar").style.width=((learn.idx+1)/learn.list.length*100)+"%";
+  let mk="・",cls="m0";
+  if(it&&it.mastered){mk="◎マスター";cls="m2";}
+  else if(it&&it.totalWrong>0){mk="×苦手";cls="mx";}
+  const lm=byId("lmark");lm.textContent=mk;lm.className="lmark "+cls;
+  byId("lFilterBtn").className="chip"+(learn.unmOnly?" on":"");
+  byId("lPrev").disabled=(learn.idx===0);
+  byId("lNext").disabled=(learn.idx===learn.list.length-1);
+  const card=byId("lcard");
+  if(!learn.revealed){
+    card.innerHTML=`<div class="cat">${CATS[d[0]]}</div>`+
+      `<div class="idm mincho">${esc(d[1]).replace("□",'<span class="blank empty"></span>')}</div>`+
+      `<div class="hint">タップして答えをみる</div>`;
+    byId("lRevealBtn").textContent="答えをみる";
+  }else{
+    card.innerHTML=`<div class="cat">${CATS[d[0]]}</div>`+
+      `<div class="idm mincho">${esc(d[1]).replace("□",`<span class="blank fill">${esc(d[2])}</span>`)}</div>`+
+      `<div class="mean">${esc(d[3])}</div>`;
+    byId("lRevealBtn").textContent="かくす";
+  }
 }
 
 /* ---------------- 一覧 ---------------- */

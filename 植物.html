@@ -376,6 +376,7 @@ var modalEl=document.getElementById("modal");
 
 var UI={screen:"home", homeFilterState:"all", resultCatFilter:"all", resultStateFilter:"all", resultSort:"wrong"};
 var S=null;  // 進行中セッション
+var MEMO=null;  // 覚えるモードの状態（成績には影響しない）
 
 function newSessionObj(mode,kpIds){
   return {mode:mode, kpIds:kpIds, queue:[], served:[], cur:null,
@@ -533,6 +534,9 @@ function render(){
   }
   if(UI.screen==="quiz" && S) return renderQuiz();
   if(UI.screen==="result" && S) return renderResult();
+  if(UI.screen==="memo") return renderMemoSetup();
+  if(UI.screen==="memocard") return renderMemoCard();
+  if(UI.screen==="memodone") return renderMemoDone();
   if(UI.screen==="progress") return renderProgress();
   if(UI.screen==="settings") return renderSettings();
   return renderHome();
@@ -633,6 +637,9 @@ function renderHome(){
     '<button class="secondary" data-mode="20q">20問モード（20KP＝約40問）</button>'+
     '<button class="secondary" data-mode="all">全問モード（全'+KPS.length+'KPを1周・実力確認）</button></div>';
 
+  html+='<div class="eyebrow" style="margin:22px 0 8px">覚える（テストなし）</div>'+
+    '<button class="secondary" id="memoBtn">📖 覚えるモード（カードで答えと解説を確認）</button>';
+
   // 間違いランキング（§9-2）
   if(rank.length){
     html+='<div class="eyebrow" style="margin:24px 0 8px">間違いランキング</div><div class="panel" style="padding:8px">';
@@ -675,6 +682,7 @@ function renderHome(){
     } else { startSession(m,false); }
   };});
   var rs=q("#revStart"); if(rs) rs.onclick=function(){startSession("10q",true);};
+  var mb=q("#memoBtn"); if(mb) mb.onclick=function(){ MEMO=null; UI.screen="memo"; render(); };
   q("#toProgress").onclick=function(){UI.screen="progress";render();};
   q("#toSettings").onclick=function(){UI.screen="settings";render();};
 }
@@ -894,6 +902,106 @@ function exportCSV(){
   setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
 }
 function csvCell(v){v=String(v);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+
+/* ---- 覚えるモード（§7 とは別・成績非影響） ---- */
+function buildMemoCards(cats,scope){
+  var items=accProgress(DB.activeAccountId).items;
+  return KPS.filter(function(k){
+    if(cats.indexOf(k.cat)<0) return false;
+    var it=items[k.id];
+    if(scope==="unmastered") return !(it&&it.mastered);
+    if(scope==="weak") return it && it.totalWrong>0;
+    return true;
+  });
+}
+function renderMemoSetup(){
+  armLeaveGuard(false);
+  if(!MEMO) MEMO={cats:CATS.map(function(c){return c.id;}),scope:"all"};
+  var html='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'+
+    '<button class="link" id="mback">← 戻る</button><span style="font-family:var(--serif);font-size:16px">📖 覚えるモード</span></div>';
+  html+='<p style="font-size:12.5px;color:var(--ink60);margin:0 0 16px;line-height:1.7">カードをめくって答えと解説を確認します。<b>成績や習得には影響しません</b>（覚えたらテストで力だめし）。</p>';
+  html+='<div class="eyebrow" style="margin:0 0 8px">はんい</div><div class="stack" style="gap:6px">';
+  CATS.forEach(function(c){var on=MEMO.cats.indexOf(c.id)>=0; var st=catStat(c.id);
+    html+='<button class="row" data-mc="'+c.id+'" style="background:'+(on?"var(--paper2)":"transparent")+';border-color:'+(on?c.color:"var(--line)")+';opacity:'+(on?1:.55)+'">'+
+      '<span class="box" style="border-color:'+(on?c.color:"var(--line)")+';background:'+(on?c.color:"transparent")+'"></span>'+
+      '<span style="font-size:13.5px">'+esc(c.id)+'</span>'+
+      '<span class="num" style="margin-left:auto;font-size:11px;color:var(--ink60)">'+st.total+'枚</span></button>';
+  });
+  html+='</div>';
+  html+='<div class="eyebrow" style="margin:20px 0 8px">対象</div><div style="display:flex;gap:8px;flex-wrap:wrap">';
+  [["all","全部"],["unmastered","未習得だけ"],["weak","苦手（誤答あり）だけ"]].forEach(function(s){
+    html+='<button class="pill'+(MEMO.scope===s[0]?" on":"")+'" data-ms="'+s[0]+'">'+s[1]+'</button>';
+  });
+  html+='</div>';
+  var count=buildMemoCards(MEMO.cats,MEMO.scope).length;
+  html+='<button class="primary" id="mstart" style="margin-top:24px"'+(count?'':' disabled')+'>カードを見る（'+count+'枚）</button>';
+  app.innerHTML=html;
+  q("#mback").onclick=function(){UI.screen="home";render();};
+  qa("[data-mc]").forEach(function(el){el.onclick=function(){var id=el.getAttribute("data-mc");var i=MEMO.cats.indexOf(id);if(i>=0)MEMO.cats.splice(i,1);else MEMO.cats.push(id);render();};});
+  qa("[data-ms]").forEach(function(el){el.onclick=function(){MEMO.scope=el.getAttribute("data-ms");render();};});
+  var ms=q("#mstart"); if(ms) ms.onclick=function(){
+    MEMO.cards=buildMemoCards(MEMO.cats,MEMO.scope); MEMO.idx=0; MEMO.revealed=false;
+    if(!MEMO.cards.length) return; UI.screen="memocard"; render();
+  };
+}
+function renderMemoCard(){
+  armLeaveGuard(false);
+  if(!MEMO||!MEMO.cards||!MEMO.cards.length){ UI.screen="memodone"; return renderMemoDone(); }
+  if(MEMO.idx>=MEMO.cards.length) MEMO.idx=MEMO.cards.length-1;
+  var k=MEMO.cards[MEMO.idx], fm=k.forms.A;
+  var it=accProgress(DB.activeAccountId).items[k.id];
+  var mastered=it&&it.mastered;
+  var html='<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'+
+    '<button class="link" id="mhome">✕ ホーム</button>'+
+    '<span style="font-size:11.5px;color:var(--ink60)">残り '+MEMO.cards.length+' 枚</span>'+
+    '<span class="num" style="margin-left:auto;font-size:12px;color:var(--ink60)">'+(MEMO.idx+1)+' / '+MEMO.cards.length+'</span></div>';
+  html+=bar((MEMO.idx+1)/MEMO.cards.length,"var(--petal)");
+  html+='<div class="panel" style="margin-top:16px;min-height:130px">'+
+    '<span class="tag" style="background:var(--leafLt);color:'+catColor(k.cat)+'">'+esc(k.cat)+'</span>'+
+    (mastered?'<span class="badge" style="background:var(--leafLt);color:var(--leaf);border-color:#B7D0BD">習得済み</span>':'')+
+    '<h2 style="font-size:20px;line-height:1.7;margin:12px 0 0">'+txt(fm.prompt)+'</h2>';
+  if(MEMO.revealed){
+    html+='<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">'+
+      '<div style="font-family:var(--serif);font-size:22px;color:var(--leaf)">'+txt(fm.answers.join(" ・ "))+'</div>'+
+      '<p style="font-size:13.5px;line-height:1.85;margin:10px 0 0">'+txt(k.exp)+'</p>'+findLinks(fm.kw)+'</div>';
+  }
+  html+='</div>';
+  if(!MEMO.revealed){
+    html+='<button class="primary" id="reveal" style="margin-top:14px">答えを見る</button>';
+  } else {
+    html+='<div style="display:flex;gap:10px;margin-top:14px">'+
+      '<button class="secondary" id="prev"'+(MEMO.idx===0?' disabled':'')+' style="flex:1">← 前へ</button>'+
+      '<button class="primary" id="next" style="flex:2">'+(MEMO.idx+1>=MEMO.cards.length?"おわり":"次へ →")+'</button></div>'+
+      '<button class="link" id="learned" style="margin:10px auto 0;display:block">✓ 覚えた（このリストから外す）</button>';
+  }
+  app.innerHTML=html;
+  q("#mhome").onclick=function(){UI.screen="home";render();};
+  var rv=q("#reveal"); if(rv) rv.onclick=function(){MEMO.revealed=true;render();};
+  var pv=q("#prev"); if(pv) pv.onclick=function(){if(MEMO.idx>0){MEMO.idx--;MEMO.revealed=false;render();}};
+  var nx=q("#next"); if(nx) nx.onclick=function(){
+    if(MEMO.idx+1>=MEMO.cards.length){ UI.screen="memodone"; render(); }
+    else { MEMO.idx++; MEMO.revealed=false; render(); }
+  };
+  var ln=q("#learned"); if(ln) ln.onclick=function(){
+    MEMO.cards.splice(MEMO.idx,1);
+    if(MEMO.cards.length===0){ UI.screen="memodone"; render(); return; }
+    if(MEMO.idx>=MEMO.cards.length) MEMO.idx=MEMO.cards.length-1;
+    MEMO.revealed=false; render();
+  };
+}
+function renderMemoDone(){
+  armLeaveGuard(false);
+  var html='<div style="text-align:center;padding:40px 0">'+LEAF+
+    '<h2 style="font-size:24px;margin:14px 0 6px">カードは以上です</h2>'+
+    '<p style="color:var(--ink60);font-size:13px;margin:0 0 24px">おぼえたら、テストで力だめししてみましょう。</p></div>'+
+    '<div class="stack" style="gap:10px"><button class="primary" id="toTest">テストをする（10問モード）</button>'+
+    '<button class="secondary" id="againMemo">もう一度カードを見る</button>'+
+    '<button class="secondary" id="homeMemo">ホームへ</button></div>';
+  app.innerHTML=html;
+  q("#toTest").onclick=function(){startSession("10q",false);};
+  q("#againMemo").onclick=function(){UI.screen="memo";render();};
+  q("#homeMemo").onclick=function(){UI.screen="home";render();};
+}
 
 /* ---- 設定（§9 リセット） ---- */
 function renderSettings(){

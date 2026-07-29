@@ -303,6 +303,41 @@
   .mCancel{background:#fff;border:1.5px solid var(--line);color:var(--ink);}
   .mOk{background:var(--shu);border:none;color:#fff;}
 
+  /* 覚えるモード（フラッシュカード） */
+  .learnTop{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .learnTop .stat{font-size:.82rem;color:var(--ink-soft);white-space:nowrap;}
+  .learnTop .stat b{color:var(--matsu);}
+  .learnCard{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:34px 20px 26px;text-align:center;position:relative;margin-bottom:14px;
+    box-shadow:0 2px 8px rgba(43,43,51,.08);min-height:230px;cursor:pointer;
+    display:flex;flex-direction:column;justify-content:center;gap:14px;
+  }
+  .learnCard .lw{
+    font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    font-size:1.9rem;font-weight:700;line-height:1.6;letter-spacing:.04em;
+  }
+  .learnCard .lw.small{font-size:1.35rem;}
+  .learnCard .lm{
+    font-size:1rem;line-height:1.9;text-align:left;
+    border-top:1px dashed var(--line);padding-top:14px;
+  }
+  .learnCard .hint{font-size:.75rem;color:var(--ink-soft);letter-spacing:.1em;}
+  .learnCard .againTag{position:absolute;top:12px;left:12px;background:var(--gold);color:#fff;font-size:.7rem;border-radius:99px;padding:3px 10px;letter-spacing:.1em;}
+  .learnBtns{display:flex;gap:10px;}
+  .learnBtns button{
+    flex:1;border:none;border-radius:14px;padding:15px 8px;font-size:1rem;
+    cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:.08em;
+  }
+  .learnBtns .lbShow{background:var(--ai);color:#fff;letter-spacing:.2em;}
+  .learnBtns .lbGot{background:var(--matsu);color:#fff;}
+  .learnBtns .lbAgain{background:#fff;border:2px solid var(--gold);color:var(--gold);}
+  .learnDone{text-align:center;padding:30px 16px;}
+  .learnDone .big{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:2rem;font-weight:700;color:var(--matsu);letter-spacing:.1em;}
+  .learnDone .sub{font-size:.9rem;color:var(--ink-soft);margin-top:10px;line-height:1.9;}
+  .learnBar{flex:1;height:8px;background:#EDE6D6;border-radius:99px;overflow:hidden;}
+  .learnBar i{display:block;height:100%;background:linear-gradient(90deg,var(--matsu),var(--gold));width:0%;transition:width .3s;}
+
   button:focus-visible,.opt:focus-visible,.choice:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
 </style>
 </head>
@@ -351,6 +386,7 @@
         <button class="opt selected" data-mode="10q">10問モード<small>10語×2形式=20問</small></button>
         <button class="opt" data-mode="20q">20問モード<small>20語×2形式=40問</small></button>
         <button class="opt" data-mode="all">全問モード<small>全語1周・実力確認</small></button>
+        <button class="opt" data-mode="learn">覚えるモード<small>カードでインプット</small></button>
       </div>
       <div class="notice" style="margin-top:10px;" id="modeHint"></div>
     </div>
@@ -383,6 +419,18 @@
       </div>
       <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
     </div>
+  </section>
+
+  <!-- 覚えるモード -->
+  <section id="scrLearn" class="screen">
+    <div class="learnTop">
+      <span class="stat" id="learnLeft"></span>
+      <div class="learnBar"><i id="learnBarFill"></i></div>
+      <span class="stat"><b id="learnGot">0</b>枚おぼえた</span>
+      <button id="learnQuitBtn" style="border:none;background:none;color:var(--ink-soft);font-size:.8rem;cursor:pointer;text-decoration:underline;font-family:inherit;">やめる</button>
+    </div>
+    <div id="learnBody"></div>
+    <div class="notice" style="margin-top:12px;">このモードは記録に影響しません。「習得」はクイズ（2形式で連続正解）で判定されます</div>
   </section>
 
   <!-- クイズ -->
@@ -1171,6 +1219,7 @@ function renderHome(){
   renderUsers();renderMasteryBars();renderRanking();
   $("modeHint").textContent=
     mode==="all"?"全問モード：習得済みも含めて全語を1周し、実力を確認します（再出題なし）"
+    :mode==="learn"?"覚えるモード：カードをめくって意味を確認するインプット用。「まだ」のカードは少しあとにもう一度出ます（記録には影響しません）"
     :"1語につき「成語→意味」「意味→成語」の2形式で出題。異なる形式で2連続正解すると習得です";
 }
 
@@ -1346,7 +1395,7 @@ $("userChip").onclick=async()=>{
   if(SESS){await quitSession();}
   else goHome();
 };
-$("startBtn").onclick=()=>startSession({mode});
+$("startBtn").onclick=()=>{ if(mode==="learn")startLearn(); else startSession({mode}); };
 $("rankReviewBtn").onclick=startRankReview;
 $("listBtn").onclick=()=>{renderList();showScreen("scrList");};
 $("listBackBtn").onclick=goHome;
@@ -1380,6 +1429,90 @@ $("resetAllBtn").onclick=async()=>{
 window.addEventListener("beforeunload",e=>{
   if(SESS){e.preventDefault();e.returnValue="";}
 });
+
+/* ================= 覚えるモード（フラッシュカード・記録に影響しない） ================= */
+const LEARN_AGAIN_GAP=3;   // 「まだ」のカードを差しもどす位置
+let LEARN=null;
+function startLearn(){
+  const acc=activeAcc(); if(!acc)return;
+  const items=accItems();
+  const pool=poolByRange(range);
+  // 優先順位：誤答が多い → 未習得 → 未出題 → 習得済み（各グループ内はシャッフル）
+  const g1=[],g2=[],g3=[],g4=[];
+  pool.forEach(kp=>{
+    const it=items[kp.id];
+    if(it&&it.totalWrong>0&&!it.mastered)g1.push(kp);
+    else if(it&&!it.mastered&&it.lastSeenAt)g2.push(kp);
+    else if(!it||!it.lastSeenAt)g3.push(kp);
+    else g4.push(kp);
+  });
+  g1.sort((a,b)=>items[b.id].totalWrong-items[a.id].totalWrong);
+  const deck=[...g1,...shuffle(g2),...shuffle(g3),...shuffle(g4)].map(kp=>({kp,again:false}));
+  LEARN={deck,total:deck.length,got:0,revealed:false};
+  renderLearn();
+  showScreen("scrLearn");
+}
+function renderLearn(){
+  const total=LEARN.total;
+  $("learnLeft").textContent=`のこり ${LEARN.deck.length} 枚`;
+  $("learnGot").textContent=LEARN.got;
+  $("learnBarFill").style.width=(total?LEARN.got/total*100:0)+"%";
+  const body=$("learnBody");
+  if(LEARN.deck.length===0){
+    body.innerHTML=`<div class="card learnDone">
+      <div class="big">おつかれさま！</div>
+      <div class="sub">全 ${total} 枚をめくり終えました。<br>次は「10問モード」で確認テストをしてみよう。</div>
+    </div>
+    <div class="rowBtns">
+      <button class="btnGhost" id="learnHomeBtn">ホームへ</button>
+      <button class="btnFill" id="learnQuizBtn">10問モードに挑戦</button>
+    </div>`;
+    $("learnHomeBtn").onclick=goHome;
+    $("learnQuizBtn").onclick=()=>{mode="10q";startSession({mode:"10q"});};
+    return;
+  }
+  const c=LEARN.deck[0], kp=c.kp;
+  const it=accItems()[kp.id];
+  const badge=it&&it.mastered?'<span style="position:absolute;top:12px;right:12px;color:var(--gold);font-size:.85rem;">⭐習得済み</span>'
+    :`<span class="qLevelSeal">${kp.lv==="C"?"他":kp.lv}</span>`;
+  if(!LEARN.revealed){
+    body.innerHTML=`<div class="learnCard" id="learnCardEl">
+        ${badge}
+        ${c.again?'<span class="againTag">もう一度</span>':""}
+        <div class="lw${kp.w.length>8?" small":""}">${rubyHtml(kp)}</div>
+        <div class="hint">タップで意味を表示</div>
+      </div>
+      <div class="learnBtns"><button class="lbShow" id="learnShowBtn">意味を見る</button></div>`;
+    $("learnCardEl").onclick=revealLearn;
+    $("learnShowBtn").onclick=revealLearn;
+  }else{
+    body.innerHTML=`<div class="learnCard" id="learnCardEl" style="cursor:default;">
+        ${badge}
+        ${c.again?'<span class="againTag">もう一度</span>':""}
+        <div class="lw${kp.w.length>8?" small":""}">${rubyHtml(kp)}</div>
+        <div class="lm">${esc(kp.m)}</div>
+      </div>
+      <div class="learnBtns">
+        <button class="lbAgain" id="learnAgainBtn">🔁 まだ</button>
+        <button class="lbGot" id="learnGotBtn">⭕ おぼえた</button>
+      </div>`;
+    $("learnAgainBtn").onclick=()=>learnNext(false);
+    $("learnGotBtn").onclick=()=>learnNext(true);
+  }
+}
+function revealLearn(){ if(!LEARN)return; LEARN.revealed=true; renderLearn(); }
+function learnNext(got){
+  if(!LEARN)return;
+  const c=LEARN.deck.shift();
+  if(got)LEARN.got++;
+  else{
+    c.again=true;
+    LEARN.deck.splice(Math.min(LEARN_AGAIN_GAP,LEARN.deck.length),0,c);
+  }
+  LEARN.revealed=false;
+  renderLearn();
+}
+$("learnQuitBtn").onclick=()=>{LEARN=null;goHome();};   // 記録なしのため確認不要
 
 /* ================= クラウド同期（追補v1.1／v1.2） ================= */
 let SYNC=(()=>{try{return JSON.parse(store.getItem(SYNC_KEY)||"null");}catch(e){return null;}})();
