@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>動物｜中学受験 理科</title>
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#2b2b2b; --sub:#6b6b6b; --line:#e3ded3;
+  --accent:#2f7d5d; --accent2:#e3f1e9; --warn:#c9522b; --warnbg:#fdeee8;
+  --gold:#b8860b; --blue:#2b6cb0; --bluebg:#e7eff8;
+  --ok:#2f7d5d; --ng:#c9522b;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",YuGothic,Meiryo,sans-serif;
+  font-size:16px; line-height:1.7; padding-bottom:40px;
+}
+#app{max-width:720px;margin:0 auto;padding:12px 12px 60px;}
+h1,h2,h3{margin:0 0 8px;line-height:1.4;}
+h1{font-size:20px;}
+h2{font-size:17px;}
+h3{font-size:15px;color:var(--sub);}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;}
+.card.tight{padding:10px;}
+.muted{color:var(--sub);font-size:13px;}
+.small{font-size:13px;}
+.center{text-align:center;}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.row.tight{gap:6px;}
+.spacer{flex:1;}
+button{
+  font-family:inherit;font-size:15px;color:var(--ink);background:#fff;
+  border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;
+}
+button:active{transform:translateY(1px);}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:bold;}
+button.ghost{background:transparent;}
+button.danger{color:var(--warn);border-color:#eccfc4;}
+button.wide{width:100%;}
+button:disabled{opacity:.45;cursor:default;}
+.chip{
+  border:1px solid var(--line);background:#fff;border-radius:999px;
+  padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap;
+}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;}
+.seg button{border:0;border-radius:0;padding:8px 12px;font-size:13px;background:#fff;}
+.seg button.on{background:var(--accent);color:#fff;}
+.bar{height:9px;background:#e9e5dc;border-radius:99px;overflow:hidden;}
+.bar > i{display:block;height:100%;background:var(--accent);}
+.qbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:10px 0;}
+.qtext{font-size:20px;font-weight:bold;line-height:1.5;}
+.choice{
+  display:block;width:100%;text-align:left;margin:8px 0;padding:14px;
+  font-size:16px;border-radius:12px;border:1px solid var(--line);background:#fff;
+}
+.choice.correct{background:var(--accent2);border-color:var(--accent);font-weight:bold;}
+.choice.wrong{background:var(--warnbg);border-color:var(--warn);color:var(--warn);}
+.choice:disabled{opacity:1;cursor:default;}
+.choice.correct::after{content:" ◯";color:var(--accent);}
+.choice.wrong::after{content:" ×";color:var(--warn);}
+.fb{padding:12px;border-radius:12px;margin:10px 0;font-weight:bold;}
+.fb.ok{background:var(--accent2);color:var(--accent);}
+.fb.ng{background:var(--warnbg);color:var(--warn);}
+.gauge{letter-spacing:2px;font-size:16px;}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);background:#faf8f4;color:var(--sub);margin-right:4px;}
+.tag.imp2{background:#fdf3d8;border-color:#eddfae;color:var(--gold);}
+.tag.imp1{background:var(--bluebg);border-color:#cfdcee;color:var(--blue);}
+.tag.mastered{background:var(--accent);border-color:var(--accent);color:#fff;}
+.tag.attn{background:var(--warnbg);border-color:var(--warn);color:var(--warn);}
+table{border-collapse:collapse;width:100%;font-size:14px;}
+th,td{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top;}
+th{background:#faf8f4;font-weight:bold;}
+.hide-cell{color:transparent !important;background:#efece5 !important;border-radius:6px;cursor:pointer;}
+.hide-cell *{color:transparent !important;}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bg);padding:6px 0 8px;border-bottom:1px solid var(--line);margin-bottom:8px;}
+.flash{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:#2b2b2b;color:#fff;padding:10px 16px;border-radius:99px;font-size:14px;z-index:100;opacity:.95;}
+.modalbg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal{background:#fff;border-radius:16px;padding:16px;max-width:520px;width:100%;max-height:86vh;overflow:auto;}
+input[type=text],input[type=url],input[type=password],select{
+  font-family:inherit;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;width:100%;background:#fff;color:var(--ink);
+}
+label.f{display:block;font-size:13px;color:var(--sub);margin:8px 0 4px;}
+.list-item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0;background:#fff;cursor:pointer;}
+.list-item.mastered{background:#eef6f1;}
+.list-item.attn{background:#fdf5f1;border-color:#eccfc4;}
+.flip{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;font-size:22px;font-weight:bold;cursor:pointer;}
+.flip .sub{font-size:14px;font-weight:normal;color:var(--sub);margin-top:10px;}
+.box{border:2px dashed var(--line);border-radius:12px;padding:10px;min-height:64px;background:#fff;}
+.box.on{border-color:var(--accent);background:var(--accent2);}
+.goro{background:#fdf9ec;border:1px solid #eddfae;border-radius:10px;padding:8px 10px;font-size:14px;margin-top:8px;}
+.note{background:#f4f7fb;border:1px solid #dbe5f0;border-radius:10px;padding:8px 10px;font-size:14px;margin-top:8px;}
+.warnbar{background:var(--warnbg);border:1px solid #eccfc4;color:var(--warn);border-radius:10px;padding:8px 10px;font-size:13px;margin:8px 0;}
+.okbar{background:var(--accent2);border:1px solid #cfe4d8;color:var(--accent);border-radius:10px;padding:8px 10px;font-size:13px;margin:8px 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+@media(max-width:420px){ .grid3{grid-template-columns:1fr 1fr;} }
+.tabbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+.tabbar button{white-space:nowrap;font-size:13px;padding:8px 12px;}
+.tabbar button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.kpline{display:flex;gap:8px;align-items:baseline;}
+.kpline .n{font-weight:bold;}
+.kpline .a{color:var(--accent);}
+.rank{display:flex;justify-content:space-between;border-bottom:1px dotted var(--line);padding:6px 0;font-size:14px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ==========================================================================
+   動物分野 データ（2027年中学受験・標準レベル）
+   1行 = 1知識ポイント(KP)
+   blk(大単元, カテゴリー, 軸, [[主語, 答え, 重要度, 解説, 語呂合わせ], ...])
+     重要度 imp : 2=◎最重要 / 1=○重要 / 0=標準
+     解説・語呂合わせは省略可
+   ========================================================================== */
+const D = [];
+function blk(unit, cat, axis, rows){
+  rows.forEach(function(r){
+    D.push([unit, cat, axis, r[0], r[1], (r[2] === undefined ? 1 : r[2]), r[3] || "", r[4] || ""]);
+  });
+}
+
+/* ======================= 大単元1 動物の分類 ======================= */
+
+blk("動物の分類","セキツイ動物","なかま",[
+["メダカ","魚類",2],
+["サケ","魚類",1],
+["マグロ","魚類",1],
+["フナ","魚類",1],
+["コイ","魚類",1],
+["ウナギ","魚類",1,"細長いがひれ・うろこがあり、えらで呼吸する"],
+["ナマズ","魚類",0],
+["サンマ","魚類",0],
+["サメ","魚類",2,"大きくても、えら呼吸・変温だから魚類","サメ・エイは『大きな魚』"],
+["エイ","魚類",2,"うろこは細かいが、えら呼吸の魚類"],
+["タツノオトシゴ","魚類",1,"形は変わっているが、えらで呼吸する魚類"],
+["カエル","両生類",2],
+["イモリ","両生類",2,"しめった皮ふでおおわれ、子はえらで呼吸する","イモリは井（い）戸＝水べにすむ両生類"],
+["サンショウウオ","両生類",1],
+["オオサンショウウオ","両生類",1,"日本の特別天然記念物"],
+["ウシガエル","両生類",1,"食用として持ちこまれた外来種"],
+["アマガエル","両生類",0],
+["ヒキガエル","両生類",0],
+["ヤモリ","ハチュウ類",2,"かたいうろこでおおわれ、陸でくらす","ヤモリは家（や）を守る＝陸のハチュウ類"],
+["トカゲ","ハチュウ類",2],
+["ヘビ","ハチュウ類",2],
+["カメ","ハチュウ類",2],
+["ワニ","ハチュウ類",1],
+["カメレオン","ハチュウ類",0],
+["ウミガメ","ハチュウ類",2,"海にすむが肺で呼吸し、砂浜にからのある卵を産む"],
+["スッポン","ハチュウ類",0],
+["スズメ","鳥類",2],
+["ツバメ","鳥類",2],
+["ハト","鳥類",1],
+["ニワトリ","鳥類",1],
+["ペンギン","鳥類",2,"飛べなくても羽毛があり、からのある卵を産むから鳥類"],
+["ダチョウ","鳥類",2,"飛べないが羽毛におおわれた鳥類"],
+["カモ","鳥類",1],
+["フクロウ","鳥類",0],
+["カラス","鳥類",1],
+["ワシ","鳥類",1],
+["キツツキ","鳥類",0],
+["ハクチョウ","鳥類",1],
+["クジラ","ホニュウ類",2,"水中でも肺で呼吸し、乳で子を育てる","クジラ・イルカは『海のけもの』"],
+["イルカ","ホニュウ類",2],
+["シャチ","ホニュウ類",1],
+["コウモリ","ホニュウ類",2,"空を飛んでも体が毛でおおわれ、乳で子を育てる"],
+["カモノハシ","ホニュウ類",2,"たまごを産むけれど乳で子を育てるホニュウ類"],
+["カンガルー","ホニュウ類",1,"未熟な子を産み、ふくろの中で乳を飲ませて育てる"],
+["アザラシ","ホニュウ類",1],
+["ラッコ","ホニュウ類",0],
+["ネズミ","ホニュウ類",1],
+["モグラ","ホニュウ類",1],
+["ウマ","ホニュウ類",1],
+["ゾウ","ホニュウ類",0],
+["サル","ホニュウ類",0],
+["ウサギ","ホニュウ類",0],
+["シカ","ホニュウ類",0],
+["クマ","ホニュウ類",0],
+["ムササビ","ホニュウ類",1,"皮まくで滑空するが、毛におおわれた胎生のホニュウ類"],
+["ヒト","ホニュウ類",1],
+]);
+
+blk("動物の分類","5分類の特徴","体表",[
+["魚類","うろこ",2],
+["両生類","しめった皮ふ",2],
+["ハチュウ類","かたいうろこ・こうら",2],
+["鳥類","羽毛",2],
+["ホニュウ類","毛",2],
+["こん虫","かたい外骨格",1,"体の外側のかたい殻が体を支える"],
+]);
+
+blk("動物の分類","5分類の特徴","呼吸",[
+["魚類","えら",2],
+["両生類の子（おたまじゃくし）","えらと皮ふ",2],
+["両生類の親（カエル）","肺と皮ふ",2,"親になると肺ができるが、皮ふ呼吸も続ける"],
+["ハチュウ類","肺",2],
+["鳥類","肺",2],
+["ホニュウ類","肺",2],
+["こん虫","気門と気管",1],
+]);
+
+blk("動物の分類","5分類の特徴","体温",[
+["魚類","変温動物",2],
+["両生類","変温動物",2],
+["ハチュウ類","変温動物",2],
+["鳥類","恒温動物",2,"","恒温は鳥とホニュウだけ＝『と・ほ』"],
+["ホニュウ類","恒温動物",2],
+["こん虫","変温動物",1],
+["メダカ","変温動物",1],
+["ヘビ","変温動物",1],
+["ペンギン","恒温動物",1,"鳥類なので恒温動物"],
+["クジラ","恒温動物",1,"ホニュウ類なので恒温動物"],
+]);
+
+blk("動物の分類","5分類の特徴","子の生まれ方",[
+["魚類","卵生（からのない卵を水中に産む）",2],
+["両生類","卵生（からのない卵を水中に産む）",2],
+["ハチュウ類","卵生（からのある卵を陸上に産む）",2],
+["鳥類","卵生（からのある卵を陸上に産む）",2],
+["ホニュウ類","胎生",2],
+["カモノハシ","卵生（ホニュウ類の例外）",1],
+["メダカ","卵生（からのない卵を水中に産む）",1],
+["ウミガメ","卵生（からのある卵を陸上に産む）",1],
+]);
+
+blk("動物の分類","5分類の特徴","子育て",[
+["魚類","しない",1],
+["両生類","しない",1],
+["ハチュウ類","しない",1],
+["こん虫","しない",0],
+["鳥類","する（えさを運ぶ）",2],
+["ホニュウ類","する（乳をあたえる）",2],
+["ワニ","する（卵と子を守る）",0,"ハチュウ類だが子を守る変わった例"],
+]);
+
+blk("動物の分類","5分類の特徴","子の数",[
+["魚類","非常に多い",1,"親が世話をしないぶん、たくさん産む"],
+["両生類","多い",1],
+["ハチュウ類","やや多い",0],
+["鳥類","少ない",1],
+["ホニュウ類","非常に少ない",1,"親が世話をするので少なくてよい"],
+]);
+
+blk("動物の分類","5分類の特徴","受精のしかた",[
+["魚類","体外受精",2],
+["両生類","体外受精",2],
+["ハチュウ類","体内受精",2],
+["鳥類","体内受精",2],
+["ホニュウ類","体内受精",2],
+["メダカ","体外受精",1],
+["カエル","体外受精",1],
+["ハト","体内受精",0],
+]);
+
+blk("動物の分類","まちがえやすい例","理由",[
+["イモリが両生類である理由","しめった皮ふでおおわれ、子はえらで呼吸するから",2],
+["ヤモリがハチュウ類である理由","かたいうろこでおおわれ、陸でくらすから",2],
+["クジラがホニュウ類である理由","肺で呼吸し、乳で子を育てるから",2],
+["コウモリがホニュウ類である理由","体が毛でおおわれ、胎生だから",2],
+["ペンギンが鳥類である理由","体が羽毛でおおわれ、からのある卵を産むから",2],
+["カモノハシがホニュウ類である理由","卵を産むが、乳で子を育てるから",1],
+["ウミガメがハチュウ類である理由","肺で呼吸し、陸にからのある卵を産むから",1],
+["クモがこん虫でない理由","あしが8本で、体が頭胸部と腹部の2つに分かれるから",2],
+["ダンゴムシがこん虫でない理由","あしが14本で、甲殻類のなかまだから",2],
+["カタツムリがこん虫でない理由","骨も節もなく、外とう膜をもつ軟体動物だから",1],
+["ムササビがホニュウ類である理由","皮まくで滑空するだけで、毛におおわれ胎生だから",0],
+["ワニの心臓が特別な理由","ハチュウ類なのに2心房2心室だから",1],
+]);
+
+blk("動物の分類","無セキツイ動物","なかま",[
+["カブトムシ","こん虫類",2],
+["モンシロチョウ","こん虫類",2],
+["トンボ","こん虫類",2],
+["アリ","こん虫類",1],
+["バッタ","こん虫類",1],
+["セミ","こん虫類",1],
+["ミツバチ","こん虫類",1],
+["カ","こん虫類",1],
+["ハエ","こん虫類",0],
+["テントウムシ","こん虫類",1],
+["カマキリ","こん虫類",1],
+["ゴキブリ","こん虫類",0],
+["ノミ","こん虫類",0],
+["クモ","クモ類",2,"あしは8本。こん虫ではない"],
+["サソリ","クモ類",1],
+["ダニ","クモ類",1],
+["エビ","甲殻類",2],
+["カニ","甲殻類",2],
+["ザリガニ","甲殻類",1],
+["ダンゴムシ","甲殻類",2,"陸にいてもエビ・カニのなかま"],
+["ミジンコ","甲殻類",2,"小さいがエビ・カニと同じ甲殻類"],
+["フジツボ","甲殻類",1,"岩にくっついているが甲殻類"],
+["ヤドカリ","甲殻類",1],
+["シャコ","甲殻類",0],
+["ムカデ","多足類",2],
+["ヤスデ","多足類",1],
+["イカ","軟体動物",2],
+["タコ","軟体動物",2],
+["アサリ","軟体動物",1],
+["ハマグリ","軟体動物",1],
+["サザエ","軟体動物",1],
+["ホタテ","軟体動物",0],
+["カタツムリ","軟体動物",2,"貝のなかま。こん虫ではない"],
+["ナメクジ","軟体動物",1],
+["ウミウシ","軟体動物",0],
+["ミミズ","環形動物",2],
+["ゴカイ","環形動物",1],
+["ヒル","環形動物",0],
+["ウニ","キョク皮動物",2],
+["ヒトデ","キョク皮動物",2],
+["ナマコ","キョク皮動物",1],
+["クラゲ","シホウ動物",2],
+["イソギンチャク","シホウ動物",1],
+["サンゴ","シホウ動物",0],
+]);
+
+blk("動物の分類","無セキツイ動物","グループの特ちょう",[
+["節足動物","体の外側にかたい外骨格があり、体やあしに節がある",2],
+["軟体動物","骨がなく、内臓が外とう膜に包まれている",2],
+["こん虫類のあし","6本（すべて胸から出る）",2],
+["クモ類のあし","8本",2],
+["甲殻類のあし","10本のものが多い（ダンゴムシは14本）",1],
+["多足類のあし","たくさんの節に1対ずつつく",1],
+["こん虫類の体の分かれ方","頭・胸・腹の3つ",2],
+["クモ類の体の分かれ方","頭胸部と腹部の2つ",2],
+]);
+
+/* ======================= 大単元2 こん虫 ======================= */
+
+blk("こん虫","からだのつくり","こん虫のからだ",[
+["体の分かれ方","頭・胸・腹の3つ",2],
+["あしの数","6本",2],
+["あしがつく場所","胸",2],
+["はねの数","4枚（2対）のものが多い",2],
+["はねがつく場所","胸",2],
+["しょっ角がつく場所","頭",2],
+["空気をとり入れるあな","気門（胸や腹にある）",2],
+["気門から続く管","気管",1],
+["目のつくり","複眼と単眼",1],
+["しょっ角のはたらき","においや空気の動きを感じる",1],
+["ハエのはね","2枚（後ろばねが退化している）",1],
+["カブトムシの前ばね","かたい（体を守る）",1],
+["アリのはね","ふつうはない（女王アリとオスにはある）",0],
+["トンボの複眼","たくさんの小さな目が集まっている",0],
+]);
+
+blk("こん虫","育ち方","育ち方",[
+["モンシロチョウ","完全変態",2,"","完全変態＝『テントにうっすらカブトムシ。ハチ・アリ・ノミ・ゲンゴロウ・ホタル・ハエ』"],
+["アゲハ","完全変態",2],
+["カブトムシ","完全変態",2],
+["クワガタ","完全変態",1],
+["テントウムシ","完全変態",2],
+["ミツバチ","完全変態",2],
+["アリ","完全変態",2],
+["カ","完全変態",2],
+["ハエ","完全変態",1],
+["ホタル","完全変態",2],
+["カイコガ","完全変態",1],
+["ゲンゴロウ","完全変態",1],
+["アブ","完全変態",0],
+["ウスバカゲロウ","完全変態",0,"幼虫はアリジゴク"],
+["ノミ","完全変態",0],
+["トンボ","不完全変態",2,"","不完全変態＝『かっ飛ばせ、ぶりっこ！＝カマキリ・トンボ・バッタ・セミ・ゴキブリ・コオロギ』"],
+["セミ","不完全変態",2],
+["バッタ","不完全変態",2],
+["カマキリ","不完全変態",2],
+["ゴキブリ","不完全変態",1],
+["コオロギ","不完全変態",2],
+["スズムシ","不完全変態",1],
+["カメムシ","不完全変態",1],
+["アメンボ","不完全変態",1],
+["トノサマバッタ","不完全変態",0],
+["シラミ","不完全変態",0],
+]);
+
+blk("こん虫","育ち方","育つ順番",[
+["完全変態のこん虫","卵→幼虫→さなぎ→成虫",2],
+["不完全変態のこん虫","卵→幼虫→成虫（さなぎにならない）",2],
+["カエル","卵→おたまじゃくし→後ろあし→前あし→子ガエル",2],
+["メダカ","卵→はらのふくろをもつ子メダカ→子メダカ→親メダカ",1],
+]);
+
+blk("こん虫","育ち方","よび名",[
+["トンボの幼虫","ヤゴ",2],
+["カの幼虫","ボウフラ",2],
+["カのさなぎ","オニボウフラ",0],
+["ハエの幼虫","ウジ",0],
+["カイコガの幼虫","カイコ",1],
+["こん虫が皮をぬいで大きくなること","脱皮",2],
+]);
+
+blk("こん虫","冬越し","冬越しのすがた",[
+["バッタ","卵",2,"土の中に卵で冬をこす","卵＝『たまにオカマの彼はばったり転んであかんね（オビカレハ・カマキリ・バッタ・コオロギ・アキアカネ）』"],
+["カマキリ","卵",2,"草の茎についた卵のうの中"],
+["コオロギ","卵",2],
+["スズムシ","卵",1],
+["オビカレハ","卵",0],
+["アキアカネ","卵",1,"水田などの水中や土の中で卵のまま冬をこす"],
+["トンボ","幼虫",2,"ヤゴのすがたで水中にいる","幼虫＝『かぶと山で待つ彼は髪切り見逃せ（カブトムシ・ギンヤンマ・マツカレハ・カミキリムシ・ミノガ・セミ）』"],
+["ギンヤンマ","幼虫",1],
+["カブトムシ","幼虫",2],
+["クワガタ","幼虫",1],
+["セミ","幼虫",2,"土の中で数年間すごす"],
+["ホタル","幼虫",2,"水中や水べの土の中"],
+["ミノガ（ミノムシ）","幼虫",1],
+["カミキリムシ","幼虫",1],
+["マツカレハ","幼虫",0],
+["アゲハ","さなぎ",2,"","さなぎ＝『チョウはさなぎ（アゲハ・モンシロチョウ）』"],
+["モンシロチョウ","さなぎ",2],
+["キアゲハ","さなぎ",1],
+["ハチ","成虫",2,"女王バチだけが冬をこす","成虫＝『ハチ・アリ・ゲンゴロウ・テントウムシは成虫で冬越し』"],
+["アリ","成虫",2],
+["テントウムシ","成虫",2,"落ち葉の下などに集まって冬をこす"],
+["ゲンゴロウ","成虫",1],
+["タガメ","成虫",0],
+["キチョウ","成虫",1,"チョウだが成虫で冬をこす例外"],
+["アカタテハ","成虫",0],
+["ミツバチ","成虫",1],
+]);
+
+blk("こん虫","冬越し","冬越しの場所",[
+["カマキリの卵","草の茎などについたあわ状の卵のうの中",2],
+["バッタの卵","土の中",2],
+["カブトムシの幼虫","くさった落ち葉や土の中",2],
+["セミの幼虫","土の中（木の根のしるを吸う）",1],
+["テントウムシの成虫","落ち葉の下や木のすきま",2],
+["ミノガの幼虫","みのの中（枝にぶら下がる）",1],
+]);
+
+blk("こん虫","口の形と食べ物","口の形",[
+["チョウ","ストローのような口",2,"みつを吸うのに適している"],
+["ガ","ストローのような口",1],
+["カ","針のような口",2,"皮ふにさして血を吸う"],
+["セミ","針のような口",2,"木にさしてしるを吸う"],
+["カメムシ","針のような口",1],
+["アメンボ","針のような口",0],
+["バッタ","かむ口",2,"草をかみ切る"],
+["カマキリ","かむ口",2],
+["トンボ","かむ口",2],
+["ゴキブリ","かむ口",0],
+["ハエ","なめる口",2],
+["ミツバチ","なめる口",1],
+["カブトムシ","ブラシのような口",2,"樹液をなめとる"],
+]);
+
+blk("こん虫","口の形と食べ物","食べ物",[
+["モンシロチョウの幼虫","キャベツなどアブラナのなかまの葉",2],
+["アゲハの幼虫","ミカンやサンショウの葉",2],
+["カイコガの幼虫","クワの葉",2],
+["カブトムシ","木の樹液",2],
+["テントウムシ","アブラムシ",2],
+["カマキリ","生きている小さな虫",2],
+["トンボ","飛んでいる小さな虫",2],
+["セミ","木のしる",2],
+["チョウの成虫","花のみつ",2],
+["ミツバチ","花のみつと花粉",1],
+["バッタ","イネ科の草の葉",1],
+["ゲンゴロウ","水中の小動物や弱った魚",0],
+]);
+
+blk("こん虫","口の形と食べ物","たまごを産む場所",[
+["モンシロチョウ","キャベツの葉のうら",2],
+["アゲハ","ミカンやサンショウの葉",2],
+["トンボ","水中や水草",2],
+["カマキリ","草の茎（あわのような卵のう）",2],
+["バッタ","土の中",2],
+["セミ","木の幹や枝",1],
+["カ","水面",2],
+["カイコガ","クワの葉",0],
+]);
+
+/* ======================= 大単元3 からだのはたらき ======================= */
+
+blk("からだのはたらき","心臓","心臓のつくり",[
+["魚類","1心房1心室",2],
+["両生類","2心房1心室",2],
+["ハチュウ類","2心房1心室",2,"心室に不完全な仕切りがある"],
+["鳥類","2心房2心室",2],
+["ホニュウ類","2心房2心室",2],
+["ワニ","2心房2心室",1,"ハチュウ類だが2心房2心室という例外"],
+["かべがいちばん厚い部屋","左心室",2,"全身に血液を送り出すため"],
+]);
+
+blk("からだのはたらき","心臓","血管",[
+["心臓から出ていく血管","動脈",2],
+["心臓へもどる血管","静脈",2],
+["かべが厚くて弾力のある血管","動脈",1],
+["逆流を防ぐ弁がある血管","静脈",2],
+["体のすみずみで動脈と静脈をつなぐ細い血管","毛細血管",1],
+]);
+
+blk("からだのはたらき","心臓","血液",[
+["酸素を多くふくむ血液","動脈血",2],
+["二酸化炭素を多くふくむ血液","静脈血",2],
+["動脈血が流れる静脈","肺静脈",2],
+["静脈血が流れる動脈","肺動脈",2],
+["酸素を運ぶ血液の成分","赤血球",1],
+]);
+
+blk("からだのはたらき","心臓","血液の道すじ",[
+["肺循環","右心室→肺動脈→肺→肺静脈→左心房",2],
+["体循環","左心室→大動脈→全身→大静脈→右心房",2],
+["魚の血液の流れ","心臓→えら→全身→心臓",1],
+["心臓の部屋を通る順","右心房→右心室→（肺）→左心房→左心室",1],
+]);
+
+blk("からだのはたらき","呼吸","無セキツイ動物の呼吸",[
+["こん虫","気門と気管",2],
+["クモ","書肺（しょはい）",1],
+["ミミズ","皮ふ",2],
+["イカ・貝","えら",2],
+["ザリガニ","えら",1],
+["カタツムリ","肺のようなつくり",1,"陸にすむ貝なので空気を直接とり入れる"],
+["ダンゴムシ","えらのようなつくり",0],
+]);
+
+blk("からだのはたらき","呼吸","呼吸のしくみ",[
+["肺のつくり","肺ほうがたくさん集まっている",2],
+["肺ほうが多い理由","表面積を大きくして気体の交かんをしやすくするため",2],
+["えらが赤い理由","毛細血管がたくさん集まっているため",2],
+["ヒトが息を吸うとき","横かく膜が下がり、ろっ骨が上がる",2],
+["ヒトが息をはくとき","横かく膜が上がり、ろっ骨が下がる",1],
+["肺に筋肉がないのに動く理由","横かく膜とろっ骨の動きで胸の空間が変わるから",1],
+]);
+
+blk("からだのはたらき","歯と食べ物","草食動物と肉食動物",[
+["草食動物の歯","門歯と臼歯が発達し、犬歯は小さい",2],
+["肉食動物の歯","犬歯がするどく、臼歯もとがっている",2],
+["草食動物の目のつき方","顔の横（広い範囲を見わたせる）",2],
+["肉食動物の目のつき方","顔の前（きょりをつかみやすい）",2],
+["草食動物の消化管","長い",2,"消化しにくい草を時間をかけて消化するため"],
+["肉食動物の消化管","短い",2],
+["草食動物のあし","ひづめがあり、速く長く走れる",1],
+["肉食動物のあし","するどいつめがあり、短きょりを速く走る",1],
+]);
+
+blk("からだのはたらき","歯と食べ物","歯のはたらき",[
+["門歯","草をかみ切る",2],
+["臼歯","食べ物をすりつぶす",2],
+["犬歯","えものをとらえ、肉を引きさく",2],
+["草食動物の臼歯","平らで、草をすりつぶすのに適する",1],
+["肉食動物の臼歯","とがっていて、肉を切りさくのに適する",1],
+]);
+
+blk("からだのはたらき","歯と食べ物","食べ物によるなかま分け",[
+["ウシ","草食動物",2],
+["ウマ","草食動物",2],
+["ヒツジ","草食動物",1],
+["シカ","草食動物",1],
+["ウサギ","草食動物",1],
+["ライオン","肉食動物",2],
+["トラ","肉食動物",1],
+["オオカミ","肉食動物",2],
+["ワシ","肉食動物",1],
+["ヒト","雑食動物",2],
+["クマ","雑食動物",2],
+["サル","雑食動物",1],
+["タヌキ","雑食動物",0],
+]);
+
+blk("からだのはたらき","歯と食べ物","反すう",[
+["反すうとは","一度飲みこんだ食物を口にもどしてかみ直すこと",2],
+["反すうする動物","ウシ・ヒツジ・ヤギ・シカ",2],
+["反すうする動物の胃の数","4つ",1],
+["反すうをする理由","消化しにくい草を細かくして消化しやすくするため",1],
+]);
+
+/* ======================= 大単元4 季節と生き物 ======================= */
+
+blk("季節と生き物","季節の生き物","見られる季節",[
+["ツバメが日本に来る","春",2],
+["カエルの産卵","春",2],
+["モンシロチョウが飛びはじめる","春",2],
+["おたまじゃくしが泳ぐ","春",1],
+["ヒバリがさえずる","春",1],
+["メダカが卵を産みはじめる","春",1],
+["アブラゼミが鳴く","夏",2],
+["カブトムシがとれる","夏",2],
+["ホタルが光る","夏",2],
+["ツバメの子育て","夏",1],
+["トノサマガエルの活動がさかん","夏",0],
+["アキアカネが山からおりてくる","秋",2],
+["スズムシ・コオロギが鳴く","秋",2],
+["ツバメが南へ帰る","秋",2],
+["モズのはやにえ","秋",1],
+["カマキリが卵のうを産む","秋",1],
+["オオハクチョウやカモが来る","冬",2],
+["テントウムシの集団越冬","冬",2],
+["クマが冬眠する","冬",1],
+["カエルが土の中でじっとしている","冬",1],
+]);
+
+blk("季節と生き物","季節の生き物","わたり鳥",[
+["ツバメ","夏鳥（春に来て秋に帰る）",2],
+["ホトトギス","夏鳥（春に来て秋に帰る）",1],
+["カッコウ","夏鳥（春に来て秋に帰る）",1],
+["オオヨシキリ","夏鳥（春に来て秋に帰る）",0],
+["ハクチョウ","冬鳥（秋に来て春に帰る）",2],
+["マガモ","冬鳥（秋に来て春に帰る）",1],
+["ツグミ","冬鳥（秋に来て春に帰る）",1],
+["ガン","冬鳥（秋に来て春に帰る）",1],
+["ジョウビタキ","冬鳥（秋に来て春に帰る）",0],
+["スズメ","留鳥（一年中いる）",2],
+["カラス","留鳥（一年中いる）",1],
+["ハト","留鳥（一年中いる）",1],
+["ヒヨドリ","留鳥（一年中いる）",0],
+]);
+
+blk("季節と生き物","季節の生き物","冬のすごし方",[
+["クマ","冬眠する",2],
+["カエル・ヘビ・カメ","土の中などで冬眠する",2],
+["コウモリ","冬眠する",1],
+["ノウサギ・ライチョウ","毛や羽が白くかわる",2],
+["ツバメ","南の暖かい国へわたる",2],
+["テントウムシ","集まってじっとしている",1],
+["リス","えさをたくわえて活動する",1],
+["カモ・ハクチョウ","北から日本へわたってくる",1],
+]);
+
+blk("季節と生き物","メダカ","メダカの見分け方",[
+["オスの背びれ","切れこみがある",2],
+["メスの背びれ","切れこみがない",2],
+["オスのしりびれ","平行四辺形で大きい",2],
+["メスのしりびれ","後ろが短い三角形",2],
+["オスとメスを見分けるひれ","背びれとしりびれ",2],
+["腹にたまごをつけているのは","メス",1],
+]);
+
+blk("季節と生き物","メダカ","メダカの飼い方",[
+["水そうを置く場所","日光が直接あたらない明るいところ",2],
+["入れる水","くみおきの水（水道水は1日置く）",2],
+["産卵する条件","水温25度前後で、日照時間が長いとき",2],
+["えさのあたえ方","食べ残さない量を1日2〜3回",1],
+["水のかえ方","くみおきの水で3分の1ほどをかえる",1],
+]);
+
+blk("季節と生き物","メダカ","メダカの育ち方",[
+["卵がかえるまでの日数","水温25度で約10日",2],
+["かえったばかりの子メダカ","はらのふくろの養分で2〜3日すごす",2],
+["卵についている毛のようなもの","付着毛（水草にからませる）",1],
+["受精のしかた","メスが産んだ卵にオスが精子をかける",2],
+["卵の大きさ","約1mm",1],
+["子メダカのえさ","ミジンコなどの小さな生物",1],
+]);
+
+blk("季節と生き物","メダカ","カエルの育ち方",[
+["おたまじゃくしの呼吸","えら（やがて肺になる）",2],
+["カエルの卵","かんてんのようなものに包まれている",2],
+["先に出てくるあし","後ろあし",2],
+["おたまじゃくしの食べ物","水中の藻や小さな生物",1],
+["カエルが冬をこす場所","土の中や落ち葉の下",1],
+]);
+
+blk("季節と生き物","プランクトン","プランクトンの種類",[
+["ミカヅキモ","植物プランクトン",2],
+["ケイソウ","植物プランクトン",2],
+["アオミドロ","植物プランクトン",2],
+["ボルボックス","植物プランクトン",1],
+["クンショウモ","植物プランクトン",1],
+["イカダモ","植物プランクトン",1],
+["ハネケイソウ","植物プランクトン",0],
+["ミジンコ","動物プランクトン",2],
+["ゾウリムシ","動物プランクトン",2],
+["ツリガネムシ","動物プランクトン",1],
+["アメーバ","動物プランクトン",1],
+["ワムシ","動物プランクトン",1],
+["ケンミジンコ","動物プランクトン",0],
+["ミドリムシ","植物と動物の両方の性質をもつ",2,"葉緑体で光合成をし、べん毛で動く"],
+]);
+
+blk("季節と生き物","プランクトン","けんび鏡",[
+["はじめに使う対物レンズ","いちばん低い倍率のもの",2],
+["ピントの合わせ方","横から見ながら近づけ、はなしながら合わせる",2],
+["けんび鏡の倍率","接眼レンズの倍率×対物レンズの倍率",2],
+["対物レンズをかえる部分","レボルバー",1],
+["明るさを調節する部分","しぼりと反射鏡",1],
+["けんび鏡での見え方","上下左右が逆に見える",2],
+["見たいものを右下に動かしたいとき","プレパラートを左上に動かす",1],
+]);
+
+blk("季節と生き物","食物連鎖","生物のはたらき",[
+["生産者","自分で養分をつくる植物",2],
+["消費者","ほかの生物を食べる動物",2],
+["分解者","死がいやふんを分解する菌類・細菌類",2],
+["菌類の例","カビ・キノコ",2],
+["土の中の分解者の例","ミミズ・ダンゴムシ・トビムシ",1],
+]);
+
+blk("季節と生き物","食物連鎖","数量の関係",[
+["食べられる生物の数","食べる生物より多い",2],
+["生態ピラミッドの形","下（生産者）ほど数が多い",2],
+["生態ピラミッドの頂点","数がもっとも少ない大形の肉食動物",1],
+["草食動物がふえると植物は","減る",1],
+["草食動物がふえると肉食動物は","ふえる",1],
+]);
+
+blk("季節と生き物","食物連鎖","つながり",[
+["食物連鎖","食べる・食べられるの一本のつながり",2],
+["食物網","食物連鎖が網の目のようにからみ合ったもの",2],
+["生態系","生物とまわりの環境を1つのまとまりとしてみたもの",1],
+["生物濃縮","食べる・食べられるを通して体内に有害物質が濃くたまること",1],
+]);
+
+blk("季節と生き物","食物連鎖","食物連鎖の順",[
+["池・湖","植物プランクトン→動物プランクトン→小魚→大きな魚",2],
+["草原","草→バッタ→カエル→ヘビ→ワシ",2],
+["海","植物プランクトン→動物プランクトン→イワシ→カツオ",1],
+["森林","木の葉→イモムシ→小鳥→タカ",1],
+]);
+
+blk("季節と生き物","環境と生き物","日本での立場",[
+["アメリカザリガニ","外来種",2],
+["オオクチバス（ブラックバス）","外来種",2],
+["ウシガエル","外来種",2],
+["アライグマ","外来種",2],
+["ミシシッピアカミミガメ","外来種",2],
+["マングース","外来種",1],
+["ヒアリ","外来種",1],
+["セイヨウタンポポ","外来種",1],
+["トキ","絶滅危惧種",2],
+["イリオモテヤマネコ","絶滅危惧種",2],
+["アマミノクロウサギ","絶滅危惧種",1],
+["ヤンバルクイナ","絶滅危惧種",1],
+["ライチョウ","絶滅危惧種",1],
+["ジュゴン","絶滅危惧種",1],
+["ニホンオオカミ","すでに絶滅した動物",2],
+["ニホンカワウソ","すでに絶滅した動物",1],
+["スズメ","もともと日本にいる在来種",1],
+["タヌキ","もともと日本にいる在来種",1],
+["カブトムシ","もともと日本にいる在来種",1],
+["ゲンジボタル","もともと日本にいる在来種",1],
+]);
+
+blk("季節と生き物","環境と生き物","水のよごれと生き物",[
+["とてもきれいな水","カワゲラ・サワガニ・ヘビトンボ",2],
+["少しきたない水","ゲンジボタル・カワニナ・ヤマトシジミ",1],
+["きたない水","タニシ・ヒル・ミズムシ",1],
+["とてもきたない水","アメリカザリガニ・サカマキガイ・エラミミズ",2],
+]);
+
+blk("季節と生き物","環境と生き物","ことば",[
+["外来種とは","もともとその地域にいなかった、人が持ちこんだ生物",2],
+["在来種とは","もともとその地域にすんでいた生物",1],
+["特定外来生物とは","生態系などに大きな害があるとして法律で規制された外来生物",2],
+["条件付特定外来生物とは","2023年6月からアメリカザリガニとアカミミガメが指定された区分",1,"ペットとして飼うことはできるが、野外に放すことや販売は禁止"],
+["レッドデータブックとは","絶滅のおそれがある生物をまとめた本",2],
+["天然記念物とは","国が保護のために指定した貴重な動植物や自然",1],
+]);
+
+
+
+/* =======================================================================
+   基本設定
+   ======================================================================= */
+var APP = "kj-quiz-rika-doubutsu";   // ※ 絶対に変更しないこと（共通仕様 §2）
+var TOOL_NAME = "動物";
+var SYNC_KEY_LS = APP + ":sync";
+var UI_KEY_LS   = APP + ":ui";
+var DB_VERSION  = 2;
+
+/* ---- localStorage ラッパー（例外環境ではメモリ動作） ---------------- */
+var LS_OK = true, MEM = {};
+try { window.localStorage.setItem("__t", "1"); window.localStorage.removeItem("__t"); }
+catch (e) { LS_OK = false; }
+function lsGet(k){ try { return LS_OK ? localStorage.getItem(k) : (MEM[k] === undefined ? null : MEM[k]); } catch(e){ return MEM[k] === undefined ? null : MEM[k]; } }
+function lsSet(k,v){ try { if (LS_OK) localStorage.setItem(k,v); else MEM[k]=v; } catch(e){ LS_OK=false; MEM[k]=v; } }
+function lsDel(k){ try { if (LS_OK) localStorage.removeItem(k); else delete MEM[k]; } catch(e){ delete MEM[k]; } }
+
+/* =======================================================================
+   知識ポイント（KP）の構築
+   ======================================================================= */
+function hashStr(s){ var h=5381,i; for(i=0;i<s.length;i++){ h=((h*33)^s.charCodeAt(i))>>>0; } return h.toString(36); }
+
+var KPS = [], NAME_AXIS = {}, ID2KP = {};
+(function(){
+  var used = {};
+  for (var i=0;i<D.length;i++){
+    var r = D[i];
+    var kp = { unit:r[0], cat:r[1], axis:r[2], name:r[3], ans:r[4], imp:(r[5]===undefined?1:r[5]), note:r[6]||"", goro:r[7]||"", idx:i };
+    var base = "k" + hashStr(kp.cat + "|" + kp.axis + "|" + kp.name), id = base, n = 2;
+    while (used[id]) { id = base + "_" + (n++); }
+    used[id] = 1; kp.id = id;
+    KPS.push(kp); ID2KP[id] = kp;
+    NAME_AXIS[kp.name + "|" + kp.axis] = kp.ans;
+  }
+})();
+
+var UNITS = [];
+var CATS  = [];
+var CAT_UNIT = {};
+(function(){
+  for (var i=0;i<KPS.length;i++){
+    if (UNITS.indexOf(KPS[i].unit) < 0) UNITS.push(KPS[i].unit);
+    if (CATS.indexOf(KPS[i].cat) < 0) { CATS.push(KPS[i].cat); CAT_UNIT[KPS[i].cat] = KPS[i].unit; }
+  }
+})();
+
+/* ---- 重要度◎に自動昇格させる軸は使わない（データ側で付与済み） ---- */
+function impMark(v){ return v===2 ? "◎" : (v===1 ? "○" : ""); }
+
+/* =======================================================================
+   出題文テンプレート（軸ごと）
+   ======================================================================= */
+var AXQ = {
+"なかま":{a:"「{name}」は何のなかま？",b:"「{ans}」なのはどれ？"},
+"体表":{a:"{name}の体表は？",b:"体表が「{ans}」なのはどれ？"},
+"呼吸":{a:"{name}の呼吸のしかたは？",b:"「{ans}」で呼吸するのはどれ？"},
+"体温":{a:"{name}の体温はどうなっている？",b:"「{ans}」なのはどれ？"},
+"子の生まれ方":{a:"{name}の子の生まれ方は？",b:"子の生まれ方が「{ans}」なのはどれ？"},
+"子育て":{a:"{name}は子育てをする？",b:"子育てについて「{ans}」なのはどれ？"},
+"子の数":{a:"{name}が産む卵や子の数は？",b:"産む卵や子の数が「{ans}」なのはどれ？"},
+"受精のしかた":{a:"{name}の受精のしかたは？",b:"受精のしかたが「{ans}」なのはどれ？"},
+"理由":{a:"{name}は？",b:"「{ans}」— これはどれの理由？"},
+"グループの特ちょう":{a:"「{name}」について正しいのは？",b:"「{ans}」— これはどれの説明？"},
+"こん虫のからだ":{a:"こん虫の「{name}」は？",b:"こん虫について「{ans}」なのはどれ？"},
+"育ち方":{a:"{name}の育ち方は？",b:"「{ans}」をするのはどれ？"},
+"育つ順番":{a:"{name}の育つ順番は？",b:"「{ans}」の順に育つのはどれ？"},
+"よび名":{a:"{name}のよび名は？",b:"「{ans}」とよばれるのはどれ？"},
+"冬越しのすがた":{a:"{name}は何のすがたで冬をこす？",b:"「{ans}」のすがたで冬をこすのはどれ？"},
+"冬越しの場所":{a:"{name}が冬をこす場所は？",b:"「{ans}」で冬をこすのはどれ？"},
+"口の形":{a:"{name}の口の形は？",b:"口の形が「{ans}」なのはどれ？"},
+"食べ物":{a:"{name}の食べ物は？",b:"「{ans}」を食べるのはどれ？"},
+"たまごを産む場所":{a:"{name}がたまごを産む場所は？",b:"「{ans}」にたまごを産むのはどれ？"},
+"心臓のつくり":{a:"{name}の心臓のつくりは？",b:"心臓が「{ans}」なのはどれ？"},
+"血管":{a:"{name}を何という？",b:"「{ans}」の説明はどれ？"},
+"血液":{a:"{name}を何という？",b:"「{ans}」の説明はどれ？"},
+"血液の道すじ":{a:"{name}の道すじは？",b:"「{ans}」— これはどれ？"},
+"無セキツイ動物の呼吸":{a:"{name}の呼吸のしかたは？",b:"「{ans}」で呼吸するのはどれ？"},
+"呼吸のしくみ":{a:"{name}は？",b:"「{ans}」— これはどれの説明？"},
+"草食動物と肉食動物":{a:"{name}の特ちょうは？",b:"「{ans}」— これはどれの特ちょう？"},
+"歯のはたらき":{a:"{name}のはたらきは？",b:"「{ans}」はたらきをするのはどれ？"},
+"食べ物によるなかま分け":{a:"{name}は何動物？",b:"「{ans}」なのはどれ？"},
+"反すう":{a:"{name}は？",b:"「{ans}」— これはどれ？"},
+"見られる季節":{a:"{name}のはいつ？",b:"{ans}に見られるのはどれ？"},
+"わたり鳥":{a:"{name}は夏鳥・冬鳥・留鳥のどれ？",b:"「{ans}」なのはどれ？"},
+"冬のすごし方":{a:"{name}の冬のすごし方は？",b:"冬のすごし方が「{ans}」なのはどれ？"},
+"メダカの見分け方":{a:"メダカ：{name}は？",b:"「{ans}」— これはどれ？"},
+"メダカの飼い方":{a:"メダカの飼い方：{name}は？",b:"「{ans}」— これはどれ？"},
+"メダカの育ち方":{a:"メダカ：{name}は？",b:"「{ans}」— これはどれ？"},
+"カエルの育ち方":{a:"カエル：{name}は？",b:"「{ans}」— これはどれ？"},
+"プランクトンの種類":{a:"「{name}」はどのなかま？",b:"「{ans}」なのはどれ？"},
+"けんび鏡":{a:"けんび鏡：{name}は？",b:"「{ans}」— これはどれ？"},
+"生物のはたらき":{a:"「{name}」とは？",b:"「{ans}」— これはどれ？"},
+"数量の関係":{a:"{name}は？",b:"「{ans}」— これはどれ？"},
+"つながり":{a:"「{name}」とは？",b:"「{ans}」— これはどれ？"},
+"食物連鎖の順":{a:"{name}の食物連鎖の順は？",b:"「{ans}」— これはどこの食物連鎖？"},
+"日本での立場":{a:"「{name}」は日本ではどれにあたる？",b:"「{ans}」にあたるのはどれ？"},
+"水のよごれと生き物":{a:"{name}にすむ生き物は？",b:"「{ans}」がすむのはどんな水？"},
+"ことば":{a:"「{name}」の説明は？",b:"「{ans}」— これはどのことば？"}
+};
+function qText(kp, fmt){
+  var t = AXQ[kp.axis];
+  var s = t ? (fmt==="A" ? t.a : t.b)
+            : (fmt==="A" ? "「{name}」の{axis}は？" : "{axis}が「{ans}」なのはどれ？");
+  return s.replace(/\{name\}/g, kp.name).replace(/\{ans\}/g, kp.ans).replace(/\{axis\}/g, kp.axis);
+}
+
+/* =======================================================================
+   誤答選択肢の生成（引き継ぎ仕様 §4）
+   ======================================================================= */
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+function distractorsA(kp){
+  var out=[], seen={}; seen[kp.ans]=1;
+  var tiers=[
+    KPS.filter(function(k){ return k.axis===kp.axis && k.cat===kp.cat; }),
+    KPS.filter(function(k){ return k.axis===kp.axis; }),
+    KPS.filter(function(k){ return k.cat===kp.cat; }),
+    KPS.filter(function(k){ return k.unit===kp.unit; }),
+    KPS
+  ];
+  for(var t=0;t<tiers.length && out.length<3;t++){
+    var c=shuffle(tiers[t]);
+    for(var i=0;i<c.length && out.length<3;i++){ if(!seen[c[i].ans]){ seen[c[i].ans]=1; out.push(c[i].ans); } }
+  }
+  return out;
+}
+function distractorsB(kp){
+  var out=[], seen={}; seen[kp.name]=1;
+  function ok(k){ return NAME_AXIS[k.name+"|"+kp.axis] !== kp.ans; }        // 正解が2つになるのを防ぐ
+  function unknown(k){ return NAME_AXIS[k.name+"|"+kp.axis] === undefined; }
+  var tiers=[
+    KPS.filter(function(k){ return k.axis===kp.axis && k.cat===kp.cat && ok(k); }),
+    KPS.filter(function(k){ return k.axis===kp.axis && k.unit===kp.unit && ok(k); }),
+    KPS.filter(function(k){ return k.axis===kp.axis && ok(k); }),
+    KPS.filter(function(k){ return unknown(k) && k.cat===kp.cat; }),
+    KPS.filter(unknown)
+  ];
+  for(var t=0;t<tiers.length && out.length<3;t++){
+    var c=shuffle(tiers[t]);
+    for(var i=0;i<c.length && out.length<3;i++){ if(!seen[c[i].name]){ seen[c[i].name]=1; out.push(c[i].name); } }
+  }
+  return out;
+}
+function buildQuestion(kp, fmt){
+  var correct = fmt==="A" ? kp.ans : kp.name;
+  var ds = fmt==="A" ? distractorsA(kp) : distractorsB(kp);
+  return { kp:kp, fmt:fmt, text:qText(kp,fmt), correct:correct, choices:shuffle([correct].concat(ds)) };
+}
+
+/* =======================================================================
+   保存スキーマ（共通仕様 §10）
+   ======================================================================= */
+function newItem(){
+  return { streak:0, mastered:false, masteredAt:null, postMasterWrong:0, lastFormat:null,
+           totalCorrect:0, totalWrong:0,
+           byFormat:{A:{correct:0,wrong:0},B:{correct:0,wrong:0}}, wrongLog:[], lastSeenAt:null };
+}
+function emptyDB(){
+  return { app:APP, version:DB_VERSION, updatedAt:new Date().toISOString(),
+           activeAccountId:null, accounts:[], progress:{} };
+}
+var DB = null;
+
+function migrate(raw){
+  if (!raw || typeof raw !== "object") return emptyDB();
+  // 旧スキーマ {users:{name:{st}}} 等 → 新スキーマ
+  if (!raw.accounts && raw.users){
+    var db = emptyDB(), names = Object.keys(raw.users);
+    names.forEach(function(nm,i){
+      var id = "acc_" + hashStr(nm) + "_" + i;
+      db.accounts.push({ id:id, name:nm, createdAt:new Date().toISOString() });
+      var p = { items:{}, sessions:[] }, src = raw.users[nm] || {};
+      var srcItems = src.st || src.items || {};
+      Object.keys(srcItems).forEach(function(k){
+        var it = newItem(), o = srcItems[k] || {};
+        it.streak = o.streak||0; it.mastered = !!o.mastered; it.masteredAt = o.masteredAt||null;
+        it.totalCorrect = o.totalCorrect||0; it.totalWrong = o.totalWrong||0;
+        it.lastSeenAt = o.lastSeenAt||null; it.lastFormat = o.lastFormat||null;
+        if (o.byFormat) it.byFormat = o.byFormat;
+        it.wrongLog = (o.wrongLog||[]).slice(0,5);
+        p.items[k] = it;
+      });
+      db.progress[id] = p;
+    });
+    db.activeAccountId = db.accounts.length ? db.accounts[0].id : null;
+    return db;
+  }
+  raw.app = APP; raw.version = DB_VERSION;
+  raw.accounts = raw.accounts || [];
+  raw.progress = raw.progress || {};
+  raw.accounts.forEach(function(a){
+    var p = raw.progress[a.id] = raw.progress[a.id] || { items:{}, sessions:[] };
+    p.items = p.items || {}; p.sessions = p.sessions || [];
+    Object.keys(p.items).forEach(function(k){
+      var it = p.items[k], base = newItem(), f;
+      for (f in base) if (it[f] === undefined) it[f] = base[f];
+      it.byFormat = it.byFormat || {A:{correct:0,wrong:0},B:{correct:0,wrong:0}};
+      it.byFormat.A = it.byFormat.A || {correct:0,wrong:0};
+      it.byFormat.B = it.byFormat.B || {correct:0,wrong:0};
+      if (typeof it.postMasterWrong !== "number") it.postMasterWrong = 0;   // v1→v2 補完
+      it.wrongLog = (it.wrongLog||[]).slice(0,5);                            // 5件に切り詰め
+    });
+    if (p.sessions.length > 100) p.sessions = p.sessions.slice(0,100);
+  });
+  return raw;
+}
+function loadDB(){
+  var s = lsGet(APP), raw = null;
+  if (s) { try { raw = JSON.parse(s); } catch(e){ raw = null; } }
+  DB = migrate(raw);
+  if (!DB.accounts.length) DB.activeAccountId = null;
+  return DB;
+}
+function saveDB(fromCloud){
+  if (!fromCloud) DB.updatedAt = new Date().toISOString();   // クラウド取り込み時は上書きしない
+  DB.app = APP; DB.version = DB_VERSION;
+  lsSet(APP, JSON.stringify(DB));
+}
+function acc(){
+  if (!DB.activeAccountId) return null;
+  for (var i=0;i<DB.accounts.length;i++) if (DB.accounts[i].id===DB.activeAccountId) return DB.accounts[i];
+  return null;
+}
+function prog(){
+  var a = acc(); if (!a) return null;
+  if (!DB.progress[a.id]) DB.progress[a.id] = { items:{}, sessions:[] };
+  return DB.progress[a.id];
+}
+function item(id, create){
+  var p = prog(); if (!p) return newItem();
+  if (!p.items[id]) { if (!create) return newItem(); p.items[id] = newItem(); }
+  return p.items[id];
+}
+function itemRO(id){ var p=prog(); return (p && p.items[id]) ? p.items[id] : newItem(); }
+
+/* ---- 端末ローカル設定 ---------------------------------------------- */
+function getUI(){
+  var d = { unit:"ALL", cat:"ALL", imp:"ALL" };
+  try { var o = JSON.parse(lsGet(UI_KEY_LS)||"{}"); for (var k in d) if (o[k]!==undefined) d[k]=o[k]; } catch(e){}
+  return d;
+}
+function setUI(o){ var u=getUI(); for(var k in o) u[k]=o[k]; lsSet(UI_KEY_LS, JSON.stringify(u)); }
+function getSync(){ try { return JSON.parse(lsGet(SYNC_KEY_LS)||"{}"); } catch(e){ return {}; } }
+function setSync(o){ lsSet(SYNC_KEY_LS, JSON.stringify(o)); }
+
+/* =======================================================================
+   出題範囲（共通仕様 §3-5）
+   ======================================================================= */
+function impPass(kp, f){ return f==="ALL" ? true : (f==="21" ? kp.imp>=1 : kp.imp>=2); }
+function inRange(kp, ui){
+  ui = ui || getUI();
+  if (ui.unit!=="ALL" && kp.unit!==ui.unit) return false;
+  if (ui.cat !=="ALL" && kp.cat !==ui.cat ) return false;
+  return impPass(kp, ui.imp);
+}
+function rangeKPs(){ var ui=getUI(); return KPS.filter(function(k){ return inRange(k,ui); }); }
+
+/* =======================================================================
+   習得判定（共通仕様 §4）
+   ======================================================================= */
+function requiredStreak(it){
+  var w = it.totalWrong || 0;
+  if (w >= 6) return 4;
+  if (w >= 3) return 3;
+  return 2;
+}
+function stateOf(it){
+  if (it.mastered && it.postMasterWrong > 0) return "要注意習得";
+  if (it.mastered) return "習得済み";
+  if (it.totalWrong > 0 && it.totalCorrect === 0) return "誤答";
+  if (it.totalCorrect > 0) return it.totalCorrect + "回正解";
+  return "未出題";
+}
+
+/* =======================================================================
+   同期（共通仕様 §12・§13）
+   ======================================================================= */
+var syncMsg = { text:"", kind:"" };
+function dbHasRecords(d){
+  if (!d || !d.progress) return false;
+  var ids = Object.keys(d.progress);
+  for (var i=0;i<ids.length;i++){
+    var p = d.progress[ids[i]] || {};
+    if ((p.sessions||[]).length > 0) return true;
+    var its = p.items || {}, ks = Object.keys(its);
+    for (var j=0;j<ks.length;j++){
+      var it = its[ks[j]] || {};
+      if ((it.totalCorrect||0) + (it.totalWrong||0) > 0) return true;
+    }
+  }
+  return false;
+}
+function syncCfg(){ var s=getSync(); return (s.url && s.key) ? s : null; }
+
+function apiPull(cb){
+  var s = syncCfg(); if (!s) { cb({ok:false, error:"未設定"}); return; }
+  fetch(s.url + (s.url.indexOf("?")<0?"?":"&") + "key=" + encodeURIComponent(s.key) + "&app=" + encodeURIComponent(APP))
+    .then(function(r){ return r.text(); })
+    .then(function(t){ var j; try { j=JSON.parse(t); } catch(e){ cb({ok:false, error:"BAD_JSON"}); return; } cb(j); })
+    .catch(function(){ cb({ok:false, error:"OFFLINE"}); });
+}
+function apiPost(body, cb){
+  var s = syncCfg(); if (!s) { cb({ok:false, error:"未設定"}); return; }
+  fetch(s.url, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(body) })
+    .then(function(r){ return r.text(); })
+    .then(function(t){ var j; try { j=JSON.parse(t); } catch(e){ cb({ok:false, error:"BAD_JSON"}); return; } cb(j); })
+    .catch(function(){ cb({ok:false, error:"OFFLINE"}); });
+}
+function errText(e){
+  if (e === "BAD_JSON") return "GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
+  if (e === "OFFLINE")  return "オフライン（ローカルには保存済み）";
+  if (e && /key|合言葉|unauthor/i.test(e)) return "合言葉が違います";
+  return e || "エラー";
+}
+function setSyncMsg(kind, text){
+  syncMsg = { kind:kind, text:text };
+  var s = getSync(); s.lastSync = new Date().toISOString(); setSync(s);
+  render();
+}
+function pushDB(silent){
+  var s = syncCfg(); if (!s) return;
+  if (!silent) setSyncMsg("busy","☁… 送信中");
+  apiPost({ key:s.key, data:DB }, function(j){
+    if (j.ok) setSyncMsg("ok","☁✓ クラウドに保存しました");
+    else setSyncMsg(/合言葉/.test(errText(j.error))?"err":"warn", "☁⚠ " + errText(j.error));
+  });
+}
+/* ---- 合流（§13-3） -------------------------------------------------- */
+function mergeItem(a, b){
+  // a=ローカル, b=クラウド
+  var A = a || newItem(), B = b || newItem(), o = newItem();
+  o.totalCorrect    = Math.max(A.totalCorrect||0,    B.totalCorrect||0);
+  o.totalWrong      = Math.max(A.totalWrong||0,      B.totalWrong||0);
+  o.postMasterWrong = Math.max(A.postMasterWrong||0, B.postMasterWrong||0);
+  ["A","B"].forEach(function(f){
+    o.byFormat[f].correct = Math.max((A.byFormat&&A.byFormat[f]?A.byFormat[f].correct:0)||0,(B.byFormat&&B.byFormat[f]?B.byFormat[f].correct:0)||0);
+    o.byFormat[f].wrong   = Math.max((A.byFormat&&A.byFormat[f]?A.byFormat[f].wrong  :0)||0,(B.byFormat&&B.byFormat[f]?B.byFormat[f].wrong  :0)||0);
+  });
+  o.mastered = !!(A.mastered || B.mastered);
+  if (A.masteredAt && B.masteredAt) o.masteredAt = (A.masteredAt < B.masteredAt) ? A.masteredAt : B.masteredAt;
+  else o.masteredAt = A.masteredAt || B.masteredAt || null;
+  var log = (A.wrongLog||[]).concat(B.wrongLog||[]), seen = {}, uniq = [];
+  log.forEach(function(w){ if (w && w.at && !seen[w.at]) { seen[w.at]=1; uniq.push(w); } });
+  uniq.sort(function(x,y){ return x.at < y.at ? 1 : -1; });
+  o.wrongLog = uniq.slice(0,5);
+  var an = A.lastSeenAt || "", bn = B.lastSeenAt || "";
+  var newer = (an >= bn) ? A : B;                 // lastSeenAt が新しい側
+  o.lastSeenAt = an >= bn ? an : bn; if (!o.lastSeenAt) o.lastSeenAt = null;
+  o.streak     = newer.streak || 0;               // ← 大きい方ではない（§13-3）
+  o.lastFormat = newer.lastFormat || null;
+  return o;
+}
+function mergeDB(local, cloud){
+  var out = { app:APP, version:DB_VERSION, updatedAt:cloud.updatedAt || local.updatedAt,
+              activeAccountId:null, accounts:[], progress:{} };
+  var byName = {}, changed = false;
+  (local.accounts||[]).forEach(function(a){ byName[a.name] = { id:a.id, createdAt:a.createdAt }; });
+  var names = (local.accounts||[]).map(function(a){ return a.name; });
+  (cloud.accounts||[]).forEach(function(a){ if (names.indexOf(a.name)<0) { names.push(a.name); byName[a.name] = { id:a.id, createdAt:a.createdAt }; changed = true; } });
+
+  names.forEach(function(nm){
+    var la = (local.accounts||[]).filter(function(a){ return a.name===nm; })[0];
+    var ca = (cloud.accounts||[]).filter(function(a){ return a.name===nm; })[0];
+    var id = la ? la.id : ca.id;
+    out.accounts.push({ id:id, name:nm, createdAt:(la&&la.createdAt) || (ca&&ca.createdAt) || new Date().toISOString() });
+    var lp = (la && local.progress ? local.progress[la.id] : null) || { items:{}, sessions:[] };
+    var cp = (ca && cloud.progress ? cloud.progress[ca.id] : null) || { items:{}, sessions:[] };
+    var items = {}, keys = {};
+    Object.keys(lp.items||{}).forEach(function(k){ keys[k]=1; });
+    Object.keys(cp.items||{}).forEach(function(k){ keys[k]=1; });
+    Object.keys(keys).forEach(function(k){
+      var m = mergeItem(lp.items?lp.items[k]:null, cp.items?cp.items[k]:null);
+      items[k] = m;
+      if (JSON.stringify(m) !== JSON.stringify(lp.items ? lp.items[k] : null)) changed = true;
+    });
+    var ss = (lp.sessions||[]).concat(cp.sessions||[]), seen={}, u=[];
+    ss.forEach(function(s){ if (s && s.finishedAt && !seen[s.finishedAt]) { seen[s.finishedAt]=1; u.push(s); } });
+    u.sort(function(x,y){ return x.finishedAt < y.finishedAt ? 1 : -1; });
+    if (u.length !== (lp.sessions||[]).length) changed = true;
+    out.progress[id] = { items:items, sessions:u.slice(0,100) };
+  });
+  // アクティブアカウントは名前で維持
+  var cur = (local.accounts||[]).filter(function(a){ return a.id===local.activeAccountId; })[0];
+  if (cur){ var f = out.accounts.filter(function(a){ return a.name===cur.name; })[0]; if (f) out.activeAccountId = f.id; }
+  if (!out.activeAccountId && out.accounts.length) out.activeAccountId = out.accounts[0].id;
+  return { db:out, changed:changed };
+}
+function mergeSummary(db){
+  var people = db.accounts.length, seen = 0, mastered = 0;
+  Object.keys(db.progress).forEach(function(id){
+    var its = db.progress[id].items || {};
+    Object.keys(its).forEach(function(k){
+      var it = its[k];
+      if ((it.totalCorrect||0)+(it.totalWrong||0) > 0) seen++;
+      if (it.mastered) mastered++;
+    });
+  });
+  return "（" + people + "人・出題済み" + seen + "・習得" + mastered + "）";
+}
+function doSync(){
+  var s = syncCfg(); if (!s) { flash("同期が設定されていません"); return; }
+  setSyncMsg("busy","☁… 同期中");
+  apiPull(function(j){
+    if (!j.ok){ setSyncMsg(/合言葉/.test(errText(j.error))?"err":"warn", "☁⚠ " + errText(j.error)); return; }
+    var cloud = j.data ? migrate(j.data) : null;
+    var localHas = dbHasRecords(DB), cloudHas = dbHasRecords(cloud);
+    if (!cloud){ pushDB(true); setSyncMsg("ok","☁ クラウドに進捗が無かったので送りました"); return; }
+    if (!localHas && cloudHas){                       // 空の端末は無条件でクラウド採用
+      DB = cloud; saveDB(true); lsSet(APP, JSON.stringify(DB));
+      setSyncMsg("ok","☁✓ クラウドの記録を取り込みました " + mergeSummary(DB)); return;
+    }
+    if (localHas && !cloudHas){ pushDB(true); setSyncMsg("ok","☁ クラウドに進捗が無かったので送りました"); return; }
+    if (!localHas && !cloudHas){
+      var r0 = mergeDB(DB, cloud); DB = r0.db; saveDB(true); lsSet(APP, JSON.stringify(DB));
+      setSyncMsg("ok","☁✓ クラウドと合流しました " + mergeSummary(DB)); return;
+    }
+    var r = mergeDB(DB, cloud);
+    DB = r.db; saveDB(true); lsSet(APP, JSON.stringify(DB));
+    setSyncMsg("ok","☁✓ クラウドと合流しました " + mergeSummary(DB));
+    if (r.changed) pushDB(true);
+  });
+}
+
+/* =======================================================================
+   画面フレーム
+   ======================================================================= */
+var SCREEN = "home", LAST_SCREEN = "", MODAL = null;
+function esc(s){ return String(s===undefined||s===null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function flash(msg){
+  var d = document.createElement("div"); d.className="flash"; d.textContent=msg;
+  document.body.appendChild(d); setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 2200);
+}
+function go(s){ SCREEN = s; render(); }
+function render(){
+  var html = "";
+  if (SCREEN === "account")      html = viewAccount();
+  else if (SCREEN === "home")    html = viewHome();
+  else if (SCREEN === "quiz")    html = viewQuiz();
+  else if (SCREEN === "result")  html = viewResult();
+  else if (SCREEN === "learn")   html = viewLearn();
+  else html = viewHome();
+  if (MODAL) html += MODAL;
+  document.getElementById("app").innerHTML = html;
+  if (SCREEN !== LAST_SCREEN){ window.scrollTo(0,0); LAST_SCREEN = SCREEN; }  // 画面が変わったときだけ先頭へ
+}
+function openModal(h){ MODAL = '<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal">'+h+'</div></div>'; render(); }
+function closeModal(){ MODAL = null; render(); }
+
+/* =======================================================================
+   アカウント画面
+   ======================================================================= */
+function viewAccount(){
+  var h = '<div class="card"><h1>🐾 '+TOOL_NAME+'（中学受験 理科）</h1>'
+        + '<div class="muted">つかう人をえらんでください</div></div>';
+  if (!DB.accounts.length) h += '<div class="card muted">まだアカウントがありません。下から追加してください。</div>';
+  DB.accounts.forEach(function(a){
+    var p = DB.progress[a.id] || {items:{}}, m = 0;
+    Object.keys(p.items||{}).forEach(function(k){ if (p.items[k].mastered) m++; });
+    h += '<div class="list-item" onclick="pickAccount(\''+a.id+'\')"><div class="row"><b>'+esc(a.name)+'</b>'
+      +  '<span class="spacer"></span><span class="muted">習得 '+m+' / '+KPS.length+'</span></div></div>';
+  });
+  h += '<div class="card"><label class="f">新しいアカウント名</label>'
+    +  '<input type="text" id="newAcc" placeholder="例：長男">'
+    +  '<div class="row" style="margin-top:8px"><button class="primary" onclick="addAccount()">追加する</button>';
+  if (DB.accounts.length) h += '<button class="ghost" onclick="go(\'home\')">もどる</button>';
+  h += '</div></div>';
+  if (!LS_OK) h += '<div class="warnbar">この端末には記録を残せない環境です。'+(syncCfg()?'クラウド同期が有効なので記録はGoogleに保存されます。':'クラウド同期を設定すると記録を残せます。')+'</div>';
+  return h;
+}
+function addAccount(){
+  var v = (document.getElementById("newAcc").value||"").trim();
+  if (!v) { flash("名前を入力してください"); return; }
+  if (DB.accounts.some(function(a){ return a.name===v; })) { flash("同じ名前があります"); return; }
+  var id = "acc_" + Date.now().toString(36) + "_" + Math.floor(Math.random()*1e6).toString(36);
+  DB.accounts.push({ id:id, name:v, createdAt:new Date().toISOString() });
+  DB.progress[id] = { items:{}, sessions:[] };
+  DB.activeAccountId = id; saveDB(); pushDB(true); go("home");
+}
+function pickAccount(id){ DB.activeAccountId = id; saveDB(); go("home"); }
+function renameAccount(){
+  var a = acc(); if (!a) return;
+  var v = prompt("新しい名前", a.name); if (!v) return; v = v.trim(); if (!v) return;
+  if (DB.accounts.some(function(x){ return x.name===v && x.id!==a.id; })) { flash("同じ名前があります"); return; }
+  a.name = v; saveDB(); pushDB(true); flash("名前を変えました"); render();
+}
+function deleteAccount(){
+  var a = acc(); if (!a) return;
+  if (!confirm("「"+a.name+"」の記録をすべて削除します。よろしいですか？")) return;
+  DB.accounts = DB.accounts.filter(function(x){ return x.id!==a.id; });
+  delete DB.progress[a.id];
+  DB.activeAccountId = DB.accounts.length ? DB.accounts[0].id : null;
+  saveDB(); pushDB(true); go(DB.accounts.length ? "home" : "account");
+}
+
+/* =======================================================================
+   範囲セレクタ（共通仕様 §3-5）
+   ======================================================================= */
+function rangeBar(onChangeFn){
+  var ui = getUI(), h = '<div class="card tight">';
+  h += '<div class="row tight" style="margin-bottom:6px"><span class="muted">出題範囲</span></div>';
+  h += '<div class="row tight" style="margin-bottom:6px">';
+  h += chipBtn("すべての単元", ui.unit==="ALL", "setRange({unit:'ALL',cat:'ALL'})");
+  UNITS.forEach(function(u){ h += chipBtn(u, ui.unit===u, "setRange({unit:'"+u+"',cat:'ALL'})"); });
+  h += '</div>';
+  var cats = CATS.filter(function(c){ return ui.unit==="ALL" || CAT_UNIT[c]===ui.unit; });
+  h += '<div class="row tight" style="margin-bottom:6px">';
+  h += chipBtn("すべて（"+countRange("ALL",ui.unit,ui.imp)+"）", ui.cat==="ALL", "setRange({cat:'ALL'})");
+  cats.forEach(function(c){ h += chipBtn(c+"（"+countRange(c,ui.unit,ui.imp)+"）", ui.cat===c, "setRange({cat:'"+c+"'})"); });
+  h += '</div>';
+  h += '<div class="row tight"><span class="muted small">重要度</span><span class="seg">'
+    +  segBtn("すべて", ui.imp==="ALL", "setRange({imp:'ALL'})")
+    +  segBtn("◎○のみ", ui.imp==="21", "setRange({imp:'21'})")
+    +  segBtn("◎のみ",  ui.imp==="2",  "setRange({imp:'2'})")
+    +  '</span><span class="spacer"></span><span class="muted small">'+rangeKPs().length+' 語</span></div>';
+  h += '</div>';
+  return h;
+}
+function chipBtn(label, on, act){ return '<button class="chip'+(on?" on":"")+'" onclick="'+act+'">'+esc(label)+'</button>'; }
+function segBtn(label, on, act){ return '<button class="'+(on?"on":"")+'" onclick="'+act+'">'+esc(label)+'</button>'; }
+function countRange(cat, unit, imp){
+  return KPS.filter(function(k){
+    if (unit!=="ALL" && k.unit!==unit) return false;
+    if (cat !=="ALL" && k.cat !==cat ) return false;
+    return impPass(k, imp);
+  }).length;
+}
+function setRange(o){ setUI(o); render(); }
+
+/* =======================================================================
+   ホーム画面
+   ======================================================================= */
+function attentionKPs(){ return rangeKPs().filter(function(k){ return itemRO(k.id).postMasterWrong > 0; }); }
+
+function viewHome(){
+  var a = acc(); if (!a) return viewAccount();
+  var h = '';
+  h += '<div class="card tight"><div class="row"><b>🐾 '+TOOL_NAME+'</b><span class="spacer"></span>'
+    +  '<span class="muted small">'+esc(a.name)+'</span>'
+    +  '<button class="chip" onclick="go(\'account\')">切替</button>'
+    +  '<button class="chip" onclick="renameAccount()">改名</button></div></div>';
+  if (!LS_OK) h += '<div class="warnbar">☁ この端末には記録を残せない環境ですが、'+(syncCfg()?'クラウド同期が有効なので記録はGoogleに保存されます':'クラウド同期を設定すると記録を残せます')+'</div>';
+
+  h += rangeBar();
+
+  var n = rangeKPs().length;
+  var att = attentionKPs().length;
+  h += '<div class="card"><h2>学習をはじめる</h2>'
+    +  '<div class="grid2">'
+    +  '<button class="primary" onclick="startQuiz(\'10問\')">10問モード<br><span class="small">10語 ＝ 20問</span></button>'
+    +  '<button class="primary" onclick="startQuiz(\'20問\')">20問モード<br><span class="small">20語 ＝ 40問</span></button>'
+    +  '<button onclick="startQuiz(\'全問\')">全問モード<br><span class="small">範囲の'+n+'語を1周</span></button>'
+    +  '<button onclick="startQuiz(\'再確認\')">再確認モード<br><span class="small">要注意 '+att+' 語</span></button>'
+    +  '</div>'
+    +  '<button class="wide" style="margin-top:8px" onclick="go(\'learn\')">📖 覚えるモード（記録に残りません）</button>';
+  if (att > 0) h += '<div class="warnbar" style="margin-top:8px;cursor:pointer" onclick="startQuiz(\'再確認\')">⚠ 要注意 '+att+' 語 — タップで再確認モード</div>';
+  h += '</div>';
+
+  h += masteryPanel();
+  h += rankingPanel();
+  h += managePanel();
+  return h;
+}
+function masteryPanel(){
+  // ※ 範囲選択に関係なく全KPで集計（§3-5③）
+  var tot = KPS.length, m = 0, att = 0, once = 0;
+  KPS.forEach(function(k){ var it = itemRO(k.id);
+    if (it.mastered) { m++; if (it.postMasterWrong>0) att++; }
+    else if (it.totalCorrect>0) once++; });
+  var h = '<div class="card"><h2>習得のようす<span class="muted small">（全'+tot+'語で集計）</span></h2>';
+  h += '<div class="row"><b>総合</b><span class="spacer"></span><span class="muted">習得済み '+m+' / '+tot+'（'+Math.round(m/tot*100)+'%）</span></div>';
+  h += '<div class="bar"><i style="width:'+(m/tot*100)+'%"></i></div>';
+  h += '<div class="muted small" style="margin-top:4px">うち要注意習得 '+att+' ／ 1回以上正解（未習得）'+once+'</div>';
+  h += '<div style="margin-top:10px"></div>';
+  UNITS.forEach(function(u){
+    var cs = CATS.filter(function(c){ return CAT_UNIT[c]===u; });
+    h += '<div class="muted small" style="margin-top:8px"><b>'+esc(u)+'</b></div>';
+    cs.forEach(function(c){
+      var ks = KPS.filter(function(k){ return k.cat===c; });
+      var mm = ks.filter(function(k){ return itemRO(k.id).mastered; }).length;
+      h += '<div class="row small" style="margin-top:4px"><span style="min-width:9em">'+esc(c)+'</span>'
+        +  '<span style="flex:1"><span class="bar"><i style="width:'+(mm/ks.length*100)+'%"></i></span></span>'
+        +  '<span class="muted" style="min-width:5.5em;text-align:right">'+mm+' / '+ks.length+'</span></div>';
+    });
+  });
+  h += '<div class="muted small" style="margin-top:10px">濃い＝習得済み／⚠枠＝要注意習得／淡い＝未着手</div>';
+  h += '</div>';
+  return h;
+}
+function rankingPanel(){
+  var list = KPS.map(function(k){ return { kp:k, it:itemRO(k.id) }; })
+                .filter(function(x){ return x.it.totalWrong > 0; })
+                .sort(function(a,b){ return b.it.totalWrong - a.it.totalWrong; }).slice(0,15);
+  if (!list.length) return '';
+  var h = '<div class="card"><h2>間違いランキング</h2>';
+  list.forEach(function(x){
+    h += '<div class="rank" onclick="startFocus(\''+x.kp.id+'\')"><span>'+esc(x.kp.name)+' <span class="muted small">'+esc(x.kp.axis)+'</span></span>'
+      +  '<span class="muted">誤答 '+x.it.totalWrong+' 回</span></div>';
+  });
+  h += '<div class="muted small" style="margin-top:6px">タップするとそのことばを中心に10問モードを始めます</div></div>';
+  return h;
+}
+
+/* =======================================================================
+   記録データの管理パネル（共通仕様 §14）
+   ======================================================================= */
+function managePanel(){
+  var s = getSync(), cfg = syncCfg();
+  var col = syncMsg.kind==="ok" ? "var(--accent)" : (syncMsg.kind==="err" ? "var(--warn)" : "var(--sub)");
+  var h = '<div class="card"><h2>記録データの管理</h2>';
+  h += '<div class="small" style="color:'+col+'">'+esc(syncMsg.text || (cfg ? "☁ 未同期" : "☁ 未設定"))
+    +  (s.lastSync ? ' ｜ 最終同期 '+esc(fmtDT(s.lastSync)) : '') + '</div>';
+  h += '<div class="row" style="margin-top:10px">'
+    +  '<button onclick="exportJSON()">📤 記録を書き出す</button>'
+    +  '<button onclick="importJSON()">📥 記録を読み込む</button>'
+    +  '<button onclick="syncSettings()">☁ クラウド同期設定</button>';
+  if (cfg) h += '<button onclick="doSync()">🔄 今すぐ同期</button><button onclick="exportList()">📋 全問一覧をDriveへ</button>';
+  h += '<button onclick="downloadCSV()">📄 CSVをダウンロード</button>';
+  h += '<button class="danger" onclick="deleteAccount()">このアカウントを削除</button>';
+  h += '</div></div>';
+  return h;
+}
+function fmtDT(iso){ try{ var d=new Date(iso); return d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate()+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2); }catch(e){ return iso; } }
+function ymd(){ var d=new Date(); return ""+d.getFullYear()+("0"+(d.getMonth()+1)).slice(-2)+("0"+d.getDate()).slice(-2); }
+function dl(name, text, mime){
+  var blob = new Blob([text], {type:(mime||"text/plain")+";charset=utf-8"});
+  var u = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href=u; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(u); }, 500);
+}
+function exportJSON(){ dl(TOOL_NAME+"記録_"+ymd()+".json", JSON.stringify(DB,null,1), "application/json"); }
+function importJSON(){
+  var inp = document.createElement("input"); inp.type="file"; inp.accept=".json,application/json";
+  inp.onchange = function(){
+    var f = inp.files[0]; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      var o; try { o = JSON.parse(rd.result); } catch(e){ flash("読み込めませんでした"); return; }
+      if (o.app !== APP) { flash("このツールの記録ではありません（"+o.app+"）"); return; }
+      var names = (o.accounts||[]).map(function(a){ return a.name; }).join("・");
+      openModal('<h2>記録を置きかえます</h2><div class="small">アカウント：'+esc(names||"（なし）")+'<br>保存日時：'+esc(fmtDT(o.updatedAt))+'</div>'
+        + '<div class="warnbar">いまの端末の記録は置きかえられます。</div>'
+        + '<div class="row"><button class="primary" onclick="doImport()">置きかえる</button><button onclick="closeModal()">やめる</button></div>');
+      window.__imp = o;
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+function doImport(){
+  DB = migrate(window.__imp); saveDB(); pushDB(true); closeModal(); flash("読み込みました");
+}
+function syncSettings(){
+  var s = getSync();
+  openModal('<h2>クラウド同期設定</h2>'
+    + '<label class="f">GASのURL（末尾 /exec）</label><input type="text" id="sUrl" value="'+esc(s.url||"")+'" placeholder="https://script.google.com/macros/s/..../exec">'
+    + '<label class="f">合言葉</label><input type="text" id="sKey" value="'+esc(s.key||"")+'">'
+    + '<div class="muted small" style="margin-top:6px">この設定はこの端末にだけ保存されます（同期されません）。</div>'
+    + '<div class="row" style="margin-top:10px"><button class="primary" onclick="saveSync()">保存して同期</button>'
+    + (s.url?'<button class="danger" onclick="clearSync()">同期を解除</button>':'')
+    + '<button onclick="closeModal()">とじる</button></div>');
+}
+function saveSync(){
+  var u=(document.getElementById("sUrl").value||"").trim(), k=(document.getElementById("sKey").value||"").trim();
+  if (!u || !k) { flash("URLと合言葉を入力してください"); return; }
+  setSync({ url:u, key:k, lastSync:getSync().lastSync||null });
+  closeModal(); doSync();
+}
+function clearSync(){ lsDel(SYNC_KEY_LS); syncMsg={text:"",kind:""}; closeModal(); flash("同期を解除しました"); }
+
+/* =======================================================================
+   出題（共通仕様 §3・§4・§5）
+   ======================================================================= */
+var SESSION = null;
+
+function pickKPs(mode, focusId){
+  var pool = rangeKPs();
+  if (mode === "再確認") return pool.filter(function(k){ return itemRO(k.id).postMasterWrong > 0; });
+  if (mode === "全問")  return shuffle(pool);
+  var need = mode === "20問" ? 20 : 10;
+  var cand = pool.filter(function(k){ return !itemRO(k.id).mastered; });
+  cand.sort(function(a,b){
+    var A = itemRO(a.id), B = itemRO(b.id);
+    if ((B.totalWrong||0) !== (A.totalWrong||0)) return (B.totalWrong||0) - (A.totalWrong||0);
+    var au = A.lastSeenAt ? 1 : 0, bu = B.lastSeenAt ? 1 : 0;
+    if (au !== bu) return au - bu;                        // 未出題を優先
+    return (A.lastSeenAt||"") < (B.lastSeenAt||"") ? -1 : 1;  // 古い順
+  });
+  var out = cand.slice(0, need);
+  if (focusId){
+    var f = ID2KP[focusId];
+    if (f && out.indexOf(f) < 0) { out.pop(); out.unshift(f); }
+  }
+  return out;
+}
+function startFocus(id){ startQuiz("10問", id); }
+
+function startQuiz(mode, focusId){
+  var kps = pickKPs(mode, focusId);
+  if (!kps.length){
+    flash(mode==="再確認" ? "要注意のことばはありません" : "この範囲に出題できることばがありません");
+    return;
+  }
+  var short = "";
+  if (mode!=="全問" && mode!=="再確認"){
+    var need = mode==="20問"?20:10;
+    if (kps.length < need) short = "この範囲の未習得は"+kps.length+"語しかないので、"+kps.length+"語（"+(kps.length*2)+"問）で出題します。";
+  }
+  var queue = [];
+  if (mode === "全問"){
+    kps.forEach(function(k){ var lf = itemRO(k.id).lastFormat; var f = lf==="A" ? "B" : (lf==="B" ? "A" : (Math.random()<.5?"A":"B")); queue.push({id:k.id, fmt:f}); });
+  } else {
+    var first = [], second = [];
+    kps.forEach(function(k){
+      var lf = itemRO(k.id).lastFormat; var f = lf==="A" ? "B" : (lf==="B" ? "A" : (Math.random()<.5?"A":"B"));
+      first.push({id:k.id, fmt:f}); second.push({id:k.id, fmt:(f==="A"?"B":"A")});
+    });
+    queue = shuffle(first).concat(shuffle(second));
+  }
+  SESSION = {
+    mode: mode, queue: queue, idx: 0, log: [], tmp: {}, seenCount: {},
+    startedAt: new Date().toISOString(),
+    masteredAtStart: KPS.filter(function(k){ return itemRO(k.id).mastered; }).map(function(k){ return k.id; }),
+    answered: false, viewBack: null, cur: null, notice: short, skipped: []
+  };
+  nextQuestion();
+  go("quiz");
+}
+function tmpItem(id){
+  if (!SESSION.tmp[id]) SESSION.tmp[id] = JSON.parse(JSON.stringify(itemRO(id)));
+  return SESSION.tmp[id];
+}
+function nextQuestion(){
+  SESSION.answered = false; SESSION.viewBack = null;
+  while (SESSION.idx < SESSION.queue.length){
+    var q = SESSION.queue[SESSION.idx];
+    if ((SESSION.seenCount[q.id]||0) >= 4){                 // 1セッション同一KPの上限4回（§5）
+      if (SESSION.skipped.indexOf(q.id)<0) SESSION.skipped.push(q.id);
+      SESSION.idx++; continue;
+    }
+    SESSION.cur = buildQuestion(ID2KP[q.id], q.fmt);
+    return;
+  }
+  SESSION.cur = null; finishSession();
+}
+function totalPlanned(){ return SESSION.queue.length; }
+
+function answer(choiceIdx){
+  if (SESSION.answered) return;
+  var q = SESSION.cur, chosen = q.choices[choiceIdx], ok = (chosen === q.correct);
+  var id = q.kp.id;
+  var before = JSON.parse(JSON.stringify(tmpItem(id)));
+  var beforeQueue = JSON.stringify(SESSION.queue);
+  applyAnswer(q, ok, chosen);
+  SESSION.log.push({ id:id, fmt:q.fmt, text:q.text, choices:q.choices, correct:q.correct, chosen:chosen, ok:ok,
+                     before:before, beforeQueue:beforeQueue, beforeIdx:SESSION.idx });
+  SESSION.answered = true;
+  render();
+}
+function applyAnswer(q, ok, chosen){
+  var id = q.kp.id, it = tmpItem(id), now = new Date().toISOString();
+  SESSION.seenCount[id] = (SESSION.seenCount[id]||0) + 1;
+  var wasMastered = it.mastered;
+  it.lastSeenAt = now;
+  if (ok){
+    it.totalCorrect++; it.byFormat[q.fmt].correct++;
+    if (SESSION.mode !== "再確認"){
+      if (it.lastFormat === q.fmt) { /* 同形式の連続正解では streak を進めない */ }
+      else it.streak++;
+      if (!it.mastered && it.streak >= requiredStreak(it)) { it.mastered = true; it.masteredAt = now; }
+    }
+  } else {
+    it.totalWrong++; it.byFormat[q.fmt].wrong++;
+    it.wrongLog.unshift({ at:now, format:q.fmt, answered:chosen });
+    it.wrongLog = it.wrongLog.slice(0,5);
+    if (wasMastered) it.postMasterWrong++;
+    if (SESSION.mode !== "再確認") it.streak = 0;          // 習得は降格しない（§4-2）
+  }
+  it.lastFormat = q.fmt;
+  // 復習キュー（10問／20問／再確認のみ）
+  if (SESSION.mode !== "全問"){
+    var gap = ok ? (it.mastered ? 0 : 6) : 3;
+    if (gap > 0 && (SESSION.seenCount[id]||0) < 4){
+      var pos = SESSION.idx + gap, nf = q.fmt === "A" ? "B" : "A";
+      while (pos < SESSION.queue.length && SESSION.queue[pos] && SESSION.queue[pos].id === id) pos++;
+      if (pos > SESSION.queue.length) pos = SESSION.queue.length;
+      SESSION.queue.splice(pos, 0, { id:id, fmt:nf });
+    }
+  }
+}
+function nextBtn(){ SESSION.idx++; nextQuestion(); render(); }
+function goBack(){
+  if (SESSION.viewBack === null) SESSION.viewBack = SESSION.answered ? SESSION.log.length-2 : SESSION.log.length-1;
+  else SESSION.viewBack--;
+  if (SESSION.viewBack < 0) SESSION.viewBack = 0;
+  render();
+}
+function goForward(){
+  if (SESSION.viewBack === null) return;
+  SESSION.viewBack++;
+  if (SESSION.viewBack > SESSION.log.length-1 || (SESSION.answered && SESSION.viewBack > SESSION.log.length-1)) SESSION.viewBack = null;
+  render();
+}
+function reAnswer(choiceIdx){
+  var i = SESSION.log.length-1, e = SESSION.log[i];
+  var chosen = e.choices[choiceIdx], ok = (chosen === e.correct);
+  SESSION.tmp[e.id] = JSON.parse(JSON.stringify(e.before));
+  SESSION.queue = JSON.parse(e.beforeQueue);
+  SESSION.idx = e.beforeIdx;
+  SESSION.seenCount[e.id] = Math.max(0,(SESSION.seenCount[e.id]||1)-1);
+  var q = { kp:ID2KP[e.id], fmt:e.fmt, correct:e.correct, choices:e.choices, text:e.text };
+  applyAnswer(q, ok, chosen);
+  e.chosen = chosen; e.ok = ok;
+  SESSION.viewBack = null; SESSION.answered = true;
+  render();
+}
+function quitQuiz(){
+  if (!confirm("とちゅうでやめると、今回の成績は記録されません。やめますか？")) return;
+  SESSION = null; go("home");
+}
+
+function viewQuiz(){
+  if (!SESSION) return viewHome();
+  var doneN = SESSION.log.length, totN = Math.max(totalPlanned(), doneN);
+  var correctN = SESSION.log.filter(function(x){ return x.ok; }).length;
+  var wrongN = doneN - correctN;
+  var remain = {}; SESSION.queue.slice(SESSION.idx).forEach(function(q){ remain[q.id]=1; });
+  var remainWords = Object.keys(remain).length;
+
+  var h = '<div class="topbar">';
+  h += '<div class="row small"><b>'+esc(SESSION.mode)+'モード</b><span class="spacer"></span>'
+    +  '<span class="muted">'+(doneN+ (SESSION.answered?0:1))+'問目 / 全'+totN+'問 ｜ あと'+remainWords+'語 ｜ 正解'+correctN+' 誤答'+wrongN+'</span></div>';
+  h += '<div class="bar" style="margin-top:5px"><i style="width:'+(totN?Math.min(100,doneN/totN*100):0)+'%"></i></div>';
+  h += '<div class="row" style="margin-top:6px"><button class="chip" onclick="quitQuiz()">やめる</button>';
+  if (SESSION.log.length > (SESSION.answered?1:0)) h += '<button class="chip" onclick="goBack()">← 前の問題へ</button>';
+  if (SESSION.viewBack !== null) h += '<button class="chip" onclick="goForward()">進む →</button>';
+  h += '</div></div>';
+
+  if (SESSION.notice) h += '<div class="okbar">'+esc(SESSION.notice)+'</div>';
+
+  if (SESSION.viewBack !== null){
+    var e = SESSION.log[SESSION.viewBack];
+    var editable = (SESSION.viewBack === SESSION.log.length-1) && !SESSION.answered;
+    h += '<div class="muted small">'+(SESSION.viewBack+1)+'問目の見直し'+(editable?'（もう一度こたえられます）':'（見るだけ）')+'</div>';
+    h += renderQ(e, true, editable);
+    return h;
+  }
+  if (SESSION.answered){
+    var last = SESSION.log[SESSION.log.length-1];
+    h += renderQ(last, true, false);
+    h += '<button class="primary wide" onclick="nextBtn()">次へ →</button>';
+    return h;
+  }
+  if (!SESSION.cur) return h;
+  h += renderQ({ id:SESSION.cur.kp.id, fmt:SESSION.cur.fmt, text:SESSION.cur.text, choices:SESSION.cur.choices,
+                 correct:SESSION.cur.correct, chosen:null, ok:null }, false, false);
+  return h;
+}
+function renderQ(e, revealed, editable){
+  var kp = ID2KP[e.id], it = tmpItem(e.id), req = requiredStreak(it);
+  var h = '<div class="qbox">';
+  h += '<div class="muted small">'+esc(kp.cat)+' ｜ '+esc(kp.axis)+' ｜ 形式'+e.fmt+' '+(e.fmt==="A"?"（ことば→特ちょう）":"（特ちょう→ことば）")+' '+(kp.imp===2?'<span class="tag imp2">◎</span>':(kp.imp===1?'<span class="tag imp1">○</span>':''))+'</div>';
+  h += '<div class="qtext">'+esc(e.text)+'</div>';
+  h += '<div class="muted small" style="margin-top:6px">習得ゲージ <span class="gauge">'+gauge(it.streak, req)+'</span>'
+    +  (req>2 ? ' <span class="tag attn">このことばは苦手なので'+req+'回必要</span>' : '')
+    +  (it.mastered ? ' <span class="tag mastered">習得済み</span>' : '') + '</div>';
+  h += '</div>';
+  e.choices.forEach(function(c, i){
+    var cls = "choice";
+    if (revealed && !editable){
+      if (c === e.correct) cls += " correct";
+      else if (c === e.chosen) cls += " wrong";
+    }
+    var act = editable ? "reAnswer("+i+")" : (revealed ? "" : "answer("+i+")");
+    h += '<button class="'+cls+'"'+(act?' onclick="'+act+'"':' disabled')+'>'+esc(c)+'</button>';
+  });
+  if (revealed && !editable){
+    h += '<div class="fb '+(e.ok?"ok":"ng")+'">'+(e.ok?"◯ 正解！":"× ざんねん…　正しくは「"+esc(e.correct)+"」")+'</div>';
+    h += '<div class="card tight"><div class="kpline"><span class="n">'+esc(kp.name)+'</span><span class="muted">の '+esc(kp.axis)+' →</span><span class="a">'+esc(kp.ans)+'</span></div>';
+    if (kp.note) h += '<div class="note">'+esc(kp.note)+'</div>';
+    if (kp.goro) h += '<div class="goro">🎵 '+esc(kp.goro)+'</div>';
+    h += '</div>';
+  }
+  return h;
+}
+function gauge(s, req){ var o=""; for(var i=0;i<req;i++) o += (i<s ? "●" : "○"); return o; }
+
+/* =======================================================================
+   セッション確定（共通仕様 §6-2・§11）
+   ======================================================================= */
+function finishSession(){
+  var p = prog(); if (!p) { go("home"); return; }
+  var newly = [];
+  Object.keys(SESSION.tmp).forEach(function(id){
+    var t = SESSION.tmp[id];
+    if (t.mastered && SESSION.masteredAtStart.indexOf(id) < 0) newly.push(id);
+    p.items[id] = t;
+  });
+  var correct = SESSION.log.filter(function(x){ return x.ok; }).length;
+  var wrong = SESSION.log.length - correct;
+  var wrongKpIds = []; SESSION.log.forEach(function(x){ if (!x.ok && wrongKpIds.indexOf(x.id)<0) wrongKpIds.push(x.id); });
+  var totalMastered = 0; Object.keys(p.items).forEach(function(k){ if (p.items[k].mastered) totalMastered++; });
+  p.sessions.unshift({
+    startedAt: SESSION.startedAt, finishedAt: new Date().toISOString(),
+    mode: SESSION.mode, correct: correct, wrong: wrong,
+    newlyMastered: newly, wrongKpIds: wrongKpIds, totalMastered: totalMastered
+  });
+  if (p.sessions.length > 100) p.sessions = p.sessions.slice(0,100);
+  SESSION.newly = newly; SESSION.correctN = correct; SESSION.wrongN = wrong;
+  saveDB();
+  pushDB(true);
+  SCREEN = "result";
+}
+
+/* =======================================================================
+   結果画面（共通仕様 §8）
+   ======================================================================= */
+var RES = { filterCat:"ALL", filterState:"ALL", sort:"wrong", open:{} };
+
+function viewResult(){
+  if (!SESSION) return viewHome();
+  var total = SESSION.correctN + SESSION.wrongN;
+  var rate = total ? Math.round(SESSION.correctN/total*100) : 0;
+  var h = '<div class="card"><h1>けっか</h1>'
+    + '<div class="row"><div style="flex:1"><div class="muted small">正解</div><div style="font-size:26px;font-weight:bold;color:var(--ok)">'+SESSION.correctN+'</div></div>'
+    + '<div style="flex:1"><div class="muted small">誤答</div><div style="font-size:26px;font-weight:bold;color:var(--ng)">'+SESSION.wrongN+'</div></div>'
+    + '<div style="flex:1"><div class="muted small">正答率</div><div style="font-size:26px;font-weight:bold">'+rate+'%</div></div>'
+    + '<div style="flex:1"><div class="muted small">新しく習得</div><div style="font-size:26px;font-weight:bold;color:var(--accent)">'+SESSION.newly.length+'</div></div></div>';
+  if (SESSION.skipped && SESSION.skipped.length){
+    h += '<div class="warnbar">同じことばを4回出したので、次のことばは「要復習」です：'
+      + SESSION.skipped.map(function(id){ return esc(ID2KP[id].name); }).join("、") + '</div>';
+  }
+  h += '<div class="row" style="margin-top:8px"><button class="primary" onclick="SESSION=null;go(\'home\')">ホームへ</button>'
+    + '<button onclick="downloadCSV()">📄 CSVをダウンロード</button></div></div>';
+
+  var wrongs = SESSION.log.filter(function(x){ return !x.ok; });
+  h += '<div class="card"><h2>今回まちがえた問題（'+wrongs.length+'）</h2>';
+  if (!wrongs.length) h += '<div class="muted">まちがいはありませんでした。すばらしい！</div>';
+  wrongs.forEach(function(e){
+    var kp = ID2KP[e.id];
+    h += '<div class="list-item attn"><div class="small muted">'+esc(kp.cat)+' ｜ 形式'+e.fmt+'</div>'
+      + '<div><b>'+esc(e.text)+'</b></div>'
+      + '<div class="small">あなたの答え：<span style="color:var(--ng)">'+esc(e.chosen)+'</span> ／ 正しくは：<span style="color:var(--ok)">'+esc(e.correct)+'</span></div>'
+      + (kp.note?'<div class="note">'+esc(kp.note)+'</div>':'')
+      + (kp.goro?'<div class="goro">🎵 '+esc(kp.goro)+'</div>':'')
+      + '</div>';
+  });
+  h += '</div>';
+
+  h += allListPanel();
+  return h;
+}
+function setRes(k,v){ RES[k]=v; render(); }
+function toggleOpen(id){ RES.open[id] = !RES.open[id]; render(); }
+
+function allListPanel(){
+  // ※ 範囲選択の影響を受けない（常に全KP）
+  var h = '<div class="card"><h2>カテゴリー別 全問一覧<span class="muted small">（全'+KPS.length+'語）</span></h2>';
+  h += '<div class="row tight" style="margin-bottom:6px"><select onchange="setRes(\'filterCat\',this.value)" style="max-width:14em">'
+    + '<option value="ALL">すべてのカテゴリー</option>'
+    + CATS.map(function(c){ return '<option value="'+esc(c)+'"'+(RES.filterCat===c?' selected':'')+'>'+esc(c)+'</option>'; }).join("")
+    + '</select>'
+    + '<select onchange="setRes(\'filterState\',this.value)" style="max-width:10em">'
+    + ["ALL","習得済み","要注意習得","誤答","未出題","正解あり"].map(function(s){ return '<option value="'+s+'"'+(RES.filterState===s?' selected':'')+'>'+(s==="ALL"?"すべての状態":s)+'</option>'; }).join("")
+    + '</select>'
+    + '<select onchange="setRes(\'sort\',this.value)" style="max-width:10em">'
+    + '<option value="wrong"'+(RES.sort==="wrong"?" selected":"")+'>誤答が多い順</option>'
+    + '<option value="order"'+(RES.sort==="order"?" selected":"")+'>もとの順</option>'
+    + '<option value="name"'+(RES.sort==="name"?" selected":"")+'>ことば順</option>'
+    + '</select></div>';
+
+  var list = KPS.slice();
+  if (RES.filterCat!=="ALL") list = list.filter(function(k){ return k.cat===RES.filterCat; });
+  if (RES.filterState!=="ALL") list = list.filter(function(k){
+    var st = stateOf(itemRO(k.id));
+    if (RES.filterState==="正解あり") return /回正解/.test(st);
+    return st === RES.filterState;
+  });
+  if (RES.sort==="wrong") list.sort(function(a,b){ return (itemRO(b.id).totalWrong||0)-(itemRO(a.id).totalWrong||0); });
+  if (RES.sort==="name")  list.sort(function(a,b){ return a.name < b.name ? -1 : 1; });
+
+  h += '<div class="muted small">'+list.length+'語</div>';
+  list.slice(0,400).forEach(function(k){
+    var it = itemRO(k.id), st = stateOf(it);
+    var cls = it.mastered ? (it.postMasterWrong>0 ? "list-item attn" : "list-item mastered") : "list-item";
+    h += '<div class="'+cls+'" onclick="toggleOpen(\''+k.id+'\')">'
+      + '<div class="row tight"><b>'+esc(k.name)+'</b><span class="muted small">'+esc(k.axis)+'</span><span class="spacer"></span>'
+      + (k.imp===2?'<span class="tag imp2">◎</span>':(k.imp===1?'<span class="tag imp1">○</span>':''))
+      + '<span class="tag'+(it.mastered?(it.postMasterWrong>0?" attn":" mastered"):"")+'">'+esc(st)+'</span>'
+      + (it.totalWrong>0?'<span class="tag attn" style="'+(it.totalWrong>=2?"font-weight:bold":"")+'">誤答'+it.totalWrong+'回</span>':'')
+      + '</div>';
+    if (RES.open[k.id]){
+      h += '<div class="small" style="margin-top:6px">答え：<b>'+esc(k.ans)+'</b></div>'
+        + '<div class="small muted">形式A：正解'+it.byFormat.A.correct+'／誤答'+it.byFormat.A.wrong+'　形式B：正解'+it.byFormat.B.correct+'／誤答'+it.byFormat.B.wrong+'</div>';
+      if (it.wrongLog.length) h += '<div class="small">過去の誤答：'+it.wrongLog.map(function(w){ return esc(w.answered)+'（形式'+w.format+'）'; }).join("、")+'</div>';
+      if (k.note) h += '<div class="note">'+esc(k.note)+'</div>';
+      if (k.goro) h += '<div class="goro">🎵 '+esc(k.goro)+'</div>';
+    }
+    h += '</div>';
+  });
+  if (list.length>400) h += '<div class="muted small">（表示は400語までです。絞り込んでご覧ください）</div>';
+  h += '</div>';
+  return h;
+}
+
+/* =======================================================================
+   14列書き出し（共通仕様 §15）とCSV（§9-2）
+   ======================================================================= */
+var HEADER14 = ["名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
+                "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"];
+function dstr(iso){ if(!iso) return ""; var d=new Date(iso); return d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate(); }
+function buildRows(extra){
+  var rows = [];
+  DB.accounts.forEach(function(a){
+    var p = DB.progress[a.id] || { items:{} };
+    KPS.forEach(function(k){
+      var it = (p.items && p.items[k.id]) ? p.items[k.id] : newItem();
+      var bf = it.byFormat || {A:{wrong:0},B:{wrong:0}};
+      var last = (it.wrongLog && it.wrongLog.length) ? it.wrongLog[0].at : null;
+      var r = [ a.name, k.cat, k.axis, k.name, "", impMark(k.imp), stateOf(it),
+                it.totalCorrect||0, it.totalWrong||0, (bf.A?bf.A.wrong:0)||0, (bf.B?bf.B.wrong:0)||0,
+                (it.wrongLog||[]).map(function(w){ return w.answered; }).join("；"),
+                dstr(last), dstr(it.masteredAt) ];
+      if (extra) r = r.concat([ k.ans, k.unit ]);
+      rows.push(r);
+    });
+  });
+  rows.sort(function(x,y){ return (y[8]||0)-(x[8]||0); });   // 誤答数の多い順
+  return rows;
+}
+function downloadCSV(){
+  var rows = buildRows(true), head = HEADER14.concat(["答え","大単元"]);
+  var csv = [head].concat(rows).map(function(r){
+    return r.map(function(c){ c = String(c===undefined||c===null?"":c); return /[",\n]/.test(c) ? '"'+c.replace(/"/g,'""')+'"' : c; }).join(",");
+  }).join("\r\n");
+  var a = acc();
+  dl(TOOL_NAME+"結果_"+((a&&a.name)||"")+"_"+ymd()+".csv", "\ufeff"+csv, "text/csv");
+}
+function exportList(){
+  var s = syncCfg(); if (!s) { flash("同期が設定されていません"); return; }
+  setSyncMsg("busy","☁… 一覧を書き出しています");
+  apiPull(function(j){                                   // 空上書き防止（§15）
+    if (j.ok && j.data){ var cloud = migrate(j.data); if (dbHasRecords(cloud) && !dbHasRecords(DB)) { DB = cloud; saveDB(true); } }
+    if (!dbHasRecords(DB)){
+      setSyncMsg("warn","☁⚠ 書き出しを中止しました");
+      openModal('<h2>書き出しを中止しました</h2><div class="small">この端末にもクラウドにも学習の記録がありません。空の一覧でスプレッドシートを上書きしないように中止しました。</div><div class="row" style="margin-top:10px"><button class="primary" onclick="closeModal()">とじる</button></div>');
+      return;
+    }
+    apiPost({ key:s.key, app:APP, list:{ header:HEADER14, rows:buildRows(false) } }, function(r){
+      if (r.ok) setSyncMsg("ok","☁✓ 全問一覧をスプレッドシートに書き出しました");
+      else setSyncMsg("err","☁⚠ "+errText(r.error));
+    });
+  });
+}
+
+/* =======================================================================
+   覚えるモード（共通仕様 §3-4／引き継ぎ仕様 §6）
+   ※ 記録・習得判定・同期に一切影響しない
+   ======================================================================= */
+var LEARN = { tab:"list", listIdx:0, listOpen:null,
+              hideName:false, hideAns:false,
+              deck:[], deckIdx:0, flipped:false, dir:"A", onlyLeft:false, known:{},
+              goroIdx:0,
+              sortAxis:null, sortQueue:[], sortIdx:0, sortOk:0, sortNg:0, sortFb:null };
+
+function viewLearn(){
+  var h = '<div class="card tight"><div class="row"><b>📖 覚えるモード</b>'
+        + '<span class="spacer"></span><span class="muted small">記録には残りません</span>'
+        + '<button class="chip" onclick="go(\'home\')">ホーム</button></div></div>';
+  h += rangeBar();
+  h += '<div class="tabbar" style="margin:8px 0">'
+    +  tabBtn("list","📝 一覧学習") + tabBtn("table","📋 分類表ビューア") + tabBtn("card","📇 カードめくり")
+    +  tabBtn("goro","🎵 語呂合わせ") + tabBtn("sort","🧺 仲間分け") + '</div>';
+  if (LEARN.tab==="list")  h += learnList();
+  if (LEARN.tab==="table") h += learnTable();
+  if (LEARN.tab==="card")  h += learnCard();
+  if (LEARN.tab==="goro")  h += learnGoro();
+  if (LEARN.tab==="sort")  h += learnSort();
+  return h;
+}
+function tabBtn(k,label){ return '<button class="'+(LEARN.tab===k?"on":"")+'" onclick="setTab(\''+k+'\')">'+label+'</button>'; }
+function setTab(k){
+  LEARN.tab = k;
+  if (k==="card") resetDeck();
+  if (k==="sort") { LEARN.sortAxis=null; LEARN.sortQueue=[]; LEARN.sortFb=null; }
+  LEARN.listIdx = 0; LEARN.goroIdx = 0;
+  render(); window.scrollTo(0,0);
+}
+
+/* ---- ① 一覧学習 ----------------------------------------------------- */
+function learnList(){
+  var list = rangeKPs();
+  if (!list.length) return '<div class="card muted">この範囲にことばがありません。</div>';
+  if (LEARN.listIdx >= list.length) LEARN.listIdx = 0;
+  var k = list[LEARN.listIdx], it = itemRO(k.id);
+  var h = '<div class="card"><div class="muted small">'+esc(k.unit)+' ｜ '+esc(k.cat)+' ｜ '+esc(k.axis)+'</div>'
+    + '<div style="font-size:22px;font-weight:bold;margin-top:4px">'+esc(k.name)+'</div>'
+    + '<div style="font-size:19px;color:var(--accent);margin-top:6px">'+esc(k.ans)+'</div>'
+    + '<div class="row tight" style="margin-top:8px">'
+    + (k.imp===2?'<span class="tag imp2">◎ 最重要</span>':(k.imp===1?'<span class="tag imp1">○ 重要</span>':'<span class="tag">標準</span>'))
+    + '<span class="tag'+(it.mastered?(it.postMasterWrong>0?" attn":" mastered"):"")+'">'+esc(stateOf(it))+'</span></div>'
+    + (k.note?'<div class="note">'+esc(k.note)+'</div>':'')
+    + (k.goro?'<div class="goro">🎵 '+esc(k.goro)+'</div>':'')
+    + '<div class="row" style="margin-top:10px"><button onclick="moveList(-1)">← 前へ</button>'
+    + '<span class="spacer"></span><span class="muted small">'+(LEARN.listIdx+1)+' / '+list.length+'</span><span class="spacer"></span>'
+    + '<button onclick="moveList(1)">次へ →</button></div></div>';
+  h += '<div class="card"><h3>この範囲のことば</h3>';
+  list.forEach(function(x,i){
+    h += '<div class="list-item'+(i===LEARN.listIdx?' mastered':'')+'" onclick="jumpList('+i+')"><div class="row tight">'
+      + '<b>'+esc(x.name)+'</b><span class="muted small">'+esc(x.axis)+'</span><span class="spacer"></span>'
+      + '<span class="muted small">'+esc(x.ans)+'</span></div></div>';
+  });
+  h += '</div>';
+  return h;
+}
+function moveList(d){ var n=rangeKPs().length; LEARN.listIdx=(LEARN.listIdx+d+n)%n; render(); }
+function jumpList(i){ LEARN.listIdx=i; render(); window.scrollTo(0,0); }
+
+/* ---- ② 分類表ビューア ------------------------------------------------ */
+function learnTable(){
+  var list = rangeKPs();
+  if (!list.length) return '<div class="card muted">この範囲にことばがありません。</div>';
+  var h = '<div class="card tight"><div class="row tight">'
+    + '<button class="chip'+(LEARN.hideName?" on":"")+'" onclick="toggleHide(\'hideName\')">ことばをかくす</button>'
+    + '<button class="chip'+(LEARN.hideAns?" on":"")+'" onclick="toggleHide(\'hideAns\')">答えをかくす</button>'
+    + '<span class="muted small">かくれている所はタップで開きます</span></div></div>';
+  var groups = {};
+  list.forEach(function(k){ var g = k.cat+"／"+k.axis; (groups[g] = groups[g] || []).push(k); });
+  Object.keys(groups).forEach(function(g){
+    var ks = groups[g], byAns = {}, order = [];
+    ks.forEach(function(k){ if (!byAns[k.ans]) { byAns[k.ans]=[]; order.push(k.ans); } byAns[k.ans].push(k.name); });
+    h += '<div class="card"><h3>'+esc(g)+'</h3><table><tr><th style="width:36%">答え</th><th>あてはまることば</th></tr>';
+    order.forEach(function(a){
+      h += '<tr><td'+(LEARN.hideAns?' class="hide-cell" onclick="this.classList.toggle(\'hide-cell\')"':'')+'>'+esc(a)+'</td>'
+        +  '<td'+(LEARN.hideName?' class="hide-cell" onclick="this.classList.toggle(\'hide-cell\')"':'')+'>'+byAns[a].map(esc).join("、")+'</td></tr>';
+    });
+    h += '</table></div>';
+  });
+  return h;
+}
+function toggleHide(k){ LEARN[k] = !LEARN[k]; render(); }
+
+/* ---- ③ カードめくり -------------------------------------------------- */
+function resetDeck(){ LEARN.deck = shuffle(rangeKPs()).map(function(k){ return k.id; }); LEARN.deckIdx=0; LEARN.flipped=false; }
+function currentDeck(){
+  var d = LEARN.deck.filter(function(id){ return ID2KP[id] && inRange(ID2KP[id]); });
+  if (LEARN.onlyLeft) d = d.filter(function(id){ return !LEARN.known[id]; });
+  return d;
+}
+function learnCard(){
+  var d = currentDeck();
+  var h = '<div class="card tight"><div class="row tight">'
+    + '<span class="seg">'+segBtn("ことば→答え", LEARN.dir==="A", "setDir(\'A\')")+segBtn("答え→ことば", LEARN.dir==="B", "setDir(\'B\')")+'</span>'
+    + '<button class="chip'+(LEARN.onlyLeft?" on":"")+'" onclick="LEARN.onlyLeft=!LEARN.onlyLeft;LEARN.deckIdx=0;LEARN.flipped=false;render()">まだの分だけ</button>'
+    + '<button class="chip" onclick="resetDeck();render()">シャッフル</button>'
+    + '<button class="chip" onclick="LEARN.known={};render()">覚えたをリセット</button></div></div>';
+  if (!d.length) return h + '<div class="card center"><b>ぜんぶ「覚えた」になりました！</b><div class="muted small">この印はこの画面だけのもので、成績には影響しません。</div></div>';
+  if (LEARN.deckIdx >= d.length) LEARN.deckIdx = 0;
+  var k = ID2KP[d[LEARN.deckIdx]];
+  var front = LEARN.dir==="A" ? k.name : k.ans, back = LEARN.dir==="A" ? k.ans : k.name;
+  h += '<div class="card flip" onclick="LEARN.flipped=!LEARN.flipped;render()">'
+    + '<div class="muted small">'+esc(k.cat)+' ｜ '+esc(k.axis)+'</div>'
+    + '<div style="margin-top:8px">'+esc(LEARN.flipped ? back : front)+'</div>';
+  if (LEARN.flipped){
+    if (k.note) h += '<div class="sub">'+esc(k.note)+'</div>';
+    if (k.goro) h += '<div class="sub">🎵 '+esc(k.goro)+'</div>';
+  } else h += '<div class="sub">タップしてめくる</div>';
+  h += '</div>';
+  h += '<div class="row"><button class="primary" style="flex:1" onclick="markKnown(true)">覚えた ✓</button>'
+    + '<button style="flex:1" onclick="markKnown(false)">まだ</button></div>';
+  h += '<div class="muted small center" style="margin-top:6px">のこり '+d.length+' 枚 ｜ 覚えた '+Object.keys(LEARN.known).length+' 枚（記録には残りません）</div>';
+  return h;
+}
+function setDir(d){ LEARN.dir=d; LEARN.flipped=false; render(); }
+function markKnown(yes){
+  var d = currentDeck(); if (!d.length) return;
+  var id = d[LEARN.deckIdx];
+  if (yes) LEARN.known[id] = 1;                        // 画面上の一時状態のみ（mastered は立てない）
+  else { LEARN.deck.push(LEARN.deck.splice(LEARN.deck.indexOf(id),1)[0]); }
+  LEARN.flipped = false;
+  if (yes && LEARN.onlyLeft) { /* インデックス据え置き */ } else LEARN.deckIdx++;
+  var nd = currentDeck(); if (LEARN.deckIdx >= nd.length) LEARN.deckIdx = 0;
+  render();
+}
+
+/* ---- ④ 語呂合わせ ---------------------------------------------------- */
+function learnGoro(){
+  var list = rangeKPs().filter(function(k){ return k.goro; });
+  if (!list.length) return '<div class="card muted">この範囲に語呂合わせはありません。範囲を「すべての単元」にすると見つかります。</div>';
+  if (LEARN.goroIdx >= list.length) LEARN.goroIdx = 0;
+  var k = list[LEARN.goroIdx];
+  var h = '<div class="card center"><div class="muted small">'+esc(k.cat)+' ｜ '+esc(k.axis)+'</div>'
+    + '<div style="font-size:18px;font-weight:bold;margin:8px 0">'+esc(k.name)+' → '+esc(k.ans)+'</div>'
+    + '<div class="goro" style="font-size:16px">🎵 '+esc(k.goro)+'</div>'
+    + '<div class="row" style="margin-top:10px"><button onclick="moveGoro(-1)">← 前へ</button><span class="spacer"></span>'
+    + '<span class="muted small">'+(LEARN.goroIdx+1)+' / '+list.length+'</span><span class="spacer"></span>'
+    + '<button onclick="moveGoro(1)">次へ →</button></div></div>';
+  h += '<div class="card"><h3>語呂合わせ一覧</h3><table><tr><th style="width:34%">ことば</th><th>語呂合わせ</th></tr>';
+  list.forEach(function(x,i){ h += '<tr onclick="LEARN.goroIdx='+i+';render();window.scrollTo(0,0)" style="cursor:pointer"><td>'+esc(x.name)+'<div class="muted small">'+esc(x.ans)+'</div></td><td>'+esc(x.goro)+'</td></tr>'; });
+  h += '</table></div>';
+  return h;
+}
+function moveGoro(d){ var n=rangeKPs().filter(function(k){return k.goro;}).length; LEARN.goroIdx=(LEARN.goroIdx+d+n)%n; render(); }
+
+/* ---- ⑤ 仲間分けトレーニング ------------------------------------------ */
+function sortableAxes(){
+  var list = rangeKPs(), m = {};
+  list.forEach(function(k){ (m[k.cat+"／"+k.axis] = m[k.cat+"／"+k.axis] || []).push(k); });
+  return Object.keys(m).filter(function(g){
+    var as = {}; m[g].forEach(function(k){ as[k.ans]=1; });
+    return Object.keys(as).length >= 2 && Object.keys(as).length <= 8 && m[g].length >= 4;
+  }).map(function(g){ return { key:g, kps:m[g] }; });
+}
+function learnSort(){
+  var axes = sortableAxes();
+  if (!LEARN.sortAxis){
+    var h = '<div class="card"><h3>どの軸で仲間分けする？</h3>';
+    if (!axes.length) h += '<div class="muted">この範囲では仲間分けできる軸がありません。範囲を広げてください。</div>';
+    axes.forEach(function(a){
+      var as={}; a.kps.forEach(function(k){ as[k.ans]=1; });
+      h += '<div class="list-item" onclick="startSort(\''+a.key.replace(/'/g,"\\'")+'\')"><b>'+esc(a.key)+'</b>'
+        + '<div class="muted small">'+a.kps.length+'語／箱 '+Object.keys(as).length+'つ</div></div>';
+    });
+    return h + '</div>';
+  }
+  var g = axes.filter(function(a){ return a.key===LEARN.sortAxis; })[0];
+  if (!g) { LEARN.sortAxis=null; return learnSort(); }
+  var boxes = []; g.kps.forEach(function(k){ if (boxes.indexOf(k.ans)<0) boxes.push(k.ans); });
+  var h = '<div class="card tight"><div class="row"><b>'+esc(g.key)+'</b><span class="spacer"></span>'
+    + '<span class="muted small">○'+LEARN.sortOk+' ×'+LEARN.sortNg+'</span>'
+    + '<button class="chip" onclick="LEARN.sortAxis=null;render()">別の軸</button></div></div>';
+  if (LEARN.sortIdx >= LEARN.sortQueue.length){
+    h += '<div class="card center"><b>おわり！ ○'+LEARN.sortOk+' ×'+LEARN.sortNg+'</b>'
+      + '<div class="muted small">この結果は成績には記録されません。</div>'
+      + '<div class="row" style="margin-top:8px"><button class="primary" onclick="startSort(\''+LEARN.sortAxis.replace(/'/g,"\\'")+'\')">もう一度</button>'
+      + '<button onclick="LEARN.sortAxis=null;render()">別の軸</button></div></div>';
+    return h;
+  }
+  var kp = ID2KP[LEARN.sortQueue[LEARN.sortIdx]];
+  h += '<div class="card center"><div class="muted small">'+(LEARN.sortIdx+1)+' / '+LEARN.sortQueue.length+'</div>'
+    + '<div style="font-size:24px;font-weight:bold;margin:10px 0">'+esc(kp.name)+'</div>'
+    + '<div class="muted small">どの箱に入る？</div></div>';
+  h += '<div class="grid2">';
+  boxes.forEach(function(b,i){
+    var cls = "box";
+    if (LEARN.sortFb){
+      if (b === kp.ans) cls += " on";
+    }
+    h += '<button class="'+cls+'" style="text-align:center" '+(LEARN.sortFb?'disabled':'onclick="answerSort('+i+')"')+'>'+esc(b)+'</button>';
+  });
+  h += '</div>';
+  if (LEARN.sortFb){
+    h += '<div class="fb '+(LEARN.sortFb.ok?"ok":"ng")+'">'+(LEARN.sortFb.ok?"◯ 正解！":"× 正しくは「"+esc(kp.ans)+"」")+'</div>';
+    if (kp.note) h += '<div class="note">'+esc(kp.note)+'</div>';
+    if (kp.goro) h += '<div class="goro">🎵 '+esc(kp.goro)+'</div>';
+    h += '<button class="primary wide" onclick="nextSort()">次へ →</button>';
+  }
+  return h;
+}
+function startSort(key){
+  LEARN.sortAxis = key;
+  var g = sortableAxes().filter(function(a){ return a.key===key; })[0];
+  LEARN.sortQueue = shuffle(g.kps).slice(0,24).map(function(k){ return k.id; });
+  LEARN.sortIdx = 0; LEARN.sortOk = 0; LEARN.sortNg = 0; LEARN.sortFb = null;
+  render(); window.scrollTo(0,0);
+}
+function answerSort(i){
+  var g = sortableAxes().filter(function(a){ return a.key===LEARN.sortAxis; })[0];
+  var boxes = []; g.kps.forEach(function(k){ if (boxes.indexOf(k.ans)<0) boxes.push(k.ans); });
+  var kp = ID2KP[LEARN.sortQueue[LEARN.sortIdx]], ok = (boxes[i] === kp.ans);
+  if (ok) LEARN.sortOk++; else LEARN.sortNg++;
+  LEARN.sortFb = { ok:ok };
+  render();
+}
+function nextSort(){ LEARN.sortIdx++; LEARN.sortFb = null; render(); }
+
+/* =======================================================================
+   起動
+   ======================================================================= */
+(function init(){
+  loadDB();
+  if (!DB.accounts.length) SCREEN = "account"; else SCREEN = "home";
+  render();
+  if (syncCfg()) setTimeout(doSync, 300);     // 起動直後にpull（§13-1）
+})();
+</script>
+</body>
+</html>

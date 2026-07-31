@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>日本国憲法の条文｜第9回</title>
+<style>
+:root{
+  --bg:#f5f4f0; --card:#ffffff; --ink:#242028; --sub:#6b6470;
+  --line:#e2ded8; --pri:#2f4fb5; --pri-d:#22397f; --pri-l:#e8edfb;
+  --ok:#1f8a5f; --ok-l:#e3f4ec; --ng:#c0392b; --ng-l:#fbe9e7;
+  --warn:#b8860b; --warn-l:#fbf3dd; --gold:#c8952a;
+  --r:14px; --sh:0 1px 3px rgba(0,0,0,.07),0 6px 18px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",Meiryo,sans-serif;
+  font-size:16px; line-height:1.75; letter-spacing:.02em;
+  padding:0 0 env(safe-area-inset-bottom);
+}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 64px}
+h1,h2,h3{line-height:1.5;margin:0}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.hide{display:none !important}
+
+/* ---------- header ---------- */
+header.top{
+  background:linear-gradient(135deg,#2f4fb5,#4a3a8f); color:#fff;
+  padding:14px 16px calc(14px + env(safe-area-inset-top)) 16px;
+  padding-top:calc(14px + env(safe-area-inset-top));
+  position:sticky; top:0; z-index:50; box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+header.top .row{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+header.top h1{font-size:17px;font-weight:800;flex:1}
+header.top .sub{font-size:11px;opacity:.8;font-weight:400;display:block}
+.accbtn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+  border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap}
+
+/* ---------- card ---------- */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin:12px 0}
+.card h2{font-size:15px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card h2 .em{font-size:18px}
+.muted{color:var(--sub);font-size:13px}
+.tiny{font-size:12px;color:var(--sub)}
+
+/* ---------- chips / segments ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;
+  padding:7px 13px;font-size:13.5px;font-weight:700;color:var(--sub);line-height:1.3}
+.chip .n{font-size:11px;font-weight:700;opacity:.75;margin-left:4px}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.seg{display:flex;border:1.5px solid var(--line);border-radius:11px;overflow:hidden;background:#fff}
+.seg button{flex:1;padding:10px 4px;font-size:13.5px;font-weight:700;color:var(--sub);border-right:1.5px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--pri);color:#fff}
+
+/* ---------- mode buttons ---------- */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mode{border-radius:12px;padding:14px 10px;font-weight:800;font-size:15px;
+  background:var(--pri);color:#fff;box-shadow:0 2px 0 var(--pri-d);text-align:center;line-height:1.4}
+.mode small{display:block;font-size:11px;font-weight:600;opacity:.85;margin-top:2px}
+.mode.alt{background:#fff;color:var(--pri);border:2px solid var(--pri);box-shadow:none}
+.mode.learn{background:linear-gradient(135deg,#c8952a,#a8761a);box-shadow:0 2px 0 #8a5f12;grid-column:1/-1}
+.mode.recheck{background:#fff;color:var(--warn);border:2px solid var(--warn);box-shadow:none;grid-column:1/-1}
+.mode:disabled{opacity:.4}
+
+/* ---------- bars ---------- */
+.bar{height:9px;border-radius:99px;background:#e8e5df;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.bar i.m{background:var(--pri)}
+.bar i.w{background:#f0a500}
+.bar i.o{background:#a9c2f2}
+.brow{margin:9px 0}
+.brow .lb{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px}
+.brow .lb b{font-weight:800}
+
+/* ---------- badge ---------- */
+.badge{display:inline-flex;align-items:center;gap:5px;background:var(--warn-l);color:#8a6508;
+  border:1.5px solid #e6d08a;border-radius:999px;padding:6px 13px;font-size:13px;font-weight:800}
+
+/* ---------- list ---------- */
+.lst{border-top:1px solid var(--line)}
+.lst .it{border-bottom:1px solid var(--line);padding:10px 2px;display:flex;gap:9px;align-items:flex-start}
+.lst .it .k{flex:1;min-width:0}
+.lst .it .k b{font-weight:700;font-size:14.5px}
+.tag{font-size:10.5px;font-weight:800;border-radius:5px;padding:2px 6px;white-space:nowrap;line-height:1.5}
+.t-m{background:var(--pri);color:#fff}
+.t-w{background:var(--warn-l);color:#8a6508;border:1.5px solid #e6d08a}
+.t-c{background:#dfe8fb;color:var(--pri-d)}
+.t-x{background:var(--ng-l);color:var(--ng)}
+.t-n{background:#eeebe6;color:var(--sub)}
+.imp2{color:var(--gold);font-weight:900}
+.imp1{color:var(--pri);font-weight:900}
+
+/* ---------- quiz ---------- */
+.qhead{background:var(--bg);padding:8px 0 6px;margin:-4px 0 0}
+.qmeta{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--sub);margin:6px 0 4px}
+.gauge{display:flex;gap:4px;align-items:center;font-size:13px;font-weight:700}
+.gauge .d{width:13px;height:13px;border-radius:50%;background:#ddd8d0;display:inline-block}
+.gauge .d.f{background:var(--ok)}
+.qtext{font-size:17px;font-weight:700;line-height:1.95;margin:4px 0 6px}
+.qtext .bl{display:inline-block;min-width:5.5em;border-bottom:3px solid var(--pri);
+  text-align:center;color:var(--pri);font-weight:900;vertical-align:baseline}
+.artchip{display:inline-block;background:var(--pri-l);color:var(--pri-d);border-radius:7px;
+  padding:2px 9px;font-size:12.5px;font-weight:800;margin-bottom:8px}
+.opts{display:grid;gap:9px;margin-top:12px}
+.opt{border:2px solid var(--line);background:#fff;border-radius:12px;padding:13px 14px;
+  text-align:left;font-size:15.5px;font-weight:700;line-height:1.6;min-height:52px}
+.opt .no{display:inline-block;width:22px;height:22px;border-radius:50%;background:#eeebe6;
+  color:var(--sub);font-size:12px;font-weight:800;text-align:center;line-height:22px;margin-right:8px}
+.opt.ok{border-color:var(--ok);background:var(--ok-l)}
+.opt.ng{border-color:var(--ng);background:var(--ng-l)}
+.opt.dim{opacity:.5}
+.fb{border-radius:12px;padding:13px 14px;margin-top:12px;font-size:14.5px;line-height:1.8}
+.fb.ok{background:var(--ok-l);border:1.5px solid #b6e0cd}
+.fb.ng{background:var(--ng-l);border:1.5px solid #f0c6c0}
+.fb .hd{font-weight:900;font-size:15px;margin-bottom:4px}
+.fb .full{background:#fff;border-radius:9px;padding:10px 11px;margin-top:9px;font-size:14px;line-height:1.9}
+.fb .full em{font-style:normal;color:var(--pri);font-weight:900;border-bottom:2px solid var(--pri)}
+.navbtns{display:flex;gap:9px;margin-top:14px}
+.btn{border-radius:11px;padding:13px 16px;font-weight:800;font-size:15px;text-align:center}
+.btn.pri{background:var(--pri);color:#fff;flex:1;box-shadow:0 2px 0 var(--pri-d)}
+.btn.gh{background:#fff;border:2px solid var(--line);color:var(--sub)}
+.btn.sm{padding:9px 13px;font-size:13.5px;border-radius:9px}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45}
+
+/* ---------- flashcard ---------- */
+.fc{background:#fff;border-radius:18px;box-shadow:var(--sh);min-height:250px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;padding:26px 20px;text-align:center;position:relative}
+.fc .side{font-size:11px;font-weight:800;color:var(--sub);position:absolute;top:12px;left:16px;letter-spacing:.1em}
+.fc .big{font-size:20px;font-weight:800;line-height:1.9}
+.fc .small{font-size:14px;color:var(--sub);margin-top:12px;line-height:1.8}
+.fc .hint{font-size:12px;color:var(--sub);margin-top:18px}
+.fcrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+
+/* ---------- misc ---------- */
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.stat div{background:var(--pri-l);border-radius:11px;padding:11px 4px}
+.stat b{display:block;font-size:22px;font-weight:900;color:var(--pri-d);line-height:1.3}
+.stat span{font-size:11px;color:var(--sub);font-weight:700}
+.syncbar{border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;line-height:1.6;background:#eeebe6;color:var(--sub)}
+.syncbar.ok{background:var(--ok-l);color:#136344}
+.syncbar.ng{background:var(--ng-l);color:var(--ng)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tools .btn{flex:1 1 46%;min-width:140px;background:#fff;border:2px solid var(--line);color:var(--ink);font-size:13.5px;padding:11px 8px}
+input[type=text],input[type=url],select{width:100%;padding:11px 12px;border:1.5px solid var(--line);
+  border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+label.f{display:block;font-size:12.5px;font-weight:800;color:var(--sub);margin:10px 0 4px}
+.modal{position:fixed;inset:0;background:rgba(20,16,24,.55);z-index:100;display:flex;
+  align-items:center;justify-content:center;padding:16px}
+.modal .box{background:#fff;border-radius:16px;max-width:460px;width:100%;max-height:86vh;overflow:auto;padding:18px}
+.modal h3{font-size:16px;font-weight:800;margin-bottom:8px}
+.mrow{display:flex;gap:9px;margin-top:14px}
+.mrow .btn{flex:1}
+details.kp{border-bottom:1px solid var(--line)}
+details.kp summary{padding:10px 2px;list-style:none;display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+details.kp summary::-webkit-details-marker{display:none}
+details.kp .body{padding:2px 2px 12px;font-size:13.5px;line-height:1.85;color:var(--sub)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.filters select{width:auto;flex:1 1 46%;min-width:130px;padding:8px 10px;font-size:13.5px}
+.warnbar{background:var(--warn-l);border:1.5px solid #e6d08a;color:#8a6508;border-radius:10px;
+  padding:9px 12px;font-size:12.5px;font-weight:700;margin:8px 0}
+.rank{display:flex;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.rank .n{background:var(--ng-l);color:var(--ng);border-radius:6px;padding:2px 7px;font-size:12px;font-weight:800}
+.ruby{font-size:11px;color:var(--sub);display:block;line-height:1.4}
+ruby{ruby-align:center}
+ruby rt{font-size:.47em;color:var(--sub);font-weight:600;letter-spacing:0;line-height:1.1}
+.opt ruby rt,.fc ruby rt{color:#8a8390}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="row">
+    <h1>日本国憲法の条文<span class="sub">第9回・重要条文チェック</span></h1>
+    <button class="accbtn" id="accBtn">👤 —</button>
+  </div>
+</header>
+<div class="wrap" id="app"></div>
+<div id="modalHost"></div>
+<script>
+/* ============================================================
+   日本国憲法の条文  データ定義
+   ============================================================ */
+const APP  = 'kj-quiz-shakai-kenpou';
+const TOOL = '日本国憲法の条文';
+const VER  = 'v2.1';
+
+/* 条文マスタ  [条番号, カテゴリー(章), 要旨, 重要度] */
+const ARTICLES = [
+["前文","前文","国民主権・平和主義・基本的人権の由来を宣言している",2],
+["第1条","天皇","天皇は日本国および日本国民統合の象徴であり、その地位は国民の総意に基づく",2],
+["第3条","天皇","天皇の国事行為には内閣の助言と承認が必要で、責任は内閣が負う",2],
+["第6条","天皇","天皇は国会の指名で内閣総理大臣を、内閣の指名で最高裁長官を任命する",2],
+["第7条","天皇","天皇の国事行為（公布・召集・解散・総選挙の公示・栄典の授与など）",2],
+["第9条","戦争の放棄","戦争の放棄・戦力の不保持・交戦権の否認",2],
+["第11条","基本的人権","基本的人権は侵すことのできない永久の権利として与えられる",2],
+["第12条","基本的人権","自由・権利は国民の不断の努力で保持し、公共の福祉のために利用する",1],
+["第14条","基本的人権","法の下の平等と差別の禁止",2],
+["第15条","基本的人権","公務員は全体の奉仕者・普通選挙の保障・投票の秘密",1],
+["第18条","基本的人権","奴隷的拘束および苦役からの自由",0],
+["第19条","基本的人権","思想及び良心の自由",1],
+["第20条","基本的人権","信教の自由と政教分離",2],
+["第21条","基本的人権","集会・結社・言論・出版など表現の自由",2],
+["第22条","基本的人権","居住・移転および職業選択の自由",1],
+["第23条","基本的人権","学問の自由",1],
+["第24条","基本的人権","両性の合意による婚姻・個人の尊厳と両性の本質的平等",1],
+["第25条","基本的人権","生存権（健康で文化的な最低限度の生活を営む権利）",2],
+["第26条","基本的人権","教育を受ける権利・教育を受けさせる義務・義務教育の無償",2],
+["第27条","基本的人権","勤労の権利と義務・勤労条件の基準",1],
+["第28条","基本的人権","労働三権（団結権・団体交渉権・団体行動権）",2],
+["第30条","基本的人権","納税の義務",2],
+["第32条","基本的人権","裁判を受ける権利",1],
+["第41条","国会","国会は国権の最高機関であって国の唯一の立法機関である",2],
+["第45条","国会","衆議院議員の任期は4年（解散のときは期間満了前に終了）",2],
+["第46条","国会","参議院議員の任期は6年、3年ごとに半数を改選する",2],
+["第52条","国会","常会（通常国会）は毎年1回召集する",1],
+["第53条","国会","臨時会の召集（総議員の4分の1以上の要求で決定しなければならない）",1],
+["第54条","国会","解散後40日以内に総選挙・30日以内に国会召集／参議院の緊急集会",2],
+["第56条","国会","定足数は総議員の3分の1、議事は出席議員の過半数で決する",1],
+["第59条","国会","法律案の議決と衆議院の再可決（出席議員の3分の2以上）",2],
+["第60条","国会","予算の衆議院先議と予算の議決における衆議院の優越",2],
+["第61条","国会","条約の承認には予算の規定を準用する（衆議院の優越）",1],
+["第64条","国会","弾劾裁判所を設けて裁判官を裁判する",2],
+["第65条","内閣","行政権は内閣に属する",2],
+["第66条","内閣","国務大臣は文民でなければならない・内閣は国会に連帯して責任を負う",2],
+["第67条","内閣","内閣総理大臣は国会議員の中から国会の議決で指名する",2],
+["第68条","内閣","内閣総理大臣が国務大臣を任命する（過半数は国会議員）",1],
+["第69条","内閣","衆議院の内閣不信任決議 → 10日以内に解散か総辞職",2],
+["第73条","内閣","内閣の仕事（条約の締結・予算の作成・政令の制定など）",2],
+["第76条","司法","司法権は裁判所に属する・裁判官の独立",2],
+["第78条","司法","裁判官の身分保障（心身の故障か公の弾劾以外では罷免されない）",1],
+["第79条","司法","最高裁判所裁判官の任命と国民審査",2],
+["第80条","司法","下級裁判所の裁判官の任命と任期10年",0],
+["第81条","司法","最高裁判所は違憲審査の終審裁判所（憲法の番人）",2],
+["第96条","改正・最高法規","憲法改正の手続（総議員の3分の2以上で発議 → 国民投票で過半数）",2],
+["第97条","改正・最高法規","基本的人権の本質（侵すことのできない永久の権利）",1],
+["第98条","改正・最高法規","憲法は国の最高法規・条約と国際法規の遵守",2],
+["第99条","改正・最高法規","憲法尊重擁護の義務（国民は義務者に入らない）",2]
+];
+
+/* 穴埋めKP  [条番号, 条文（【】が空欄）, 答え, よみ, 重要度, 解説] */
+const FILLS = [
+["前文","日本国民は、正当に【選挙】された国会における代表者を通じて行動し、","選挙","せんきょ",1,"国民が選んだ代表者が政治を行う＝間接民主制（議会制民主主義）を示す部分。"],
+["前文","ここに【主権】が国民に存することを宣言し、この憲法を確定する。","主権","しゅけん",2,"国民主権の宣言。大日本帝国憲法の天皇主権からの最大の転換点。"],
+["前文","そもそも国政は、国民の厳粛な信託によるものであって、その【権威】は国民に由来し、","権威","けんい",1,"「権威は国民に由来し／権力は代表者が行使し／福利は国民が享受する」の3点セットで覚える。"],
+["前文","その【権力】は国民の代表者がこれを行使し、","権力","けんりょく",1,"権威→国民、権力→代表者、福利→国民。順番に注意。"],
+["前文","その【福利】は国民がこれを享受する。","福利","ふくり",1,"政治の利益は国民が受け取るという意味。"],
+["前文","【政府の行為】によって再び戦争の惨禍が起ることのないようにすることを決意し、","政府の行為","せいふのこうい",1,"戦争は政府が起こしたものだという反省が込められている。平和主義の出発点。"],
+["前文","日本国民は、恒久の【平和】を念願し、人間相互の関係を支配する崇高な理想を深く自覚するのであって、","平和","へいわ",1,"前文の第2段落は平和主義を述べた部分。"],
+["前文","全世界の国民が、ひとしく【恐怖と欠乏】から免かれ、平和のうちに生存する権利を有することを確認する。","恐怖と欠乏","きょうふとけつぼう",2,"ここが「平和的生存権」を示した有名な部分。入試頻出。"],
+["前文","われらは、平和を維持し、専制と隷従、圧迫と【偏狭】を地上から永遠に除去しようと努めている国際社会において、名誉ある地位を占めたいと思う。","偏狭","へんきょう",0,"「専制と隷従、圧迫と偏狭」で1セット。"],
+
+["第1条","天皇は、日本国の【象徴】であり日本国民統合の象徴であって、","象徴","しょうちょう",2,"天皇は政治の権力をもたない「象徴」。象徴天皇制という。"],
+["第1条","この地位は、【主権】の存する日本国民の総意に基く。","主権","しゅけん",2,"天皇の地位は国民の総意に基づく＝国民主権のあらわれ。"],
+["第3条","天皇の国事に関するすべての行為には、【内閣】の助言と承認を必要とし、内閣が、その責任を負う。","内閣","ないかく",2,"天皇の国事行為は必ず内閣の助言と承認が必要。責任も内閣が負う。"],
+["第6条","天皇は、【国会】の指名に基いて、内閣総理大臣を任命する。","国会","こっかい",2,"総理大臣は「国会が指名→天皇が任命」。指名と任命の主体を混同しないこと。"],
+["第6条","天皇は、【内閣】の指名に基いて、最高裁判所の長たる裁判官を任命する。","内閣","ないかく",2,"最高裁長官は「内閣が指名→天皇が任命」。総理大臣（国会が指名）と対で覚える。"],
+["第7条","憲法改正、法律、政令及び条約を【公布】すること。","公布","こうふ",2,"国事行為の代表例。「公布」は世に広く知らせること。制定するのは国会。"],
+["第7条","国会を【召集】すること。","召集","しょうしゅう",1,"召集を決めるのは内閣、実際に召集するのは天皇の国事行為。"],
+["第7条","衆議院を【解散】すること。","解散","かいさん",1,"解散を決めるのは内閣、国事行為として行うのは天皇。"],
+["第7条","国会議員の総選挙の【施行】を公示すること。","施行","しこう",0,"「公示」は天皇の国事行為、「告示」は参議院通常選挙以外の選挙で使う語。"],
+["第7条","【栄典】を授与すること。","栄典","えいてん",0,"勲章などを与えること。天皇の国事行為のひとつ。"],
+
+["第9条","日本国民は、正義と秩序を基調とする国際平和を誠実に希求し、国権の発動たる【戦争】と、武力による威嚇又は武力の行使は、","戦争","せんそう",2,"9条1項は「戦争の放棄」。国権の発動たる戦争＝国が行う戦争。"],
+["第9条","国際紛争を解決する手段としては、永久にこれを【放棄】する。","放棄","ほうき",2,"1項＝戦争の放棄、2項＝戦力の不保持・交戦権の否認。3点セットで覚える。"],
+["第9条","前項の目的を達するため、陸海空軍その他の【戦力】は、これを保持しない。","戦力","せんりょく",2,"2項前段＝戦力の不保持。「陸海空軍その他の」までセットで暗記。"],
+["第9条","国の【交戦権】は、これを認めない。","交戦権","こうせんけん",2,"2項後段＝交戦権の否認。国として戦争をする権利を認めない。"],
+
+["第11条","国民は、すべての基本的人権の【享有】を妨げられない。","享有","きょうゆう",1,"「享有」は生まれながらに持っていること。11条は基本的人権の永久不可侵をうたう。"],
+["第11条","この憲法が国民に保障する基本的人権は、侵すことのできない【永久】の権利として、現在及び将来の国民に与えられる。","永久","えいきゅう",2,"97条にもほぼ同じ表現が出てくる。「侵すことのできない永久の権利」。"],
+["第12条","この憲法が国民に保障する自由及び権利は、国民の【不断の努力】によって、これを保持しなければならない。","不断の努力","ふだんのどりょく",1,"人権は与えられて終わりではなく、国民が守り続けるものだという規定。"],
+["第12条","又、国民は、これを【濫用】してはならないのであって、","濫用","らんよう",0,"「濫用」はむやみに使うこと。権利には責任が伴う。"],
+["第12条","常に【公共の福祉】のためにこれを利用する責任を負う。","公共の福祉","こうきょうのふくし",2,"人権が制限される唯一の理由。12条・13条・22条・29条に登場する。"],
+["第14条","すべて国民は、法の下に【平等】であって、","平等","びょうどう",2,"平等権の中心条文。「法の下の平等」。"],
+["第14条","【人種】、信条、性別、社会的身分又は門地により、政治的、経済的又は社会的関係において、差別されない。","人種","じんしゅ",1,"差別禁止の5つの事由「人種・信条・性別・社会的身分・門地」を順に暗記。"],
+["第14条","人種、信条、【性別】、社会的身分又は門地により、政治的、経済的又は社会的関係において、差別されない。","性別","せいべつ",1,"男女平等の根拠条文。男女雇用機会均等法などにつながる。"],
+["第14条","人種、信条、性別、社会的身分又は【門地】により、政治的、経済的又は社会的関係において、差別されない。","門地","もんち",1,"「門地」は家がら・生まれのこと。読み方も問われる。"],
+["第15条","すべて公務員は、【全体】の奉仕者であって、一部の奉仕者ではない。","全体","ぜんたい",2,"公務員は国民全体のために働く。「全体の奉仕者」は頻出語。"],
+["第15条","公務員の選挙については、成年者による【普通選挙】を保障する。","普通選挙","ふつうせんきょ",2,"財産や性別で制限しない選挙。日本では1946年から男女普通選挙。"],
+["第15条","すべて選挙における投票の【秘密】は、これを侵してはならない。","秘密","ひみつ",1,"秘密選挙の原則。だれに投票したかを明かす必要はない。"],
+["第18条","何人も、いかなる【奴隷的拘束】も受けない。","奴隷的拘束","どれいてきこうそく",0,"身体の自由（人身の自由）の規定。"],
+["第18条","犯罪に因る処罰の場合を除いては、その意に反する【苦役】に服させられない。","苦役","くえき",0,"強制的に働かされない自由。「意に反する苦役」。"],
+["第19条","【思想及び良心】の自由は、これを侵してはならない。","思想及び良心","しそうおよびりょうしん",2,"精神の自由の出発点。心の中で何を考えても自由。"],
+["第20条","【信教】の自由は、何人に対してもこれを保障する。","信教","しんきょう",2,"どの宗教を信じても信じなくても自由。"],
+["第20条","いかなる宗教団体も、国から【特権】を受け、又は政治上の権力を行使してはならない。","特権","とっけん",1,"政教分離の原則。国と宗教を切り離す。"],
+["第20条","国及びその機関は、【宗教教育】その他いかなる宗教的活動もしてはならない。","宗教教育","しゅうきょうきょういく",1,"公立学校で特定の宗教を教えてはいけない根拠。"],
+["第21条","集会、結社及び言論、出版その他一切の【表現】の自由は、これを保障する。","表現","ひょうげん",2,"精神の自由の中心。集会・結社・言論・出版をまとめて表現の自由という。"],
+["第22条","何人も、【公共の福祉】に反しない限り、居住、移転及び職業選択の自由を有する。","公共の福祉","こうきょうのふくし",2,"経済活動の自由は公共の福祉による制限を受けやすい。"],
+["第22条","何人も、公共の福祉に反しない限り、居住、移転及び【職業選択】の自由を有する。","職業選択","しょくぎょうせんたく",2,"経済活動の自由のひとつ。医師免許などの制限は公共の福祉による。"],
+["第23条","【学問】の自由は、これを保障する。","学問","がくもん",2,"研究し、発表し、教える自由。精神の自由のひとつ。"],
+["第24条","婚姻は、【両性の合意】のみに基いて成立し、","両性の合意","りょうせいのごうい",2,"結婚は当事者2人の合意だけで成立する。家長の同意は不要。"],
+["第24条","夫婦が【同等】の権利を有することを基本として、相互の協力により、維持されなければならない。","同等","どうとう",1,"夫婦は対等であるという規定。"],
+["第24条","法律は、個人の【尊厳】と両性の本質的平等に立脚して、制定されなければならない。","尊厳","そんげん",1,"「個人の尊厳と両性の本質的平等」で1セット。"],
+["第25条","すべて国民は、【健康で文化的な最低限度】の生活を営む権利を有する。","健康で文化的な最低限度","けんこうでぶんかてきなさいていげんど",2,"生存権。社会権の中心条文で、生活保護法や社会保障制度の根拠。"],
+["第26条","すべて国民は、法律の定めるところにより、その【能力】に応じて、ひとしく教育を受ける権利を有する。","能力","のうりょく",1,"「その能力に応じて、ひとしく」がポイント。"],
+["第26条","すべて国民は、法律の定めるところにより、その保護する子女に普通【教育】を受けさせる義務を負う。","教育","きょういく",1,"国民の三大義務のひとつ「教育を受けさせる義務」。子どもの義務ではない。"],
+["第26条","義務教育は、これを【無償】とする。","無償","むしょう",2,"授業料が無料。教科書無償は法律で定められている。"],
+["第27条","すべて国民は、【勤労】の権利を有し、義務を負う。","勤労","きんろう",2,"勤労は権利であり義務でもある。国民の三大義務のひとつ。"],
+["第27条","賃金、就業時間、休息その他の【勤労条件】に関する基準は、法律でこれを定める。","勤労条件","きんろうじょうけん",1,"労働基準法の根拠条文。"],
+["第28条","勤労者の【団結】する権利及び団体交渉その他の団体行動をする権利は、これを保障する。","団結","だんけつ",2,"労働三権の1つめ＝団結権（労働組合をつくる権利）。"],
+["第28条","勤労者の団結する権利及び【団体交渉】その他の団体行動をする権利は、これを保障する。","団体交渉","だんたいこうしょう",2,"労働三権の2つめ＝団体交渉権（使用者と話し合う権利）。"],
+["第28条","勤労者の団結する権利及び団体交渉その他の【団体行動】をする権利は、これを保障する。","団体行動","だんたいこうどう",2,"労働三権の3つめ＝団体行動権（争議権・ストライキ）。"],
+["第30条","国民は、法律の定めるところにより、【納税】の義務を負う。","納税","のうぜい",2,"国民の三大義務＝勤労・納税・教育を受けさせる義務。"],
+["第32条","何人も、裁判所において【裁判を受ける権利】を奪われない。","裁判を受ける権利","さいばんをうけるけんり",1,"請求権（国務請求権）のひとつ。"],
+
+["第41条","国会は、国権の【最高機関】であって、","最高機関","さいこうきかん",2,"国民が直接選ぶ議員で構成されるため最高機関とされる。"],
+["第41条","国会は、国権の最高機関であって、国の唯一の【立法機関】である。","立法機関","りっぽうきかん",2,"法律をつくれるのは国会だけ。「唯一の」がポイント。"],
+["第45条","衆議院議員の任期は、【4年】とする。","4年","よねん",2,"衆議院＝任期4年・解散あり。参議院＝任期6年・解散なし。"],
+["第45条","但し、衆議院【解散】の場合には、その期間満了前に終了する。","解散","かいさん",1,"解散があるため衆議院の方が国民の意思を反映しやすい＝衆議院の優越の根拠。"],
+["第46条","参議院議員の任期は、【6年】とし、","6年","ろくねん",2,"参議院は任期6年で解散がない。"],
+["第46条","参議院議員の任期は、6年とし、【3年】ごとに議員の半数を改選する。","3年","さんねん",2,"3年ごとの半数改選。だから参議院選挙は3年に1度行われる。"],
+["第52条","国会の【常会】は、毎年1回これを召集する。","常会","じょうかい",2,"常会＝通常国会。毎年1月に召集され会期は150日。"],
+["第53条","内閣は、国会の【臨時会】の召集を決定することができる。","臨時会","りんじかい",2,"臨時会＝臨時国会。ほかに特別会（解散後の総選挙のあと）がある。"],
+["第53条","いずれかの議院の総議員の【4分の1】以上の要求があれば、内閣は、その召集を決定しなければならない。","4分の1","よんぶんのいち",1,"臨時会の召集要求は「総議員の4分の1以上」。定足数3分の1と混同しない。"],
+["第54条","衆議院が解散されたときは、解散の日から【40日】以内に、衆議院議員の総選挙を行い、","40日","よんじゅうにち",2,"解散→40日以内に総選挙→30日以内に特別会。数字をセットで覚える。"],
+["第54条","その選挙の日から【30日】以内に、国会を召集しなければならない。","30日","さんじゅうにち",2,"このとき召集される国会が特別会（特別国会）で、総理大臣の指名を行う。"],
+["第54条","但し、内閣は、国に緊急の必要があるときは、参議院の【緊急集会】を求めることができる。","緊急集会","きんきゅうしゅうかい",2,"衆議院の解散中に国会の機能を代行する仕組み。求めるのは内閣。"],
+["第56条","両議院は、各々その総議員の【3分の1】以上の出席がなければ、議事を開き議決することができない。","3分の1","さんぶんのいち",1,"定足数＝総議員の3分の1以上。臨時会の要求（4分の1）と区別する。"],
+["第56条","両議院の議事は、この憲法に特別の定のある場合を除いては、出席議員の【過半数】でこれを決し、","過半数","かはんすう",1,"通常の議決は出席議員の過半数。特別の定め＝3分の2以上など。"],
+["第56条","可否同数のときは、【議長】の決するところによる。","議長","ぎちょう",0,"賛成と反対が同数のときは議長が決める。"],
+["第59条","衆議院で可決し、参議院でこれと異なった議決をした法律案は、衆議院で出席議員の【3分の2】以上の多数で再び可決したときは、法律となる。","3分の2","さんぶんのに",2,"衆議院の優越の代表例。法律案の再可決は「出席議員の3分の2以上」。"],
+["第59条","参議院が、衆議院の可決した法律案を受け取った後、国会休会中の期間を除いて【60日】以内に、議決しないときは、衆議院は、参議院がその法律案を否決したものとみなすことができる。","60日","ろくじゅうにち",2,"法律案は60日、予算・条約・首相指名は30日／30日／10日。数字を整理する。"],
+["第60条","【予算】は、さきに衆議院に提出しなければならない。","予算","よさん",2,"予算の衆議院先議権。法律案には先議権がないことに注意。"],
+["第60条","予算は、さきに【衆議院】に提出しなければならない。","衆議院","しゅうぎいん",2,"予算は必ず衆議院から審議する。"],
+["第60条","参議院が、衆議院の可決した予算を受け取った後、国会休会中の期間を除いて【30日】以内に、議決しないときは、衆議院の議決を国会の議決とする。","30日","さんじゅうにち",2,"予算は30日。法律案の60日と区別する。"],
+["第61条","条約の締結に必要な国会の【承認】については、前条第2項の規定を準用する。","承認","しょうにん",1,"条約の承認も予算と同じ扱い（30日ルール・衆議院の優越）。"],
+["第64条","国会は、罷免の訴追を受けた裁判官を裁判するため、両議院の議員で組織する【弾劾裁判所】を設ける。","弾劾裁判所","だんがいさいばんしょ",2,"国会が裁判所をチェックする仕組み。三権分立の重要ポイント。"],
+
+["第65条","【行政権】は、内閣に属する。","行政権","ぎょうせいけん",2,"立法権＝国会（41条）、行政権＝内閣（65条）、司法権＝裁判所（76条）。"],
+["第66条","内閣総理大臣その他の国務大臣は、【文民】でなければならない。","文民","ぶんみん",2,"文民統制（シビリアン・コントロール）。軍人ではない人が政治を行う。"],
+["第66条","内閣は、行政権の行使について、国会に対し【連帯して責任】を負う。","連帯して責任","れんたいしてせきにん",2,"議院内閣制の根拠条文。内閣は国会に対して責任を負う。"],
+["第67条","内閣総理大臣は、【国会議員】の中から国会の議決で、これを指名する。","国会議員","こっかいぎいん",2,"総理大臣は必ず国会議員。国務大臣は過半数が国会議員（68条）。"],
+["第67条","内閣総理大臣は、国会議員の中から国会の議決で、これを【指名】する。","指名","しめい",2,"国会が指名し、天皇が任命する（6条）。"],
+["第67条","衆議院が指名の議決をした後、国会休会中の期間を除いて【10日】以内に、参議院が、指名の議決をしないときは、衆議院の議決を国会の議決とする。","10日","とおか",1,"首相指名は10日。法律案60日・予算30日・条約30日と区別する。"],
+["第68条","内閣総理大臣は、国務大臣を【任命】する。","任命","にんめい",2,"国務大臣の任免権は総理大臣にある（罷免も自由）。"],
+["第68条","但し、その【過半数】は、国会議員の中から選ばれなければならない。","過半数","かはんすう",2,"国務大臣は過半数が国会議員であればよい（全員ではない）。"],
+["第69条","内閣は、衆議院で【不信任】の決議案を可決し、又は信任の決議案を否決したときは、","不信任","ふしんにん",2,"内閣不信任決議は衆議院だけができる。参議院にはできない。"],
+["第69条","内閣は、衆議院で不信任の決議案を可決し、又は信任の決議案を否決したときは、【10日】以内に衆議院が解散されない限り、総辞職をしなければならない。","10日","とおか",2,"不信任決議のあとは10日以内。首相指名の10日ルール（67条）と数字が同じ。"],
+["第69条","10日以内に衆議院が【解散】されない限り、総辞職をしなければならない。","解散","かいさん",2,"不信任決議→10日以内に衆議院を解散するか、内閣総辞職か。"],
+["第69条","10日以内に衆議院が解散されない限り、【総辞職】をしなければならない。","総辞職","そうじしょく",2,"内閣が全員そろって辞めること。"],
+["第73条","【条約】を締結すること。但し、事前に、時宜によっては事後に、国会の承認を経ることを必要とする。","条約","じょうやく",2,"条約を結ぶのは内閣、承認するのは国会。役割分担に注意。"],
+["第73条","条約を締結すること。但し、事前に、時宜によっては事後に、国会の【承認】を経ることを必要とする。","承認","しょうにん",2,"内閣の行為を国会がチェックする三権分立の仕組み。"],
+["第73条","【予算】を作成して国会に提出すること。","予算","よさん",2,"予算をつくるのは内閣、議決するのは国会。"],
+["第73条","この憲法及び法律の規定を実施するために、【政令】を制定すること。","政令","せいれい",2,"政令は内閣が定める命令。法律は国会が定める。"],
+
+["第76条","すべて【司法権】は、最高裁判所及び法律の定めるところにより設置する下級裁判所に属する。","司法権","しほうけん",2,"司法権は裁判所だけがもつ。特別裁判所は認められない。"],
+["第76条","すべて裁判官は、その良心に従い【独立】してその職権を行い、","独立","どくりつ",2,"司法権の独立。裁判官は他の機関から指示を受けない。"],
+["第76条","すべて裁判官は、その良心に従い独立してその職権を行い、この【憲法及び法律】にのみ拘束される。","憲法及び法律","けんぽうおよびほうりつ",1,"裁判官が従うのは良心と憲法・法律だけ。"],
+["第78条","裁判官は、裁判により、【心身の故障】のために職務を執ることができないと決定された場合を除いては、","心身の故障","しんしんのこしょう",1,"裁判官が辞めさせられる例外の1つめ。"],
+["第78条","公の【弾劾】によらなければ罷免されない。","弾劾","だんがい",2,"例外の2つめ＝国会の弾劾裁判。最高裁裁判官はさらに国民審査がある。"],
+["第78条","裁判官の懲戒処分は、【行政機関】がこれを行うことはできない。","行政機関","ぎょうせいきかん",1,"内閣などが裁判官を処分できない＝司法権の独立を守るため。"],
+["第79条","最高裁判所は、その長たる裁判官及び法律の定める員数のその他の裁判官でこれを構成し、その長たる裁判官以外の裁判官は、【内閣】でこれを任命する。","内閣","ないかく",2,"最高裁長官は内閣が指名し天皇が任命、その他の裁判官は内閣が任命。"],
+["第79条","最高裁判所の裁判官の任命は、その任命後初めて行われる衆議院議員総選挙の際【国民の審査】に付し、","国民の審査","こくみんのしんさ",2,"国民審査。国民が裁判所をチェックする仕組みで、三権分立の重要ポイント。"],
+["第79条","その後【10年】を経過した後初めて行われる衆議院議員総選挙の際更に審査に付し、その後も同様とする。","10年","じゅうねん",1,"国民審査は10年ごと。実際には2回目以降を受ける裁判官は少ない。"],
+["第80条","下級裁判所の裁判官は、【最高裁判所】の指名した者の名簿によって、内閣でこれを任命する。","最高裁判所","さいこうさいばんしょ",1,"名簿をつくるのは最高裁、任命するのは内閣。"],
+["第80条","その裁判官は、任期を【10年】とし、再任されることができる。","10年","じゅうねん",0,"下級裁判所の裁判官の任期は10年、再任あり。"],
+["第81条","最高裁判所は、一切の法律、命令、規則又は処分が【憲法】に適合するかしないかを決定する権限を有する","憲法","けんぽう",2,"違憲審査権（違憲立法審査権）。すべての裁判所がもつが、最高裁が最終判断。"],
+["第81条","最高裁判所は、一切の法律、命令、規則又は処分が憲法に適合するかしないかを決定する権限を有する【終審裁判所】である。","終審裁判所","しゅうしんさいばんしょ",2,"最終的に決めるのは最高裁だから「憲法の番人」と呼ばれる。"],
+
+["第96条","この憲法の改正は、各議院の総議員の【3分の2】以上の賛成で、国会が、これを発議し、","3分の2","さんぶんのに",2,"改正の発議は「各議院の総議員の3分の2以上」。法律の再可決（出席議員の3分の2）と区別する。"],
+["第96条","各議院の総議員の3分の2以上の賛成で、国会が、これを【発議】し、国民に提案してその承認を経なければならない。","発議","はつぎ",2,"発議するのは国会、承認するのは国民。"],
+["第96条","この承認には、特別の【国民投票】又は国会の定める選挙の際行われる投票において、その過半数の賛成を必要とする。","国民投票","こくみんとうひょう",2,"国民投票で過半数の賛成が必要。国民主権のあらわれ。"],
+["第96条","この承認には、特別の国民投票又は国会の定める選挙の際行われる投票において、その【過半数】の賛成を必要とする。","過半数","かはんすう",2,"国民投票は過半数（3分の2ではない）。"],
+["第96条","憲法改正について前項の承認を経たときは、天皇は、【国民の名】で、この憲法と一体を成すものとして、直ちにこれを公布する。","国民の名","こくみんのな",1,"改正憲法を公布するのは天皇だが、あくまで「国民の名で」行う。"],
+["第97条","この憲法が日本国民に保障する【基本的人権】は、人類の多年にわたる自由獲得の努力の成果であって、","基本的人権","きほんてきじんけん",2,"人権は長い歴史の中で人々が勝ち取ってきたものだと述べている。"],
+["第97条","現在及び将来の国民に対し、侵すことのできない【永久】の権利として信託されたものである。","永久","えいきゅう",2,"11条とほぼ同じ表現。97条は「最高法規」の章にある点がポイント。"],
+["第98条","この憲法は、国の【最高法規】であって、その条規に反する法律、命令、詔勅及び国務に関するその他の行為の全部又は一部は、その効力を有しない。","最高法規","さいこうほうき",2,"憲法に反する法律は無効。だから違憲審査権（81条）が必要になる。"],
+["第98条","日本国が締結した【条約】及び確立された国際法規は、これを誠実に遵守することを必要とする。","条約","じょうやく",1,"国際協調主義を示す条文。"],
+["第98条","日本国が締結した条約及び確立された【国際法規】は、これを誠実に遵守することを必要とする。","国際法規","こくさいほうき",1,"条約と国際法規をきちんと守るという規定。"],
+["第99条","天皇又は摂政及び国務大臣、【国会議員】、裁判官その他の公務員は、この憲法を尊重し擁護する義務を負う。","国会議員","こっかいぎいん",2,"憲法を守る義務があるのは権力を使う側。国民は入っていないことが最大のポイント。"],
+["第99条","天皇又は摂政及び国務大臣、国会議員、裁判官その他の公務員は、この憲法を【尊重し擁護する義務】を負う。","尊重し擁護する義務","そんちょうしようごするぎむ",2,"憲法は権力を縛るためのもの（立憲主義）を示す条文。"]
+];
+
+/* ふりがな辞書（§18）：長い語から順に適用される */
+const RUBY = {
+"日本国民":"にほんこくみん","国民":"こくみん","選挙":"せんきょ","国会議員":"こっかいぎいん",
+"衆議院議員":"しゅうぎいんぎいん","参議院議員":"さんぎいんぎいん","国会":"こっかい","代表者":"だいひょうしゃ",
+"行動":"こうどう","子孫":"しそん","諸国民":"しょこくみん","協和":"きょうわ","成果":"せいか","全土":"ぜんど",
+"自由":"じゆう","恵沢":"けいたく","確保":"かくほ","政府":"せいふ","行為":"こうい","戦争":"せんそう",
+"惨禍":"さんか","決意":"けつい","主権":"しゅけん","宣言":"せんげん","憲法":"けんぽう","確定":"かくてい",
+"国政":"こくせい","厳粛":"げんしゅく","信託":"しんたく","権威":"けんい","由来":"ゆらい","権力":"けんりょく",
+"行使":"こうし","福利":"ふくり","享受":"きょうじゅ","人類":"じんるい","普遍":"ふへん","原理":"げんり",
+"法令":"ほうれい","詔勅":"しょうちょく","排除":"はいじょ","恒久":"こうきゅう","平和":"へいわ","念願":"ねんがん",
+"人間相互":"にんげんそうご","関係":"かんけい","支配":"しはい","崇高":"すうこう","理想":"りそう","自覚":"じかく",
+"公正":"こうせい","信義":"しんぎ","信頼":"しんらい","安全":"あんぜん","生存":"せいぞん","保持":"ほじ",
+"維持":"いじ","専制":"せんせい","隷従":"れいじゅう","圧迫":"あっぱく","偏狭":"へんきょう","地上":"ちじょう",
+"永遠":"えいえん","除去":"じょきょ","国際社会":"こくさいしゃかい","名誉":"めいよ","地位":"ちい",
+"全世界":"ぜんせかい","恐怖":"きょうふ","欠乏":"けつぼう","免かれ":"まぬかれ","権利":"けんり","確認":"かくにん",
+"基く":"もとづく","基いて":"もとづいて",
+"象徴":"しょうちょう","統合":"とうごう","総意":"そうい","天皇":"てんのう","国事":"こくじ","助言":"じょげん",
+"承認":"しょうにん","内閣総理大臣":"ないかくそうりだいじん","内閣":"ないかく","責任":"せきにん","指名":"しめい",
+"任命":"にんめい","最高裁判所":"さいこうさいばんしょ","下級裁判所":"かきゅうさいばんしょ","裁判所":"さいばんしょ",
+"裁判官":"さいばんかん","改正":"かいせい","法律案":"ほうりつあん","法律":"ほうりつ","政令":"せいれい",
+"条約":"じょうやく","公布":"こうふ","召集":"しょうしゅう","衆議院":"しゅうぎいん","参議院":"さんぎいん",
+"解散":"かいさん","総選挙":"そうせんきょ","施行":"しこう","公示":"こうじ","栄典":"えいてん","授与":"じゅよ",
+"正義":"せいぎ","秩序":"ちつじょ","基調":"きちょう","国際平和":"こくさいへいわ","誠実":"せいじつ","希求":"ききゅう",
+"国権":"こっけん","発動":"はつどう","武力":"ぶりょく","威嚇":"いかく","国際紛争":"こくさいふんそう",
+"解決":"かいけつ","手段":"しゅだん","永久":"えいきゅう","放棄":"ほうき","前項":"ぜんこう","目的":"もくてき",
+"陸海空軍":"りくかいくうぐん","戦力":"せんりょく","交戦権":"こうせんけん",
+"基本的人権":"きほんてきじんけん","享有":"きょうゆう","妨げ":"さまたげ","侵す":"おかす","侵し":"おかし",
+"将来":"しょうらい","保障":"ほしょう","不断":"ふだん","努力":"どりょく","濫用":"らんよう",
+"公共":"こうきょう","福祉":"ふくし","利用":"りよう","平等":"びょうどう","人種":"じんしゅ","信条":"しんじょう",
+"性別":"せいべつ","社会的身分":"しゃかいてきみぶん","門地":"もんち","身分":"みぶん","拘束":"こうそく","門地":"もんち","政治的":"せいじてき","経済的":"けいざいてき",
+"社会的":"しゃかいてき","差別":"さべつ","公務員":"こうむいん","全体":"ぜんたい","奉仕者":"ほうししゃ",
+"一部":"いちぶ","成年者":"せいねんしゃ","普通選挙":"ふつうせんきょ","投票":"とうひょう","秘密":"ひみつ",
+"選択":"せんたく","私的":"してき","何人":"なんぴと","奴隷的拘束":"どれいてきこうそく","犯罪":"はんざい",
+"処罰":"しょばつ","苦役":"くえき","思想":"しそう","良心":"りょうしん","信教":"しんきょう",
+"宗教団体":"しゅうきょうだんたい","特権":"とっけん","政治上":"せいじじょう","機関":"きかん",
+"宗教教育":"しゅうきょうきょういく","宗教的活動":"しゅうきょうてきかつどう","集会":"しゅうかい","結社":"けっしゃ",
+"言論":"げんろん","出版":"しゅっぱん","一切":"いっさい","表現":"ひょうげん","居住":"きょじゅう","移転":"いてん",
+"職業選択":"しょくぎょうせんたく","学問":"がくもん","婚姻":"こんいん","両性":"りょうせい","合意":"ごうい",
+"成立":"せいりつ","夫婦":"ふうふ","同等":"どうとう","相互":"そうご","協力":"きょうりょく","配偶者":"はいぐうしゃ",
+"財産権":"ざいさんけん","相続":"そうぞく","住居":"じゅうきょ","選定":"せんてい","離婚":"りこん","家族":"かぞく",
+"事項":"じこう","個人":"こじん","尊厳":"そんげん","本質的":"ほんしつてき","立脚":"りっきゃく","制定":"せいてい",
+"健康":"けんこう","文化的":"ぶんかてき","最低限度":"さいていげんど","生活":"せいかつ","営む":"いとなむ",
+"能力":"のうりょく","応じて":"おうじて","教育":"きょういく","保護":"ほご","子女":"しじょ","普通教育":"ふつうきょういく",
+"義務":"ぎむ","無償":"むしょう","勤労条件":"きんろうじょうけん","勤労者":"きんろうしゃ","勤労":"きんろう",
+"賃金":"ちんぎん","就業時間":"しゅうぎょうじかん","休息":"きゅうそく","基準":"きじゅん","団結":"だんけつ",
+"団体交渉":"だんたいこうしょう","団体行動":"だんたいこうどう","納税":"のうぜい","奪われ":"うばわれ",
+"最高機関":"さいこうきかん","唯一":"ゆいいつ","立法機関":"りっぽうきかん","総議員":"そうぎいん","議員":"ぎいん",
+"任期":"にんき","但し":"ただし","期間":"きかん","満了":"まんりょう","終了":"しゅうりょう","半数":"はんすう",
+"改選":"かいせん","常会":"じょうかい","毎年":"まいとし","臨時会":"りんじかい","決定":"けってい",
+"議院":"ぎいん","要求":"ようきゅう","以内":"いない","同時":"どうじ","閉会":"へいかい","緊急集会":"きんきゅうしゅうかい",
+"緊急":"きんきゅう","必要":"ひつよう","各々":"おのおの","出席議員":"しゅっせきぎいん","出席":"しゅっせき",
+"議事":"ぎじ","議決":"ぎけつ","特別":"とくべつ","過半数":"かはんすう","可否同数":"かひどうすう","議長":"ぎちょう",
+"可決":"かけつ","多数":"たすう","休会":"きゅうかい","否決":"ひけつ","予算":"よさん","提出":"ていしゅつ",
+"協議会":"きょうぎかい","一致":"いっち","締結":"ていけつ","規定":"きてい","準用":"じゅんよう","罷免":"ひめん",
+"訴追":"そつい","組織":"そしき","弾劾裁判所":"だんがいさいばんしょ","弾劾":"だんがい","設ける":"もうける",
+"行政権":"ぎょうせいけん","国務大臣":"こくむだいじん","文民":"ぶんみん","連帯":"れんたい","案件":"あんけん",
+"不信任":"ふしんにん","信任":"しんにん","決議案":"けつぎあん","総辞職":"そうじしょく","一般行政事務":"いっぱんぎょうせいじむ",
+"事務":"じむ","事前":"じぜん","時宜":"じぎ","事後":"じご","作成":"さくせい","実施":"じっし","委任":"いにん",
+"罰則":"ばっそく","司法権":"しほうけん","設置":"せっち","属する":"ぞくする","独立":"どくりつ","職権":"しょっけん",
+"拘束":"こうそく","心身":"しんしん","故障":"こしょう","職務":"しょくむ","懲戒処分":"ちょうかいしょぶん",
+"行政機関":"ぎょうせいきかん","員数":"いんずう","構成":"こうせい","審査":"しんさ","名簿":"めいぼ","再任":"さいにん",
+"退官":"たいかん","命令":"めいれい","規則":"きそく","処分":"しょぶん","適合":"てきごう","権限":"けんげん",
+"終審裁判所":"しゅうしんさいばんしょ","賛成":"さんせい","発議":"はつぎ","提案":"ていあん","国民投票":"こくみんとうひょう",
+"一体":"いったい","直ちに":"ただちに","多年":"たねん","獲得":"かくとく","幾多":"いくた","試練":"しれん",
+"最高法規":"さいこうほうき","条規":"じょうき","国務":"こくむ","効力":"こうりょく","確立":"かくりつ",
+"国際法規":"こくさいほうき","遵守":"じゅんしゅ","摂政":"せっしょう","尊重":"そんちょう","擁護":"ようご",
+"年齢":"ねんれい","達した":"たっした"
+};
+/* ============================================================
+   §0 KP構築（ハイブリッド：穴埋めKP＋条文対応KP）
+   出題形式  A＝場所から中身（穴埋め／条番号→内容）
+             B＝中身から場所（語→条文／内容→条番号）
+   ============================================================ */
+const ARTMAP = {}; ARTICLES.forEach(a=>ARTMAP[a[0]]={key:a[0],cat:a[1],sum:a[2],imp:a[3]});
+const CATS = []; ARTICLES.forEach(a=>{ if(CATS.indexOf(a[1])<0) CATS.push(a[1]); });
+
+const KPS = [];
+FILLS.forEach(function(f,i){
+  KPS.push({ id:'f'+String(i+1).padStart(3,'0'), kind:'fill',
+    art:f[0], cat:ARTMAP[f[0]].cat, sent:f[1], ans:f[2], yomi:f[3], imp:f[4], note:f[5],
+    label:f[2] });
+});
+ARTICLES.forEach(function(a,i){
+  KPS.push({ id:'m'+String(i+1).padStart(3,'0'), kind:'match',
+    art:a[0], cat:a[1], sum:a[2], ans:a[2], yomi:'', imp:a[3],
+    note:'条文の番号と内容の対応を覚える問題です。', label:a[0]+'の内容' });
+});
+const KPMAP = {}; KPS.forEach(function(k){ KPMAP[k.id]=k; });
+
+/* 語 → その語が登場する条文の集合（形式Bの選択肢から除くため） */
+const ANS2ARTS = {};
+KPS.forEach(function(k){ if(k.kind==='fill'){ (ANS2ARTS[k.ans]=ANS2ARTS[k.ans]||{})[k.art]=1; } });
+const ANSPOOL = []; KPS.forEach(function(k){ if(k.kind==='fill'&&ANSPOOL.indexOf(k.ans)<0) ANSPOOL.push(k.ans); });
+const NUMRE = /^[0-9０-９]+(年|日|か月)$|^[0-9０-９]+分の[0-9０-９]+$|^過半数$/;
+
+/* ============================================================
+   汎用ヘルパ
+   ============================================================ */
+function $(s,r){ return (r||document).querySelector(s); }
+function el(tag,cls,txt){ var e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+function nowISO(){ return new Date().toISOString(); }
+function jdate(iso){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return ''; return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
+function jdatetime(iso){ if(!iso) return '—'; var d=new Date(iso); if(isNaN(d)) return '—';
+  return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function ymd(){ var d=new Date(); return ''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function impMark(v){ return v===2?'◎':(v===1?'○':''); }
+function impText(v){ return v===2?'◎ 最重要':(v===1?'○ 重要':'標準'); }
+
+/* §18 ふりがな（ルビ）：長い語から順に置換 → プレースホルダで二重ルビを防ぐ */
+var RUBY_KEYS = Object.keys(RUBY).sort(function(a,b){ return b.length-a.length; });
+var RUBY_CACHE = {};
+function rubify(s){
+  if(UI && UI.ruby===false) return s;
+  if(RUBY_CACHE[s]!=null) return RUBY_CACHE[s];
+  var src=s, store=[];
+  RUBY_KEYS.forEach(function(k){
+    if(src.indexOf(k)<0) return;
+    var i=store.length; store.push('<ruby>'+k+'<rt>'+RUBY[k]+'</rt></ruby>');
+    src=src.split(k).join('\u0001'+i+'\u0002');
+  });
+  src=src.replace(/\u0001(\d+)\u0002/g,function(m,i){ return store[+i]; });
+  RUBY_CACHE[s]=src; return src;
+}
+
+/* ============================================================
+   §10 保存（localStorage）
+   ============================================================ */
+var K_DB=APP, K_SYNC=APP+':sync', K_UI=APP+':ui';
+var MEM={}, memoryOnly=false;
+function lsGet(k){ try{ var v=localStorage.getItem(k); return v; }catch(e){ memoryOnly=true; return MEM[k]||null; } }
+function lsSet(k,v){ MEM[k]=v; try{ localStorage.setItem(k,v); }catch(e){ memoryOnly=true; } }
+function lsDel(k){ delete MEM[k]; try{ localStorage.removeItem(k); }catch(e){ memoryOnly=true; } }
+
+var DB=null, UI=null, SYNC=null;
+
+function blankItem(){ return { streak:0, mastered:false, masteredAt:null, postMasterWrong:0,
+  lastFormat:null, totalCorrect:0, totalWrong:0,
+  byFormat:{A:{correct:0,wrong:0},B:{correct:0,wrong:0}}, wrongLog:[], lastSeenAt:null }; }
+function blankDB(){ return { app:APP, version:2, updatedAt:nowISO(), activeAccountId:null, accounts:[], progress:{} }; }
+function newAccId(){ return 'acc_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* 旧スキーマ移行（§10） */
+function normItem(o){
+  var it=blankItem(); if(!o||typeof o!=='object') return it;
+  it.streak = +o.streak||0;
+  it.mastered = !!o.mastered;
+  it.masteredAt = o.masteredAt||null;
+  it.postMasterWrong = +o.postMasterWrong||0;
+  it.lastFormat = (o.lastFormat==='A'||o.lastFormat==='B')?o.lastFormat:null;
+  it.totalCorrect = +o.totalCorrect||+o.correct||0;
+  it.totalWrong = +o.totalWrong||+o.wrong||0;
+  var bf=o.byFormat||{};
+  ['A','B'].forEach(function(f){ var s=bf[f]||{}; it.byFormat[f]={correct:+s.correct||0,wrong:+s.wrong||0}; });
+  it.wrongLog = Array.isArray(o.wrongLog)?o.wrongLog.filter(function(w){return w&&w.at;}).slice(-5):[];
+  it.lastSeenAt = o.lastSeenAt||null;
+  if(it.mastered && !it.masteredAt) it.masteredAt = it.lastSeenAt||nowISO();
+  return it;
+}
+function normAcctProgress(p){
+  var out={items:{},sessions:[]};
+  if(p&&p.items) Object.keys(p.items).forEach(function(k){ out.items[k]=normItem(p.items[k]); });
+  else if(p&&p.st) Object.keys(p.st).forEach(function(k){ out.items[k]=normItem(p.st[k]); });
+  if(p&&Array.isArray(p.sessions)) out.sessions=p.sessions.slice(-100);
+  return out;
+}
+function migrate(raw){
+  if(!raw||typeof raw!=='object') return blankDB();
+  var db=blankDB();
+  db.updatedAt = raw.updatedAt||nowISO();
+  if(Array.isArray(raw.accounts)&&raw.progress){
+    db.accounts = raw.accounts.filter(function(a){return a&&a.name;}).map(function(a){
+      return {id:a.id||newAccId(), name:String(a.name), createdAt:a.createdAt||nowISO()}; });
+    db.accounts.forEach(function(a){ db.progress[a.id]=normAcctProgress(raw.progress[a.id]); });
+    db.activeAccountId = raw.activeAccountId;
+  } else if(raw.users&&typeof raw.users==='object'){
+    Object.keys(raw.users).forEach(function(name){
+      var id=newAccId();
+      db.accounts.push({id:id,name:name,createdAt:nowISO()});
+      db.progress[id]=normAcctProgress(raw.users[name]);
+    });
+  }
+  if(!db.accounts.length){ db.activeAccountId=null; }
+  else if(!db.accounts.some(function(a){return a.id===db.activeAccountId;})) db.activeAccountId=db.accounts[0].id;
+  return db;
+}
+function loadAll(){
+  var raw=null; try{ raw=JSON.parse(lsGet(K_DB)||'null'); }catch(e){}
+  DB = migrate(raw);
+  try{ UI = JSON.parse(lsGet(K_UI)||'null'); }catch(e){}
+  if(!UI||typeof UI!=='object') UI={category:'すべて',impFilter:'all'};
+  if(CATS.indexOf(UI.category)<0 && UI.category!=='すべて') UI.category='すべて';
+  if(['all','top2','top1'].indexOf(UI.impFilter)<0) UI.impFilter='all';
+  if(typeof UI.ruby!=='boolean') UI.ruby=true;
+  try{ SYNC = JSON.parse(lsGet(K_SYNC)||'null'); }catch(e){}
+  if(!SYNC||typeof SYNC!=='object') SYNC={url:'',key:'',lastSync:null};
+}
+/* §10 saveDB：クラウド取り込み時は updatedAt を上書きしない */
+function saveDB(opt){
+  opt=opt||{};
+  if(!opt.fromCloud) DB.updatedAt=nowISO();
+  DB.app=APP; DB.version=2;
+  lsSet(K_DB, JSON.stringify(DB));
+}
+function saveUI(){ lsSet(K_UI, JSON.stringify(UI)); }
+function saveSync(){ lsSet(K_SYNC, JSON.stringify(SYNC)); }
+
+/* ============================================================
+   アカウント（§1）
+   ============================================================ */
+function acc(){ return DB.accounts.filter(function(a){return a.id===DB.activeAccountId;})[0]||null; }
+function prog(){ var a=acc(); if(!a) return null;
+  if(!DB.progress[a.id]) DB.progress[a.id]={items:{},sessions:[]};
+  var p=DB.progress[a.id]; if(!p.items)p.items={}; if(!p.sessions)p.sessions=[]; return p; }
+function itemOf(id){ var p=prog(); if(!p) return blankItem(); if(!p.items[id]) p.items[id]=blankItem(); return p.items[id]; }
+function itemRO(id){ var p=prog(); if(!p||!p.items[id]) return blankItem(); return p.items[id]; }
+function addAccount(name){
+  name=String(name||'').trim(); if(!name) return null;
+  if(DB.accounts.some(function(a){return a.name===name;})) { alert('同じ名前のアカウントがあります'); return null; }
+  var a={id:newAccId(),name:name,createdAt:nowISO()};
+  DB.accounts.push(a); DB.progress[a.id]={items:{},sessions:[]}; DB.activeAccountId=a.id;
+  saveDB(); pushCloud(true); return a;
+}
+
+/* ============================================================
+   §4 適応ハードル
+   ============================================================ */
+function requiredStreak(item){
+  var w=(item&&item.totalWrong)||0;
+  if(w>=6) return 4;
+  if(w>=3) return 3;
+  return 2;
+}
+
+/* ============================================================
+   §3-5 出題範囲
+   ============================================================ */
+function inScope(k){
+  if(UI.category!=='すべて' && k.cat!==UI.category) return false;
+  if(UI.impFilter==='top2' && k.imp<1) return false;
+  if(UI.impFilter==='top1' && k.imp<2) return false;
+  return true;
+}
+function scopeKPs(){ return KPS.filter(inScope); }
+function countInCat(cat){
+  return KPS.filter(function(k){
+    if(cat!=='すべて'&&k.cat!==cat) return false;
+    if(UI.impFilter==='top2'&&k.imp<1) return false;
+    if(UI.impFilter==='top1'&&k.imp<2) return false;
+    return true; }).length;
+}
+
+/* ============================================================
+   §12 同期API契約
+   ============================================================ */
+var syncState={cls:'',msg:'クラウド同期は未設定です'};
+function setSync(cls,msg){ syncState={cls:cls,msg:msg}; var b=$('#syncBar'); if(b){ b.className='syncbar '+cls; b.innerHTML=syncHTML(); } }
+function syncHTML(){
+  var t = SYNC.lastSync?('　｜　最終同期 '+jdatetime(SYNC.lastSync)):'';
+  return esc(syncState.msg)+'<span class="tiny">'+esc(t)+'</span>';
+}
+function parseResp(txt){
+  try{ return JSON.parse(txt); }
+  catch(e){ throw new Error('GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください'); }
+}
+function syncReady(){ return !!(SYNC.url&&SYNC.key); }
+
+function dbHasRecords(d){
+  if(!d||!d.progress) return false;
+  var keys=Object.keys(d.progress);
+  for(var i=0;i<keys.length;i++){
+    var p=d.progress[keys[i]]; if(!p) continue;
+    if(Array.isArray(p.sessions)&&p.sessions.length>0) return true;
+    var its=p.items||{}; var ik=Object.keys(its);
+    for(var j=0;j<ik.length;j++){ var it=its[ik[j]]||{};
+      if(((+it.totalCorrect||0)+(+it.totalWrong||0))>0) return true; }
+  }
+  return false;
+}
+
+/* §13-3 合流（マージ） */
+function mergeItem(a,b){
+  /* a=ローカル b=クラウド。どちらか欠けたら他方 */
+  if(!a) return normItem(b); if(!b) return normItem(a);
+  a=normItem(a); b=normItem(b);
+  var o=blankItem();
+  o.totalCorrect=Math.max(a.totalCorrect,b.totalCorrect);
+  o.totalWrong  =Math.max(a.totalWrong,b.totalWrong);
+  o.postMasterWrong=Math.max(a.postMasterWrong,b.postMasterWrong);
+  ['A','B'].forEach(function(f){
+    o.byFormat[f].correct=Math.max(a.byFormat[f].correct,b.byFormat[f].correct);
+    o.byFormat[f].wrong  =Math.max(a.byFormat[f].wrong,  b.byFormat[f].wrong);
+  });
+  o.mastered = a.mastered||b.mastered;
+  if(a.masteredAt&&b.masteredAt) o.masteredAt = (new Date(a.masteredAt)<=new Date(b.masteredAt))?a.masteredAt:b.masteredAt;
+  else o.masteredAt = a.masteredAt||b.masteredAt||null;
+  if(o.mastered&&!o.masteredAt) o.masteredAt=nowISO();
+  /* wrongLog: at で重複排除 → 新しい順に5件 */
+  var seen={}, log=[];
+  a.wrongLog.concat(b.wrongLog).forEach(function(w){ if(w&&w.at&&!seen[w.at+'|'+w.format]){ seen[w.at+'|'+w.format]=1; log.push(w); } });
+  log.sort(function(x,y){ return new Date(y.at)-new Date(x.at); });
+  o.wrongLog = log.slice(0,5).reverse();
+  var at=a.lastSeenAt?new Date(a.lastSeenAt).getTime():0, bt=b.lastSeenAt?new Date(b.lastSeenAt).getTime():0;
+  var newer = (at>=bt)?a:b;
+  o.lastSeenAt = newer.lastSeenAt||a.lastSeenAt||b.lastSeenAt||null;
+  o.streak     = newer.streak;      /* ★ 大きい方ではなく lastSeenAt が新しい側 */
+  o.lastFormat = newer.lastFormat;
+  return o;
+}
+function mergeDB(local,cloud){
+  var out=blankDB();
+  out.updatedAt = local.updatedAt||nowISO();
+  var byName={};
+  local.accounts.forEach(function(a){ byName[a.name]={id:a.id,name:a.name,createdAt:a.createdAt,l:local.progress[a.id],c:null}; });
+  cloud.accounts.forEach(function(a){
+    if(byName[a.name]) byName[a.name].c = cloud.progress[a.id];
+    else byName[a.name]={id:a.id,name:a.name,createdAt:a.createdAt,l:null,c:cloud.progress[a.id]};
+  });
+  Object.keys(byName).forEach(function(n){
+    var e=byName[n];
+    out.accounts.push({id:e.id,name:e.name,createdAt:e.createdAt||nowISO()});
+    var L=normAcctProgress(e.l), C=normAcctProgress(e.c), M={items:{},sessions:[]};
+    var ids={}; Object.keys(L.items).forEach(function(k){ids[k]=1;}); Object.keys(C.items).forEach(function(k){ids[k]=1;});
+    Object.keys(ids).forEach(function(k){ M.items[k]=mergeItem(L.items[k],C.items[k]); });
+    var seen={}, ss=[];
+    L.sessions.concat(C.sessions).forEach(function(s){ if(s&&s.finishedAt&&!seen[s.finishedAt]){ seen[s.finishedAt]=1; ss.push(s); } });
+    ss.sort(function(x,y){ return new Date(y.finishedAt)-new Date(x.finishedAt); });
+    M.sessions = ss.slice(0,100).reverse();
+    out.progress[e.id]=M;
+  });
+  /* ローカルでアクティブだったアカウントを名前で維持 */
+  var la = local.accounts.filter(function(a){return a.id===local.activeAccountId;})[0];
+  var keep = la?out.accounts.filter(function(a){return a.name===la.name;})[0]:null;
+  out.activeAccountId = keep?keep.id:(out.accounts[0]?out.accounts[0].id:null);
+  return out;
+}
+function dbSummary(d){
+  var acn=d.accounts.length, seen=0, mas=0;
+  Object.keys(d.progress).forEach(function(k){
+    var its=(d.progress[k]||{}).items||{};
+    Object.keys(its).forEach(function(i){ var it=its[i];
+      if(((+it.totalCorrect||0)+(+it.totalWrong||0))>0) seen++;
+      if(it.mastered) mas++; });
+  });
+  return acn+'人・出題済み'+seen+'・習得'+mas;
+}
+
+async function pullCloud(silent){
+  if(!syncReady()){ if(!silent) setSync('','クラウド同期は未設定です'); return; }
+  setSync('','☁… クラウドと同期しています');
+  var txt;
+  try{
+    var r=await fetch(SYNC.url+'?key='+encodeURIComponent(SYNC.key)+'&app='+encodeURIComponent(APP));
+    txt=await r.text();
+  }catch(e){ setSync('','☁ オフライン（ローカルには保存済み）'); return; }
+  var j; try{ j=parseResp(txt); }catch(e){ setSync('ng','☁⚠ '+e.message); return; }
+  if(!j.ok){ setSync('ng','☁⚠ '+(/key|合言葉|KEY/i.test(j.error||'')?'合言葉が違います':(j.error||'エラー'))); return; }
+  var cloud = j.data?migrate(j.data):null;
+  var lHas=dbHasRecords(DB), cHas=cloud?dbHasRecords(cloud):false;
+  if(!cloud||!cHas){                     /* クラウドが空 → push */
+    await pushCloud(false,'☁ クラウドに進捗が無かったので送りました'); return;
+  }
+  if(!lHas){                              /* ローカルが空 → 無条件でクラウド採用 */
+    DB=cloud; saveDB({fromCloud:true}); SYNC.lastSync=nowISO(); saveSync();
+    setSync('ok','☁✓ クラウドの記録を取り込みました（'+dbSummary(DB)+'）'); render(); return;
+  }
+  /* 両方に記録あり → 必ず合流 */
+  var before=JSON.stringify(DB.accounts.map(function(a){return a.name;}).sort())+'|'+JSON.stringify(DB.progress);
+  var merged=mergeDB(DB,cloud);
+  var after =JSON.stringify(merged.accounts.map(function(a){return a.name;}).sort())+'|'+JSON.stringify(merged.progress);
+  merged.updatedAt = DB.updatedAt;
+  DB=merged; saveDB({fromCloud:true});
+  SYNC.lastSync=nowISO(); saveSync();
+  var mm='☁✓ クラウドと合流しました（'+dbSummary(DB)+'）';
+  setSync('ok',mm);
+  render();
+  if(before!==after) await pushCloud(true,mm);   /* 合流の文言を上書きしない */
+}
+async function pushCloud(silent,okMsg){
+  if(!syncReady()) return;
+  if(!silent) setSync('','☁… 送信しています');
+  var txt;
+  try{
+    var r=await fetch(SYNC.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({key:SYNC.key,data:DB})});
+    txt=await r.text();
+  }catch(e){ setSync('','☁ オフライン（ローカルには保存済み）'); return; }
+  var j; try{ j=parseResp(txt); }catch(e){ setSync('ng','☁⚠ '+e.message); return; }
+  if(!j.ok){ setSync('ng','☁⚠ '+(/key|合言葉|KEY/i.test(j.error||'')?'合言葉が違います':(j.error||'エラー'))); return; }
+  SYNC.lastSync=nowISO(); saveSync();
+  setSync('ok', okMsg||'☁✓ クラウドに保存しました（'+dbSummary(DB)+'）');
+}
+
+/* ============================================================
+   §15 全問一覧の書き出し（14列固定）
+   ============================================================ */
+const LIST_HEADER = ['名前','カテゴリー','記号','知識ポイント','よみがな','重要度','状態',
+  '累計正解数','累計誤答数','形式A誤答数','形式B誤答数','過去の誤答内容','最終誤答日','習得日'];
+
+function stateLabel(it){
+  if(!it) return '未出題';
+  if(it.mastered) return it.postMasterWrong>0?'要注意習得':'習得済み';
+  if((it.totalCorrect||0)>0) return it.totalCorrect+'回正解';
+  if((it.totalWrong||0)>0) return '誤答';
+  return '未出題';
+}
+function rowFor(name,kp,it){
+  var log=(it&&it.wrongLog)||[];
+  var last=log.length?log[log.length-1].at:null;
+  return [ name, kp.cat, kp.art, kp.label, kp.yomi||'', impMark(kp.imp), stateLabel(it),
+    (it&&it.totalCorrect)||0, (it&&it.totalWrong)||0,
+    (it&&it.byFormat.A.wrong)||0, (it&&it.byFormat.B.wrong)||0,
+    log.map(function(w){return w.answered;}).filter(Boolean).join(';'),
+    last?jdate(last):'', (it&&it.masteredAt)?jdate(it.masteredAt):'' ];
+}
+function buildListRows(){
+  var rows=[];
+  DB.accounts.forEach(function(a){
+    var p=DB.progress[a.id]||{items:{}};
+    KPS.forEach(function(k){ rows.push(rowFor(a.name,k,p.items[k.id])); });
+  });
+  return rows;
+}
+async function exportListToDrive(){
+  if(!syncReady()) return;
+  setSync('','☁… 書き出し前にクラウドを確認しています');
+  await pullCloud(true);
+  if(!dbHasRecords(DB)){ openModal('書き出しを中止しました',
+    '<p>記録がまだ1件もないため、スプレッドシートを空で上書きしてしまうおそれがあります。<br>1回以上学習してから書き出してください。</p>',
+    [{t:'閉じる',cls:'gh',fn:closeModal}]); return; }
+  var body={key:SYNC.key,app:APP,list:{header:LIST_HEADER,rows:buildListRows()}};
+  var txt;
+  try{
+    var r=await fetch(SYNC.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+    txt=await r.text();
+  }catch(e){ setSync('','☁ オフライン（ローカルには保存済み）'); return; }
+  var j; try{ j=parseResp(txt); }catch(e){ setSync('ng','☁⚠ '+e.message); return; }
+  if(!j.ok){ setSync('ng','☁⚠ '+(/key|合言葉|KEY/i.test(j.error||'')?'合言葉が違います':(j.error||'エラー'))); return; }
+  setSync('ok','☁✓ 全問一覧をスプレッドシートに書き出しました');
+}
+
+/* §9-2 CSV（同じ14列） */
+function downloadCSV(){
+  var a=acc(); if(!a) return;
+  var p=DB.progress[a.id]||{items:{}};
+  var rows=KPS.map(function(k){ return rowFor(a.name,k,p.items[k.id]); });
+  rows.sort(function(x,y){ return (y[8]-x[8])||(y[7]-x[7]); });
+  var csv=[LIST_HEADER].concat(rows).map(function(r){
+    return r.map(function(c){ c=String(c==null?'':c); return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c; }).join(',');
+  }).join('\r\n');
+  dl(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}), TOOL+'結果_'+a.name+'_'+ymd()+'.csv');
+}
+function dl(blob,name){
+  var u=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=u; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); },500);
+}
+function exportJSON(){
+  dl(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}), TOOL+'記録_'+ymd()+'.json');
+}
+/* ============================================================
+   問題生成
+   形式A＝場所から中身（穴埋め／条番号→内容）
+   形式B＝中身から場所（語→条文／内容→条番号）
+   ============================================================ */
+function artLabel(key){ return key+'　'+ARTMAP[key].sum; }
+function distractors(ans){
+  var isNum=NUMRE.test(ans);
+  var pool=ANSPOOL.filter(function(a){ return a!==ans && NUMRE.test(a)===isNum; });
+  if(pool.length<3) pool=ANSPOOL.filter(function(a){return a!==ans;});
+  pool=pool.slice().sort(function(x,y){ return Math.abs(x.length-ans.length)-Math.abs(y.length-ans.length); });
+  var near=pool.slice(0,Math.min(pool.length,14));
+  var pick=shuffle(near).slice(0,3);
+  while(pick.length<3){ var c=ANSPOOL[Math.floor(Math.random()*ANSPOOL.length)];
+    if(c!==ans&&pick.indexOf(c)<0) pick.push(c); }
+  return pick;
+}
+function pickArts(exclude,cat,n){
+  var cand=ARTICLES.filter(function(a){ return !exclude[a[0]]; });
+  var same=shuffle(cand.filter(function(a){return a[1]===cat;}));
+  var other=shuffle(cand.filter(function(a){return a[1]!==cat;}));
+  return same.slice(0,2).concat(other, same.slice(2)).slice(0,n).map(function(a){return a[0];});
+}
+function makeQ(kp,fmt){
+  if(kp.kind==='fill'){
+    if(fmt==='A'){
+      var ch=shuffle([kp.ans].concat(distractors(kp.ans)));
+      return {fmt:'A',kind:'fill',lead:'つぎの条文の　□　に入ることばは？',
+        art:kp.art, sent:kp.sent, choices:ch, correct:kp.ans};
+    }
+    var ex={}; ex[kp.art]=1; Object.keys(ANS2ARTS[kp.ans]||{}).forEach(function(k){ex[k]=1;});
+    var ds=pickArts(ex,kp.cat,3);
+    var ch2=shuffle([kp.art].concat(ds));
+    return {fmt:'B',kind:'fill',lead:'「'+kp.ans+'」ということばが出てくるのは、どの条文？',
+      art:null, sent:null, choices:ch2.map(artLabel), correct:artLabel(kp.art),
+      keyword:kp.ans};
+  }
+  /* 条文対応KP */
+  var ex2={}; ex2[kp.art]=1;
+  if(fmt==='A'){
+    var d=pickArts(ex2,kp.cat,3);
+    var c=shuffle([kp.art].concat(d));
+    return {fmt:'A',kind:'match',lead:kp.art+'は、どんなことを定めている？',
+      art:kp.art, sent:null, choices:c.map(function(k){return ARTMAP[k].sum;}), correct:kp.sum};
+  }
+  var d2=pickArts(ex2,kp.cat,3);
+  var c2=shuffle([kp.art].concat(d2));
+  return {fmt:'B',kind:'match',lead:'「'+kp.sum+'」　これは第何条？',
+    art:null, sent:null, choices:c2, correct:kp.art};
+}
+
+/* ============================================================
+   §3 セッション
+   ============================================================ */
+var S=null, view='home';
+
+function priSort(list){
+  return shuffle(list).sort(function(a,b){
+    var x=itemRO(a.id), y=itemRO(b.id);
+    var xw=x.totalWrong||0, yw=y.totalWrong||0;
+    if(yw!==xw) return yw-xw;
+    var xu=x.lastSeenAt?0:1, yu=y.lastSeenAt?0:1;
+    if(yu!==xu) return yu-xu;
+    return (x.lastSeenAt?new Date(x.lastSeenAt).getTime():0)-(y.lastSeenAt?new Date(y.lastSeenAt).getTime():0);
+  });
+}
+function mkEntry(kp,fmt){ S.appear[kp.id]=(S.appear[kp.id]||0)+1; return {kpId:kp.id,fmt:fmt,q:makeQ(kp,fmt)}; }
+function firstFmt(id){ var it=itemRO(id); if(it.lastFormat==='A') return 'B'; if(it.lastFormat==='B') return 'A'; return Math.random()<.5?'A':'B'; }
+
+function startSession(mode,focusId){
+  if(!acc()){ openAccounts(); return; }
+  var scope=scopeKPs(), pool=[], note='';
+  if(mode==='再確認'){
+    pool=scope.filter(function(k){ return itemRO(k.id).postMasterWrong>0; });
+    if(!pool.length){ toastModal('要注意習得のことばはまだありません','習得したあとに間違えたことばが、ここに集まります。'); return; }
+  } else if(mode==='全問'){
+    pool=shuffle(scope);
+    if(!pool.length){ toastModal('この範囲に問題がありません','出題範囲をひろげてください。'); return; }
+  } else {
+    var n=(mode==='10問')?10:20;
+    var cand=scope.filter(function(k){ return !itemRO(k.id).mastered; });
+    if(!cand.length){ toastModal('この範囲はすべて習得ずみです','範囲をひろげるか、「全問モード」で力だめしをしましょう。'); return; }
+    pool=priSort(cand).slice(0,n);
+    if(focusId&&KPMAP[focusId]){
+      pool=pool.filter(function(k){ return k.id!==focusId; });
+      pool.unshift(KPMAP[focusId]); pool=pool.slice(0,n);
+    }
+    if(pool.length<n) note='この範囲でまだ習得していないことばは'+pool.length+'語です。'+pool.length+'語で出題します。';
+  }
+  S={ mode:mode, startedAt:nowISO(), items:{}, queue:[], pos:0, log:[],
+      correct:0, wrong:0, newly:[], wrongIds:{}, appear:{}, needReview:{},
+      view:null, note:note, poolIds:pool.map(function(k){return k.id;}),
+      masteredAtStart:{}, planned:0, committed:false };
+  var p=prog();
+  pool.forEach(function(k){
+    S.items[k.id]= p.items[k.id]?clone(p.items[k.id]):blankItem();
+    if(S.items[k.id].mastered) S.masteredAtStart[k.id]=1;
+  });
+  if(mode==='再確認'){
+    var f1=pool.map(function(k){ return mkEntry(k,firstFmt(k.id)); });
+    var f2=shuffle(pool).map(function(k){ var g=f1.filter(function(e){return e.kpId===k.id;})[0];
+      return mkEntry(k, g.fmt==='A'?'B':'A'); });
+    S.queue=f1.concat(f2);
+    S.planned=S.queue.length;
+  } else {
+    S.queue=pool.map(function(k){ return mkEntry(k,firstFmt(k.id)); });
+    if(mode==='全問') S.planned=pool.length;
+    else S.planned=pool.reduce(function(s,k){ var it=S.items[k.id];
+      return s+Math.max(1, requiredStreak(it)-(it.mastered?requiredStreak(it):it.streak)); },0);
+  }
+  view='quiz'; render();
+  if(note) toastModal('出題数のおしらせ',note);
+}
+
+function curEntry(){ return S.queue[S.pos]; }
+function answered(){ return S.log.length>S.pos; }
+
+function applyAnswer(e,choice){
+  var it=S.items[e.kpId], ok=(choice===e.q.correct), t=nowISO();
+  e.chosen=choice; e.ok=ok;
+  if(ok) S.correct++; else { S.wrong++; S.wrongIds[e.kpId]=1; }
+  if(S.mode==='再確認'){
+    if(!ok) it.postMasterWrong++;
+  } else {
+    var prev=it.lastFormat;
+    if(ok){
+      it.totalCorrect++; it.byFormat[e.fmt].correct++;
+      if(!(it.streak>0 && prev===e.fmt)) it.streak++;
+    } else {
+      it.totalWrong++; it.byFormat[e.fmt].wrong++; it.streak=0;
+      it.wrongLog.push({at:t,format:e.fmt,answered:String(choice).slice(0,60)});
+      if(it.wrongLog.length>5) it.wrongLog=it.wrongLog.slice(-5);
+      if(it.mastered) it.postMasterWrong++;
+    }
+    it.lastFormat=e.fmt; it.lastSeenAt=t;
+    if(!it.mastered && it.streak>=requiredStreak(it)){
+      it.mastered=true; it.masteredAt=t; if(S.newly.indexOf(e.kpId)<0) S.newly.push(e.kpId); }
+  }
+  if(S.mode!=='全問'){
+    if(!ok) reinsert(e,3);
+    else if(S.mode!=='再確認' && !it.mastered) reinsert(e,6);
+  }
+  return ok;
+}
+function reinsert(e,delay){
+  if((S.appear[e.kpId]||0)>=4){ S.needReview[e.kpId]=1; return; }
+  var kp=KPMAP[e.kpId], base=S.queue.indexOf(e); if(base<0) base=S.pos;
+  var idx=Math.min(base+delay,S.queue.length);
+  while(idx<S.queue.length && S.queue[idx].kpId===e.kpId) idx++;
+  S.queue.splice(idx,0,mkEntry(kp, e.fmt==='A'?'B':'A'));
+}
+function doAnswer(choice){
+  if(answered()) return;
+  var e=curEntry();
+  var snap={ item:clone(S.items[e.kpId]), queue:S.queue.slice(), correct:S.correct, wrong:S.wrong,
+    newly:S.newly.slice(), appear:clone(S.appear), needReview:clone(S.needReview), wrongIds:clone(S.wrongIds) };
+  applyAnswer(e,choice);
+  S.log.push({e:e,snap:snap});
+  renderQuiz();
+}
+function undoLast(){
+  var r=S.log.pop(); if(!r) return null;
+  S.items[r.e.kpId]=r.snap.item; S.queue=r.snap.queue; S.correct=r.snap.correct; S.wrong=r.snap.wrong;
+  S.newly=r.snap.newly; S.appear=r.snap.appear; S.needReview=r.snap.needReview; S.wrongIds=r.snap.wrongIds;
+  delete r.e.chosen; delete r.e.ok;
+  return r;
+}
+function reAnswer(choice){
+  var r=undoLast(); if(!r) return;
+  applyAnswer(r.e,choice);
+  S.log.push({e:r.e,snap:r.snap});
+  S.pos=S.log.length; renderQuiz();
+}
+function nextQ(){
+  S.pos=S.log.length;
+  if(S.pos>=S.queue.length){ finishSession(); return; }
+  renderQuiz();
+}
+
+/* §6-2 §11 結果画面到達時にのみ確定 */
+function finishSession(){
+  if(!S.committed){
+    var p=prog();
+    Object.keys(S.items).forEach(function(id){ p.items[id]=S.items[id]; });
+    var totalMastered=0;
+    KPS.forEach(function(k){ if((p.items[k.id]||{}).mastered) totalMastered++; });
+    p.sessions.push({ startedAt:S.startedAt, finishedAt:nowISO(), mode:S.mode,
+      correct:S.correct, wrong:S.wrong, newlyMastered:S.newly.slice(),
+      wrongKpIds:Object.keys(S.wrongIds), totalMastered:totalMastered });
+    if(p.sessions.length>100) p.sessions=p.sessions.slice(-100);
+    S.committed=true;
+    saveDB(); pushCloud(true);
+  }
+  view='result'; render();
+}
+function leaveQuiz(){
+  if(S&&!S.committed&&S.log.length){
+    openModal('とちゅうでやめますか？',
+      '<p>結果画面まで進んでいないので、<b>今回の解答は記録されません</b>。<br>習得の記録も変わりません。</p>',
+      [{t:'つづける',cls:'pri',fn:closeModal},
+       {t:'やめてホームへ',cls:'gh',fn:function(){ closeModal(); S=null; view='home'; render(); }}]);
+  } else { S=null; view='home'; render(); }
+}
+/* ============================================================
+   モーダル
+   ============================================================ */
+function closeModal(){ $('#modalHost').innerHTML=''; }
+function openModal(title,html,btns){
+  var h=$('#modalHost');
+  h.innerHTML='<div class="modal"><div class="box"><h3>'+esc(title)+'</h3><div id="mBody">'+html+
+    '</div><div class="mrow" id="mBtns"></div></div></div>';
+  var r=$('#mBtns');
+  (btns||[{t:'閉じる',cls:'gh',fn:closeModal}]).forEach(function(b){
+    var e=el('button','btn '+(b.cls||'gh'),b.t); e.onclick=b.fn; r.appendChild(e);
+  });
+}
+function toastModal(t,m){ openModal(t,'<p>'+esc(m)+'</p>',[{t:'OK',cls:'pri',fn:closeModal}]); }
+
+/* ---------- アカウント ---------- */
+function openAccounts(){
+  var h='';
+  if(!DB.accounts.length) h+='<p class="muted">まだアカウントがありません。名前を入れて追加してください。</p>';
+  h+='<div class="lst">';
+  DB.accounts.forEach(function(a){
+    var p=DB.progress[a.id]||{items:{}}, m=0;
+    KPS.forEach(function(k){ if((p.items[k.id]||{}).mastered) m++; });
+    h+='<div class="it"><div class="k"><b>'+esc(a.name)+'</b>'+
+       (a.id===DB.activeAccountId?' <span class="tag t-m">えらび中</span>':'')+
+       '<div class="tiny">習得 '+m+' / '+KPS.length+'</div></div>'+
+       '<button class="btn gh sm" data-pick="'+a.id+'">えらぶ</button>'+
+       '<button class="btn gh sm" data-ren="'+a.id+'">改名</button>'+
+       '<button class="btn gh sm" data-del="'+a.id+'">削除</button></div>';
+  });
+  h+='</div><label class="f">新しいアカウントの名前</label><input type="text" id="newAcc" placeholder="例：長男">';
+  openModal('アカウント',h,[{t:'追加する',cls:'pri',fn:function(){
+      var v=$('#newAcc').value; if(addAccount(v)){ closeModal(); render(); } }},
+    {t:'閉じる',cls:'gh',fn:closeModal}]);
+  $('#mBody').addEventListener('click',function(ev){
+    var t=ev.target, id;
+    if((id=t.getAttribute('data-pick'))){ DB.activeAccountId=id; saveDB(); closeModal(); render(); }
+    else if((id=t.getAttribute('data-ren'))){
+      var a=DB.accounts.filter(function(x){return x.id===id;})[0];
+      var v=prompt('新しい名前',a.name); if(v&&v.trim()){ a.name=v.trim(); saveDB(); pushCloud(true); openAccounts(); render(); } }
+    else if((id=t.getAttribute('data-del'))){
+      var a2=DB.accounts.filter(function(x){return x.id===id;})[0];
+      if(confirm('「'+a2.name+'」のアカウントと記録をすべて削除します。よろしいですか？')){
+        DB.accounts=DB.accounts.filter(function(x){return x.id!==id;});
+        delete DB.progress[id];
+        if(DB.activeAccountId===id) DB.activeAccountId=DB.accounts[0]?DB.accounts[0].id:null;
+        saveDB(); pushCloud(true); openAccounts(); render(); } }
+  });
+}
+
+/* ---------- 同期設定 ---------- */
+function openSyncSettings(){
+  openModal('クラウド同期設定',
+    '<p class="tiny">GASのウェブアプリURL（末尾が /exec）と合言葉を入力します。この端末にだけ保存され、記録には含まれません。</p>'+
+    '<label class="f">GASのURL</label><input type="url" id="sUrl" placeholder="https://script.google.com/.../exec" value="'+esc(SYNC.url)+'">'+
+    '<label class="f">合言葉</label><input type="text" id="sKey" value="'+esc(SYNC.key)+'">',
+    [{t:'保存して同期',cls:'pri',fn:function(){
+        SYNC.url=$('#sUrl').value.trim(); SYNC.key=$('#sKey').value.trim(); saveSync(); closeModal(); render(); pullCloud(); }},
+     {t:'同期を解除',cls:'gh',fn:function(){ SYNC={url:'',key:'',lastSync:null}; saveSync(); closeModal(); setSync('','クラウド同期は未設定です'); render(); }},
+     {t:'閉じる',cls:'gh',fn:closeModal}]);
+}
+function openImport(){
+  var inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
+  inp.onchange=function(){
+    var f=inp.files[0]; if(!f) return;
+    var rd=new FileReader();
+    rd.onload=function(){
+      var raw; try{ raw=JSON.parse(rd.result); }catch(e){ toastModal('読み込めません','JSONとして読めないファイルです。'); return; }
+      if(raw.app && raw.app!==APP){ toastModal('別のツールの記録です','このファイルは「'+esc(raw.app)+'」の記録です。'); return; }
+      var d=migrate(raw);
+      openModal('記録を置きかえますか？',
+        '<p>アカウント：<b>'+esc(d.accounts.map(function(a){return a.name;}).join('、')||'なし')+'</b><br>'+
+        '保存日時：<b>'+esc(jdatetime(raw.updatedAt))+'</b></p>'+
+        '<p class="muted">今この端末にある記録は消えて、このファイルの内容に置きかわります。</p>',
+        [{t:'置きかえる',cls:'pri',fn:function(){ DB=d; saveDB(); pushCloud(true); closeModal(); render(); }},
+         {t:'やめる',cls:'gh',fn:closeModal}]);
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+function resetRecords(){
+  openModal('記録をリセットしますか？','<p>いま選んでいるアカウント（<b>'+esc((acc()||{}).name||'')+
+    '</b>）の学習記録をすべて消します。もとに戻せません。</p>',
+    [{t:'リセットする',cls:'pri',fn:function(){ var a=acc(); if(a){ DB.progress[a.id]={items:{},sessions:[]}; saveDB(); pushCloud(true); }
+        closeModal(); render(); }},
+     {t:'やめる',cls:'gh',fn:closeModal}]);
+}
+
+/* ============================================================
+   集計
+   ============================================================ */
+function statsFor(list){
+  var p=prog()||{items:{}}, s={n:list.length,mas:0,warn:0,part:0};
+  list.forEach(function(k){ var it=p.items[k.id];
+    if(!it) return;
+    if(it.mastered){ if(it.postMasterWrong>0) s.warn++; else s.mas++; }
+    else if((it.totalCorrect||0)>0) s.part++; });
+  return s;
+}
+function warnList(){ var p=prog()||{items:{}};
+  return KPS.filter(function(k){ var it=p.items[k.id]; return it&&it.mastered&&it.postMasterWrong>0; }); }
+
+/* ============================================================
+   ホーム
+   ============================================================ */
+function renderHome(){
+  var a=acc(), app=$('#app'); app.innerHTML='';
+  $('#accBtn').textContent='👤 '+(a?a.name:'アカウント');
+  if(memoryOnly){
+    var w=el('div','warnbar');
+    w.textContent = syncReady()
+      ? '☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます'
+      : '⚠ この端末には記録を残せない環境です。ブラウザを閉じると記録が消えます。';
+    app.appendChild(w);
+  }
+  if(!a){
+    var c0=el('div','card');
+    c0.innerHTML='<h2><span class="em">👤</span>まずアカウントを作りましょう</h2>'+
+      '<p class="muted">お子さんごとに記録を分けて保存します。</p>';
+    var b=el('button','btn pri wide','アカウントを作る'); b.onclick=openAccounts;
+    c0.appendChild(b); app.appendChild(c0); return;
+  }
+
+  /* --- 範囲セレクタ --- */
+  var c1=el('div','card');
+  c1.innerHTML='<h2><span class="em">🎯</span>出題範囲</h2>';
+  var seg=el('div','seg');
+  [['all','すべて'],['top2','◎○のみ'],['top1','◎のみ']].forEach(function(o){
+    var b=el('button',UI.impFilter===o[0]?'on':'',o[1]);
+    b.onclick=function(){ UI.impFilter=o[0]; saveUI(); render(); };
+    seg.appendChild(b);
+  });
+  c1.appendChild(seg);
+  var chips=el('div','chips'); chips.style.marginTop='10px';
+  ['すべて'].concat(CATS).forEach(function(cat){
+    var n=countInCat(cat);
+    var b=el('button','chip'+(UI.category===cat?' on':''));
+    b.innerHTML=esc(cat)+'<span class="n">'+n+'</span>';
+    if(!n) b.style.opacity='.45';
+    b.onclick=function(){ UI.category=cat; saveUI(); render(); };
+    chips.appendChild(b);
+  });
+  c1.appendChild(chips);
+  var sc=scopeKPs();
+  c1.appendChild(el('div','tiny','いまの範囲：'+sc.length+'語（未習得 '+sc.filter(function(k){return !itemRO(k.id).mastered;}).length+'語）'));
+  c1.appendChild(rubyToggle());
+  app.appendChild(c1);
+
+  /* --- モード --- */
+  var c2=el('div','card');
+  c2.innerHTML='<h2><span class="em">✏️</span>学習をはじめる</h2>';
+  var m=el('div','modes');
+  function mk(cls,label,sub,fn){ var b=el('button','mode '+cls);
+    b.innerHTML=esc(label)+(sub?'<small>'+esc(sub)+'</small>':''); b.onclick=fn; m.appendChild(b); return b; }
+  mk('','10問モード','10語×形式A･B',function(){ startSession('10問'); });
+  mk('','20問モード','20語×形式A･B',function(){ startSession('20問'); });
+  mk('alt','全問モード','範囲の全'+sc.length+'語を1周',function(){ startSession('全問'); }).style.gridColumn='1/-1';
+  var wl=warnList().filter(inScope);
+  var rb=mk('recheck','🔁 再確認モード','要注意習得 '+wl.length+'語',function(){ startSession('再確認'); });
+  if(!wl.length) rb.disabled=true;
+  mk('learn','📖 覚えるモード','記録に影響しない自由学習',function(){ view='learn'; render(); });
+  c2.appendChild(m);
+  app.appendChild(c2);
+
+  /* --- 習得状況（範囲に関係なく全KP） --- */
+  var c3=el('div','card');
+  c3.innerHTML='<h2><span class="em">📊</span>習得のようす<span class="tiny" style="font-weight:400">（つねに全'+KPS.length+'語で集計）</span></h2>';
+  function barRow(label,list){
+    var s=statsFor(list), pc=s.n?Math.round((s.mas+s.warn)/s.n*100):0;
+    var d=el('div','brow');
+    d.innerHTML='<div class="lb"><span>'+esc(label)+'</span><span><b>'+(s.mas+s.warn)+'</b> / '+s.n+'（'+pc+'%）</span></div>'+
+      '<div class="bar"><i class="m" style="width:'+(s.n?s.mas/s.n*100:0)+'%"></i>'+
+      '<i class="w" style="width:'+(s.n?s.warn/s.n*100:0)+'%"></i>'+
+      '<i class="o" style="width:'+(s.n?s.part/s.n*100:0)+'%"></i></div>';
+    return d;
+  }
+  c3.appendChild(barRow('総合',KPS));
+  CATS.forEach(function(cat){ c3.appendChild(barRow(cat,KPS.filter(function(k){return k.cat===cat;}))); });
+  [['◎ 最重要',2],['○ 重要',1],['　標準',0]].forEach(function(o){
+    var l=KPS.filter(function(k){return k.imp===o[1];}); if(l.length) c3.appendChild(barRow(o[0],l)); });
+  c3.appendChild(el('div','tiny','■習得ずみ　■要注意習得　■1回以上正解'));
+  var wl2=warnList();
+  if(wl2.length){
+    var bd=el('button','badge'); bd.style.marginTop='10px';
+    bd.textContent='⚠ 要注意 '+wl2.length+'語　タップで再確認';
+    bd.onclick=function(){ UI.category='すべて'; UI.impFilter='all'; saveUI(); startSession('再確認'); };
+    c3.appendChild(bd);
+  }
+  app.appendChild(c3);
+
+  /* --- 間違いランキング --- */
+  var p=prog();
+  var rank=KPS.filter(function(k){ return (p.items[k.id]||{}).totalWrong>0; })
+    .sort(function(x,y){ return (p.items[y.id].totalWrong)-(p.items[x.id].totalWrong); }).slice(0,10);
+  if(rank.length){
+    var c4=el('div','card');
+    c4.innerHTML='<h2><span class="em">🔥</span>間違いランキング</h2><p class="tiny">タップすると、そのことばを中心に10問モードが始まります。</p>';
+    rank.forEach(function(k){
+      var it=p.items[k.id];
+      var r=el('div','rank');
+      r.innerHTML='<span class="n">'+it.totalWrong+'回</span><span style="flex:1">'+
+        '<b>'+esc(k.label)+'</b><span class="tiny"> '+esc(k.art)+'</span></span>'+
+        '<span class="tag '+tagCls(it)+'">'+esc(stateLabel(it))+'</span>';
+      r.style.cursor='pointer';
+      r.onclick=function(){ startSession('10問',k.id); };
+      c4.appendChild(r);
+    });
+    app.appendChild(c4);
+  }
+
+  /* --- 記録データの管理（§14） --- */
+  var c5=el('div','card');
+  c5.innerHTML='<h2><span class="em">💾</span>記録データの管理</h2>';
+  var sb=el('div','syncbar '+syncState.cls); sb.id='syncBar'; sb.innerHTML=syncHTML();
+  c5.appendChild(sb);
+  var tl=el('div','tools');
+  function tb(label,fn){ var b=el('button','btn',label); b.onclick=fn; tl.appendChild(b); }
+  tb('📤 記録を書き出す',exportJSON);
+  tb('📥 記録を読み込む',openImport);
+  tb('📄 CSVをダウンロード',downloadCSV);
+  tb('☁ クラウド同期設定',openSyncSettings);
+  if(syncReady()){
+    tb('🔄 今すぐ同期',function(){ pullCloud(); });
+    tb('📋 全問一覧をDriveへ',exportListToDrive);
+  }
+  tb('🗑 記録をリセット',resetRecords);
+  c5.appendChild(tl);
+  c5.appendChild(el('div','tiny','ツール識別子 '+APP+'　／　共通仕様 '+VER+'　／　全'+KPS.length+'知識ポイント'));
+  app.appendChild(c5);
+}
+function rubyToggle(){
+  var on=(UI.ruby!==false);
+  var b=el('button','btn gh sm', on?'ふりがな ON':'ふりがな OFF');
+  b.style.marginTop='8px';
+  b.onclick=function(){ UI.ruby=!on; saveUI(); render(); };
+  return b;
+}
+function tagCls(it){
+  var s=stateLabel(it);
+  return s==='習得済み'?'t-m':s==='要注意習得'?'t-w':s==='誤答'?'t-x':s==='未出題'?'t-n':'t-c';
+}
+
+/* ============================================================
+   出題画面
+   ============================================================ */
+function renderQuiz(){
+  var app=$('#app'); app.innerHTML='';
+  if(S.view!=null){ renderReview(); return; }
+  if(S.pos>=S.queue.length){ finishSession(); return; }
+  var e=curEntry(), kp=KPMAP[e.kpId], it=S.items[e.kpId], done=answered();
+
+  var head=el('div','qhead');
+  var total=Math.max(S.planned,S.queue.length);
+  var remainKp={}; S.queue.slice(S.pos).forEach(function(x){ remainKp[x.kpId]=1; });
+  head.innerHTML='<div class="bar"><i class="m" style="width:'+((S.pos+(done?1:0))/total*100)+'%"></i></div>'+
+    '<div class="qmeta"><span>'+esc(S.mode)+'モード　'+(S.pos+1)+'問目 / 全'+total+'問</span>'+
+    '<span>あと'+Object.keys(remainKp).length+'語　｜　⭕'+S.correct+'　❌'+S.wrong+'</span></div>';
+  app.appendChild(head);
+
+  var c=el('div','card');
+  /* 習得ゲージ */
+  if(S.mode!=='再確認'){
+    var req=requiredStreak(it), g=el('div','gauge');
+    var gh='<span class="tiny" style="font-weight:700">習得まで</span>';
+    for(var i=0;i<req;i++) gh+='<span class="d'+((it.mastered||i<it.streak)?' f':'')+'"></span>';
+    if(it.mastered) gh+='<span class="tag t-'+(it.postMasterWrong>0?'w':'m')+'">'+(it.postMasterWrong>0?'要注意習得':'習得ずみ')+'</span>';
+    else if(req>2) gh+='<span class="tiny">このことばは苦手なので'+req+'回必要</span>';
+    g.innerHTML=gh; g.style.marginBottom='10px'; c.appendChild(g);
+  } else {
+    c.appendChild(el('div','tiny','再確認モードでは、習得の記録は変わりません（要注意の記録だけ更新します）'));
+  }
+
+  var lead=el('div','tiny'); lead.textContent='【形式'+e.fmt+'】'+(e.q.sent?e.q.lead:''); c.appendChild(lead);
+  if(e.q.art){ var ac=el('span','artchip',e.q.art); c.appendChild(ac); }
+  var q=el('div','qtext');
+  if(e.q.sent) q.innerHTML=rubify(esc(e.q.sent)).replace(/【[\s\S]+?】/,'<span class="bl">？</span>');
+  else q.innerHTML=rubify(esc(e.q.lead));
+  c.appendChild(q);
+
+  var opts=el('div','opts');
+  e.q.choices.forEach(function(ch,i){
+    var b=el('button','opt');
+    b.innerHTML='<span class="no">'+(i+1)+'</span>'+rubify(esc(ch));
+    if(done){
+      if(ch===e.q.correct) b.className='opt ok';
+      else if(ch===e.chosen) b.className='opt ng';
+      else b.className='opt dim';
+    } else b.onclick=function(){ doAnswer(ch); };
+    opts.appendChild(b);
+  });
+  c.appendChild(opts);
+
+  if(done) c.appendChild(feedbackEl(e,kp,it));
+  app.appendChild(c);
+
+  var nav=el('div','navbtns');
+  if(!done && S.log.length>=1){
+    var bk=el('button','btn gh','← 前の問題へ');
+    bk.onclick=function(){ S.view=S.log.length-1; renderQuiz(); };
+    nav.appendChild(bk);
+  }
+  if(done){
+    var nx=el('button','btn pri', (S.log.length>=S.queue.length)?'結果を見る →':'つぎの問題 →');
+    nx.onclick=nextQ; nav.appendChild(nx);
+  }
+  var rt=rubyToggle(); rt.className='btn gh sm'; nav.appendChild(rt);
+  var hm=el('button','btn gh','中止'); hm.onclick=leaveQuiz; nav.appendChild(hm);
+  app.appendChild(nav);
+  window.scrollTo(0,0);
+}
+function feedbackEl(e,kp,it){
+  var f=el('div','fb '+(e.ok?'ok':'ng'));
+  var h='<div class="hd">'+(e.ok?'⭕ 正解！':'❌ ざんねん')+'</div>';
+  if(!e.ok) h+='<div>正しくは <b>'+rubify(esc(e.q.correct))+'</b></div>';
+  if(kp.kind==='fill'){
+    h+='<div class="full">'+esc(kp.art)+'　'+rubify(esc(kp.sent)).replace(/【([\s\S]+?)】/,'<em>$1</em>')+
+       '<div class="ruby">'+esc(kp.ans)+'（'+esc(kp.yomi)+'）　'+esc(impText(kp.imp))+'</div></div>';
+  } else {
+    h+='<div class="full"><b>'+esc(kp.art)+'</b>　'+rubify(esc(kp.sum))+'</div>';
+  }
+  h+='<div style="margin-top:8px">💡 '+esc(kp.note)+'</div>';
+  f.innerHTML=h;
+  return f;
+}
+/* §6-1 前の問題へ戻る */
+function renderReview(){
+  var app=$('#app'), i=S.view, r=S.log[i], e=r.e, kp=KPMAP[e.kpId];
+  var last=(i===S.log.length-1);
+  var c=el('div','card');
+  c.innerHTML='<div class="tiny">見直し中（'+(i+1)+'問目 / 解答ずみ'+S.log.length+'問）'+
+    (last?'　― この1問だけ答え直せます':'　― この問題は見るだけです')+'</div>';
+  var lead=el('div','tiny'); lead.textContent='【形式'+e.fmt+'】'+(e.q.sent?e.q.lead:''); c.appendChild(lead);
+  if(e.q.art) c.appendChild(el('span','artchip',e.q.art));
+  var q=el('div','qtext');
+  if(e.q.sent) q.innerHTML=rubify(esc(e.q.sent)).replace(/【[\s\S]+?】/,'<span class="bl">？</span>');
+  else q.innerHTML=rubify(esc(e.q.lead));
+  c.appendChild(q);
+  var opts=el('div','opts');
+  e.q.choices.forEach(function(ch,n){
+    var b=el('button','opt');
+    b.innerHTML='<span class="no">'+(n+1)+'</span>'+rubify(esc(ch));
+    if(ch===e.q.correct) b.className='opt ok';
+    else if(ch===e.chosen) b.className='opt ng';
+    else b.className='opt dim';
+    if(last){ b.onclick=function(){ reAnswer(ch); }; }
+    opts.appendChild(b);
+  });
+  c.appendChild(opts);
+  c.appendChild(feedbackEl(e,kp,S.items[e.kpId]));
+  app.appendChild(c);
+  var nav=el('div','navbtns');
+  if(i>0){ var p=el('button','btn gh','← さらに前'); p.onclick=function(){ S.view=i-1; renderQuiz(); }; nav.appendChild(p); }
+  var nx=el('button','btn pri', last?'出題にもどる →':'つぎへ →');
+  nx.onclick=function(){ if(last){ S.view=null; S.pos=S.log.length; } else S.view=i+1; renderQuiz(); };
+  nav.appendChild(nx);
+  app.appendChild(nav);
+  window.scrollTo(0,0);
+}
+
+/* ============================================================
+   §8 結果画面
+   ============================================================ */
+var RF={cat:'すべて',st:'すべて',sort:'wrong'};
+function renderResult(){
+  var app=$('#app'); app.innerHTML=''; var p=prog();
+  var tot=S.correct+S.wrong, rate=tot?Math.round(S.correct/tot*100):0;
+
+  var c1=el('div','card');
+  c1.innerHTML='<h2><span class="em">🎉</span>'+esc(S.mode)+'モード の結果</h2>'+
+    '<div class="stat"><div><b>'+S.correct+'</b><span>正解</span></div>'+
+    '<div><b>'+S.wrong+'</b><span>誤答</span></div>'+
+    '<div><b>'+rate+'%</b><span>正答率</span></div>'+
+    '<div><b>'+S.newly.length+'</b><span>新しく習得</span></div></div>';
+  if(S.newly.length) c1.appendChild(el('div','tiny','🏅 新しく習得：'+S.newly.map(function(id){return KPMAP[id].label;}).join('、')));
+  var nr=Object.keys(S.needReview);
+  if(nr.length) c1.appendChild(el('div','warnbar','⚠ 要復習：'+nr.map(function(id){return KPMAP[id].label;}).join('、')+'（1回のセッションで4回出題しても定着しませんでした）'));
+  app.appendChild(c1);
+
+  var wrongs=S.log.filter(function(r){ return !r.e.ok; });
+  var c2=el('div','card');
+  c2.innerHTML='<h2><span class="em">❌</span>今回まちがえた問題（'+wrongs.length+'）</h2>';
+  if(!wrongs.length) c2.appendChild(el('p','muted','ぜんぶ正解でした！すばらしい。'));
+  wrongs.forEach(function(r){
+    var kp=KPMAP[r.e.kpId], d=el('div','it');
+    d.innerHTML='<div class="k"><b>'+esc(kp.label)+'</b> <span class="tag t-n">形式'+r.e.fmt+'</span>'+
+      '<div class="tiny">あなたの答え：'+esc(r.e.chosen)+'　→　正解：'+esc(r.e.q.correct)+'</div>'+
+      '<div class="tiny">'+esc(kp.art)+'　'+esc(kp.kind==='fill'?kp.sent.replace(/【|】/g,'　'):kp.sum)+'</div>'+
+      '<div class="tiny">💡'+esc(kp.note)+'</div></div>';
+    c2.appendChild(d);
+  });
+  c2.className='card lst'; app.appendChild(c2);
+
+  /* 全問一覧（範囲選択の影響を受けない） */
+  var c3=el('div','card');
+  c3.innerHTML='<h2><span class="em">📚</span>カテゴリー別 全問一覧<span class="tiny" style="font-weight:400">（全'+KPS.length+'語）</span></h2>';
+  var fl=el('div','filters');
+  function sel(id,opts,val,fn){ var s=document.createElement('select');
+    opts.forEach(function(o){ var op=document.createElement('option'); op.value=o[0]; op.textContent=o[1];
+      if(o[0]===val) op.selected=true; s.appendChild(op); });
+    s.onchange=function(){ fn(s.value); }; fl.appendChild(s); }
+  sel('c',[['すべて','カテゴリー：すべて']].concat(CATS.map(function(x){return [x,'カテゴリー：'+x];})),RF.cat,function(v){RF.cat=v;renderResult();});
+  sel('s',[['すべて','状態：すべて'],['習得済み','状態：習得済み'],['要注意習得','状態：要注意習得'],['未習得','状態：未習得'],['未出題','状態：未出題']],RF.st,function(v){RF.st=v;renderResult();});
+  sel('o',[['wrong','並び：誤答が多い順'],['cat','並び：条文順'],['imp','並び：重要度順']],RF.sort,function(v){RF.sort=v;renderResult();});
+  c3.appendChild(fl);
+
+  var list=KPS.filter(function(k){
+    if(RF.cat!=='すべて'&&k.cat!==RF.cat) return false;
+    var st=stateLabel(p.items[k.id]);
+    if(RF.st==='すべて') return true;
+    if(RF.st==='未習得') return st!=='習得済み'&&st!=='要注意習得'&&st!=='未出題';
+    return st===RF.st;
+  });
+  if(RF.sort==='wrong') list=list.slice().sort(function(x,y){ return ((p.items[y.id]||{}).totalWrong||0)-((p.items[x.id]||{}).totalWrong||0); });
+  else if(RF.sort==='imp') list=list.slice().sort(function(x,y){ return y.imp-x.imp; });
+  var host=el('div','');
+  list.forEach(function(k){
+    var it=p.items[k.id]||blankItem();
+    var d=document.createElement('details'); d.className='kp';
+    var sm=document.createElement('summary');
+    sm.innerHTML='<span style="flex:1;min-width:0"><b>'+esc(k.label)+'</b> <span class="imp'+k.imp+'">'+impMark(k.imp)+'</span>'+
+      '<span class="tiny"> '+esc(k.art)+'・'+esc(k.cat)+'</span></span>'+
+      (it.totalWrong>1?'<span class="tag t-x">誤答'+it.totalWrong+'回</span>':(it.totalWrong===1?'<span class="tag t-n">誤答1回</span>':''))+
+      '<span class="tag '+tagCls(it)+'">'+esc(stateLabel(it))+'</span>';
+    d.appendChild(sm);
+    var bd=el('div','body');
+    var h='';
+    if(k.kind==='fill') h+=esc(k.art)+'　'+rubify(esc(k.sent)).replace(/【([\s\S]+?)】/,'<em style="font-style:normal;color:var(--pri);font-weight:900">$1</em>')+'<br><span class="ruby">'+esc(k.yomi)+'</span>';
+    else h+='<b>'+esc(k.art)+'</b>　'+rubify(esc(k.sum));
+    h+='<br>💡'+esc(k.note);
+    h+='<br>形式A：正'+it.byFormat.A.correct+'／誤'+it.byFormat.A.wrong+
+       '　形式B：正'+it.byFormat.B.correct+'／誤'+it.byFormat.B.wrong;
+    if(it.wrongLog.length) h+='<br>過去の誤答：'+it.wrongLog.map(function(w){return esc(w.answered)+'（形式'+w.format+'・'+jdate(w.at)+'）';}).join('／');
+    if(it.masteredAt) h+='<br>習得日：'+jdate(it.masteredAt)+(it.postMasterWrong?'（習得後の誤答 '+it.postMasterWrong+'回）':'');
+    bd.innerHTML=h; d.appendChild(bd); host.appendChild(d);
+  });
+  c3.appendChild(host);
+  app.appendChild(c3);
+
+  var nav=el('div','navbtns');
+  var b1=el('button','btn pri','ホームへもどる'); b1.onclick=function(){ S=null; view='home'; render(); };
+  var b2=el('button','btn gh','📄 CSV'); b2.onclick=downloadCSV;
+  nav.appendChild(b1); nav.appendChild(b2); app.appendChild(nav);
+  window.scrollTo(0,0);
+}
+
+/* ============================================================
+   §3-4 覚えるモード（記録・習得判定・同期に一切影響しない）
+   ============================================================ */
+var L={tab:'list',idx:0,deck:[],di:0,flip:false,dir:'A',done:0};
+function renderLearn(){
+  var app=$('#app'); app.innerHTML='';
+  var sc=scopeKPs();
+  var top=el('div','card');
+  top.innerHTML='<h2><span class="em">📖</span>覚えるモード<span class="tiny" style="font-weight:400">（記録は変わりません）</span></h2>';
+  var seg=el('div','seg');
+  [['list','📋 一覧学習'],['card','🃏 単語カード']].forEach(function(o){
+    var b=el('button',L.tab===o[0]?'on':'',o[1]);
+    b.onclick=function(){ L.tab=o[0]; if(o[0]==='card') buildDeck(); renderLearn(); };
+    seg.appendChild(b);
+  });
+  top.appendChild(seg);
+  top.appendChild(el('div','tiny','範囲：'+(UI.category)+'／'+({all:'すべて',top2:'◎○のみ',top1:'◎のみ'}[UI.impFilter])+'　'+sc.length+'語'));
+  var row=el('div','navbtns');
+  var hb=el('button','btn gh sm','← ホームへ'); hb.onclick=function(){ view='home'; render(); };
+  row.appendChild(hb); row.appendChild(rubyToggle()); top.appendChild(row);
+  app.appendChild(top);
+  if(!sc.length){ app.appendChild(el('div','card','この範囲に語がありません。')); return; }
+  if(L.tab==='list') learnList(app,sc); else learnCards(app,sc);
+  window.scrollTo(0,0);
+}
+function learnList(app,sc){
+  if(L.idx>=sc.length) L.idx=0;
+  var k=sc[L.idx], it=itemRO(k.id);
+  var c=el('div','card');
+  var h='<div class="tiny">'+(L.idx+1)+' / '+sc.length+'　'+esc(k.cat)+'</div>'+
+    '<span class="artchip">'+esc(k.art)+'</span>'+
+    '<div class="qtext">';
+  if(k.kind==='fill') h+=rubify(esc(k.sent)).replace(/【([\s\S]+?)】/,'<em style="font-style:normal;color:var(--pri);font-weight:900;border-bottom:3px solid var(--pri)">$1</em>');
+  else h+=rubify(esc(k.sum));
+  h+='</div>';
+  if(k.kind==='fill') h+='<div class="ruby">'+esc(k.ans)+'（'+esc(k.yomi)+'）</div>';
+  h+='<div style="margin-top:8px">💡'+esc(k.note)+'</div>'+
+     '<div style="margin-top:10px"><span class="imp'+k.imp+'">'+esc(impText(k.imp))+'</span>　'+
+     '<span class="tag '+tagCls(it)+'">'+esc(stateLabel(it))+'</span></div>';
+  c.innerHTML=h;
+  var nav=el('div','navbtns');
+  var pb=el('button','btn gh','← 前へ'); pb.onclick=function(){ L.idx=(L.idx-1+sc.length)%sc.length; renderLearn(); };
+  var nb=el('button','btn pri','次へ →'); nb.onclick=function(){ L.idx=(L.idx+1)%sc.length; renderLearn(); };
+  nav.appendChild(pb); nav.appendChild(nb);
+  c.appendChild(nav);
+  app.appendChild(c);
+
+  var c2=el('div','card lst');
+  c2.innerHTML='<h2><span class="em">🗂</span>一覧（タップで表示）</h2>';
+  var cur=null;
+  sc.forEach(function(kk,i){
+    if(kk.cat!==cur){ cur=kk.cat; var hd=el('div','tiny'); hd.style.cssText='font-weight:800;margin-top:8px'; hd.textContent='― '+cur+' ―'; c2.appendChild(hd); }
+    var d=el('div','it'); d.style.cursor='pointer';
+    d.innerHTML='<div class="k"><b>'+esc(kk.label)+'</b> <span class="imp'+kk.imp+'">'+impMark(kk.imp)+'</span>'+
+      '<div class="tiny">'+esc(kk.art)+'</div></div><span class="tag '+tagCls(itemRO(kk.id))+'">'+esc(stateLabel(itemRO(kk.id)))+'</span>';
+    d.onclick=function(){ L.idx=i; renderLearn(); };
+    c2.appendChild(d);
+  });
+  app.appendChild(c2);
+}
+function buildDeck(){ L.deck=shuffle(scopeKPs()).map(function(k){return k.id;}); L.di=0; L.flip=false; L.done=0; }
+function learnCards(app,sc){
+  if(!L.deck.length || L.deck.some(function(id){ return !inScope(KPMAP[id]); })) buildDeck();
+  var c0=el('div','card');
+  var seg=el('div','seg');
+  [['A','形式A：条文 → ことば'],['B','形式B：ことば → 条文']].forEach(function(o){
+    var b=el('button',L.dir===o[0]?'on':'',o[1]);
+    b.onclick=function(){ L.dir=o[0]; L.flip=false; renderLearn(); }; seg.appendChild(b);
+  });
+  c0.appendChild(seg);
+  c0.appendChild(el('div','tiny','のこり '+L.deck.length+'枚　／　「覚えた」は画面上だけの印で、記録には残りません'));
+  app.appendChild(c0);
+  if(!L.deck.length){
+    var fin=el('div','card');
+    fin.innerHTML='<h2>🎊 デッキをぜんぶ覚えました！</h2><p class="muted">記録は変わっていません。</p>';
+    var b=el('button','btn pri wide','もう一度シャッフル'); b.onclick=function(){ buildDeck(); renderLearn(); };
+    fin.appendChild(b); app.appendChild(fin); return;
+  }
+  if(L.di>=L.deck.length) L.di=0;
+  var k=KPMAP[L.deck[L.di]];
+  var fc=el('div','fc');
+  var front,back;
+  if(k.kind==='fill'){
+    front = (L.dir==='A') ? (k.art+'<br>'+rubify(esc(k.sent)).replace(/【[\s\S]+?】/,'<span class="bl">？</span>')) : rubify(esc(k.ans));
+    back  = (L.dir==='A') ? rubify(esc(k.ans))+'<div class="ruby">'+esc(k.yomi)+'</div>'
+                          : (k.art+'<br>'+rubify(esc(k.sent)).replace(/【([\s\S]+?)】/,'<em style="font-style:normal;color:var(--pri);font-weight:900">$1</em>'));
+  } else {
+    front = (L.dir==='A') ? esc(k.art) : rubify(esc(k.sum));
+    back  = (L.dir==='A') ? rubify(esc(k.sum)) : esc(k.art);
+  }
+  fc.innerHTML='<div class="side">'+(L.flip?'うら（こたえ）':'おもて')+'</div>'+
+    '<div class="big">'+(L.flip?back:front)+'</div>'+
+    (L.flip?'<div class="small">💡'+esc(k.note)+'</div>':'<div class="hint">タップしてめくる</div>');
+  fc.onclick=function(){ L.flip=!L.flip; renderLearn(); };
+  app.appendChild(fc);
+  var row=el('div','fcrow');
+  var b1=el('button','btn gh','まだ　（後ろへ）');
+  b1.onclick=function(){ var id=L.deck.splice(L.di,1)[0]; L.deck.push(id); L.flip=false; if(L.di>=L.deck.length)L.di=0; renderLearn(); };
+  var b2=el('button','btn pri','覚えた　（外す）');
+  b2.onclick=function(){ L.deck.splice(L.di,1); L.done++; L.flip=false; if(L.di>=L.deck.length)L.di=0; renderLearn(); };
+  row.appendChild(b1); row.appendChild(b2); app.appendChild(row);
+}
+
+/* ============================================================
+   起動
+   ============================================================ */
+function render(){
+  if(view==='quiz'&&S) renderQuiz();
+  else if(view==='result'&&S) renderResult();
+  else if(view==='learn') renderLearn();
+  else { view='home'; renderHome(); }
+}
+$('#accBtn').onclick=function(){ if(view==='quiz'&&S&&S.log.length){ leaveQuiz(); return; } openAccounts(); };
+window.addEventListener('beforeunload',function(ev){
+  if(view==='quiz'&&S&&!S.committed&&S.log.length){ ev.preventDefault(); ev.returnValue=''; }
+});
+loadAll();
+if(syncReady()) setSync('','☁… クラウドと同期しています');
+render();
+if(syncReady()) pullCloud(true);
+
+</script>
+</body>
+</html>
