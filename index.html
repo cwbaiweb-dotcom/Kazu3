@@ -43,7 +43,23 @@
   h1{font-size:30px;font-weight:800;letter-spacing:.04em}
   .sub{margin-top:8px;font-size:13.5px;color:var(--ink-soft)}
 
-  .list{display:grid;gap:12px;margin-top:24px}
+  /* 教科の見出し */
+  .section{margin-top:32px}
+  .section:first-of-type{margin-top:24px}
+  .sec-head{
+    display:flex;align-items:center;gap:10px;
+    margin:0 0 12px 4px;
+  }
+  .sec-bar{width:6px;height:20px;border-radius:3px;flex:0 0 auto}
+  .sec-title{font-size:18px;font-weight:800;letter-spacing:.06em}
+  .sec-count{font-size:12px;color:var(--ink-soft);font-weight:700}
+
+  .kokugo .sec-bar{background:var(--kokugo)}
+  .rika   .sec-bar{background:var(--rika)}
+  .shakai .sec-bar{background:var(--shakai)}
+  .sansu  .sec-bar{background:var(--sansu)}
+
+  .list{display:grid;gap:12px}
 
   /* カード＝ノートのインデックスシール */
   .app{
@@ -82,8 +98,16 @@
   .shakai .tab{background:var(--shakai)}
   .sonota .tab{background:var(--sonota)}
 
+  /* 準備中カード */
+  .soon{
+    padding:16px 18px;border-radius:4px;
+    border:1.5px dashed var(--grid);
+    background:rgba(255,255,255,.4);
+    color:var(--ink-soft);font-size:13.5px;
+  }
+
   footer{
-    margin-top:36px;padding-left:4px;
+    margin-top:40px;padding-left:4px;
     font-size:12px;color:var(--ink-soft);line-height:1.8;
   }
 
@@ -92,6 +116,7 @@
     h1{font-size:25px}
     .tab{flex-basis:60px;font-size:14px}
     .name{font-size:16px}
+    .sec-title{font-size:16px}
   }
   @media (prefers-reduced-motion:reduce){
     .app{transition:none}
@@ -109,121 +134,178 @@
   </header>
 
   <!-- ============================================================
-       ▼ アプリを追加するときは、この <a> ブロックを1つコピーして
-         ① class の 2つめ（kokugo / sansu / rika / shakai / sonota）
-         ② href のファイル名
-         ③ tab の教科名 / name のタイトル / note の説明
-         を書きかえるだけです。並び順＝表示順です。
+       ▼ アプリを追加するときは、追加したい教科の <div class="list"> の中に
+         下の <a> ブロックを1つコピーして
+         ① href のファイル名
+         ② name のタイトル / note の説明
+         を書きかえるだけです。（class の教科名は変えない）
+         見出しの (◯) の数字も手で直してください。
        ============================================================ -->
-  <div class="list">
 
-    <a class="app shakai" href="歴史年代クイズ.html">
-      <div class="tab">社会</div>
-      <div class="body">
-        <div class="name">１００問歴史年号クイズ</div>
-        <div class="note">重要な年号を、おぼえるまでくりかえし出題</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
-    <a class="app shakai" href="夏季講習歴史年代クイズ.html">
-      <div class="tab">社会</div>
-      <div class="body">
-        <div class="name">夏季講習歴史年号クイズ</div>
-        <div class="note">重要な年号を、おぼえるまでくりかえし出題</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
-    <a class="app shakai" href="地理用語.html">
-      <div class="tab">社会</div>
-      <div class="body">
-        <div class="name">地理用語</div>
-        <div class="note">地形・気候・産業などの用語を確認</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+  <!-- 国語 -->
+  <section class="section kokugo">
+    <div class="sec-head">
+      <span class="sec-bar"></span>
+      <span class="sec-title">国語</span>
+      <span class="sec-count">(6)</span>
+    </div>
+    <div class="list">
 
-    <a class="app shakai" href="都市交通.html">
-      <div class="tab">社会</div>
-      <div class="body">
-        <div class="name">都市・交通</div>
-        <div class="note">おもな都市と交通のつながりを確認</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+      <a class="app kokugo" href="外来語ドリル.html">
+        <div class="tab">国語</div>
+        <div class="body">
+          <div class="name">外来語ドリル</div>
+          <div class="note">入試によく出る外来語をチェック</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
 
-    <a class="app shakai" href="旧国名.html">
-      <div class="tab">社会</div>
-      <div class="body">
-        <div class="name">旧国名</div>
-        <div class="note">武蔵・相模など、むかしの国名と今の県</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+      <a class="app kokugo" href="和語.html">
+        <div class="tab">国語</div>
+        <div class="body">
+          <div class="name">和語ドリル</div>
+          <div class="note">和語・漢語・外来語の見分けかたを確認</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
 
-    <a class="app kokugo" href="外来語ドリル.html">
-      <div class="tab">国語</div>
-      <div class="body">
-        <div class="name">外来語ドリル</div>
-        <div class="note">入試によく出る外来語をチェック</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+      <a class="app kokugo" href="故事成語.html">
+        <div class="tab">国語</div>
+        <div class="body">
+          <div class="name">故事成語</div>
+          <div class="note">むかしの話がもとになった言葉の意味</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
 
-    <a class="app kokugo" href="和語.html">
-      <div class="tab">国語</div>
-      <div class="body">
-        <div class="name">和語ドリル</div>
-        <div class="note">和語・漢語・外来語の見分けかたを確認</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+      <a class="app kokugo" href="慣用句.html">
+        <div class="tab">国語</div>
+        <div class="body">
+          <div class="name">慣用句</div>
+          <div class="note">体の部分などを使った言い回しをおぼえる</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
 
-    <a class="app kokugo" href="故事成語.html">
-      <div class="tab">国語</div>
-      <div class="body">
-        <div class="name">故事成語</div>
-        <div class="note">むかしの話がもとになった言葉の意味</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+      <a class="app kokugo" href="ことわざ.html">
+        <div class="tab">国語</div>
+        <div class="body">
+          <div class="name">ことわざ</div>
+          <div class="note">昔からの言いならわしと、その意味</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
 
-    <a class="app kokugo" href="慣用句.html">
-      <div class="tab">国語</div>
-      <div class="body">
-        <div class="name">慣用句</div>
-        <div class="note">体の部分などを使った言い回しをおぼえる</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+      <a class="app kokugo" href="熟語対義語類義語.html">
+        <div class="tab">国語</div>
+        <div class="body">
+          <div class="name">熟語対義語類義語</div>
+          <div class="note">熟語の組み立てと、反対語・似た意味の言葉</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
 
-    <a class="app kokugo" href="ことわざ.html">
-      <div class="tab">国語</div>
-      <div class="body">
-        <div class="name">ことわざ</div>
-        <div class="note">昔からの言いならわしと、その意味</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+    </div>
+  </section>
 
-    <a class="app kokugo" href="熟語対義語類義語.html">
-      <div class="tab">国語</div>
-      <div class="body">
-        <div class="name">熟語対義語類義語</div>
-        <div class="note">熟語の組み立てと、反対語・似た意味の言葉</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+  <!-- 理科 -->
+  <section class="section rika">
+    <div class="sec-head">
+      <span class="sec-bar"></span>
+      <span class="sec-title">理科</span>
+      <span class="sec-count">(2)</span>
+    </div>
+    <div class="list">
 
-    <a class="app rika" href="植物.html">
-      <div class="tab">理科</div>
-      <div class="body">
-        <div class="name">植物カード</div>
-        <div class="note">イラストで見わけるポイントを確認</div>
-      </div>
-      <div class="arrow" aria-hidden="true">›</div>
-    </a>
+      <a class="app rika" href="植物.html">
+        <div class="tab">理科</div>
+        <div class="body">
+          <div class="name">植物カード</div>
+          <div class="note">イラストで見わけるポイントを確認</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
 
-  </div>
+      <a class="app rika" href="動物.html">
+        <div class="tab">理科</div>
+        <div class="body">
+          <div class="name">動物カード</div>
+          <div class="note">なかま分けや体のつくりを確認</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 社会 -->
+  <section class="section shakai">
+    <div class="sec-head">
+      <span class="sec-bar"></span>
+      <span class="sec-title">社会</span>
+      <span class="sec-count">(5)</span>
+    </div>
+    <div class="list">
+
+      <a class="app shakai" href="歴史年代クイズ.html">
+        <div class="tab">社会</div>
+        <div class="body">
+          <div class="name">歴史年号クイズ</div>
+          <div class="note">重要な年号を、おぼえるまでくりかえし出題</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="app shakai" href="地理用語.html">
+        <div class="tab">社会</div>
+        <div class="body">
+          <div class="name">地理用語</div>
+          <div class="note">地形・気候・産業などの用語を確認</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="app shakai" href="都市交通.html">
+        <div class="tab">社会</div>
+        <div class="body">
+          <div class="name">都市・交通</div>
+          <div class="note">おもな都市と交通のつながりを確認</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="app shakai" href="旧国名.html">
+        <div class="tab">社会</div>
+        <div class="body">
+          <div class="name">旧国名</div>
+          <div class="note">武蔵・相模など、むかしの国名と今の県</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
+
+      <a class="app shakai" href="日本国憲法の条文.html">
+        <div class="tab">社会</div>
+        <div class="body">
+          <div class="name">日本国憲法の条文</div>
+          <div class="note">よく出る条文と、その意味を確認</div>
+        </div>
+        <div class="arrow" aria-hidden="true">›</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- 算数 -->
+  <section class="section sansu">
+    <div class="sec-head">
+      <span class="sec-bar"></span>
+      <span class="sec-title">算数</span>
+      <span class="sec-count">(0)</span>
+    </div>
+    <div class="list">
+      <div class="soon">じゅんび中です</div>
+    </div>
+  </section>
 
   <footer>
     このページはこの家のためのものです。<br>
