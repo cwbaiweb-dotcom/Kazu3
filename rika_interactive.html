@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中学受験 理科 計算分野 インタラクティブまとめ</title>
+<style>
+  :root{
+    --ink:#1c1a17; --sub:#5d574e; --line:#e2ddd4; --bg:#faf8f5; --card:#fff;
+    --phys:#2f6f8f; --chem:#9a5b2e; --bio:#3f7a4d; --earth:#6b4f8a; --tool:#4a5a6b;
+    --accent:#b4472a; --soft:#f5f2ed; --ok:#3f7a4d; --ng:#b4472a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+    line-height:1.8;font-size:15px;-webkit-text-size-adjust:100%}
+  .wrap{max-width:1020px;margin:0 auto;padding:26px 20px 90px}
+  header{border-bottom:3px solid var(--ink);padding-bottom:14px}
+  h1{font-size:25px;margin:0 0 5px;letter-spacing:.02em}
+  .lead{color:var(--sub);font-size:13.5px;margin:0}
+  .badge{display:inline-block;background:var(--ink);color:#fff;font-size:11px;
+    padding:2px 9px;border-radius:4px;letter-spacing:.06em;margin-right:8px;vertical-align:2px}
+
+  /* progress */
+  .prog{display:flex;align-items:center;gap:12px;margin:16px 0 4px;font-size:13px;color:var(--sub)}
+  .bar{flex:1;height:8px;background:var(--soft);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
+  .prog b{color:var(--ink);font-size:14px}
+
+  /* controls */
+  .ctrl{position:sticky;top:0;z-index:30;background:var(--bg);padding:12px 0 10px;
+    border-bottom:1px solid var(--line);margin-bottom:22px}
+  .fil{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+  .fb{border:1px solid var(--line);background:var(--card);border-radius:999px;
+    padding:6px 16px;font-size:13.5px;cursor:pointer;color:var(--sub);font-family:inherit;transition:.12s}
+  .fb:hover{border-color:var(--ink);color:var(--ink)}
+  .fb.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .fb.on[data-f="phys"]{background:var(--phys);border-color:var(--phys)}
+  .fb.on[data-f="chem"]{background:var(--chem);border-color:var(--chem)}
+  .fb.on[data-f="bio"]{background:var(--bio);border-color:var(--bio)}
+  .fb.on[data-f="earth"]{background:var(--earth);border-color:var(--earth)}
+  .fb.on[data-f="tool"]{background:var(--tool);border-color:var(--tool)}
+  .srch{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 13px;
+    font-size:14px;font-family:inherit;background:var(--card);color:var(--ink)}
+  .srch:focus{outline:none;border-color:var(--ink)}
+  .hint{font-size:12px;color:var(--sub);margin:6px 0 0}
+
+  /* unit card */
+  .unit{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);
+    border-radius:10px;padding:16px 19px;margin:13px 0}
+  .unit[data-f="phys"]{--c:var(--phys)} .unit[data-f="chem"]{--c:var(--chem)}
+  .unit[data-f="bio"]{--c:var(--bio)} .unit[data-f="earth"]{--c:var(--earth)}
+  .uh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .uh h3{margin:0;font-size:16.5px}
+  .lv{font-size:11px;color:#fff;background:var(--c);border-radius:4px;padding:2px 8px}
+  .chk{margin-left:auto;font-size:12.5px;color:var(--sub);cursor:pointer;
+    display:flex;align-items:center;gap:5px;user-select:none;white-space:nowrap}
+  .chk input{cursor:pointer;accent-color:var(--ok);width:15px;height:15px}
+  .unit.done{background:#f7fbf7}
+  .lbl{font-size:11.5px;letter-spacing:.1em;color:var(--sub);font-weight:700;
+    display:block;margin:12px 0 2px}
+  .f{background:var(--soft);border-radius:7px;padding:10px 14px;margin:5px 0;
+    font-size:14.5px;border-left:3px solid var(--c)}
+  .f code{font-family:inherit;font-weight:700}
+  ul,ol{margin:5px 0;padding-left:1.3em} li{margin:3px 0}
+  .warn{font-size:13.5px;background:#fdf3ef;border:1px dashed #e0b6a6;
+    border-radius:7px;padding:9px 14px;margin:9px 0 0}
+  .warn b{color:var(--accent)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0}
+  th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+  th{background:var(--soft);font-weight:700;white-space:nowrap}
+
+  /* quiz */
+  .quiz{margin-top:13px;border-top:1px dashed var(--line);padding-top:11px}
+  .qq{font-size:14px;margin:0 0 8px}
+  .qq::before{content:"確認クイズ　";font-size:11px;letter-spacing:.1em;color:var(--sub);font-weight:700}
+  .opts{display:flex;flex-direction:column;gap:6px}
+  .opt{text-align:left;border:1px solid var(--line);background:#fdfcfa;border-radius:7px;
+    padding:7px 13px;font-size:14px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover{border-color:var(--ink)}
+  .opt.ok{border-color:var(--ok);background:#eef6ee;color:var(--ok);font-weight:700}
+  .opt.ng{border-color:var(--ng);background:#fceeea;color:var(--ng);text-decoration:line-through}
+  .exp{display:none;margin-top:9px;font-size:13.5px;background:var(--soft);
+    border-radius:7px;padding:9px 13px;border-left:3px solid var(--ok)}
+  .exp.show{display:block}
+
+  /* tools */
+  .tool{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--tool);
+    border-radius:10px;padding:16px 19px;margin:13px 0}
+  .tool h3{margin:0 0 4px;font-size:16.5px}
+  .tool p.td{margin:0 0 10px;font-size:13px;color:var(--sub)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:7px 0}
+  .fld{display:flex;flex-direction:column;gap:3px}
+  .fld label{font-size:12px;color:var(--sub)}
+  .fld input,.fld select{border:1px solid var(--line);border-radius:6px;padding:6px 9px;
+    font-size:14px;font-family:inherit;width:130px;background:#fdfcfa;color:var(--ink)}
+  .fld input:focus,.fld select:focus{outline:none;border-color:var(--tool)}
+  .go{border:1px solid var(--tool);background:var(--tool);color:#fff;border-radius:7px;
+    padding:7px 20px;font-size:13.5px;cursor:pointer;font-family:inherit;height:34px}
+  .go:hover{opacity:.88}
+  .out{margin-top:10px;font-size:14.5px;background:var(--soft);border-radius:7px;
+    padding:10px 14px;border-left:3px solid var(--tool);min-height:20px;color:var(--sub)}
+  .out b{color:var(--accent);font-size:16px}
+  .out .st{display:block;font-size:13px;color:var(--sub);margin-top:3px}
+
+  .sechead{font-size:12px;letter-spacing:.16em;color:var(--sub);margin:34px 0 6px;font-weight:700}
+  .empty{text-align:center;color:var(--sub);font-size:14px;padding:40px 0;display:none}
+  footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;font-size:12.5px;color:var(--sub)}
+  @media print{ .ctrl,.prog,.quiz .opts,.chk{display:none} .exp{display:block} body{background:#fff} .unit{break-inside:avoid} }
+  @media(max-width:600px){ .wrap{padding:18px 13px 70px} h1{font-size:20px} .fld input,.fld select{width:110px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>中学受験 理科・計算分野 インタラクティブまとめ</h1>
+  <p class="lead"><span class="badge">基礎〜標準</span>全23単元。分野でしぼる・キーワードで探す・クイズで確認する・計算ツールで検算する。</p>
+</header>
+
+<div class="prog">
+  <span>理解した単元</span><b id="pn">0</b><span>/ 23</span>
+  <span class="bar"><i id="pb"></i></span>
+  <button class="fb" onclick="resetChk()" style="padding:4px 12px;font-size:12px">リセット</button>
+</div>
+
+<div class="ctrl">
+  <div class="fil">
+    <button class="fb on" data-f="all">すべて</button>
+    <button class="fb" data-f="phys">物理</button>
+    <button class="fb" data-f="chem">化学</button>
+    <button class="fb" data-f="bio">生物</button>
+    <button class="fb" data-f="earth">地学</button>
+    <button class="fb" data-f="tool">計算ツール</button>
+  </div>
+  <input class="srch" id="srch" type="text" placeholder="キーワードで探す（例：浮力、中和、露点、南中高度）">
+  <p class="hint">各単元のチェックを入れると上のバーが進みます。クイズは選択肢をクリックすると即座に正誤と解説が出ます。</p>
+</div>
+
+<p class="empty" id="empty">該当する単元が見つかりませんでした。</p>
+
+<!-- ==================== 物理 ==================== -->
+<div class="sechead sec" data-f="phys">PHYSICS ── 物理</div>
+
+<article class="unit" data-f="phys" data-k="てこ 支点 力点 作用点 つりあい モーメント 棒 重心">
+<div class="uh"><h3>1. てこ・棒のつりあい</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+支点から遠いところにつるすほど、小さい力で持ち上がります。「重さ × 支点からの距離」がまわす力の大きさです。
+<div class="f"><code>左まわりの力 ＝ 右まわりの力</code>　（重さ × 支点からの距離）</div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>棒に重さがあるとき</b>…太さが一様な棒なら、重さは全部「まん中」にかかっていると考えます。</li>
+<li><b>支点がまん中のとき</b>…棒の重さは支点にかかるので、計算に入れなくてよい。</li>
+<li><b>2か所でつるすとき</b>…①上向きの力の合計＝下向きの力の合計、②どこか1点でまわす力のつりあい、の2本の式で解く。</li>
+</ul>
+<span class="lbl">解く手順</span>
+<ol><li>支点に▲印をつける</li><li>力の矢印を全部書きこむ（棒の重さも忘れずに）</li><li>支点からの距離を書きこむ</li><li>式を立てる</li></ol>
+<div class="warn"><b>いちばん多いミス：</b>距離を「棒の端から」測ってしまう。距離は必ず<b>支点から</b>。</div>
+<div class="quiz" data-exp="棒の重さ120gは、まん中（左端から30cm）にかかります。支点は左端から15cmなので、支点からの距離は30−15＝15cm。右まわりの力は 120×15＝1800。左端は支点から15cmなので □×15＝1800 → 120g。">
+<p class="qq">長さ60cm・重さ120gの一様な棒を、左端から15cmの点で支えます。左端に何gをつるすとつりあう？</p>
+<div class="opts"><button class="opt">ア　60g</button><button class="opt" data-c="1">イ　120g</button><button class="opt">ウ　240g</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="phys" data-k="滑車 定滑車 動滑車 輪軸 仕事の原理 ひも">
+<div class="uh"><h3>2. 滑車・輪軸</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+道具を使っても「得」はできません。力が小さくなったぶん、ひもを長く引くことになります。
+<div class="f"><code>力が ○分の1 になると、ひもを引く長さは ○倍</code>（仕事の原理）</div>
+<span class="lbl">標準</span>
+<table>
+<tr><th>種類</th><th>力</th><th>引く長さ</th></tr>
+<tr><td>定滑車</td><td>変わらない</td><td>変わらない（向きだけ変わる）</td></tr>
+<tr><td>動滑車 1個</td><td>1/2</td><td>2倍</td></tr>
+<tr><td>動滑車 2個</td><td>1/4</td><td>4倍</td></tr>
+<tr><td>輪軸</td><td colspan="2">大輪の力×大輪の半径 ＝ 小輪の力×小輪の半径</td></tr>
+</table>
+<ul><li><b>動滑車自身に重さがあるとき</b>…（荷物＋動滑車）の重さを分け合うと考えます。</li></ul>
+<div class="warn"><b>いちばん多いミス：</b>「ひもを何cm引くか」で荷物が上がる距離をそのまま答えてしまう。<b>得した力のぶんだけ長さは損</b>。</div>
+<div class="quiz" data-exp="動滑車2個なので力は 1/2×1/2＝1/4。長さはその逆で4倍必要です。ひもを80cm引くと、荷物は 80÷4＝20cm 上がります。">
+<p class="qq">動滑車2個で荷物を持ち上げます。ひもを80cm引くと、荷物は何cm上がる？</p>
+<div class="opts"><button class="opt">ア　40cm</button><button class="opt" data-c="1">イ　20cm</button><button class="opt">ウ　320cm</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="phys" data-k="ばね のび 自然長 フック 直列 並列 ばねばかり">
+<div class="uh"><h3>3. ばね</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+ばねののびは、つるした重さに比例します。まず「1gあたり何cmのびるか」に直すのがコツ。
+<div class="f"><code>のび ＝ 1gあたりのび × 重さ</code>　／　<code>全長 ＝ 自然長 ＋ のび</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>たてに2本つなぐ</b>…どちらのばねにも同じ重さがかかる → のびは足し算（2倍）。</li>
+<li><b>2本で支える</b>…重さを半分ずつ分け合う → のびは半分。</li>
+<li><b>ばねの間におもり</b>…上のばねには「下にあるもの全部」の重さ、下のばねには「その下だけ」の重さ。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>グラフや表の値が「のび」か「全長」かの読みちがい。全長なら自然長を引いてから使う。</div>
+<div class="quiz" data-exp="1gあたり 3÷20＝0.15cm。50gでは 0.15×50＝7.5cm のびる。全長は 12＋7.5＝19.5cm。">
+<p class="qq">自然長12cmのばねが20gで3cmのびます。50gをつるすと全長は？</p>
+<div class="opts"><button class="opt">ア　7.5cm</button><button class="opt" data-c="1">イ　19.5cm</button><button class="opt">ウ　30cm</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="phys" data-k="浮力 アルキメデス 密度 沈む 浮く 水面 ばねばかり 台ばかり">
+<div class="uh"><h3>4. 浮力・密度</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+水に入れた物体は、押しのけた水の重さのぶんだけ軽くなります。水の場合、体積の数字がそのまま浮力(g)になります。
+<div class="f"><code>浮力(g) ＝ 水の中に入っている部分の体積(cm³)</code>　※水のとき<br>
+<code>ばねばかりの値 ＝ 物体の重さ − 浮力</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>密度</b> ＝ 重さ ÷ 体積。1より大きければ沈む、小さければ浮く。</li>
+<li><b>浮いているとき</b>…浮力＝物体の重さ。だから「水中にある体積(cm³) ＝ 物体の重さ(g)」。</li>
+<li><b>食塩水など</b>…浮力 ＝ 水中の体積 × 液体の密度。</li>
+<li><b>水面の上昇</b> ＝ 沈んだ体積 ÷ 容器の底面積。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>深く沈めるほど浮力が増えると思ってしまう。<b>全部沈んだあとは浮力は変わりません</b>。グラフの折れ曲がり点＝ちょうど全部沈んだ瞬間。</div>
+<div class="quiz" data-exp="密度は 72÷90＝0.8 で1より小さいので浮きます。浮力が72gになればつりあうので水中の体積は72cm³。水面から出ているのは 90−72＝18cm³。">
+<p class="qq">重さ72g・体積90cm³の物体を水に入れると、水面から出ている体積は？</p>
+<div class="opts"><button class="opt">ア　沈むので0cm³</button><button class="opt" data-c="1">イ　18cm³</button><button class="opt">ウ　72cm³</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="phys" data-k="ふりこ 周期 往復 ひもの長さ おもり ふれ幅 くぎ">
+<div class="uh"><h3>5. ふりこ</h3><span class="lv">標準</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+ふりこが1往復する時間（周期）は、<b>ひもの長さだけ</b>で決まります。おもりの重さやふれ幅を変えても周期は変わりません。
+<div class="f">長さ 4倍 → 周期 2倍　／　長さ 9倍 → 周期 3倍　（長さが □×□ 倍なら周期は □ 倍）</div>
+<span class="lbl">標準</span>
+<ul>
+<li>「10往復の時間をはかって10でわる」のは<b>誤差を小さくするため</b>（記述でよく問われます）。</li>
+<li>支点の下にくぎを打つ問題…行きと帰りで長さが変わるので、それぞれの周期の<b>半分ずつ</b>を足します。</li>
+</ul>
+<div class="quiz" data-exp="長さが 100÷25＝4倍。4＝2×2 なので周期は2倍で2秒になります。おもりの重さは関係ありません。">
+<p class="qq">長さ25cmのふりこの周期が1秒。長さを100cmにすると周期は？</p>
+<div class="opts"><button class="opt">ア　1秒のまま</button><button class="opt" data-c="1">イ　2秒</button><button class="opt">ウ　4秒</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="phys" data-k="電流 豆電球 かん電池 直列 並列 明るさ ショート 回路">
+<div class="uh"><h3>6. 電流と豆電球</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+豆電球1個・かん電池1個のときの電流を <b>1</b> として、すべて比で考えます。電流が大きいほど明るく光ります。
+<table>
+<tr><th>つなぎ方</th><th>豆電球1個の電流</th><th>明るさ</th><th>電池のもち</th></tr>
+<tr><td>豆電球 直列2個</td><td>1/2</td><td>暗い</td><td>長い</td></tr>
+<tr><td>豆電球 並列2個</td><td>各1（電池には2）</td><td>ふつう</td><td>短い</td></tr>
+<tr><td>電池 直列2個</td><td>2</td><td>明るい</td><td>ふつう</td></tr>
+<tr><td>電池 並列2個</td><td>1</td><td>ふつう</td><td>長い</td></tr>
+</table>
+<span class="lbl">標準</span>
+<ul>
+<li><b>電池の直列</b>＝電流を押す力が2倍。<b>電池の並列</b>＝力は1倍のまま長もちするだけ。</li>
+<li><b>ショート</b>…導線だけの近道がある枝には電流が全部そちらへ流れ、その豆電球は<b>つきません</b>。</li>
+<li>回路図は「電池の＋極から出て−極に戻るまで」を指でなぞって確認します。</li>
+</ul>
+<div class="quiz" data-exp="並列では、それぞれの豆電球に1個のときと同じ0.3Aが流れます。かん電池にはその合計が流れるので 0.3×2＝0.6A。">
+<p class="qq">豆電球1個・電池1個で0.3A。豆電球2個を並列にしたとき、かん電池を流れる電流は？</p>
+<div class="opts"><button class="opt">ア　0.15A</button><button class="opt">イ　0.3A</button><button class="opt" data-c="1">ウ　0.6A</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="phys" data-k="電熱線 発熱 熱量 カロリー 水 温度 混合 状態変化">
+<div class="uh"><h3>7. 熱量・水の温度変化</h3><span class="lv">標準</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+水1gを1℃上げるのに必要な熱が1カロリーです。
+<div class="f"><code>熱量(カロリー) ＝ 水の重さ(g) × 上がった温度(℃)</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>ちがう温度の水を混ぜる</b>…（重さ×温度 ＋ 重さ×温度）÷ 合計の重さ。</li>
+<li><b>電熱線</b>…太いほど・短いほど電流が多く流れ、よく発熱します。</li>
+<li><b>状態変化の間は温度が上がらない</b>…氷がとけている間は0℃、ふっとう中は100℃のまま。グラフの水平部分がこれ。</li>
+</ul>
+<div class="quiz" data-exp="(300×10 ＋ 200×60) ÷ (300＋200) ＝ (3000＋12000)÷500 ＝ 30℃。単純に平均(35℃)にしないよう注意。">
+<p class="qq">10℃の水300gと60℃の水200gを混ぜると何℃？</p>
+<div class="opts"><button class="opt">ア　35℃</button><button class="opt" data-c="1">イ　30℃</button><button class="opt">ウ　40℃</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="phys" data-k="音 光 速さ やまびこ 340 凸レンズ 鏡 焦点">
+<div class="uh"><h3>8. 音と光</h3><span class="lv">基礎</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<div class="f">音の速さは <code>秒速340m</code>。光は一瞬で届くので、光ってから音までの秒数で距離がわかる。</div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>やまびこ</b>は音が<b>往復</b>する → 距離×2 ÷ 340 ＝ 時間。</li>
+<li><b>凸レンズ</b>…焦点距離の2倍の位置に置くと、反対側の2倍の位置に同じ大きさの逆さまの像。レンズの半分をかくしても像は欠けず、<b>暗くなるだけ</b>。</li>
+<li><b>鏡</b>…全身をうつすのに必要な鏡の縦の長さは<b>身長の半分</b>。</li>
+</ul>
+<div class="quiz" data-exp="音は往復するので、片道は 340×4÷2 ＝ 680m。往復1360mを4秒で進んだ、と考えても同じです。">
+<p class="qq">がけに向かって叫ぶと4秒後に反射音が返ってきました。がけまでの距離は？</p>
+<div class="opts"><button class="opt">ア　1360m</button><button class="opt" data-c="1">イ　680m</button><button class="opt">ウ　85m</button></div>
+<div class="exp"></div></div>
+</article>
+
+<!-- ==================== 化学 ==================== -->
+<div class="sechead sec" data-f="chem">CHEMISTRY ── 化学</div>
+
+<article class="unit" data-f="chem" data-k="濃度 食塩水 溶質 溶媒 水溶液 割合 蒸発 うすめる">
+<div class="uh"><h3>9. 水よう液の濃度</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<div class="f"><code>濃度(%) ＝ とけているもの(g) ÷ 水よう液全体(g) × 100</code><br>
+<code>水よう液 ＝ 水 ＋ とけているもの</code></div>
+<span class="lbl">標準</span>
+<table>
+<tr><th>操作</th><th>とけているもの</th><th>全体の重さ</th></tr>
+<tr><td>水を加える</td><td>変わらない</td><td>増える → 濃度は下がる</td></tr>
+<tr><td>水を蒸発させる</td><td>変わらない</td><td>減る → 濃度は上がる</td></tr>
+<tr><td>食塩を加える</td><td>増える</td><td>増える → 濃度は上がる</td></tr>
+</table>
+<div class="warn"><b>いちばん多いミス：</b>「水100gに食塩20g」を20%としてしまう。正しくは 20÷120 で約16.7%。<b>「水」か「水よう液」か</b>を毎回確認。</div>
+<div class="quiz" data-exp="食塩は 200×0.05＝10g で、水を加えても変わりません。全体は 200＋50＝250g。10÷250×100＝4%。">
+<p class="qq">5%の食塩水200gに水を50g加えると、濃度は？</p>
+<div class="opts"><button class="opt">ア　5%</button><button class="opt" data-c="1">イ　4%</button><button class="opt">ウ　2.5%</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="chem" data-k="溶解度 再結晶 飽和 ホウ酸 ミョウバン 硝酸カリウム 食塩 結晶 冷やす">
+<div class="uh"><h3>10. 溶解度・再結晶</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<div class="f"><code>溶解度 ＝ 水100gにとける最大の量(g)</code>　→ まず「水100gあたり」に直してから比例</div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>出てくる結晶</b> ＝ 高い温度でとけていた量 − 低い温度でとける量。</li>
+<li><b>水を蒸発させたとき</b> ＝ 蒸発させた水にとけていたぶんが出てくる。</li>
+<li><b>冷やして取り出す</b>…ホウ酸・ミョウバン・硝酸カリウム（温度で大きく変わる）。</li>
+<li><b>水を蒸発させて取り出す</b>…食塩（温度でほとんど変わらない）。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>水の量が100gでないのに、そのまま溶解度の数字を使ってしまう。<b>必ず水100gあたりに換算</b>。</div>
+<div class="quiz" data-exp="水150gにとける量は 9×1.5＝13.5g。入れたのは20gなので 20−13.5＝6.5g がとけ残ります。">
+<p class="qq">40℃でホウ酸は水100gに9gとけます。40℃の水150gにホウ酸20gを入れると、とけ残りは？</p>
+<div class="opts"><button class="opt">ア　11g</button><button class="opt" data-c="1">イ　6.5g</button><button class="opt">ウ　とけ残らない</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="chem" data-k="中和 塩酸 水酸化ナトリウム 食塩 BTB 完全中和 蒸発 固体">
+<div class="uh"><h3>11. 中和</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+酸性の水よう液とアルカリ性の水よう液を混ぜると、たがいの性質を打ち消し合います。
+<div class="f">ちょうど中和する <code>塩酸：水酸化ナトリウム水よう液</code> の<b>体積の比はいつも一定</b></div>
+<span class="lbl">標準</span>
+<ul>
+<li>まず<b>「ちょうど中和する組み合わせ」を1つ確定</b>させる。すべてはここから比例で出ます。</li>
+<li>グラフの<b>折れ曲がる点＝ちょうど中和した点</b>。</li>
+</ul>
+<table>
+<tr><th>状態</th><th>液性（BTB液）</th><th>蒸発させて残る固体</th></tr>
+<tr><td>塩酸が余る</td><td>酸性（黄）</td><td>食塩だけ</td></tr>
+<tr><td>ちょうど中和</td><td>中性（緑）</td><td>食塩だけ</td></tr>
+<tr><td>水酸化ナトリウムが余る</td><td>アルカリ性（青）</td><td>食塩 ＋ 水酸化ナトリウム</td></tr>
+</table>
+<div class="warn"><b>いちばん多いミス：</b>塩酸が余っても、塩化水素は気体で逃げるので<b>固体は食塩だけ</b>。「余った方が必ず残る」ではありません。</div>
+<div class="quiz" data-exp="塩酸20cm³は水酸化ナトリウム水よう液30cm³とちょうど中和します。40cm³入れたので 40−30＝10cm³ 分のアルカリが余り、液はアルカリ性（青）。蒸発させると食塩と水酸化ナトリウムが残ります。">
+<p class="qq">塩酸20cm³と水酸化ナトリウム水よう液30cm³がちょうど中和します。塩酸20cm³に水酸化ナトリウム水よう液40cm³を混ぜた液を蒸発させると、残る固体は？</p>
+<div class="opts"><button class="opt">ア　食塩だけ</button><button class="opt" data-c="1">イ　食塩と水酸化ナトリウム</button><button class="opt">ウ　何も残らない</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="chem" data-k="気体 発生 過不足 水素 二酸化炭素 酸素 亜鉛 石灰石 グラフ">
+<div class="uh"><h3>12. 気体の発生と過不足</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<table>
+<tr><th>組み合わせ</th><th>発生する気体</th></tr>
+<tr><td>金属（鉄・亜鉛・アルミ）＋ 塩酸</td><td>水素</td></tr>
+<tr><td>石灰石（貝がら・卵のから）＋ 塩酸</td><td>二酸化炭素</td></tr>
+<tr><td>オキシドール ＋ 二酸化マンガン</td><td>酸素</td></tr>
+</table>
+<span class="lbl">標準</span>
+<div class="f">グラフが<b>右上がり</b>＝加えた方が足りない／<b>水平</b>＝もう一方を使いきった</div>
+<ol>
+<li>水平になった値から「<b>どちらが先になくなるか</b>」を判定する。</li>
+<li><b>足りない方</b>を基準にして比例で計算する。</li>
+</ol>
+<div class="warn"><b>いちばん多いミス：</b>「金属を2倍にしたら気体も2倍」は、酸が十分あるときだけ成り立ちます。必ず過不足を先に確認。</div>
+<div class="quiz" data-exp="塩酸50cm³は石灰石2g分までしか反応できません（塩酸が足りない）。よって 240×2＝480cm³。石灰石1gはとけ残ります。">
+<p class="qq">ある塩酸50cm³は石灰石2gまでしか反応しません。石灰石1gあたり二酸化炭素は240cm³出ます。この塩酸50cm³に石灰石3gを加えると？</p>
+<div class="opts"><button class="opt">ア　720cm³</button><button class="opt" data-c="1">イ　480cm³</button><button class="opt">ウ　240cm³</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="chem" data-k="燃焼 酸化 銅 マグネシウム スチールウール 酸素 重さ 比 空気">
+<div class="uh"><h3>13. 燃焼と重さ</h3><span class="lv">標準</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+金属が燃える（酸化する）と、結びついた酸素のぶんだけ<b>重くなります</b>。
+<div class="f">例：銅4g → 酸化銅5g　なら　<code>銅 : 酸素 : 酸化銅 ＝ 4 : 1 : 5</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li>空気の割合…ちっ素 約78%、酸素 約21%、二酸化炭素 約0.04%。</li>
+<li>ろうそくが消えるのは酸素が0になるからではなく、酸素が減って燃え続けられなくなるから。</li>
+<li><b>加熱不足の問題</b>…「反応した分」と「まだ反応していない分」に分けて考えます。</li>
+</ul>
+<div class="quiz" data-exp="銅：酸化銅 ＝ 4：5 なので、10×(5÷4)＝12.5g。">
+<p class="qq">銅4gを十分に加熱すると酸化銅5gができました。銅10gでは酸化銅は何g？</p>
+<div class="opts"><button class="opt">ア　11g</button><button class="opt" data-c="1">イ　12.5g</button><button class="opt">ウ　15g</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="chem" data-k="状態変化 融点 沸点 氷 water 体積 蒸発 グラフ">
+<div class="uh"><h3>14. 状態変化</h3><span class="lv">基礎</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+固体 ⇄ 液体 ⇄ 気体。<b>状態が変わっている間は温度が上がりません</b>（加えた熱が状態変化に使われるため）。
+<div class="f">氷がとける間 <code>0℃</code>／水がふっとうする間 <code>100℃</code>　→ グラフの水平部分</div>
+<span class="lbl">標準</span>
+<ul>
+<li>水は<b>こおると体積が約1.1倍に増える</b>（ふつうの物質は減る）。重さは変わりません。</li>
+<li>水が最も重い（体積が小さい）のは<b>4℃</b>。</li>
+<li>加熱時間と温度のグラフでは、水平部分の長さが「とけるのに必要な熱の量」に対応します。</li>
+</ul>
+<div class="quiz" data-exp="こおると体積は増えますが、重さ（物質の量）は変わりません。">
+<p class="qq">水100gを完全にこおらせました。氷の重さは？</p>
+<div class="opts"><button class="opt">ア　110g</button><button class="opt" data-c="1">イ　100g</button><button class="opt">ウ　90g</button></div>
+<div class="exp"></div></div>
+</article>
+
+<!-- ==================== 生物 ==================== -->
+<div class="sechead sec" data-f="bio">BIOLOGY ── 生物</div>
+
+<article class="unit" data-f="bio" data-k="蒸散 ワセリン 気孔 葉 表 裏 くき 対照実験 油">
+<div class="uh"><h3>15. 蒸散量の計算</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+ワセリンをぬった面からは蒸散<b>しません</b>。何をふさいだかを整理して、<b>引き算</b>で1か所ずつ取り出します。
+<table>
+<tr><th>処理</th><th>蒸散する場所</th></tr>
+<tr><td>何もしない</td><td>葉の表 ＋ 葉の裏 ＋ くき</td></tr>
+<tr><td>表にワセリン</td><td>裏 ＋ くき</td></tr>
+<tr><td>裏にワセリン</td><td>表 ＋ くき</td></tr>
+<tr><td>表と裏にワセリン</td><td>くき だけ</td></tr>
+</table>
+<span class="lbl">標準</span>
+<ul>
+<li>葉の<b>裏</b>のほうが気孔が多いので、ふつう <b>裏 ＞ 表</b>。答えが逆になったら計算ミスを疑います。</li>
+<li>水面に油を浮かべるのは<b>水面からの蒸発を防ぐ</b>ため（記述頻出）。</li>
+<li>検算：表 ＋ 裏 ＋ くき ＝「何もしない」の値になるか確かめる。</li>
+</ul>
+<div class="quiz" data-exp="「表にワセリン＝裏＋くき＝11.0」から、くき2.0を引くと裏＝9.0。「何もしない15.0」−「裏にワセリン6.0（＝表＋くき）」＝9.0 でも同じ。検算：表4.0＋裏9.0＋くき2.0＝15.0 ✓">
+<p class="qq">何もしない15.0mL／表にワセリン11.0mL／裏にワセリン6.0mL／表と裏にワセリン2.0mL。葉の裏からの蒸散量は？</p>
+<div class="opts"><button class="opt">ア　4.0mL</button><button class="opt" data-c="1">イ　9.0mL</button><button class="opt">ウ　11.0mL</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="bio" data-k="光合成 呼吸 二酸化炭素 デンプン ヨウ素液 見かけ 対照実験 グラフ">
+<div class="uh"><h3>16. 光合成と呼吸の量</h3><span class="lv">標準</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+植物は昼も夜も呼吸をしています。光が当たると、それを上回る量の光合成をします。
+<div class="f"><code>見かけの光合成量 ＝ 本当の光合成量 − 呼吸量</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>暗いところ（光0）での値が呼吸量</b>。グラフのマイナス側の切片を読みます。</li>
+<li><b>本当の光合成量 ＝ グラフの値 ＋ 呼吸量</b>。</li>
+<li>光合成量と呼吸量が等しくなり、見かけ上の出入りが0になる光の強さがあります。</li>
+<li>対照実験は<b>変える条件を1つだけ</b>に。「日光が必要」を示すならアルミニウムはくでおおった葉と比べます。</li>
+</ul>
+<div class="quiz" data-exp="暗いところでの2.0mgの放出が呼吸量。本当の光合成量 ＝ 見かけ6.0 ＋ 呼吸2.0 ＝ 8.0mg。">
+<p class="qq">暗いところで二酸化炭素を毎時2.0mg放出、光を当てると毎時6.0mg吸収。本当の光合成量は？</p>
+<div class="opts"><button class="opt">ア　4.0mg</button><button class="opt">イ　6.0mg</button><button class="opt" data-c="1">ウ　8.0mg</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="bio" data-k="心臓 血液 拍動 じん臓 消化 食物連鎖 ピラミッド">
+<div class="uh"><h3>17. からだのはたらき・食物連鎖</h3><span class="lv">基礎</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<div class="f"><code>1分間に送り出す血液量 ＝ 1回の量 × 1分間のはく動数</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li>血液が全身を1周する時間 ＝ 全血液量 ÷ 1分間に送り出す量。</li>
+<li><b>食物連鎖</b>…ピラミッドの上にいくほど数は少ない。ある層が減ったときの一時的な増減が問われます。</li>
+</ul>
+<div class="quiz" data-exp="70mL×70回＝4900mL＝4.9L。">
+<p class="qq">1回に70mL、1分間に70回はく動する心臓が、1分間に送り出す血液は？</p>
+<div class="opts"><button class="opt">ア　1.4L</button><button class="opt" data-c="1">イ　4.9L</button><button class="opt">ウ　49L</button></div>
+<div class="exp"></div></div>
+</article>
+
+<!-- ==================== 地学 ==================== -->
+<div class="sechead sec" data-f="earth">EARTH &amp; SPACE ── 地学</div>
+
+<article class="unit" data-f="earth" data-k="湿度 飽和水蒸気量 露点 水滴 結露 雲 フェーン">
+<div class="uh"><h3>18. 湿度と露点</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+空気が含める水蒸気の量には限界（飽和水蒸気量）があり、気温が高いほど大きくなります。
+<div class="f"><code>湿度(%) ＝ 空気1m³中の水蒸気量(g) ÷ その温度の飽和水蒸気量(g) × 100</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>露点</b>…いま含んでいる水蒸気量が、ちょうど飽和になる温度。表から逆に読みます。</li>
+<li><b>出てくる水てき</b> ＝ もとの水蒸気量 − 冷やした温度の飽和水蒸気量（マイナスなら水てきは出ない）。</li>
+<li>気温が上がると飽和水蒸気量が増えるので、<b>水蒸気の量が同じでも湿度は下がります</b>。</li>
+</ul>
+<div class="quiz" data-exp="含まれる水蒸気は 30.4×0.5＝15.2g。10℃では9.4gしか含めないので 15.2−9.4＝5.8g が水てきになります。">
+<p class="qq">30℃（飽和30.4g/m³）で湿度50%の空気1m³を10℃（飽和9.4g/m³）まで冷やすと、出る水てきは？</p>
+<div class="opts"><button class="opt">ア　15.2g</button><button class="opt" data-c="1">イ　5.8g</button><button class="opt">ウ　9.4g</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="earth" data-k="雲 高さ 上昇気流 露点 気温 フェーン現象 減率">
+<div class="uh"><h3>19. 雲のできる高さ</h3><span class="lv">標準</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+空気は上昇すると温度が下がり、露点まで下がったところで水蒸気が水てきになって<b>雲</b>ができます。
+<div class="f"><code>雲ができる高さ ＝（地上の気温 − 露点）× 100m</code>　※100mで1℃下がるとき</div>
+<span class="lbl">標準</span>
+<ul>
+<li>雲ができてからは、<b>100mで0.5℃</b>しか下がらなくなります（水てきになるときに熱を出すため）。</li>
+<li><b>フェーン現象</b>…のぼりは0.5℃/100m、くだりは1℃/100m → 風下側が<b>高温で乾燥</b>する。</li>
+</ul>
+<div class="warn"><b>注意：</b>気温の下がり方は問題ごとに「0.6℃/100m」など別の値が与えられることがあります。<b>必ず問題文の数値を使う</b>こと。</div>
+<div class="quiz" data-exp="下がるべき温度は 20−10＝10℃。100mで1℃下がるので 10×100＝1000m。">
+<p class="qq">地上の気温20℃、露点10℃。100mで1℃下がるとき、雲ができ始める高さは？</p>
+<div class="opts"><button class="opt">ア　100m</button><button class="opt" data-c="1">イ　1000m</button><button class="opt">ウ　2000m</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="earth" data-k="地震 P波 S波 初期微動継続時間 主要動 震源 震央 マグニチュード 緊急地震速報">
+<div class="uh"><h3>20. 地震</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+P波は速く、先に届いて小さくゆれます（初期微動）。S波はおそく、あとから届いて大きくゆれます（主要動）。
+<div class="f"><code>震源までの距離 ＝ 速さ × 時間</code>　／　<code>初期微動継続時間 ＝ S波の到達 − P波の到達</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>初期微動継続時間は震源距離に比例</b>します。「距離が2倍なら時間も2倍」。表の穴うめはこれで即答。</li>
+<li>2地点のデータから <b>速さ ＝ 距離の差 ÷ 到達時刻の差</b>。そこから逆算して<b>地震の発生時刻</b>が出せます。</li>
+<li><b>震度</b>＝ゆれの大きさ（場所ごとに変わる）。<b>マグニチュード</b>＝地震そのものの規模（1つの地震に1つ）。</li>
+<li><b>緊急地震速報</b>…先に届くP波を検知して、S波が来る前に知らせるしくみ。</li>
+</ul>
+<div class="quiz" data-exp="距離を□kmとすると S波は □÷4 秒、P波は □÷8 秒で到達。差は □÷8 ＝ 10 → □＝80km。">
+<p class="qq">P波が秒速8km、S波が秒速4km。初期微動継続時間が10秒の地点の震源距離は？</p>
+<div class="opts"><button class="opt">ア　40km</button><button class="opt" data-c="1">イ　80km</button><button class="opt">ウ　120km</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="earth" data-k="星 日周運動 年周運動 北極星 15度 30度 星座 オリオン">
+<div class="uh"><h3>21. 星の動き</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<div class="f">日周運動：<code>1時間に15°</code>（360°÷24時間）　／　年周運動：<code>同じ時刻で1か月に30°</code>（360°÷12か月）<br>どちらも東 → 西の向き</div>
+<span class="lbl">標準</span>
+<ul>
+<li><b>同じ位置に見える条件</b>…1か月あとなら、時刻は<b>2時間早く</b>（30° ÷ 15° ＝ 2時間）。</li>
+<li><b>北の空</b>…北極星を中心に<b>反時計まわり</b>。南の空は 東 → 南 → 西。</li>
+<li><b>北極星の高度 ＝ その土地の緯度</b>。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>15°と30°の取りちがえ。<b>時間なら15°、月なら30°</b>と唱えて覚えます。</div>
+<div class="quiz" data-exp="同じ時刻なら1か月で西へ30°進んでいます。真南に来るのは 30°÷15°＝2時間ぶん早い時刻なので、午後6時ごろ。">
+<p class="qq">ある星が午後8時に真南に見えました。1か月後、この星が真南に見えるのは何時ごろ？</p>
+<div class="opts"><button class="opt">ア　午後10時</button><button class="opt" data-c="1">イ　午後6時</button><button class="opt">ウ　午後8時のまま</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="earth" data-k="月 満ち欠け 新月 上弦 満月 下弦 南中 日食 月食 29.5">
+<div class="uh"><h3>22. 月の満ち欠け</h3><span class="lv">標準</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<div class="f">満ち欠けの周期 <code>約29.5日</code>　／　月の出は<b>毎日約50分おそくなる</b></div>
+<span class="lbl">標準</span>
+<table>
+<tr><th>月の形</th><th>南中時刻</th><th>見える時間帯</th></tr>
+<tr><td>新月</td><td>正午（12時）</td><td>見えない</td></tr>
+<tr><td>上弦（右半分）</td><td>18時</td><td>夕方〜真夜中</td></tr>
+<tr><td>満月</td><td>24時（真夜中）</td><td>一晩中</td></tr>
+<tr><td>下弦（左半分）</td><td>6時</td><td>真夜中〜明け方</td></tr>
+</table>
+<ul>
+<li>月は1日に約12°ずつ東へ動きます（360° ÷ 29.5日）。</li>
+<li><b>日食</b>は新月のとき、<b>月食</b>は満月のとき。毎月起こらないのは、月の通り道が少し傾いているから。</li>
+</ul>
+<div class="quiz" data-exp="上弦の南中は18時。約7日後は満月で、南中は真夜中（午前0時ごろ）になります。">
+<p class="qq">上弦の月が南中するのは午後6時ごろ。その約7日後の月の南中時刻は？</p>
+<div class="opts"><button class="opt">ア　正午</button><button class="opt" data-c="1">イ　午前0時</button><button class="opt">ウ　午前6時</button></div>
+<div class="exp"></div></div>
+</article>
+
+<article class="unit" data-f="earth" data-k="太陽 南中高度 夏至 冬至 春分 秋分 緯度 地軸 影 日の出">
+<div class="uh"><h3>23. 太陽の動きと南中高度</h3><span class="lv">最重要</span>
+<label class="chk"><input type="checkbox"> 理解した</label></div>
+<span class="lbl">基礎</span>
+<div class="f">春分・秋分 <code>90° − 緯度</code>／夏至 <code>90° − 緯度 ＋ 23.4°</code>／冬至 <code>90° − 緯度 − 23.4°</code></div>
+<span class="lbl">標準</span>
+<ul>
+<li>23.4°は<b>地軸の傾き</b>。夏は<b>足す</b>、冬は<b>引く</b>。</li>
+<li>日の出・日の入りの方角…春分秋分は真東・真西、夏至は北より、冬至は南より。</li>
+<li>影は南中高度が低いほど長くなります。高度45°のとき、影の長さ ＝ 棒の高さ。</li>
+</ul>
+<div class="quiz" data-exp="90 − 35 − 23.4 ＝ 31.6°。冬至は「引く」。">
+<p class="qq">北緯35°の地点の、冬至の日の南中高度は？</p>
+<div class="opts"><button class="opt">ア　78.4°</button><button class="opt" data-c="1">イ　31.6°</button><button class="opt">ウ　55°</button></div>
+<div class="exp"></div></div>
+</article>
+
+<!-- ==================== 計算ツール ==================== -->
+<div class="sechead sec" data-f="tool">CALCULATORS ── 計算ツール（検算用）</div>
+
+<div class="tool" data-f="tool" data-k="濃度 計算 食塩水 ツール">
+<h3>濃度を計算する</h3>
+<p class="td">とけているものの重さと水の重さを入れると、濃度が出ます。</p>
+<div class="row">
+<div class="fld"><label>とけているもの(g)</label><input type="number" id="c1a" placeholder="20"></div>
+<div class="fld"><label>水(g)</label><input type="number" id="c1b" placeholder="180"></div>
+<button class="go" onclick="calcNoudo()">計算</button>
+</div>
+<div class="out" id="c1o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="溶解度 再結晶 結晶 ツール">
+<h3>再結晶で出てくる結晶の量</h3>
+<p class="td">溶解度は「水100gにとける量」で入れてください。</p>
+<div class="row">
+<div class="fld"><label>高い温度の溶解度(g)</label><input type="number" id="c2a" placeholder="110"></div>
+<div class="fld"><label>低い温度の溶解度(g)</label><input type="number" id="c2b" placeholder="32"></div>
+<div class="fld"><label>水の量(g)</label><input type="number" id="c2c" placeholder="100"></div>
+<button class="go" onclick="calcYoukai()">計算</button>
+</div>
+<div class="out" id="c2o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="てこ つりあい ツール">
+<h3>てこのつりあい</h3>
+<p class="td">左のおもりと距離、右の距離を入れると、右につるすおもりの重さが出ます（距離はすべて支点から）。</p>
+<div class="row">
+<div class="fld"><label>左のおもり(g)</label><input type="number" id="c3a" placeholder="60"></div>
+<div class="fld"><label>左の距離(cm)</label><input type="number" id="c3b" placeholder="20"></div>
+<div class="fld"><label>右の距離(cm)</label><input type="number" id="c3c" placeholder="80"></div>
+<button class="go" onclick="calcTeko()">計算</button>
+</div>
+<div class="out" id="c3o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="浮力 密度 沈む 浮く ツール">
+<h3>浮力・浮き沈み</h3>
+<p class="td">液体の密度は、水なら1、食塩水なら1.2などを入れます。</p>
+<div class="row">
+<div class="fld"><label>物体の重さ(g)</label><input type="number" id="c4a" placeholder="72"></div>
+<div class="fld"><label>物体の体積(cm³)</label><input type="number" id="c4b" placeholder="90"></div>
+<div class="fld"><label>液体の密度</label><input type="number" id="c4c" placeholder="1" step="0.01"></div>
+<button class="go" onclick="calcFuryoku()">計算</button>
+</div>
+<div class="out" id="c4o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="熱量 混合 温度 水 ツール">
+<h3>水を混ぜたときの温度</h3>
+<div class="row">
+<div class="fld"><label>水A の重さ(g)</label><input type="number" id="c5a" placeholder="300"></div>
+<div class="fld"><label>水A の温度(℃)</label><input type="number" id="c5b" placeholder="10"></div>
+<div class="fld"><label>水B の重さ(g)</label><input type="number" id="c5c" placeholder="200"></div>
+<div class="fld"><label>水B の温度(℃)</label><input type="number" id="c5d" placeholder="60"></div>
+<button class="go" onclick="calcNetsu()">計算</button>
+</div>
+<div class="out" id="c5o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="湿度 露点 水滴 飽和水蒸気量 ツール">
+<h3>湿度と出てくる水てき</h3>
+<p class="td">冷やしたあとの飽和水蒸気量を空欄にすると、湿度だけを計算します。</p>
+<div class="row">
+<div class="fld"><label>いまの飽和量(g/m³)</label><input type="number" id="c6a" placeholder="30.4" step="0.1"></div>
+<div class="fld"><label>湿度(%)</label><input type="number" id="c6b" placeholder="50"></div>
+<div class="fld"><label>冷やした後の飽和量</label><input type="number" id="c6c" placeholder="9.4" step="0.1"></div>
+<button class="go" onclick="calcShitsudo()">計算</button>
+</div>
+<div class="out" id="c6o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="地震 P波 S波 初期微動継続時間 震源距離 ツール">
+<h3>地震：震源までの距離</h3>
+<div class="row">
+<div class="fld"><label>P波の速さ(km/秒)</label><input type="number" id="c7a" placeholder="8" step="0.1"></div>
+<div class="fld"><label>S波の速さ(km/秒)</label><input type="number" id="c7b" placeholder="4" step="0.1"></div>
+<div class="fld"><label>初期微動継続時間(秒)</label><input type="number" id="c7c" placeholder="10" step="0.1"></div>
+<button class="go" onclick="calcJishin()">計算</button>
+</div>
+<div class="out" id="c7o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="太陽 南中高度 緯度 夏至 冬至 春分 ツール">
+<h3>太陽の南中高度</h3>
+<div class="row">
+<div class="fld"><label>北緯(度)</label><input type="number" id="c8a" placeholder="35" step="0.1"></div>
+<div class="fld"><label>季節</label><select id="c8b">
+<option value="0">春分・秋分</option><option value="1">夏至</option><option value="-1">冬至</option></select></div>
+<button class="go" onclick="calcKoudo()">計算</button>
+</div>
+<div class="out" id="c8o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<div class="tool" data-f="tool" data-k="星 日周運動 年周運動 角度 ツール">
+<h3>星が動く角度</h3>
+<p class="td">経過した時間と月数から、星が西へ何度動くかを計算します。</p>
+<div class="row">
+<div class="fld"><label>経過時間(時間)</label><input type="number" id="c9a" placeholder="2" step="0.5"></div>
+<div class="fld"><label>経過した月数</label><input type="number" id="c9b" placeholder="1" step="1"></div>
+<button class="go" onclick="calcHoshi()">計算</button>
+</div>
+<div class="out" id="c9o">数値を入れて「計算」を押してください。</div>
+</div>
+
+<footer>
+中学受験 理科・計算分野 インタラクティブまとめ（基礎〜標準）／全23単元・確認クイズ23問・計算ツール9種。数値の設定（音速・気温の下がり方など）は問題文の指定を優先してください。チェック状態はこのページを開いている間だけ保持されます。
+</footer>
+
+</div>
+
+<script>
+/* ---------- フィルター & 検索 ---------- */
+var curF = 'all';
+function applyFilter(){
+  var kw = document.getElementById('srch').value.trim().toLowerCase();
+  var items = document.querySelectorAll('.unit, .tool');
+  var shown = 0;
+  for (var i=0;i<items.length;i++){
+    var el = items[i];
+    var okF = (curF === 'all') ? true : (el.getAttribute('data-f') === curF);
+    var okK = true;
+    if (kw){
+      var hay = (el.getAttribute('data-k') || '') + ' ' + el.textContent;
+      okK = hay.toLowerCase().indexOf(kw) !== -1;
+    }
+    var vis = okF && okK;
+    el.style.display = vis ? '' : 'none';
+    if (vis) shown++;
+  }
+  var secs = document.querySelectorAll('.sechead');
+  for (var s=0;s<secs.length;s++){
+    var f = secs[s].getAttribute('data-f');
+    var any = document.querySelectorAll('[data-f="'+f+'"].unit, [data-f="'+f+'"].tool');
+    var has = false;
+    for (var a=0;a<any.length;a++){ if (any[a].style.display !== 'none') { has = true; break; } }
+    secs[s].style.display = has ? '' : 'none';
+  }
+  document.getElementById('empty').style.display = shown ? 'none' : 'block';
+}
+var fbs = document.querySelectorAll('.fil .fb');
+for (var i=0;i<fbs.length;i++){
+  fbs[i].addEventListener('click', function(){
+    for (var j=0;j<fbs.length;j++) fbs[j].classList.remove('on');
+    this.classList.add('on');
+    curF = this.getAttribute('data-f');
+    applyFilter();
+    window.scrollTo(0,0);
+  });
+}
+document.getElementById('srch').addEventListener('input', applyFilter);
+
+/* ---------- クイズ ---------- */
+document.addEventListener('click', function(e){
+  var t = e.target;
+  if (!t.classList || !t.classList.contains('opt')) return;
+  var quiz = t.closest('.quiz');
+  var opts = quiz.querySelectorAll('.opt');
+  for (var i=0;i<opts.length;i++){
+    opts[i].classList.remove('ok','ng');
+    if (opts[i].getAttribute('data-c') === '1') opts[i].classList.add('ok');
+  }
+  if (t.getAttribute('data-c') !== '1') t.classList.add('ng');
+  var exp = quiz.querySelector('.exp');
+  var msg = (t.getAttribute('data-c') === '1') ? '正解！　' : 'おしい。　';
+  exp.textContent = msg + quiz.getAttribute('data-exp');
+  exp.classList.add('show');
+});
+
+/* ---------- 進捗 ---------- */
+function updProg(){
+  var cs = document.querySelectorAll('.chk input');
+  var n = 0;
+  for (var i=0;i<cs.length;i++) if (cs[i].checked) n++;
+  document.getElementById('pn').textContent = n;
+  document.getElementById('pb').style.width = (n / cs.length * 100) + '%';
+}
+var cks = document.querySelectorAll('.chk input');
+for (var i=0;i<cks.length;i++){
+  cks[i].addEventListener('change', function(){
+    this.closest('.unit').classList.toggle('done', this.checked);
+    updProg();
+  });
+}
+function resetChk(){
+  var cs = document.querySelectorAll('.chk input');
+  for (var i=0;i<cs.length;i++){ cs[i].checked = false; cs[i].closest('.unit').classList.remove('done'); }
+  updProg();
+}
+
+/* ---------- 計算ツール ---------- */
+function v(id){ var x = parseFloat(document.getElementById(id).value); return isNaN(x) ? null : x; }
+function put(id, html){ document.getElementById(id).innerHTML = html; }
+function r(x, d){ var p = Math.pow(10, d==null?2:d); return Math.round(x*p)/p; }
+function bad(id){ put(id, '数値を正しく入れてください。'); }
+
+function calcNoudo(){
+  var a=v('c1a'), b=v('c1b');
+  if (a===null||b===null||a<0||b<0||a+b===0) return bad('c1o');
+  var all=a+b, n=a/all*100;
+  put('c1o','濃度は <b>'+r(n)+'%</b><span class="st">水よう液全体 ＝ '+b+' ＋ '+a+' ＝ '+all+'g　→　'+a+' ÷ '+all+' × 100</span>');
+}
+function calcYoukai(){
+  var a=v('c2a'), b=v('c2b'), c=v('c2c');
+  if (a===null||b===null||c===null||c<=0) return bad('c2o');
+  if (a<b) return put('c2o','高い温度の溶解度のほうが小さくなっています。数値を確認してください。');
+  var out=(a-b)*c/100;
+  put('c2o','出てくる結晶は <b>'+r(out)+'g</b><span class="st">水100gあたり '+r(a-b)+'g が出る　→　× '+c+'÷100　（飽和水よう液の重さは '+r(100+a)+'g あたり水100g）</span>');
+}
+function calcTeko(){
+  var a=v('c3a'), b=v('c3b'), c=v('c3c');
+  if (a===null||b===null||c===null||c<=0) return bad('c3o');
+  var w=a*b/c;
+  put('c3o','右につるすおもりは <b>'+r(w)+'g</b><span class="st">左まわり '+a+' × '+b+' ＝ '+r(a*b)+'　→　□ × '+c+' ＝ '+r(a*b)+'</span>');
+}
+function calcFuryoku(){
+  var w=v('c4a'), vol=v('c4b'), d=v('c4c');
+  if (w===null||vol===null||vol<=0) return bad('c4o');
+  if (d===null||d<=0) d=1;
+  var full=vol*d, dens=w/vol;
+  if (w>=full){
+    put('c4o','<b>沈みます</b>（密度 '+r(dens)+' ≧ 液体の密度 '+d+'）<span class="st">浮力 ＝ '+r(full)+'g　／　ばねばかりの値 ＝ '+w+' − '+r(full)+' ＝ <b>'+r(w-full)+'g</b></span>');
+  } else {
+    var inV=w/d;
+    put('c4o','<b>浮きます</b>（密度 '+r(dens)+' ＜ 液体の密度 '+d+'）<span class="st">水中の体積 ＝ '+r(inV)+'cm³　／　液面から出ている体積 ＝ '+r(vol-inV)+'cm³　（浮力 ＝ '+w+'g）</span>');
+  }
+}
+function calcNetsu(){
+  var a=v('c5a'), at=v('c5b'), b=v('c5c'), bt=v('c5d');
+  if (a===null||at===null||b===null||bt===null||a+b<=0) return bad('c5o');
+  var t=(a*at+b*bt)/(a+b);
+  put('c5o','混ぜたあとの温度は <b>'+r(t)+'℃</b><span class="st">('+a+'×'+at+' ＋ '+b+'×'+bt+') ÷ '+(a+b)+' ＝ '+r(t)+'</span>');
+}
+function calcShitsudo(){
+  var s=v('c6a'), h=v('c6b'), s2=v('c6c');
+  if (s===null||h===null||s<=0) return bad('c6o');
+  var q=s*h/100;
+  var msg='空気1m³中の水蒸気量は <b>'+r(q)+'g</b><span class="st">'+s+' × '+h+'% ＝ '+r(q)+'g</span>';
+  if (s2!==null){
+    var dew=q-s2;
+    msg += (dew>0)
+      ? '<span class="st">冷やすと出てくる水てき ＝ '+r(q)+' − '+s2+' ＝ <b>'+r(dew)+'g</b></span>'
+      : '<span class="st">冷やしても飽和に達しないので、水てきは出ません（'+r(q)+' ＜ '+s2+'）</span>';
+  }
+  put('c6o', msg);
+}
+function calcJishin(){
+  var p=v('c7a'), s=v('c7b'), t=v('c7c');
+  if (p===null||s===null||t===null||p<=0||s<=0||t<0) return bad('c7o');
+  if (p<=s) return put('c7o','P波はS波より速い必要があります。数値を確認してください。');
+  var d=t/(1/s-1/p);
+  put('c7o','震源までの距離は <b>'+r(d,1)+'km</b><span class="st">□÷'+s+' − □÷'+p+' ＝ '+t+' 秒　→　□ ＝ '+r(d,1)+'km　（P波の到達 '+r(d/p,1)+'秒、S波の到達 '+r(d/s,1)+'秒）</span>');
+}
+function calcKoudo(){
+  var lat=v('c8a'); var k=parseInt(document.getElementById('c8b').value,10);
+  if (lat===null||lat<0||lat>90) return bad('c8o');
+  var h=90-lat+k*23.4;
+  var name=(k===0)?'春分・秋分':(k===1?'夏至':'冬至');
+  var f=(k===0)?('90 − '+lat):('90 − '+lat+(k===1?' ＋ 23.4':' − 23.4'));
+  put('c8o', name+'の南中高度は <b>'+r(h,1)+'°</b><span class="st">'+f+' ＝ '+r(h,1)+'</span>');
+}
+function calcHoshi(){
+  var h=v('c9a'), m=v('c9b');
+  if (h===null) h=0; if (m===null) m=0;
+  var a=h*15, b=m*30;
+  put('c9o','あわせて <b>西へ '+r(a+b,1)+'°</b><span class="st">日周運動 '+h+'時間 × 15° ＝ '+r(a,1)+'°　／　年周運動 '+m+'か月 × 30° ＝ '+r(b,1)+'°</span>');
+}
+
+updProg();
+applyFilter();
+</script>
+</body>
+</html>

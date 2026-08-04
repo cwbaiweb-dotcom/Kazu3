@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中学受験 理科 計算分野パック｜標準レベル</title>
+<style>
+  :root{
+    --ink:#1c1a17; --sub:#5d574e; --line:#e2ddd4; --bg:#faf8f5; --card:#fff;
+    --phys:#2f6f8f; --chem:#9a5b2e; --bio:#3f7a4d; --earth:#6b4f8a;
+    --accent:#b4472a; --soft:#f4f1ec;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+    line-height:1.8;font-size:15px;-webkit-text-size-adjust:100%}
+  .wrap{max-width:1000px;margin:0 auto;padding:30px 20px 90px}
+  header{border-bottom:3px solid var(--ink);padding-bottom:16px}
+  h1{font-size:26px;margin:0 0 5px;letter-spacing:.02em}
+  .lead{color:var(--sub);font-size:13.5px;margin:0}
+  .badge{display:inline-block;background:var(--ink);color:#fff;font-size:11px;
+    padding:2px 9px;border-radius:4px;letter-spacing:.06em;margin-right:8px;vertical-align:2px}
+
+  /* tabs */
+  .tabs{position:sticky;top:0;z-index:20;background:var(--bg);
+    display:flex;gap:6px;flex-wrap:wrap;padding:12px 0 10px;border-bottom:1px solid var(--line);margin-bottom:26px}
+  .tab{border:1px solid var(--line);background:var(--card);border-radius:999px;
+    padding:7px 17px;font-size:13.5px;cursor:pointer;color:var(--sub);
+    font-family:inherit;transition:.12s}
+  .tab:hover{border-color:var(--ink);color:var(--ink)}
+  .tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .panel{display:none} .panel.on{display:block}
+
+  h2{font-size:19px;margin:40px 0 6px;padding:5px 0 5px 13px;border-left:7px solid var(--c,#1c1a17)}
+  h2 .n{font-size:11px;color:var(--sub);letter-spacing:.14em;display:block;font-weight:400}
+  .sec-phys{--c:var(--phys)} .sec-chem{--c:var(--chem)}
+  .sec-bio{--c:var(--bio)} .sec-earth{--c:var(--earth)}
+  h2:first-of-type{margin-top:8px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:17px 20px;margin:14px 0}
+  .card h3{margin:0 0 9px;font-size:16px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .tag{font-size:11px;font-weight:400;color:#fff;background:var(--sub);
+    border-radius:4px;padding:2px 8px;letter-spacing:.04em;white-space:nowrap}
+  .t-s{background:#a33} .t-a{background:#8a7326} .t-b{background:#4a6d55}
+  .t-k{background:#6f8aa3} .t-h{background:#8a6f6f}
+  .f{background:var(--soft);border-radius:7px;padding:10px 14px;margin:9px 0;
+    font-size:14.5px;border-left:3px solid var(--sub)}
+  .f code{font-family:inherit;font-weight:700;background:none}
+  ul,ol{margin:7px 0;padding-left:1.3em} li{margin:3px 0}
+  .warn{font-size:13.5px;background:#fdf3ef;border:1px dashed #e0b6a6;
+    border-radius:7px;padding:9px 14px;margin:9px 0}
+  .warn b{color:var(--accent)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+  th{background:var(--soft);font-weight:700;white-space:nowrap}
+  .cheat td:first-child{white-space:nowrap;font-weight:700;background:#fcfbf9}
+
+  /* problems */
+  .q{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:15px 18px;margin:12px 0}
+  .q .qh{font-size:13px;color:var(--sub);margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .q .qt{font-size:14.5px}
+  details{margin-top:11px;border-top:1px solid var(--line);padding-top:9px}
+  summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:700;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▶ 解答・解説";font-size:12px}
+  summary span{display:none}
+  details[open] summary::before{content:"▼ 解答・解説"}
+  .sol{font-size:14px;padding:8px 0 0 4px;border-left:3px solid var(--soft);padding-left:13px;margin-top:8px}
+  .sol b{color:var(--accent)}
+  .ctl{margin:14px 0 4px;display:flex;gap:8px;flex-wrap:wrap}
+  .ctl button{border:1px solid var(--line);background:var(--card);border-radius:7px;
+    padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--sub)}
+  .ctl button:hover{border-color:var(--ink);color:var(--ink)}
+
+  /* plan */
+  .wk{display:grid;grid-template-columns:64px 1fr;gap:0;border:1px solid var(--line);
+    border-radius:10px;overflow:hidden;background:var(--card);margin:10px 0}
+  .wk .wl{background:var(--soft);padding:12px 8px;text-align:center;font-weight:700;
+    font-size:13px;border-right:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+  .wk .wb{padding:11px 16px;font-size:14px}
+  .wk .wb b{display:block;font-size:14.5px}
+  .wk .wb span{color:var(--sub);font-size:13px}
+  .note{font-size:13.5px;color:var(--sub)}
+  footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;
+    font-size:12.5px;color:var(--sub)}
+  @media print{
+    .tabs{display:none} .panel{display:block!important}
+    body{background:#fff} .card,.q{break-inside:avoid} details{display:none}
+  }
+  @media(max-width:600px){ .wrap{padding:20px 14px 70px} h1{font-size:21px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>中学受験 理科・計算分野パック</h1>
+  <p class="lead"><span class="badge">標準レベル</span>偏差値50前後までを確実に取りきるための、まとめ・チートシート・問題演習・学習計画の4点セット。</p>
+</header>
+
+<div class="tabs">
+  <button class="tab on" data-t="p1">① 単元別まとめ</button>
+  <button class="tab" data-t="p2">② 公式チートシート</button>
+  <button class="tab" data-t="p3">③ 練習問題＋解説</button>
+  <button class="tab" data-t="p4">④ 学習計画・優先順位</button>
+</div>
+
+<!-- ==================== ① 単元別まとめ ==================== -->
+<div class="panel on" id="p1">
+
+<p class="note">計算が必要な単元を18に整理。標準レベルで問われるところに絞ってあります。<span class="tag t-s">S 最優先</span> <span class="tag t-a">A 重要</span> <span class="tag t-b">B 余力があれば</span></p>
+
+<h2 class="sec-phys"><span class="n">PHYSICS</span>物理</h2>
+
+<div class="card">
+<h3>1. てこ・棒のつりあい <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>左まわりの力 ＝ 右まわりの力</code>　（力 ＝ 重さ × 支点からの距離）</div>
+<ul>
+<li><b>手順を固定する</b>：①支点に▲印　②力の矢印を全部書く　③支点からの距離を書き込む　④式を立てる。</li>
+<li><b>棒に重さがあるとき</b>：一様な棒なら、重さは全部「まん中」にかかっていると考える。</li>
+<li><b>ばねばかり2本でつるす</b>：上向きの合計＝下向きの合計。もう1本はモーメントの式で。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>距離を「棒の端から」測ってしまう。距離は必ず<b>支点から</b>。</div>
+</div>
+
+<div class="card">
+<h3>2. 滑車・輪軸 <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>力が○分の1 になると、引く長さは○倍</code>（仕事の原理）</div>
+<ul>
+<li><b>定滑車</b>…力も長さも変わらない（向きを変えるだけ）。</li>
+<li><b>動滑車1個</b>…力は 1/2、ひもを引く長さは 2倍。2個なら 1/4 と 4倍。</li>
+<li><b>輪軸</b>…大輪の力 × 大輪の半径 ＝ 小輪の力 × 小輪の半径。てこと同じ考え方。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>「ひもを何cm引くか」で、荷物の上がる距離をそのまま答えてしまう。<b>得した力のぶんだけ長さは損</b>。</div>
+</div>
+
+<div class="card">
+<h3>3. ばね <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>のび ＝ かけた重さに比例</code>　／　<code>全長 ＝ 自然長 ＋ のび</code></div>
+<ul>
+<li>まず「1gあたり何cmのびるか」に直す。表が「20gで3cm」なら 1gで0.15cm。</li>
+<li><b>たてに2本つなぐ</b>…どちらにも同じ重さがかかる → のびは足し算。</li>
+<li><b>2本で支える</b>…重さを半分ずつ分け合う。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>グラフや表の値が「のび」か「全長」かの読みちがい。全長なら自然長を引いてから使う。</div>
+</div>
+
+<div class="card">
+<h3>4. 浮力 <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>浮力(g) ＝ 水の中に入っている部分の体積(cm³)</code>　（水の場合）</div>
+<ul>
+<li><b>ばねばかりの値</b> ＝ 物体の重さ − 浮力。</li>
+<li><b>浮いているとき</b> ＝ 浮力が物体の重さとつりあっている。→ 水中の体積 ＝ 物体の重さ(g)。</li>
+<li><b>密度</b>（重さ ÷ 体積）が 1 より大きければ沈む、小さければ浮く。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>深く沈めるほど浮力が増えると思ってしまう。<b>全部沈んだあとは浮力は変わらない</b>。</div>
+</div>
+
+<div class="card">
+<h3>5. ふりこ <span class="tag t-a">A 重要</span></h3>
+<div class="f"><code>周期はひもの長さだけで決まる</code>（おもりの重さ・ふれ幅は関係なし）</div>
+<ul>
+<li>長さ4倍 → 周期2倍／長さ9倍 → 周期3倍。（長さの比が □×□ なら周期は □ 倍）</li>
+<li>「10往復の時間をはかって10でわる」のは<b>誤差を小さくする</b>ため。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>6. 電流と豆電球 <span class="tag t-s">S 最優先</span></h3>
+<div class="f">豆電球1個・かん電池1個のときを <code>1</code> として、すべて比で考える</div>
+<table>
+<tr><th>つなぎ方</th><th>豆電球1個の電流</th><th>明るさ</th><th>電池のもち</th></tr>
+<tr><td>豆電球 直列2個</td><td>1/2</td><td>暗い</td><td>長い</td></tr>
+<tr><td>豆電球 並列2個</td><td>1（電池には2）</td><td>ふつう</td><td>短い</td></tr>
+<tr><td>電池 直列2個</td><td>2</td><td>明るい</td><td>ふつう</td></tr>
+<tr><td>電池 並列2個</td><td>1</td><td>ふつう</td><td>長い</td></tr>
+</table>
+<div class="warn"><b>いちばん多いミス：</b>電池の並列を「明るくなる」と答えてしまう。並列は<b>長もちするだけ</b>。また、導線だけの近道がある豆電球は<b>つかない</b>。</div>
+</div>
+
+<div class="card">
+<h3>7. 熱量・水の温度 <span class="tag t-a">A 重要</span></h3>
+<div class="f"><code>熱量(カロリー) ＝ 水の重さ(g) × 上がった温度(℃)</code></div>
+<ul>
+<li><b>ちがう温度の水を混ぜる</b>：(重さ×温度 ＋ 重さ×温度) ÷ 合計の重さ。</li>
+<li><b>状態変化の間は温度が上がらない</b>：氷がとけている間は0℃、ふっとう中は100℃。グラフの水平部分。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>8. 音 <span class="tag t-b">B 余力があれば</span></h3>
+<ul>
+<li>音の速さは<b>秒速340m</b>。光は一瞬で届く。</li>
+<li>やまびこは<b>往復</b>なので「距離×2 ÷ 340 ＝ 時間」。</li>
+</ul>
+</div>
+
+<h2 class="sec-chem"><span class="n">CHEMISTRY</span>化学</h2>
+
+<div class="card">
+<h3>9. 水よう液の濃度 <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>濃度(%) ＝ とけているもの(g) ÷ 水よう液全体(g) × 100</code><br>水よう液 ＝ 水 ＋ とけているもの</div>
+<ul>
+<li><b>水を加える／蒸発させる</b> → とけているものの量は<b>変わらない</b>。分母だけが動く。</li>
+<li><b>食塩を加える</b> → 分子も分母も増える。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>「水100gに食塩20g」を20%としてしまう。正しくは 20 ÷ 120 で約16.7%。<b>「水」か「水よう液」か</b>を毎回確認。</div>
+</div>
+
+<div class="card">
+<h3>10. 溶解度・再結晶 <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>溶解度 ＝ 水100gにとける最大の量(g)</code>　→ まず「水100gあたり」に直す</div>
+<ul>
+<li><b>出てくる結晶</b> ＝ 高い温度でとけていた量 − 低い温度でとける量。</li>
+<li><b>水を蒸発させたとき</b> ＝ 蒸発させた水にとけていたぶんが出てくる。</li>
+<li>ホウ酸・ミョウバン・硝酸カリウムは<b>冷やして</b>取り出す。<b>食塩は温度でほとんど変わらない</b>ので水を蒸発させる。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>11. 中和 <span class="tag t-s">S 最優先</span></h3>
+<div class="f">ちょうど中和する <code>塩酸 ： 水酸化ナトリウム水よう液</code> の<b>体積の比は一定</b></div>
+<ul>
+<li>まず<b>「ちょうど中和する組み合わせ」を1つ見つける</b>。すべてはここから比例で出る。</li>
+<li><b>水を蒸発させて残るもの</b>：ちょうど中和 → 食塩だけ／塩酸が余る → 食塩だけ／水酸化ナトリウムが余る → 食塩＋水酸化ナトリウム。</li>
+<li>グラフの<b>折れ曲がる点＝ちょうど中和した点</b>。</li>
+<li>BTB液：酸性＝黄、中性＝緑、アルカリ性＝青。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>12. 気体の発生と過不足 <span class="tag t-a">A 重要</span></h3>
+<div class="f">グラフが<b>右上がり</b>＝加えた方が足りない／<b>水平</b>＝もう一方を使いきった</div>
+<ul>
+<li>解く順番：①水平になった値から「どちらが先になくなるか」を判定 → ②<b>足りない方</b>を基準に比例。</li>
+<li>気体：金属＋塩酸→<b>水素</b>／石灰石＋塩酸→<b>二酸化炭素</b>／オキシドール＋二酸化マンガン→<b>酸素</b>。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>13. 燃焼と重さ <span class="tag t-a">A 重要</span></h3>
+<ul>
+<li>金属が燃える（酸化する）と、<b>結びついた酸素のぶんだけ重くなる</b>。</li>
+<li>「銅4g → 酸化銅5g」なら 銅：酸素 ＝ 4：1。この比で比例。</li>
+<li>空気の割合：ちっ素 約78%、酸素 約21%。</li>
+</ul>
+</div>
+
+<h2 class="sec-bio"><span class="n">BIOLOGY</span>生物</h2>
+
+<div class="card">
+<h3>14. 蒸散量 <span class="tag t-s">S 最優先</span></h3>
+<div class="f">ワセリンをぬった面からは蒸散<b>しない</b> → 引き算で1か所ずつ取り出す</div>
+<table>
+<tr><th>処理</th><th>蒸散する場所</th></tr>
+<tr><td>何もしない</td><td>葉の表＋葉の裏＋くき</td></tr>
+<tr><td>表にワセリン</td><td>裏＋くき</td></tr>
+<tr><td>裏にワセリン</td><td>表＋くき</td></tr>
+<tr><td>表と裏にワセリン</td><td>くきだけ</td></tr>
+</table>
+<ul>
+<li>葉の<b>裏</b>のほうが気孔が多いので、ふつう 裏 ＞ 表。</li>
+<li>水面に油を浮かべるのは<b>水面からの蒸発を防ぐ</b>ため。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>15. 光合成と呼吸 <span class="tag t-a">A 重要</span></h3>
+<div class="f"><code>見かけの光合成量 ＝ 本当の光合成量 − 呼吸量</code></div>
+<ul>
+<li><b>暗いところ（光0）での値が呼吸量</b>。グラフのマイナス側の切片。</li>
+<li>本当の光合成量 ＝ グラフの値 ＋ 呼吸量。</li>
+<li>対照実験は<b>変える条件を1つだけ</b>にする。</li>
+</ul>
+</div>
+
+<h2 class="sec-earth"><span class="n">EARTH &amp; SPACE</span>地学</h2>
+
+<div class="card">
+<h3>16. 湿度 <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>湿度(%) ＝ 空気1m³中の水蒸気量(g) ÷ 飽和水蒸気量(g) × 100</code></div>
+<ul>
+<li><b>露点</b>＝いまの水蒸気量がちょうど飽和になる温度。表から逆に読む。</li>
+<li><b>出てくる水てき</b> ＝ もとの水蒸気量 − 冷やした温度の飽和水蒸気量。</li>
+<li><b>雲ができる高さ</b>：（地上の気温 − 露点）× 100m。※100mで1℃下がるとき。</li>
+</ul>
+<div class="warn"><b>いちばん多いミス：</b>気温が上がると飽和水蒸気量が増えるので、<b>水蒸気の量が同じでも湿度は下がる</b>。</div>
+</div>
+
+<div class="card">
+<h3>17. 地震 <span class="tag t-s">S 最優先</span></h3>
+<div class="f"><code>震源までの距離 ＝ 速さ × 時間</code>　／　<b>初期微動継続時間は震源距離に比例</b></div>
+<ul>
+<li>P波＝速い・初期微動、S波＝おそい・主要動。初期微動継続時間 ＝ S波の到達 − P波の到達。</li>
+<li>2地点の（距離の差）÷（時刻の差）＝ 速さ。そこから逆算して<b>地震の発生時刻</b>を出す。</li>
+<li>比例だから「距離2倍 → 初期微動継続時間も2倍」。表の穴うめはこれで即答。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>18. 星と月と太陽 <span class="tag t-a">A 重要</span></h3>
+<div class="f">星の日周運動 <code>1時間に15°</code>／年周運動 <code>同じ時刻で1か月に30°</code>（どちらも東→西）</div>
+<ul>
+<li>1か月前の日付なら、同じ位置に見えるのは<b>2時間おそい</b>時刻（30° ÷ 15°）。</li>
+<li>北の空は北極星を中心に<b>反時計まわり</b>。北極星の高度＝その土地の緯度。</li>
+<li><b>月</b>：満ち欠けの周期 約29.5日。南中時刻は 新月＝12時、上弦＝18時、満月＝24時、下弦＝6時。</li>
+<li><b>太陽の南中高度</b>：春分秋分＝90−緯度／夏至＝90−緯度＋23.4／冬至＝90−緯度−23.4。</li>
+</ul>
+</div>
+
+</div><!-- /p1 -->
+
+
+<!-- ==================== ② チートシート ==================== -->
+<div class="panel" id="p2">
+<p class="note">1枚で見わたせる公式・解法の早見表。印刷して机の前に貼る用。</p>
+
+<h2 class="sec-phys"><span class="n">CHEAT SHEET 1</span>物理</h2>
+<table class="cheat">
+<tr><th style="width:150px">項目</th><th>公式・使い方</th></tr>
+<tr><td>てこ</td><td>重さ × 支点からの距離 ＝ 重さ × 支点からの距離<br>棒の重さは「まん中」に全部かかると考える</td></tr>
+<tr><td>動滑車</td><td>1個 → 力 1/2・ひも 2倍　／　2個 → 力 1/4・ひも 4倍</td></tr>
+<tr><td>輪軸</td><td>大輪の力 × 大輪の半径 ＝ 小輪の力 × 小輪の半径</td></tr>
+<tr><td>ばね</td><td>のび ＝ 1gあたりのび × 重さ　／　全長 ＝ 自然長 ＋ のび<br>たて2本 → のび2倍　／　2本で支える → 重さ半分</td></tr>
+<tr><td>浮力</td><td>浮力(g) ＝ 水中の体積(cm³)　※水のとき<br>ばねばかり ＝ 重さ − 浮力　／　浮いている → 浮力 ＝ 重さ</td></tr>
+<tr><td>密度</td><td>密度 ＝ 重さ(g) ÷ 体積(cm³)　　1より大 → 沈む、小 → 浮く</td></tr>
+<tr><td>ふりこ</td><td>周期はひもの長さだけ。長さ4倍 → 周期2倍、9倍 → 3倍</td></tr>
+<tr><td>電流</td><td>豆電球 直列 → 1/2（暗い）　並列 → 各1（電池は2倍消耗）<br>電池 直列 → 2（明るい）　並列 → 1（長もち）</td></tr>
+<tr><td>熱量</td><td>熱量(cal) ＝ 水の重さ(g) × 上がった温度(℃)<br>混合温度 ＝ (重さ×温度 ＋ 重さ×温度) ÷ 合計の重さ</td></tr>
+<tr><td>音</td><td>秒速340m　／　やまびこは 距離×2 ÷ 340</td></tr>
+</table>
+
+<h2 class="sec-chem"><span class="n">CHEAT SHEET 2</span>化学</h2>
+<table class="cheat">
+<tr><th style="width:150px">項目</th><th>公式・使い方</th></tr>
+<tr><td>濃度</td><td>濃度(%) ＝ 溶質(g) ÷ 水よう液(g) × 100<br>水よう液 ＝ 水 ＋ 溶質　／　水を足す・蒸発 → 溶質は不変</td></tr>
+<tr><td>溶解度</td><td>水100gにとける最大量。まず水100gあたりに直す<br>出る結晶 ＝ 高温での量 − 低温でとける量</td></tr>
+<tr><td>再結晶</td><td>冷やす → ホウ酸・ミョウバン・硝酸カリウム<br>水を蒸発 → 食塩</td></tr>
+<tr><td>中和</td><td>ちょうど中和する体積の比は一定 → 比例で解く<br>残る固体：NaOH過剰のときだけ「食塩＋NaOH」</td></tr>
+<tr><td>過不足</td><td>グラフ水平＝一方を使いきった → 足りない方を基準に比例</td></tr>
+<tr><td>気体</td><td>金属＋塩酸 → 水素／石灰石＋塩酸 → 二酸化炭素<br>オキシドール＋二酸化マンガン → 酸素</td></tr>
+<tr><td>燃焼</td><td>金属 ＋ 酸素 → 酸化物（重くなる）。重さの比で比例</td></tr>
+<tr><td>BTB液</td><td>酸性＝黄　中性＝緑　アルカリ性＝青</td></tr>
+</table>
+
+<h2 class="sec-bio"><span class="n">CHEAT SHEET 3</span>生物</h2>
+<table class="cheat">
+<tr><th style="width:150px">項目</th><th>公式・使い方</th></tr>
+<tr><td>蒸散</td><td>何もしない ＝ 表＋裏＋くき　→ 引き算で1か所ずつ求める<br>ふつう 裏 ＞ 表（気孔が裏に多い）</td></tr>
+<tr><td>光合成</td><td>見かけの光合成 ＝ 本当の光合成 − 呼吸<br>暗黒下の値 ＝ 呼吸量</td></tr>
+<tr><td>対照実験</td><td>変える条件は1つだけ</td></tr>
+<tr><td>心臓</td><td>1回の量 × 1分の回数 ＝ 1分間に送る血液量</td></tr>
+</table>
+
+<h2 class="sec-earth"><span class="n">CHEAT SHEET 4</span>地学</h2>
+<table class="cheat">
+<tr><th style="width:150px">項目</th><th>公式・使い方</th></tr>
+<tr><td>湿度</td><td>湿度(%) ＝ 水蒸気量 ÷ 飽和水蒸気量 × 100<br>出る水てき ＝ 水蒸気量 − 冷やした温度の飽和水蒸気量</td></tr>
+<tr><td>雲の高さ</td><td>（地上の気温 − 露点）× 100m　※100mで1℃下がるとき</td></tr>
+<tr><td>地震</td><td>距離 ＝ 速さ × 時間<br>初期微動継続時間 ∝ 震源距離<br>速さ ＝ 距離の差 ÷ 到達時刻の差</td></tr>
+<tr><td>星</td><td>1時間で15°（日周）／同時刻で1か月30°（年周）どちらも東→西<br>1か月前 → 2時間おそい時刻に同じ位置</td></tr>
+<tr><td>月</td><td>周期 約29.5日／南中 新月12時・上弦18時・満月24時・下弦6時<br>月の出は毎日約50分おそくなる</td></tr>
+<tr><td>太陽高度</td><td>春分秋分 90−緯度／夏至 ＋23.4／冬至 −23.4<br>北極星の高度 ＝ 緯度</td></tr>
+</table>
+
+<div class="card" style="margin-top:26px">
+<h3>どんな問題にも効く3つの型</h3>
+<ol>
+<li><b>単位量あたりに直す</b>…「20gで3cm」→「1gで0.15cm」、「水150gに30g」→「水100gに20g」。理科の計算はほぼこれで解ける。</li>
+<li><b>折れ曲がりを探す</b>…中和・気体の発生・浮力・状態変化のグラフは、折れ曲がり点で条件が切りかわる。まずそこに印。</li>
+<li><b>単位を書く</b>…g / cm³ / cm / ℃ / L を書けば、かけるのかわるのかが自動で決まる。</li>
+</ol>
+</div>
+</div><!-- /p2 -->
+
+
+<!-- ==================== ③ 練習問題 ==================== -->
+<div class="panel" id="p3">
+<p class="note">全40問。<span class="tag t-k">基本</span>＝まず全問正解を目標／<span class="tag t-h">標準</span>＝入試での得点源。解説はクリックで開きます。</p>
+<div class="ctl">
+  <button onclick="allDet(true)">解説をすべて開く</button>
+  <button onclick="allDet(false)">すべて閉じる</button>
+</div>
+
+<h2 class="sec-phys"><span class="n">PRACTICE 1</span>物理（14問）</h2>
+
+<div class="q"><div class="qh"><b>問1</b><span class="tag t-k">基本</span>てこ</div>
+<div class="qt">重さの無視できる長さ100cmの棒の、左端から20cmの点を支えました。左端に60gのおもりをつるしたとき、右端に何gのおもりをつるすとつりあいますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+左まわり：60 × 20 ＝ 1200<br>
+右端は支点から 100 − 20 ＝ 80cm<br>
+□ × 80 ＝ 1200 → <b>15g</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問2</b><span class="tag t-h">標準</span>てこ</div>
+<div class="qt">長さ40cm・重さ60gの太さが一様な棒を、まん中で支えました。左端に30gのおもりをつるすとき、右端から何cmのところに40gのおもりをつるせばつりあいますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+まん中で支えているので、棒の重さ60gはモーメントに関係しない（支点にかかる）。<br>
+左まわり：30 × 20 ＝ 600<br>
+40 × □ ＝ 600 → 支点から15cm<br>
+右端からは 20 − 15 ＝ <b>5cm</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問3</b><span class="tag t-h">標準</span>てこ</div>
+<div class="qt">長さ60cm・重さ120gの太さが一様な棒の、左端Aから15cmの点を支点にしました。左端Aに何gのおもりをつるすとつりあいますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+棒の重さ120gは、まん中（Aから30cm）にかかる。支点はAから15cm。<br>
+右まわり：120 × (30 − 15) ＝ 1800<br>
+□ × 15 ＝ 1800 → <b>120g</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問4</b><span class="tag t-k">基本</span>滑車</div>
+<div class="qt">動滑車を1個使って、60gのおもりを持ち上げます。滑車とひもの重さは考えません。(1)引く力は何gですか。(2)おもりを20cm持ち上げるには、ひもを何cm引きますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+(1) 動滑車1個なので力は 1/2 → <b>30g</b><br>
+(2) 力が半分になったぶん長さは2倍 → 20 × 2 ＝ <b>40cm</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問5</b><span class="tag t-h">標準</span>滑車</div>
+<div class="qt">動滑車を2個使って100gのおもりを持ち上げます。(1)引く力は何gですか。(2)ひもを80cm引くと、おもりは何cm上がりますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+(1) 1/2 × 1/2 ＝ 1/4 → 100 ÷ 4 ＝ <b>25g</b><br>
+(2) 長さは4倍必要なので、おもりが上がるのは 80 ÷ 4 ＝ <b>20cm</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問6</b><span class="tag t-k">基本</span>ばね</div>
+<div class="qt">自然長12cmのばねは、20gのおもりで3cmのびます。50gのおもりをつるすと、ばね全体の長さは何cmになりますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+1gあたり 3 ÷ 20 ＝ 0.15cm のびる。<br>
+のび ＝ 0.15 × 50 ＝ 7.5cm<br>
+全長 ＝ 12 ＋ 7.5 ＝ <b>19.5cm</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問7</b><span class="tag t-h">標準</span>ばね</div>
+<div class="qt">問6と同じばねを2本たてにつなぎ、いちばん下に50gのおもりをつるしました。全体の長さは何cmになりますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+たてにつなぐと、どちらのばねにも50gがかかる。<br>
+それぞれ7.5cmのびる → のびの合計 15cm<br>
+自然長の合計 12 × 2 ＝ 24cm<br>
+24 ＋ 15 ＝ <b>39cm</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問8</b><span class="tag t-k">基本</span>浮力</div>
+<div class="qt">体積80cm³、重さ100gの物体を、糸でつるして水に完全に沈めました。ばねばかりは何gを示しますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+浮力 ＝ 水中の体積 ＝ 80g<br>
+100 − 80 ＝ <b>20g</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問9</b><span class="tag t-h">標準</span>浮力</div>
+<div class="qt">重さ72g、体積90cm³の物体を水に入れました。(1)浮きますか、沈みますか。(2)浮く場合、水面から出ている部分の体積は何cm³ですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+(1) 密度 ＝ 72 ÷ 90 ＝ 0.8 g/cm³ で1より小さい → <b>浮く</b><br>
+(2) 浮力が72gになればつりあうので、水中の体積は72cm³<br>
+90 − 72 ＝ <b>18cm³</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問10</b><span class="tag t-k">基本</span>ふりこ</div>
+<div class="qt">ひもの長さ25cmのふりこの周期は1秒でした。ひもの長さを100cmにすると、周期は何秒になりますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+長さが 100 ÷ 25 ＝ 4倍。4 ＝ 2×2 なので周期は2倍。<br><b>2秒</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問11</b><span class="tag t-k">基本</span>電流</div>
+<div class="qt">豆電球1個とかん電池1個をつないだとき、流れる電流は0.3Aでした。(1)豆電球2個を直列につないだとき、豆電球に流れる電流は何Aですか。(2)豆電球2個を並列につないだとき、かん電池を流れる電流は何Aですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+(1) 直列は 1/2 → <b>0.15A</b><br>
+(2) 並列は各豆電球に0.3Aずつ流れ、電池にはその合計 → <b>0.6A</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問12</b><span class="tag t-k">基本</span>熱量</div>
+<div class="qt">20℃の水100gを50℃にするには、何カロリーの熱が必要ですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+上がる温度 ＝ 50 − 20 ＝ 30℃<br>
+100 × 30 ＝ <b>3000カロリー</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問13</b><span class="tag t-h">標準</span>熱量</div>
+<div class="qt">10℃の水300gと60℃の水200gを混ぜると、何℃になりますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+(300×10 ＋ 200×60) ÷ (300＋200)<br>
+＝ (3000 ＋ 12000) ÷ 500 ＝ <b>30℃</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問14</b><span class="tag t-k">基本</span>音</div>
+<div class="qt">いなずまが光ってから5秒後に音が聞こえました。音の速さを秒速340mとすると、いなずままでの距離は何mですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+340 × 5 ＝ <b>1700m</b>
+</div></details></div>
+
+<h2 class="sec-chem"><span class="n">PRACTICE 2</span>化学（12問）</h2>
+
+<div class="q"><div class="qh"><b>問15</b><span class="tag t-k">基本</span>濃度</div>
+<div class="qt">水180gに食塩20gをとかしました。この食塩水の濃度は何%ですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+水よう液全体 ＝ 180 ＋ 20 ＝ 200g<br>
+20 ÷ 200 × 100 ＝ <b>10%</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問16</b><span class="tag t-k">基本</span>濃度</div>
+<div class="qt">8%の食塩水250gには、食塩が何gとけていますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+250 × 0.08 ＝ <b>20g</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問17</b><span class="tag t-h">標準</span>濃度</div>
+<div class="qt">5%の食塩水200gに、水を50g加えました。濃度は何%になりますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+食塩 ＝ 200 × 0.05 ＝ 10g（水を加えても変わらない）<br>
+全体 ＝ 200 ＋ 50 ＝ 250g<br>
+10 ÷ 250 × 100 ＝ <b>4%</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問18</b><span class="tag t-h">標準</span>濃度</div>
+<div class="qt">10%の食塩水300gから、水を100g蒸発させました。濃度は何%になりますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+食塩 ＝ 300 × 0.1 ＝ 30g（蒸発しても変わらない）<br>
+全体 ＝ 300 − 100 ＝ 200g<br>
+30 ÷ 200 × 100 ＝ <b>15%</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問19</b><span class="tag t-h">標準</span>溶解度</div>
+<div class="qt">硝酸カリウムは水100gに、60℃で110g、20℃で32gとけます。60℃の飽和水よう液210gを20℃まで冷やすと、結晶は何g出てきますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+60℃の飽和水よう液は「水100g＋硝酸カリウム110g＝210g」。問題の210gはちょうどこれ。<br>
+20℃では32gしかとけない。<br>
+110 − 32 ＝ <b>78g</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問20</b><span class="tag t-h">標準</span>溶解度</div>
+<div class="qt">40℃でホウ酸は水100gに9gとけます。40℃の水150gにホウ酸を20g入れると、何gとけ残りますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+水150gにとける量 ＝ 9 × 1.5 ＝ 13.5g<br>
+20 − 13.5 ＝ <b>6.5g</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問21</b><span class="tag t-k">基本</span>中和</div>
+<div class="qt">ある塩酸20cm³と、ある水酸化ナトリウム水よう液30cm³がちょうど中和します。この塩酸50cm³を中和するには、この水酸化ナトリウム水よう液が何cm³必要ですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+20 : 30 ＝ 50 : □<br>
+□ ＝ 30 × (50 ÷ 20) ＝ <b>75cm³</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問22</b><span class="tag t-h">標準</span>中和</div>
+<div class="qt">問21と同じ薬品で、塩酸20cm³と水酸化ナトリウム水よう液40cm³を混ぜました。(1)この液にBTB液を入れると何色になりますか。(2)この液を蒸発させると、何が残りますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+塩酸20cm³は水酸化ナトリウム水よう液30cm³とちょうど中和するので、40 − 30 ＝ 10cm³ 分の水酸化ナトリウムが余る。<br>
+(1) アルカリ性なので <b>青色</b><br>
+(2) <b>食塩と水酸化ナトリウム</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問23</b><span class="tag t-k">基本</span>気体</div>
+<div class="qt">石灰石1gに十分な量の塩酸を加えると、二酸化炭素が240cm³発生しました。石灰石2.5gではいくら発生しますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+240 × 2.5 ＝ <b>600cm³</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問24</b><span class="tag t-h">標準</span>過不足</div>
+<div class="qt">ある塩酸50cm³は、石灰石2gまでしか反応しません。石灰石1gあたり二酸化炭素は240cm³発生します。この塩酸50cm³に石灰石3gを加えると、二酸化炭素は何cm³発生しますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+塩酸は石灰石2g分までしか働けない（<b>塩酸が足りない</b>）。<br>
+240 × 2 ＝ <b>480cm³</b>（石灰石1gはとけ残る）
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問25</b><span class="tag t-h">標準</span>過不足</div>
+<div class="qt">問24と同じ塩酸100cm³に、石灰石3gを加えました。二酸化炭素は何cm³発生しますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+塩酸100cm³なら石灰石4g分まで反応できる。石灰石は3gしかないので<b>石灰石が足りない</b>。<br>
+240 × 3 ＝ <b>720cm³</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問26</b><span class="tag t-h">標準</span>燃焼</div>
+<div class="qt">銅4gを十分に加熱すると、酸化銅が5gできました。銅10gを十分に加熱すると、酸化銅は何gできますか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+銅 : 酸化銅 ＝ 4 : 5<br>
+10 × (5 ÷ 4) ＝ <b>12.5g</b>
+</div></details></div>
+
+<h2 class="sec-bio"><span class="n">PRACTICE 3</span>生物（6問）</h2>
+
+<div class="q"><div class="qh"><b>問27</b><span class="tag t-h">標準</span>蒸散</div>
+<div class="qt">同じ枝を4本用意し、次のように処理して水の減少量を調べました。<br>
+ア 何もしない…15.0mL／イ 葉の表にワセリン…11.0mL／ウ 葉の裏にワセリン…6.0mL／エ 葉の表と裏にワセリン…2.0mL<br>
+(1)くきからの蒸散量は？ (2)葉の裏からの蒸散量は？ (3)葉の表からの蒸散量は？</div>
+<details><summary><span>解答</span></summary><div class="sol">
+それぞれが何を表すかを先に整理する。<br>
+ア ＝ 表＋裏＋くき ＝ 15.0／イ ＝ 裏＋くき ＝ 11.0／ウ ＝ 表＋くき ＝ 6.0／エ ＝ くき ＝ 2.0<br><br>
+(1) エがくきだけなので → <b>2.0mL</b><br>
+(2) 裏 ＝ イ − エ ＝ 11.0 − 2.0 ＝ <b>9.0mL</b>（ア − ウ ＝ 15.0 − 6.0 でも同じ）<br>
+(3) 表 ＝ ウ − エ ＝ 6.0 − 2.0 ＝ <b>4.0mL</b>（ア − イ ＝ 15.0 − 11.0 でも同じ）<br><br>
+検算：表4.0 ＋ 裏9.0 ＋ くき2.0 ＝ 15.0 ＝ ア ✓　裏＞表 になっているのも自然。
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問28</b><span class="tag t-k">基本</span>蒸散</div>
+<div class="qt">問27の実験で、水面に油をうかべるのはなぜですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+<b>水面から水が蒸発するのを防ぎ、減った量がすべて蒸散によるものだとわかるようにするため。</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問29</b><span class="tag t-h">標準</span>光合成</div>
+<div class="qt">ある植物を暗い場所に置くと、1時間に二酸化炭素を2.0mg放出しました。光を当てると、1時間に二酸化炭素を6.0mg吸収しました。このとき、本当の（全体の）光合成量は1時間に何mgですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+暗い場所での2.0mgの放出 ＝ 呼吸量<br>
+本当の光合成量 ＝ 見かけ ＋ 呼吸 ＝ 6.0 ＋ 2.0 ＝ <b>8.0mg</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問30</b><span class="tag t-k">基本</span>光合成</div>
+<div class="qt">「光合成には日光が必要である」ことを確かめるには、どのような2つの葉を比べればよいですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+<b>日光に当てた葉と、アルミニウムはくでおおって日光を当てなかった葉</b>を比べる。<br>
+（それ以外の条件〈同じ株・同じ時間・同じ温度〉はそろえる ＝ 対照実験）
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問31</b><span class="tag t-h">標準</span>心臓</div>
+<div class="qt">ある人の心臓は1回に70mLの血液を送り出し、1分間に70回はく動します。1分間に送り出す血液は何Lですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+70 × 70 ＝ 4900mL ＝ <b>4.9L</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問32</b><span class="tag t-h">標準</span>心臓</div>
+<div class="qt">問31の人の全身の血液量が4.9Lのとき、血液が全身を1周するのにかかる時間はおよそ何分ですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+4.9 ÷ 4.9 ＝ <b>約1分</b>
+</div></details></div>
+
+<h2 class="sec-earth"><span class="n">PRACTICE 4</span>地学（8問）</h2>
+
+<div class="q"><div class="qh"><b>問33</b><span class="tag t-k">基本</span>湿度</div>
+<div class="qt">気温20℃の飽和水蒸気量は17.3g/m³です。空気1m³中に10.38gの水蒸気があるとき、湿度は何%ですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+10.38 ÷ 17.3 × 100 ＝ <b>60%</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問34</b><span class="tag t-h">標準</span>湿度</div>
+<div class="qt">気温30℃（飽和水蒸気量30.4g/m³）で湿度50%の空気1m³を、10℃（飽和水蒸気量9.4g/m³）まで冷やしました。出てくる水てきは何gですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+ふくまれる水蒸気 ＝ 30.4 × 0.5 ＝ 15.2g<br>
+15.2 − 9.4 ＝ <b>5.8g</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問35</b><span class="tag t-h">標準</span>雲</div>
+<div class="qt">地上の気温が20℃、露点が10℃の空気が上昇しています。100mにつき1℃下がるとすると、雲ができ始めるのは地上から何mの高さですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+下がるべき温度 ＝ 20 − 10 ＝ 10℃<br>
+10 × 100 ＝ <b>1000m</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問36</b><span class="tag t-h">標準</span>地震</div>
+<div class="qt">P波の速さが秒速8km、S波の速さが秒速4kmです。ある地点で初期微動継続時間が10秒でした。この地点から震源までの距離は何kmですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+距離を□kmとすると、S波の到達 □÷4 秒、P波の到達 □÷8 秒<br>
+□÷4 − □÷8 ＝ □÷8 ＝ 10 → □ ＝ <b>80km</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問37</b><span class="tag t-k">基本</span>地震</div>
+<div class="qt">問36と同じ地震で、震源から40kmの地点の初期微動継続時間は何秒ですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+初期微動継続時間は震源距離に比例。距離が半分なので時間も半分。<br>
+10 ÷ 2 ＝ <b>5秒</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問38</b><span class="tag t-h">標準</span>星</div>
+<div class="qt">ある星が午後8時に真南に見えました。(1)午後10時にはどの方角に、何度動いていますか。(2)1か月後、この星が真南に見えるのは何時ごろですか。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+(1) 1時間に15°、東から西へ。2時間で <b>西へ30°</b><br>
+(2) 同じ時刻なら1か月で西へ30°進んでいる。真南に来るのは30° ÷ 15° ＝ 2時間早い<br>
+→ <b>午後6時ごろ</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問39</b><span class="tag t-k">基本</span>月</div>
+<div class="qt">上弦の月が南中するのは何時ごろですか。また、その約7日後の月の形と南中時刻を答えなさい。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+上弦の南中は <b>午後6時ごろ</b><br>
+約7日後は <b>満月</b>で、南中は <b>午前0時ごろ</b>
+</div></details></div>
+
+<div class="q"><div class="qh"><b>問40</b><span class="tag t-h">標準</span>太陽高度</div>
+<div class="qt">北緯35°の地点で、(1)夏至の日の南中高度、(2)冬至の日の南中高度を求めなさい。地軸の傾きは23.4°とします。</div>
+<details><summary><span>解答</span></summary><div class="sol">
+(1) 90 − 35 ＋ 23.4 ＝ <b>78.4°</b><br>
+(2) 90 − 35 − 23.4 ＝ <b>31.6°</b>
+</div></details></div>
+
+</div><!-- /p3 -->
+
+
+<!-- ==================== ④ 学習計画 ==================== -->
+<div class="panel" id="p4">
+
+<h2><span class="n">PRIORITY</span>優先順位 ― 何から手をつけるか</h2>
+<p class="note">標準レベル（偏差値50前後）の入試では、計算問題の得点の大半が S ランクの単元から出ます。<b>Sを完璧にしてからAへ</b>が鉄則。Bは最後で構いません。</p>
+<table>
+<tr><th style="width:70px">ランク</th><th style="width:180px">単元</th><th>理由・到達目標</th></tr>
+<tr><td><span class="tag t-s">S</span></td><td>てこ／滑車・輪軸／ばね／浮力</td><td>力学は出題率が最も高く、パターンも決まっている。<b>典型題を見た瞬間に手が動く</b>まで反復する。</td></tr>
+<tr><td><span class="tag t-s">S</span></td><td>電流と豆電球</td><td>回路の比の考え方は暗記で済む。表を覚えるだけで得点になる。</td></tr>
+<tr><td><span class="tag t-s">S</span></td><td>濃度／溶解度／中和</td><td>算数の割合・比がそのまま使える。算数が得意なら最短で得点源になる。</td></tr>
+<tr><td><span class="tag t-s">S</span></td><td>蒸散／湿度／地震</td><td>公式が1本で、引き算か比例だけ。<b>やれば必ず取れる</b>コスパ最強の3つ。</td></tr>
+<tr><td><span class="tag t-a">A</span></td><td>気体の発生と過不足／燃焼／熱量</td><td>Sの比例が固まってから。グラフの読み取りとセットで練習。</td></tr>
+<tr><td><span class="tag t-a">A</span></td><td>星・月・太陽高度</td><td>公式は少ないが、空間のイメージが要る。図を描く練習を。</td></tr>
+<tr><td><span class="tag t-a">A</span></td><td>光合成・呼吸の量</td><td>グラフの読み方さえ分かれば簡単。</td></tr>
+<tr><td><span class="tag t-b">B</span></td><td>ふりこ／音／レンズ・鏡／心臓</td><td>出題頻度は低め。時間が余ったら。</td></tr>
+</table>
+
+<h2><span class="n">12-WEEK PLAN</span>12週間ロードマップ</h2>
+<p class="note">1単元あたり「①まとめを読む → ②例題を解く → ③3日後にもう一度解く」の3ステップ。1日30〜40分を想定しています。</p>
+
+<div class="wk"><div class="wl">第1週</div><div class="wb"><b>てこ・棒のつりあい</b><span>支点に▲、力に矢印、距離を書き込む——この手順を体にしみこませる週。棒に重さがある問題まで。</span></div></div>
+<div class="wk"><div class="wl">第2週</div><div class="wb"><b>滑車・輪軸</b><span>「力が○分の1なら長さは○倍」を口に出して確認。動滑車2個までで十分。</span></div></div>
+<div class="wk"><div class="wl">第3週</div><div class="wb"><b>ばね ＋ 力学の復習</b><span>1gあたりに直す練習。週末に第1〜3週の間違えた問題だけ解き直す。</span></div></div>
+<div class="wk"><div class="wl">第4週</div><div class="wb"><b>浮力</b><span>「水中の体積＝浮力(g)」の1本。ばねばかり・浮き沈み・水面の上昇の3パターン。</span></div></div>
+<div class="wk"><div class="wl">第5週</div><div class="wb"><b>電流と豆電球</b><span>4パターンの表を暗記 → 回路図を指でなぞる練習。ショート回路に注意。</span></div></div>
+<div class="wk"><div class="wl">第6週</div><div class="wb"><b>濃度</b><span>「水」か「水よう液」かの確認をクセにする。加える・蒸発させるの2パターン。</span></div></div>
+<div class="wk"><div class="wl">第7週</div><div class="wb"><b>溶解度・再結晶</b><span>必ず「水100gあたり」に直してから。冷やす／蒸発させるの使い分け。</span></div></div>
+<div class="wk"><div class="wl">第8週</div><div class="wb"><b>中和</b><span>まず「ちょうど中和する組み合わせ」を見つける。残る固体の3パターンを表で整理。</span></div></div>
+<div class="wk"><div class="wl">第9週</div><div class="wb"><b>気体の発生・過不足 ＋ 燃焼</b><span>グラフの折れ曲がりを探す練習。「どちらが足りないか」を先に判定。</span></div></div>
+<div class="wk"><div class="wl">第10週</div><div class="wb"><b>蒸散・光合成</b><span>引き算だけ。ここは1週で確実に仕上がる。得点源にする。</span></div></div>
+<div class="wk"><div class="wl">第11週</div><div class="wb"><b>湿度・雲・地震</b><span>公式3本。表の読み取りに慣れれば満点が狙える。</span></div></div>
+<div class="wk"><div class="wl">第12週</div><div class="wb"><b>星・月・太陽高度 ＋ 総復習</b><span>図を描いて考える。最後に全単元の「間違えた問題ノート」を1周。</span></div></div>
+
+<h2><span class="n">WEEKLY ROUTINE</span>1週間の回し方</h2>
+<div class="card">
+<table>
+<tr><th style="width:110px">曜日</th><th>やること</th></tr>
+<tr><td>月・火</td><td>その週の単元の<b>まとめを読む</b>＋基本問題を解く（20〜30分）</td></tr>
+<tr><td>水・木</td><td>標準問題を解く。<b>間違えた問題に付せん</b>を貼る（30〜40分）</td></tr>
+<tr><td>金</td><td>付せんの問題だけを解き直す（15分）</td></tr>
+<tr><td>土</td><td><b>前の週の単元</b>を解き直す（間隔をあけた復習が効く／20分）</td></tr>
+<tr><td>日</td><td>休むか、チートシートを眺めるだけ</td></tr>
+</table>
+</div>
+
+<h2><span class="n">TROUBLESHOOT</span>つまずいたときの対処</h2>
+<div class="card">
+<table>
+<tr><th style="width:230px">こんなとき</th><th>対処</th></tr>
+<tr><td>公式は言えるのに解けない</td><td>図に書き込んでいない。<b>問題文の数値を全部図に書き写す</b>ところからやり直す。</td></tr>
+<tr><td>比例の計算でつまずく</td><td>理科ではなく<b>算数の「割合と比」</b>に戻る。ここが弱いと濃度・溶解度・中和は伸びない。</td></tr>
+<tr><td>グラフ問題が苦手</td><td>「折れ曲がり点は何が起きた瞬間か」を毎回言葉で説明させる。</td></tr>
+<tr><td>答えの単位をまちがえる</td><td>式の途中にも単位を書かせる。cm³ と g、L と mL の変換を確認。</td></tr>
+<tr><td>時間が足りない</td><td>Sランクの8単元だけに絞る。全単元を薄くやるより、<b>Sだけを確実に</b>のほうが点は伸びる。</td></tr>
+<tr><td>やる気が続かない</td><td>1日1問でよいので毎日触れる。日をあけると力学は特に忘れやすい。</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>最後に ― 標準レベルで受かるための現実的な目標</h3>
+<ul>
+<li>理科の計算問題は、入試全体のおよそ<b>3〜4割</b>を占めます。ここを半分取れれば、標準レベルの合格ラインには十分届きます。</li>
+<li>難問に手を出す必要はありません。<b>Sランクの典型題を落とさない</b>ことが、いちばん確実な戦略です。</li>
+<li>「解けた／解けなかった」ではなく、<b>「どの型の問題か」を言えるか</b>で理解度を確認してください。型が言えれば、数字が変わっても解けます。</li>
+</ul>
+</div>
+
+</div><!-- /p4 -->
+
+<footer>
+中学受験 理科・計算分野パック（標準レベル）／全18単元・練習問題40問。数値の設定（音速・気温減率など）は問題文の指定を優先してください。
+</footer>
+
+</div>
+
+<script>
+  var tabs = document.querySelectorAll('.tab');
+  for (var i=0;i<tabs.length;i++){
+    tabs[i].addEventListener('click', function(){
+      var id = this.getAttribute('data-t');
+      var ts = document.querySelectorAll('.tab');
+      for (var j=0;j<ts.length;j++) ts[j].classList.remove('on');
+      this.classList.add('on');
+      var ps = document.querySelectorAll('.panel');
+      for (var k=0;k<ps.length;k++) ps[k].classList.remove('on');
+      document.getElementById(id).classList.add('on');
+      window.scrollTo(0,0);
+    });
+  }
+  function allDet(open){
+    var ds = document.querySelectorAll('#p3 details');
+    for (var i=0;i<ds.length;i++) ds[i].open = open;
+  }
+</script>
+</body>
+</html>
