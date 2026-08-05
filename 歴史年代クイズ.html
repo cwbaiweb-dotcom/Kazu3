@@ -365,6 +365,28 @@
   .len-btn.active{ background: var(--kincha); border-color: var(--kincha); color:#faf6ec; }
   .shortage-note{ font-size:11.5px; color: var(--shuiro); margin: -4px 0 10px; text-align:center; }
 
+  .range-panel{
+    border: 1.5px dashed var(--line); border-radius:4px; padding:14px; margin: 4px 0 14px;
+  }
+  .range-panel-title{ font-family:"Shippori Mincho", serif; font-size:13.5px; font-weight:700; color: var(--sumi); margin-bottom:8px; }
+  .range-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+  .range-row input[type=number]{
+    width:64px; font-family:"Noto Sans JP", sans-serif; font-size:14px; padding:7px 8px;
+    border:1.5px solid var(--line); border-radius:3px; text-align:center;
+  }
+  .range-row select{
+    font-family:"Noto Sans JP", sans-serif; font-size:12.5px; padding:6px 8px;
+    border:1.5px solid var(--line); border-radius:3px; background:#fff; color: var(--sumi);
+  }
+  .range-row span{ font-size:13px; color: var(--sumi-soft); }
+  .range-start-btn{
+    width:100%; font-family:"Shippori Mincho", serif; font-size:14px; font-weight:700;
+    padding:10px; border-radius:3px; border:1.5px solid var(--aizome); color: var(--aizome-deep);
+    background:#fff; cursor:pointer;
+  }
+  .range-start-btn:hover{ background: rgba(44,74,110,0.08); }
+  .range-error{ font-size:11.5px; color: var(--shuiro); margin: -2px 0 8px; }
+
   /* ---- v3: era mastery bars ---- */
   .era-bars{ text-align:left; margin-top:14px; }
   .era-bars h3{
@@ -912,8 +934,15 @@ function materializeQuestion(dataIdx, format, answerMode){
 // ---------------------------------------------------------------------
 // session KP selection + initial problem list
 // ---------------------------------------------------------------------
-function selectSessionKPs(mode, progress){
+function selectSessionKPs(mode, progress, opts){
   if(mode === "all") return DATA.map((d,i)=>i);
+  if(mode === "range"){
+    const start = Math.max(1, Math.min(100, opts.start));
+    const end = Math.max(start, Math.min(100, opts.end));
+    const indices = [];
+    for(let i=start-1;i<=end-1;i++) indices.push(i);
+    return indices; // kept in chronological (DATA) order -- no shuffle, no priority sort
+  }
   const n = mode === "10q" ? 10 : 20;
   const candidates = [];
   for(let i=0;i<DATA.length;i++) if(!isMastered(progress, i)) candidates.push(i);
@@ -931,13 +960,15 @@ function selectSessionKPs(mode, progress){
 }
 
 function buildInitialProblems(mode, kpIndices, progress){
-  if(mode === "all"){
+  if(mode === "all" || mode === "range"){
     const problems = kpIndices.map(idx=>{
       const s = progress.items[idx];
       const fmt = (s && s.lastFormat) ? otherFormat(s.lastFormat) : (Math.random()<0.5?"A":"B");
       return { dataIdx: idx, format: fmt };
     });
-    return shuffle(problems);
+    // "all" mode shuffles for variety; "range" mode keeps the given
+    // (chronological) order intact -- that's the whole point of it.
+    return mode === "all" ? shuffle(problems) : problems;
   }
   let problems = [];
   kpIndices.forEach(idx=>{
@@ -1029,18 +1060,19 @@ function jumpStudyToEra(eraIdx){
   if(targetPos !== -1) st.pos = targetPos;
 }
 
-function startSession(mode){
+function startSession(mode, opts){
   const committed = getCommittedStats(state.accountId);
   const pendingProgress = deepClone(committed);
-  const kpIndices = selectSessionKPs(mode, committed);
-  const requestedN = mode === "all" ? DATA.length : (mode === "10q" ? 10 : 20);
-  const shortage = mode !== "all" && kpIndices.length < requestedN;
+  const kpIndices = selectSessionKPs(mode, committed, opts);
+  const requestedN = mode === "all" ? DATA.length : mode === "range" ? kpIndices.length : (mode === "10q" ? 10 : 20);
+  const shortage = (mode === "10q" || mode === "20q") && kpIndices.length < requestedN;
   const problems = buildInitialProblems(mode, kpIndices, pendingProgress);
   const appearanceCount = {};
-  kpIndices.forEach(idx=>{ appearanceCount[idx] = mode === "all" ? 1 : 2; });
+  kpIndices.forEach(idx=>{ appearanceCount[idx] = (mode === "all" || mode === "range") ? 1 : 2; });
 
   state.session = {
     mode, answerMode: state.quizMode,
+    rangeLabel: mode === "range" ? `${opts.start}〜${opts.end}` : null,
     startedAt: nowIso(),
     pendingProgress,
     kpTotal: kpIndices.length,
@@ -1058,7 +1090,7 @@ function startSession(mode){
 }
 
 function scheduleRequeue(sess, fromLogIdx, dataIdx, lastUsedFormat, gap){
-  if(sess.mode === "all") return null;
+  if(sess.mode === "all" || sess.mode === "range") return null;
   const count = sess.appearanceCount[dataIdx] || 0;
   if(count >= MAX_APPEARANCES) return null;
   const targetIdx = Math.min(sess.qIndex + 1 + gap, sess.questions.length);
@@ -1124,8 +1156,11 @@ function redoAnswer(correct, answeredText){
   state.session.reviewIndex = null;
 }
 
-function modeLabel(mode){
-  return mode === "10q" ? "10問" : mode === "20q" ? "20問" : "全問";
+function modeLabel(sess){
+  if(sess.mode === "10q") return "10問";
+  if(sess.mode === "20q") return "20問";
+  if(sess.mode === "range") return `範囲(${sess.rangeLabel})`;
+  return "全問";
 }
 
 function finishSession(){
@@ -1135,7 +1170,7 @@ function finishSession(){
   acc.sessions = acc.sessions || [];
   const wrongKpIds = Array.from(new Set(sess.log.filter(l => !l.correct).map(l => String(l.dataIdx))));
   acc.sessions.push({
-    startedAt: sess.startedAt, finishedAt: nowIso(), mode: modeLabel(sess.mode),
+    startedAt: sess.startedAt, finishedAt: nowIso(), mode: modeLabel(sess),
     correct: sess.score, wrong: sess.wrongCount,
     newlyMastered: Array.from(sess.newlyMastered).map(String),
     wrongKpIds,
@@ -1903,6 +1938,25 @@ function renderHome(app){
       </div>
       <div class="shortage-note">※10・20問モードは「知識ポイント」の数。1KPにつき2問（出来事→年代／年代→出来事）出題されます。</div>
 
+      <div class="range-panel">
+        <div class="range-panel-title">📐 範囲を指定してテスト（年代順どおりに出題・習得済みも含む）</div>
+        <div class="range-row">
+          <span>時代で選ぶ：</span>
+          <select id="rangeEraSelect">
+            <option value="">－</option>
+            ${ERA_BOUNDARIES.map((e,i)=>`<option value="${i}">${e[1]}</option>`).join("")}
+          </select>
+        </div>
+        <div class="range-row">
+          <span>問題番号で選ぶ：</span>
+          <input type="number" id="rangeStartInput" min="1" max="100" value="1"> 〜
+          <input type="number" id="rangeEndInput" min="1" max="100" value="25">
+          <span>（1〜100）</span>
+        </div>
+        <div class="range-error" id="rangeError" style="display:none;"></div>
+        <button class="range-start-btn" id="rangeStartBtn">この範囲でテストする</button>
+      </div>
+
       <div class="btn-row">
         <button class="ghost-btn" id="favBtn">★ お気に入りをみる（${Object.values(progress.items).filter(s=>s.favorite).length}件）</button>
         <button class="csv-btn" id="csvBtn">結果をCSVでダウンロード</button>
@@ -1942,6 +1996,31 @@ function renderHome(app){
   document.getElementById('lenBtn20').onclick = ()=>{ startSession("20q"); render(); };
   document.getElementById('lenBtnAll').onclick = ()=>{ startSession("all"); render(); };
   document.getElementById('studyModeBtn').onclick = ()=>{ startStudyMode(); render(); };
+
+  document.getElementById('rangeEraSelect').onchange = (e)=>{
+    if(e.target.value === "") return;
+    const eraIdx = Number(e.target.value);
+    const [start] = ERA_BOUNDARIES[eraIdx];
+    const end = eraIdx+1 < ERA_BOUNDARIES.length ? ERA_BOUNDARIES[eraIdx+1][0] : Infinity;
+    let firstPos = -1, lastPos = -1;
+    DATA.forEach((d,i)=>{ if(d[1] >= start && d[1] < end){ if(firstPos===-1) firstPos = i; lastPos = i; } });
+    if(firstPos !== -1){
+      document.getElementById('rangeStartInput').value = firstPos + 1;
+      document.getElementById('rangeEndInput').value = lastPos + 1;
+    }
+  };
+  document.getElementById('rangeStartBtn').onclick = ()=>{
+    const start = parseInt(document.getElementById('rangeStartInput').value, 10);
+    const end = parseInt(document.getElementById('rangeEndInput').value, 10);
+    const errEl = document.getElementById('rangeError');
+    if(isNaN(start) || isNaN(end) || start < 1 || end > 100 || start > end){
+      errEl.textContent = "1〜100の範囲で、開始 ≤ 終了になるように入力してください。";
+      errEl.style.display = "block";
+      return;
+    }
+    startSession("range", { start, end });
+    render();
+  };
   document.getElementById('favBtn').onclick = ()=>{ state.screen = "favorites"; render(); };
   document.getElementById('csvBtn').onclick = ()=>exportCsv(state.accountId);
 
@@ -2013,7 +2092,7 @@ function renderQuiz(app){
       <div class="stat-strip">
         <span>第 <b>${viewIdx+1}</b> / ${sess.questions.length} 問</span>
         <span>正解 <b>${sess.score}</b> ／ 誤答 <b>${sess.wrongCount}</b></span>
-        ${sess.mode !== "all" ? `<span>あと <b>${stillToMaster}</b> 語</span>` : ""}
+        ${(sess.mode !== "all" && sess.mode !== "range") ? `<span>あと <b>${stillToMaster}</b> 語</span>` : ""}
         ${gauge}
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -2184,7 +2263,7 @@ function renderResult(app){
   const eraFilterOptions = ['すべて', ...ERA_BOUNDARIES.map(e=>e[1])];
   app.innerHTML = `
     <div class="card center-card">
-      <div class="qtype-tag">${accountName(state.accountId)} さんの結果（${sess.mode==='all'?'全問モード':sess.mode==='10q'?'10問モード':'20問モード'}）</div>
+      <div class="qtype-tag">${accountName(state.accountId)} さんの結果（${modeLabel(sess)}モード）</div>
       <div class="result-score">${sess.score}<span> / ${total} 問正解</span></div>
       <div class="result-comment">${comment}</div>
       <div class="result-comment" style="color:var(--moss);">今回新しく習得：${sess.newlyMastered.size}問</div>
