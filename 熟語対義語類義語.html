@@ -49,6 +49,11 @@ label.fld{display:block;margin:10px 0 0;font-size:.85rem;color:var(--sub);font-w
 #warnBar{display:none;font-size:.82rem;padding:8px 12px;background:#fff6e5;color:#8a5600;border:1px solid #f0dcb4;border-radius:10px;margin:8px 0}
 /* アカウント */
 .acc-pill{display:inline-flex;align-items:center;gap:6px;background:#eef3fb;border:1px solid #cfdcf4;color:var(--accent-d);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700}
+button.acc-pill{min-height:36px;padding:5px 12px;font-size:.85rem;border-radius:999px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.syncbar{font-size:.82rem;padding:8px 12px;border-radius:10px;background:#eef3fb;color:var(--accent-d);border:1px solid #cfdcf4}
+.syncbar.ok{background:#e8f6ee;color:#146b39;border-color:#bfe3cd}
+.syncbar.err{background:#fdecee;color:#a3232f;border-color:#f2c3c8}
+.syncbar:empty{display:none}
 .acc-item{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--line);border-radius:12px;margin:6px 0;background:#fff}
 .acc-item.active{border-color:var(--accent);background:#f5f9ff}
 .acc-item .nm{flex:1;font-weight:700}
@@ -154,19 +159,24 @@ const DATA = {"niji":[{"word":"勝負","yomi":"しょうぶ","meaning":"勝ち�
 </script>
 <script>
 /* ============================================================
-   熟語クイズ  —  共通仕様書 v1.0 ＋ 追補 v1.1（クラウド同期編）準拠
+   熟語クイズ  —  v3.0（ポータル方式・ID＋パスワード／1ID同期）
    ============================================================ */
 'use strict';
 
-const APP        = 'kj-quiz-kokugo-jukugo';   // 追補§1 ツール識別子（変更しないこと）
-const APP_TITLE  = '熟語';
-const SCHEMA_VER = 1;
-const MASTERY_STREAK = 2;                     // v1.0 §3 要確認① 既定値2
-const WRONGLOG_MAX   = 20;                    // v1.0 §9-1
-const REQUEUE_WRONG  = 3;                     // v1.0 §4
+const APP  = 'kj-quiz-kokugo-jukugo';   // 変更しないこと（既存の記録が読めなくなる）
+const TOOL = '熟語';
+const VER  = 'v3.0';
+const APP_TITLE = TOOL;
+
+const MASTERY_STREAK = 2;
+const WRONGLOG_MAX   = 20;
+const REQUEUE_WRONG  = 3;
 const REQUEUE_UNMAST = 6;
-const MAX_REPEAT     = 4;                     // 1セッション内の同一KP再出題上限
-const SYNC_LSKEY = APP + ':sync';             // 追補§2（同期対象に含めない）
+const MAX_REPEAT     = 4;
+
+/* localStorage キー（§2）— sync/auth は全ツール共通の kj-quiz: 固定 */
+var K_DB = APP, K_UI = APP+':ui', K_SYNC = 'kj-quiz:sync', K_AUTH = 'kj-quiz:auth';
+var DB = null, UI = null, SYNC = null, AUTH = null;
 
 /* ---------- カテゴリー定義 ---------- */
 const CATS = [
@@ -211,7 +221,7 @@ const KPMAP = Object.fromEntries(KPS.map(k=>[k.id,k]));
 const KP_BY_CAT = {}; CATS.forEach(c=>KP_BY_CAT[c.id]=KPS.filter(k=>k.cat===c.id));
 
 /* ============================================================
-   保存レイヤ（v1.0 §9 ／ 追補§2）
+   保存レイヤ
    ============================================================ */
 let LS_OK = true;
 let memStore = {};
@@ -221,202 +231,284 @@ function lsGet(k){
 function lsSet(k,v){
   try{ localStorage.setItem(k,v); }catch(e){ LS_OK=false; memStore[k]=v; }
 }
+function lsDel(k){
+  try{ localStorage.removeItem(k); }catch(e){ delete memStore[k]; }
+}
+function jparse(s){ if(!s) return null; try{ return JSON.parse(s); }catch(e){ return null; } }
+function nowISO(){ return new Date().toISOString(); }
 (function probeLS(){
   try{ localStorage.setItem(APP+':probe','1'); localStorage.removeItem(APP+':probe'); }
   catch(e){ LS_OK=false; }
 })();
 
-function newDB(){
-  return {app:APP, version:SCHEMA_VER, activeAccountId:null, accounts:[], progress:{}, updatedAt:null};
+function blankDB(){
+  return {app:APP, version:2, activeAccountId:null, accounts:[], progress:{}, updatedAt:null};
 }
-function migrate(d){
-  if(!d || typeof d!=='object') return newDB();
-  d.app = APP;
-  if(typeof d.version!=='number') d.version = SCHEMA_VER;
-  if(d.version < SCHEMA_VER){ d.version = SCHEMA_VER; }   // 将来のマイグレーション挿入点
-  d.accounts = Array.isArray(d.accounts)?d.accounts:[];
-  d.progress = (d.progress && typeof d.progress==='object')?d.progress:{};
-  d.accounts.forEach(a=>{
-    if(!d.progress[a.id]) d.progress[a.id] = {items:{}, sessions:[]};
-    if(!d.progress[a.id].items) d.progress[a.id].items = {};
-    if(!Array.isArray(d.progress[a.id].sessions)) d.progress[a.id].sessions = [];
-  });
-  if(d.activeAccountId && !d.accounts.some(a=>a.id===d.activeAccountId)) d.activeAccountId=null;
-  return d;
-}
-let db = newDB();
-function loadDB(){
-  const raw = lsGet(APP);
-  if(!raw){ db = newDB(); return; }
-  try{ db = migrate(JSON.parse(raw)); }catch(e){ db = newDB(); }
-}
-/* 追補§2: 保存のたびに updatedAt を更新（クラウド取り込み時は上書きしない） */
-function saveDB(keepUpdatedAt){
-  if(!keepUpdatedAt) db.updatedAt = new Date().toISOString();
-  db.app = APP;
-  try{ lsSet(APP, JSON.stringify(db)); }catch(e){}
-}
-function newItem(){
+function blankItem(){
   return {streak:0, mastered:false, masteredAt:null, lastFormat:null,
-          totalCorrect:0, totalWrong:0,
+          totalCorrect:0, totalWrong:0, postMasterWrong:0,
           byFormat:{A:{correct:0,wrong:0}, B:{correct:0,wrong:0}},
           wrongLog:[], lastSeenAt:null};
 }
-function accProg(accId){
-  if(!db.progress[accId]) db.progress[accId] = {items:{}, sessions:[]};
-  return db.progress[accId];
+function normItem(x){
+  const o = blankItem();
+  if(!x || typeof x!=='object') return o;
+  o.streak = x.streak|0; o.mastered = !!x.mastered; o.masteredAt = x.masteredAt||null;
+  o.lastFormat = x.lastFormat||null;
+  o.totalCorrect = x.totalCorrect|0; o.totalWrong = x.totalWrong|0;
+  o.postMasterWrong = x.postMasterWrong|0;
+  ['A','B'].forEach(f=>{
+    const b = (x.byFormat&&x.byFormat[f])||{};
+    o.byFormat[f].correct = b.correct|0; o.byFormat[f].wrong = b.wrong|0;
+  });
+  o.wrongLog = Array.isArray(x.wrongLog)?x.wrongLog.filter(w=>w&&w.at):[];
+  o.lastSeenAt = x.lastSeenAt||null;
+  return o;
 }
-function getItem(accId,kpId){
-  const p = accProg(accId);
-  if(!p.items[kpId]) p.items[kpId] = newItem();
+function normProgress(p){
+  const o = {items:{}, sessions:[], study:{seen:{}, marked:{}}};
+  if(!p || typeof p!=='object') return o;
+  const it = p.items||{};
+  Object.keys(it).forEach(k=>{ o.items[k] = normItem(it[k]); });
+  o.sessions = Array.isArray(p.sessions)?p.sessions.filter(s=>s&&s.finishedAt):[];
+  const st = p.study||{};
+  o.study.seen   = (st.seen   && typeof st.seen==='object')  ? Object.assign({}, st.seen)   : {};
+  o.study.marked = (st.marked && typeof st.marked==='object')? Object.assign({}, st.marked) : {};
+  return o;
+}
+/* 端末に持つのは常に「ログイン中のID 1件だけ」。他のIDは読み捨てる（§D） */
+function buildDB(raw){
+  const db = blankDB();
+  if(!AUTH) return db;
+  db.activeAccountId = AUTH.id;
+  const a = {id:AUTH.id, name:AUTH.id, label:AUTH.label||AUTH.id};
+  const src = raw && raw.accounts ? raw.accounts.filter(x=>String(x.id)===AUTH.id)[0] : null;
+  if(src && src.createdAt) a.createdAt = src.createdAt;
+  if(!a.createdAt) a.createdAt = nowISO();
+  db.accounts = [a];
+  db.progress[AUTH.id] = normProgress(raw && raw.progress ? raw.progress[AUTH.id] : null);
+  db.updatedAt = (raw && raw.updatedAt) || nowISO();
+  return db;
+}
+function loadAll(){
+  /* 同期設定：共通キー。無ければ旧キーから引き継ぐ（v2.1以前からの移行） */
+  SYNC = jparse(lsGet(K_SYNC));
+  if(!SYNC || !SYNC.url){
+    const LEGACY_SYNC_KEY = APP + ':sync';   // 移行のため読むだけ。書き込みはしない
+    const old = jparse(lsGet(LEGACY_SYNC_KEY));
+    if(old && old.url){
+      SYNC = {url:old.url, key:old.key||'', lastSync:old.lastSync||null};
+      lsSet(K_SYNC, JSON.stringify(SYNC));
+    }
+  }
+  if(!SYNC || typeof SYNC!=='object') SYNC = {url:'', key:'', lastSync:null};
+
+  AUTH = jparse(lsGet(K_AUTH));
+  if(!AUTH || !AUTH.id || !AUTH.pw) AUTH = null;
+  if(AUTH) AUTH.id = String(AUTH.id);
+
+  DB = buildDB(jparse(lsGet(K_DB)));
+
+  /* 端末ごとのUI設定（同期しない） */
+  UI = jparse(lsGet(K_UI)) || {};
+  if(!Array.isArray(UI.cats)   || !UI.cats.length)   UI.cats   = CATS.map(c=>c.id);
+  if(!Array.isArray(UI.levels) || !UI.levels.length) UI.levels = ['A','B'];
+  if(!UI.study || typeof UI.study!=='object') UI.study = {target:'all', order:'book', dir:'front', tab:'card'};
+}
+function saveDB(opt){
+  opt = opt||{};
+  if(!AUTH) return;
+  if(!opt.fromCloud) DB.updatedAt = nowISO();
+  DB.app = APP; DB.version = 2;
+  lsSet(K_DB, JSON.stringify(DB));
+}
+function saveUI(){ lsSet(K_UI, JSON.stringify(UI)); }
+function saveSync(){ lsSet(K_SYNC, JSON.stringify(SYNC)); }
+
+function acc(){ return DB.accounts[0]||null; }
+function prog(){
+  if(!AUTH) return null;
+  if(!DB.progress[AUTH.id]) DB.progress[AUTH.id] = {items:{}, sessions:[], study:{seen:{},marked:{}}};
+  const p = DB.progress[AUTH.id];
+  if(!p.items) p.items = {};
+  if(!p.sessions) p.sessions = [];
+  if(!p.study) p.study = {seen:{}, marked:{}};
+  if(!p.study.seen) p.study.seen = {};
+  if(!p.study.marked) p.study.marked = {};
+  return p;
+}
+function getItem(kpId){
+  const p = prog(); if(!p) return blankItem();
+  if(!p.items[kpId]) p.items[kpId] = blankItem();
   const it = p.items[kpId];
   if(!it.byFormat) it.byFormat = {A:{correct:0,wrong:0},B:{correct:0,wrong:0}};
   if(!it.wrongLog) it.wrongLog = [];
   return it;
 }
-function activeAcc(){ return db.accounts.find(a=>a.id===db.activeAccountId)||null; }
+function itemRO(id){ const p = prog(); if(!p || !p.items[id]) return blankItem(); return p.items[id]; }
 
-/* 追補§5-1: 記録の有無判定 */
-function dbHasRecords(d){
-  if(!d || !d.progress) return false;
-  for(const aid in d.progress){
-    const p = d.progress[aid]; if(!p) continue;
-    if(Array.isArray(p.sessions) && p.sessions.length>0) return true;
-    const items = p.items||{};
-    for(const k in items){
-      const it = items[k];
-      if(((it.totalCorrect|0)+(it.totalWrong|0))>0) return true;
-    }
-  }
+function ready(){ return !!(SYNC && SYNC.url && SYNC.key); }
+function loggedIn(){ return !!AUTH; }
+function portalURL(){ return './index.html'; }
+
+/* 学習記録が入っているか（初回ダウンロード判定にも使う） */
+function hasRecords(p){
+  if(!p) return false;
+  if((p.sessions||[]).length) return true;
+  const it = p.items||{};
+  for(const k in it){ if(((it[k].totalCorrect|0)+(it[k].totalWrong|0))>0) return true; }
+  const st = p.study||{};
+  if(Object.keys(st.seen||{}).length || Object.keys(st.marked||{}).length) return true;
   return false;
 }
 
 /* ============================================================
-   同期（追補§4 API契約 — サーバー側は変更不可）
+   合流（1アカウント用）
    ============================================================ */
-let syncCfg = null;   // {url,key,lastSync}
-function loadSyncCfg(){
-  try{ const r = lsGet(SYNC_LSKEY); syncCfg = r?JSON.parse(r):null; }catch(e){ syncCfg=null; }
-  if(syncCfg && !syncCfg.url) syncCfg=null;
-}
-function saveSyncCfg(){
-  if(syncCfg) lsSet(SYNC_LSKEY, JSON.stringify(syncCfg));
-  else { try{ localStorage.removeItem(SYNC_LSKEY); }catch(e){ delete memStore[SYNC_LSKEY]; } }
-}
-function syncEnabled(){ return !!(syncCfg && syncCfg.url && syncCfg.key); }
-
-const GAS_BAD = 'GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください';
-function setBar(state,msg){
-  const el = document.getElementById('syncBar');
-  if(!syncEnabled() && state!=='force'){ el.style.display='none'; return; }
-  el.style.display='block';
-  el.className = state==='ok'?'ok':state==='err'?'err':'busy';
-  const ls = (syncCfg&&syncCfg.lastSync)?('｜最終同期 '+fmtDT(syncCfg.lastSync)):'';
-  const icon = state==='ok'?'☁✓':state==='err'?'☁⚠':'☁…';
-  el.textContent = icon+' '+msg+ls;
-}
-async function gasFetch(opt){
-  let res, txt;
-  try{
-    res = await fetch(opt.url, opt.init);
-    txt = await res.text();
-  }catch(e){ const err=new Error('offline'); err.kind='offline'; throw err; }
-  let j;
-  try{ j = JSON.parse(txt); }catch(e){ const err=new Error(GAS_BAD); err.kind='gas'; throw err; }
-  if(!j || typeof j!=='object'){ const err=new Error(GAS_BAD); err.kind='gas'; throw err; }
-  return j;
-}
-function syncErrMsg(e){
-  if(e && e.kind==='offline') return 'オフライン（ローカルには保存済み）';
-  return (e&&e.message)?e.message:'同期エラー';
-}
-/* 追補§4-2 記録の保存(push) */
-async function syncPush(silent){
-  if(!syncEnabled()) return {ok:false};
-  if(!silent) setBar('busy','クラウドに保存中');
-  try{
-    const j = await gasFetch({url:syncCfg.url, init:{
-      method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({key:syncCfg.key, data:db})
-    }});
-    if(j.ok){ syncCfg.lastSync=new Date().toISOString(); saveSyncCfg(); setBar('ok','クラウド保存ずみ'); return {ok:true}; }
-    setBar('err', j.error||'保存に失敗しました'); return {ok:false,error:j.error};
-  }catch(e){ setBar('err', syncErrMsg(e)); return {ok:false,error:syncErrMsg(e)}; }
-}
-/* 追補§4-1 記録の取得(pull) ＋ §5 勝敗ルール */
-async function syncPull(silent){
-  if(!syncEnabled()) return {ok:false};
-  if(!silent) setBar('busy','クラウドと同期中');
-  let j;
-  try{
-    j = await gasFetch({url: syncCfg.url+(syncCfg.url.includes('?')?'&':'?')
-        +'key='+encodeURIComponent(syncCfg.key)+'&app='+encodeURIComponent(APP), init:{method:'GET'}});
-  }catch(e){ setBar('err', syncErrMsg(e)); return {ok:false,error:syncErrMsg(e)}; }
-  if(!j.ok){ setBar('err', j.error||'取得に失敗しました'); return {ok:false,error:j.error}; }
-
-  const cloud = j.data ? migrate(j.data) : null;
-  syncCfg.lastSync = new Date().toISOString(); saveSyncCfg();
-
-  if(!cloud){                                        // §5-5 クラウドが空 → push
-    const r = await syncPush(true);
-    setBar(r.ok?'ok':'err', r.ok?'クラウドに初回保存しました':(r.error||'保存に失敗しました'));
-    return {ok:true, action:'push'};
-  }
-  const lh = dbHasRecords(db), ch = dbHasRecords(cloud);
-  let adopt = false;
-  if(!lh && ch)      adopt = true;                   // §5-2 無条件でクラウド採用
-  else if(lh && !ch) adopt = false;                  // §5-2 逆なら無条件push
-  else if(lh && ch)  adopt = (new Date(cloud.updatedAt||0) > new Date(db.updatedAt||0)); // §5-3
-  else               adopt = true;                   // 両方とも記録なし → クラウドに寄せる
-
-  if(adopt){
-    const merged = mergeLocalOnlyAccounts(cloud, db);  // §5-4 アカウント合流
-    const prevActiveName = (activeAcc()||{}).name;
-    db = merged.db;
-    if(prevActiveName){
-      const hit = db.accounts.find(a=>a.name===prevActiveName);
-      if(hit) db.activeAccountId = hit.id;
-    }
-    if(!db.activeAccountId && db.accounts[0]) db.activeAccountId = db.accounts[0].id;
-    // 追補§2 取り込みだけなら updatedAt を上書きしない。
-    // ただし §5-4 の合流が起きたときは「この端末で内容が増えた」ので updatedAt を進める
-    // （進めないと、合流結果を他端末が古いデータとみなして上書きしてしまう）
-    saveDB(!merged.merged);
-    if(merged.merged){ await syncPush(true); setBar('ok','クラウドの記録と合流しました'); }
-    else setBar('ok','クラウドの記録を取り込みました');
-    return {ok:true, action:'adopt'};
-  }else{
-    const r = await syncPush(true);
-    setBar(r.ok?'ok':'err', r.ok?'この端末の記録をクラウドに保存しました':(r.error||'保存に失敗しました'));
-    return {ok:true, action:'push'};
-  }
-}
-/* §5-4 ローカルにしかないアカウント（名前で判定）を消さずに合流 */
-function mergeLocalOnlyAccounts(cloud, local){
-  let merged = false;
-  const names = new Set(cloud.accounts.map(a=>a.name));
-  local.accounts.forEach(a=>{
-    if(names.has(a.name)) return;
-    let id = a.id;
-    while(cloud.accounts.some(x=>x.id===id)) id = 'acc_'+Math.random().toString(36).slice(2,9);
-    cloud.accounts.push({id, name:a.name, createdAt:a.createdAt});
-    cloud.progress[id] = local.progress[a.id] || {items:{}, sessions:[]};
-    merged = true;
+function mergeItem(a,b){
+  if(!a) return normItem(b); if(!b) return normItem(a);
+  a = normItem(a); b = normItem(b);
+  const o = blankItem();
+  o.totalCorrect = Math.max(a.totalCorrect, b.totalCorrect);
+  o.totalWrong   = Math.max(a.totalWrong,   b.totalWrong);
+  o.postMasterWrong = Math.max(a.postMasterWrong, b.postMasterWrong);
+  ['A','B'].forEach(f=>{
+    o.byFormat[f].correct = Math.max(a.byFormat[f].correct, b.byFormat[f].correct);
+    o.byFormat[f].wrong   = Math.max(a.byFormat[f].wrong,   b.byFormat[f].wrong);
   });
-  return {db:cloud, merged};
+  o.mastered = a.mastered || b.mastered;
+  if(a.masteredAt && b.masteredAt) o.masteredAt = (new Date(a.masteredAt)<=new Date(b.masteredAt))?a.masteredAt:b.masteredAt;
+  else o.masteredAt = a.masteredAt || b.masteredAt || null;
+  if(o.mastered && !o.masteredAt) o.masteredAt = nowISO();
+  const seen = {}, log = [];
+  a.wrongLog.concat(b.wrongLog).forEach(w=>{ const k = w.at+'|'+w.format; if(!seen[k]){ seen[k]=1; log.push(w); } });
+  log.sort((x,y)=> new Date(y.at)-new Date(x.at));
+  o.wrongLog = log.slice(0,5).reverse();
+  const at = a.lastSeenAt?new Date(a.lastSeenAt).getTime():0, bt = b.lastSeenAt?new Date(b.lastSeenAt).getTime():0;
+  const newer = (at>=bt)?a:b;
+  o.lastSeenAt = newer.lastSeenAt || a.lastSeenAt || b.lastSeenAt || null;
+  o.streak     = newer.streak;
+  o.lastFormat = newer.lastFormat;
+  return o;
 }
-/* 追補§4-3 全問一覧の書き出し */
-async function syncPushList(rows, header){
-  if(!syncEnabled()) return {ok:false};
-  setBar('busy','全問一覧を書き出し中');
-  try{
-    const j = await gasFetch({url:syncCfg.url, init:{
-      method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({key:syncCfg.key, app:APP, list:{header, rows}})
-    }});
-    if(j.ok){ setBar('ok','全問一覧をスプレッドシートに書き出しました'); return {ok:true}; }
-    setBar('err', j.error||'書き出しに失敗しました'); return {ok:false,error:j.error};
-  }catch(e){ setBar('err', syncErrMsg(e)); return {ok:false,error:syncErrMsg(e)}; }
+function mergeProgress(L,C){
+  L = normProgress(L); C = normProgress(C);
+  const M = {items:{}, sessions:[], study:{seen:{}, marked:{}}}, ids = {};
+  Object.keys(L.items).forEach(k=>{ids[k]=1;});
+  Object.keys(C.items).forEach(k=>{ids[k]=1;});
+  Object.keys(ids).forEach(k=>{ M.items[k] = mergeItem(L.items[k], C.items[k]); });
+  const seen = {}, ss = [];
+  L.sessions.concat(C.sessions).forEach(s=>{ if(!seen[s.finishedAt]){ seen[s.finishedAt]=1; ss.push(s); } });
+  ss.sort((x,y)=> new Date(y.finishedAt)-new Date(x.finishedAt));
+  M.sessions = ss.slice(0,100).reverse();
+  /* 覚えるモードの記録も失わないよう和집合で合流 */
+  M.study.seen   = Object.assign({}, C.study.seen,   L.study.seen);
+  M.study.marked = Object.assign({}, C.study.marked, L.study.marked);
+  return M;
+}
+
+/* ============================================================
+   同期API（POST 1本／自分のID 1件だけ）
+   ============================================================ */
+var syncState = {cls:'', msg:''};
+function syncHTML(){
+  return esc(syncState.msg) + ((SYNC && SYNC.lastSync) ? '｜最終同期 '+fmtDT(SYNC.lastSync) : '');
+}
+function setSync(cls,msg){
+  syncState.cls = cls||''; syncState.msg = msg||'';
+  paintSync();
+}
+function paintSync(){
+  const el = document.getElementById('syncBar');
+  if(!el) return;
+  if(!syncState.msg){ el.style.display='none'; return; }
+  el.style.display = 'block';
+  el.className = syncState.cls==='ok' ? 'ok' : syncState.cls==='ng' ? 'err' : 'busy';
+  el.innerHTML = syncHTML();
+  const p = document.getElementById('panelSync');
+  if(p){ p.className = 'syncbar '+(syncState.cls==='ok'?'ok':syncState.cls==='ng'?'err':'busy'); p.innerHTML = syncHTML(); }
+}
+async function api(body){
+  const r = await fetch(SYNC.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(Object.assign({key:SYNC.key}, body))});
+  const txt = await r.text();
+  try{ return JSON.parse(txt); }
+  catch(e){ throw new Error('GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください'); }
+}
+function apiError(j){
+  const e = String(j.error||'');
+  if(e==='auth') return 'ログインが無効になりました。ポータルでログインし直してください';
+  if(/合言葉|key/i.test(e)) return '合言葉が違います';
+  return e || 'エラー';
+}
+function onAuthLost(){ lsDel(K_AUTH); AUTH = null; VIEW = 'gate'; render(); }
+
+async function pullCloud(silent){
+  if(!ready() || !AUTH) return;
+  if(!silent) setSync('','☁… クラウドと同期しています');
+  let j;
+  try{ j = await api({action:'fetch', app:APP, id:AUTH.id, pw:AUTH.pw}); }
+  catch(e){
+    if(/GASの応答/.test(e.message)) setSync('ng','☁⚠ '+e.message);
+    else setSync('','☁ オフライン（ローカルには保存済み）');
+    return;
+  }
+  if(!j.ok){
+    if(j.error==='auth'){ setSync('ng','☁⚠ '+apiError(j)); onAuthLost(); return; }
+    setSync('ng','☁⚠ '+apiError(j)); return;
+  }
+  const cloudP = normProgress(((j.data||{}).progress||{})[AUTH.id]);
+  const localP = prog();
+  const before = JSON.stringify(localP);
+
+  /* この端末にまだ記録が無ければ、クラウドの記録を丸ごと取り込む（初回ダウンロード） */
+  const firstDownload = !hasRecords(localP) && hasRecords(cloudP);
+  const merged = firstDownload ? cloudP : mergeProgress(localP, cloudP);
+
+  DB.progress[AUTH.id] = merged;
+  if(j.label){ AUTH.label = j.label; lsSet(K_AUTH, JSON.stringify(AUTH)); DB.accounts[0].label = j.label; }
+  const cd = (j.data||{}).accounts && j.data.accounts[0];
+  if(cd && cd.createdAt) DB.accounts[0].createdAt = cd.createdAt;
+  saveDB({fromCloud:true});
+  SYNC.lastSync = nowISO(); saveSync();
+
+  const n = Object.keys(merged.items).length;
+  const m = Object.keys(merged.items).filter(k=>merged.items[k].mastered).length;
+  if(firstDownload){
+    setSync('ok','☁✓ クラウドから記録を取り込みました（'+n+'語・習得'+m+'）');
+    render();
+    if(!silentAdoptNotice){
+      silentAdoptNotice = true;
+      alertM('クラウドから記録を取り込みました',
+        'この端末には記録がなかったので、ID '+esc(AUTH.id)+' のこれまでの学習記録をクラウドから読み込みました。<br><br>'+
+        '<b>'+n+'語</b>の記録／<b>習得済み '+m+'語</b><br><br>このまま続きから学習できます。');
+    }
+    return;                                   // クラウドと同じ内容なので送り返さない
+  }
+  setSync('ok','☁✓ クラウドと合流しました（'+n+'語・習得'+m+'）');
+  render();
+  if(before !== JSON.stringify(merged)) await pushCloud(true, syncState.msg);
+}
+var silentAdoptNotice = false;
+
+async function pushCloud(silent, okMsg){
+  if(!ready() || !AUTH) return false;
+  if(!silent) setSync('','☁… 送信しています');
+  let j;
+  try{ j = await api({action:'save', app:APP, id:AUTH.id, pw:AUTH.pw,
+        account:DB.accounts[0], progress:prog()}); }
+  catch(e){
+    if(/GASの応答/.test(e.message)) setSync('ng','☁⚠ '+e.message);
+    else setSync('','☁ オフライン（ローカルには保存済み。次につながったときに送ります）');
+    return false;
+  }
+  if(!j.ok){
+    if(j.error==='auth'){ setSync('ng','☁⚠ '+apiError(j)); onAuthLost(); return false; }
+    setSync('ng','☁⚠ '+apiError(j)); return false;
+  }
+  SYNC.lastSync = nowISO(); saveSync();
+  setSync('ok', okMsg || '☁✓ クラウドに保存しました');
+  return true;
 }
 
 /* ============================================================
@@ -428,8 +520,7 @@ function fmtDT(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) 
   return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
 function fmtD(iso){ if(!iso) return ''; const d=new Date(iso); if(isNaN(d)) return '';
   return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
-function fmtFile(){ const d=new Date(); return ''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate()); }
-function uid(p){ return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function ymd(){ const d=new Date(); return ''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate()); }
 function shuffle(a){ const r=a.slice(); for(let i=r.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [r[i],r[j]]=[r[j],r[i]]; } return r; }
 function ruby(word, yomi){
   if(!yomi) return esc(word);
@@ -476,7 +567,7 @@ function makeChoices(kp, fmt){
 }
 function isCorrect(kp, fmt, picked){
   if(picked===answerOf(kp,fmt)) return true;
-  if(fmt==='A' && kp.alts && kp.alts.includes(picked)) return true;   // 併記解答も正解扱い
+  if(fmt==='A' && kp.alts && kp.alts.includes(picked)) return true;
   return false;
 }
 function explainOf(kp){
@@ -499,13 +590,13 @@ let S = null;
 function pickKPs(catIds, levels, n, mode, onlyIds){
   let pool = KPS.filter(k=>catIds.includes(k.cat) && levels.includes(k.level));
   if(onlyIds) pool = pool.filter(k=>onlyIds.includes(k.id));
-  const acc = db.activeAccountId;
+  const P = prog()||{items:{}};
   if(mode==='all') return shuffle(pool).map(k=>k.id);
   // 習得済みを除外
-  const cand = pool.filter(k=>!(accProg(acc).items[k.id]||{}).mastered);
+  const cand = pool.filter(k=>!(P.items[k.id]||{}).mastered);
   const now = Date.now();
   const scored = cand.map(k=>{
-    const it = accProg(acc).items[k.id]||{};
+    const it = P.items[k.id]||{};
     const wrong = it.totalWrong|0;
     const unseen = ((it.totalCorrect|0)+(it.totalWrong|0))===0;
     const since = it.lastSeenAt ? (now-new Date(it.lastSeenAt).getTime())/86400000 : 9999;
@@ -516,18 +607,20 @@ function pickKPs(catIds, levels, n, mode, onlyIds){
   return scored.slice(0, n).map(x=>x.id);
 }
 function initialFormat(kpId){
-  const it = accProg(db.activeAccountId).items[kpId];
+  const P = prog()||{items:{}};
+  const it = P.items[kpId];
   if(it && it.lastFormat) return it.lastFormat==='A'?'B':'A';
   return Math.random()<.5?'A':'B';
 }
 function startSession(opt){
-  const acc = db.activeAccountId;
+  if(!loggedIn()){ VIEW='gate'; render(); return null; }
+  const P = prog()||{items:{}};
   const n = opt.mode==='10q'?10 : opt.mode==='20q'?20 : Infinity;
   const kpIds = pickKPs(opt.cats, opt.levels, n, opt.mode, opt.onlyIds);
   if(!kpIds.length) return null;
   const base = {};
   kpIds.forEach(id=>{
-    const it = accProg(acc).items[id]||newItem();
+    const it = P.items[id]||blankItem();
     base[id] = {streak:it.streak|0, mastered:!!it.mastered, lastFormat:it.lastFormat||null,
                 lastCorrectFormat:(it.streak|0)>0?(it.lastFormat||null):null};
   });
@@ -617,12 +710,11 @@ function remainWords(){
 
 /* 成績の確定（v1.0 §5-2：全問終了時にのみ記録） */
 function commitSession(){
-  const acc = db.activeAccountId;
-  const p = accProg(acc);
+  const p = prog();
   const newlyMastered = [], wrongKpIds = new Set(), sessionWrongCount = {};
   let c=0,w=0;
   S.log.forEach(e=>{
-    const it = getItem(acc, e.kpId);
+    const it = getItem(e.kpId);
     const f = (e.fmt==='A')?'A':'B';
     it.lastSeenAt = e.at;
     it.lastFormat = e.fmt;
@@ -649,8 +741,9 @@ function commitSession(){
     mode:S.mode, correct:c, wrong:w,
     newlyMastered, wrongKpIds:[...wrongKpIds], sessionWrongCount
   });
+  if(p.sessions.length>100) p.sessions = p.sessions.slice(-100);
   saveDB();
-  syncPush(true);                                  // 追補§5 セッション終了の保存直後に自動push
+  pushCloud(true);                                 // セッション終了の保存直後に自動送信
   return {c, w, newlyMastered, wrongKpIds:[...wrongKpIds]};
 }
 /* ============================================================
@@ -661,10 +754,8 @@ let STUDY = {tab:'card', target:'all', order:'book', dir:'front',
              idx:0, open:false, sheetOpen:{}, list:null, dirty:false};
 
 function studyStore(){
-  const p = accProg(db.activeAccountId);
-  if(!p.study || typeof p.study!=='object') p.study = {};
-  if(!p.study.seen)   p.study.seen   = {};
-  if(!p.study.marked) p.study.marked = {};
+  const p = prog();
+  if(!p) return {seen:{}, marked:{}};
   return p.study;
 }
 function markSeen(kpId){
@@ -679,7 +770,7 @@ function studySave(){
 }
 function studyLeave(){
   clearTimeout(studyTimer);
-  if(STUDY.dirty){ saveDB(); syncPush(true); STUDY.dirty=false; }
+  if(STUDY.dirty){ saveDB(); pushCloud(true); STUDY.dirty=false; }
 }
 
 const STUDY_TARGETS = [
@@ -693,7 +784,7 @@ const STUDY_ORDERS = [['book','本の順（レベルA→B）'],['shuffle','シ�
 
 function studyList(rebuild){
   if(STUDY.list && !rebuild) return STUDY.list;
-  const items = accProg(db.activeAccountId).items;
+  const items = (prog()||{items:{}}).items;
   const st = studyStore();
   let l = KPS.filter(k=>PICK.cats.includes(k.cat) && PICK.levels.includes(k.level));
   const T = STUDY.target;
@@ -832,7 +923,8 @@ function studySheet(list, st){
 const $ = id=>document.getElementById(id);
 let VIEW = 'home';
 let RESULT = null;
-let PICK = {cats:CATS.map(c=>c.id), levels:['A','B']};
+const PICK = {get cats(){return UI.cats;}, set cats(v){UI.cats=v; saveUI();},
+              get levels(){return UI.levels;}, set levels(v){UI.levels=v; saveUI();}};
 let LISTF = {cat:'', state:'', sort:'wrong'};
 let openKp = null;
 
@@ -848,6 +940,7 @@ function alertM(title, body, cb){
     '<div class="row" style="margin-top:14px"><button class="btn-p" id="mOk">OK</button></div>');
   $('mOk').onclick = ()=>{ closeModal(); if(cb) cb(); };
 }
+const toastModal = alertM;
 function confirmM(title, body, okLabel, cb, danger){
   modal('<h3>'+esc(title)+'</h3><div class="tiny" style="font-size:.9rem">'+body+'</div>'+
     '<div class="row" style="margin-top:14px"><button id="mNo">キャンセル</button>'+
@@ -861,46 +954,45 @@ function render(){
   const w = $('warnBar');
   if(!LS_OK){
     w.style.display='block';
-    w.innerHTML = syncEnabled()
+    w.innerHTML = ready()
       ? '☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます'
-      : '⚠ この端末（ブラウザ設定）では記録を保存できません。学習は続けられますが、閉じると記録は消えます。クラウド同期を設定すると記録を残せます。';
+      : '⚠ この端末（ブラウザ設定）では記録を保存できません。学習は続けられますが、閉じると記録は消えます。';
   }else w.style.display='none';
 
-  if(!db.accounts.length || !db.activeAccountId) VIEW = 'accounts';
+  /* 未設定・未ログインならゲート画面（学習させない） */
+  if(!ready() || !loggedIn()){ VIEW='gate'; renderGate(); paintSync(); return; }
+
   const app = $('app');
-  if(VIEW==='accounts') app.innerHTML = viewAccounts();
-  else if(VIEW==='quiz') app.innerHTML = viewQuiz();
+  if(VIEW==='quiz') app.innerHTML = viewQuiz();
   else if(VIEW==='result') app.innerHTML = viewResult();
   else if(VIEW==='study') app.innerHTML = viewStudy();
-  else if(VIEW==='list') app.innerHTML = '<h1>全問一覧</h1><p class="muted">'+esc(activeAcc().name)+'</p>'+listCard(false);
-  else app.innerHTML = viewHome();
+  else if(VIEW==='list') app.innerHTML = '<h1>全問一覧</h1><p class="muted">ID '+esc(AUTH.id)+'</p>'+listCard(false);
+  else { VIEW='home'; app.innerHTML = viewHome(); }
   bind();
-  window.scrollTo(0, VIEW==='quiz'?0:window.scrollY);
+  paintSync();
 }
 
 /* ============================================================
-   アカウント画面（v1.0 §1）
+   ゲート（同期未設定・未ログイン）
    ============================================================ */
-function viewAccounts(){
-  let h = '<h1>'+APP_TITLE+'クイズ</h1><p class="muted">中学受験・国語　二字／三字／四字熟語・対義語・類義語</p>';
-  h += '<div class="card"><h3 style="margin-top:0">だれが学習しますか？</h3>';
-  if(!db.accounts.length) h += '<p class="muted">まだアカウントがありません。名前を入れて追加してください。</p>';
-  db.accounts.forEach(a=>{
-    const p = accProg(a.id), items=p.items||{};
-    const mast = Object.values(items).filter(i=>i.mastered).length;
-    h += '<div class="acc-item'+(a.id===db.activeAccountId?' active':'')+'">'+
-      '<span class="nm">'+esc(a.name)+'</span>'+
-      '<span class="muted" style="font-size:.78rem">習得 '+mast+'／'+KPS.length+'</span>'+
-      '<button class="btn-sm" data-act="accRename" data-id="'+a.id+'">名前</button>'+
-      '<button class="btn-sm btn-d" data-act="accDel" data-id="'+a.id+'">削除</button>'+
-      '<button class="btn-sm btn-p" data-act="accUse" data-id="'+a.id+'">選ぶ</button></div>';
-  });
-  h += '<div class="sep"></div><label class="fld">新しいアカウント</label>'+
-    '<div class="row" style="margin-top:6px"><input type="text" id="newAcc" placeholder="例：長男" style="flex:2 1 60%">'+
-    '<button class="btn-p" data-act="accAdd" style="flex:1 1 30%">＋ 追加</button></div></div>';
-  if(db.accounts.length && db.activeAccountId) h += '<div class="row"><button data-act="go" data-v="home">← もどる</button></div>';
-  h += mgmtPanel();
-  return h;
+function renderGate(){
+  const why = !ready() ? 'クラウド同期がまだ設定されていません。' : 'まだログインしていません。';
+  $('app').innerHTML =
+    '<h1>'+APP_TITLE+'クイズ</h1>'+
+    '<div class="card"><h3 style="margin-top:0">🔑 ポータルで準備してください</h3>'+
+    '<p class="muted">'+esc(why)+'<br>ポータル（トップページ）で<b>同期設定とログイン</b>を1回だけ行うと、'+
+    'すべての学習ツールがそのまま使えるようになります。</p>'+
+    '<ul class="tiny" style="padding-left:1.2em;line-height:2">'+
+    '<li>GASのURLと合言葉 … ポータルで入力</li>'+
+    '<li>ID（5桁）とパスワード … ポータルでログイン</li>'+
+    '<li>この画面に戻ってくれば、すぐ学習を始められます</li></ul>'+
+    '<div class="stack" style="margin-top:12px">'+
+    '<a class="btn-p" id="toPortal" style="display:block;text-align:center;text-decoration:none;padding:14px;border-radius:12px">ポータルをひらく</a>'+
+    '<button data-act="reloadAuth">ログイン済みなら、ここを押して読み込み直す</button>'+
+    '</div></div>'+
+    '<p class="tiny center" style="margin-top:20px">'+esc(APP)+'　／　共通仕様 '+VER+'</p>';
+  const a = $('toPortal'); if(a) a.href = portalURL();
+  bind();
 }
 
 /* ============================================================
@@ -908,7 +1000,7 @@ function viewAccounts(){
    ============================================================ */
 function catCount(cid, levels){ return KP_BY_CAT[cid].filter(k=>levels.includes(k.level)).length; }
 function statFor(cid, level){
-  const items = accProg(db.activeAccountId).items;
+  const items = (prog()||{items:{}}).items;
   const list = KP_BY_CAT[cid].filter(k=>!level || k.level===level);
   let m=0,h=0;
   list.forEach(k=>{ const it=items[k.id]; if(!it) return;
@@ -920,14 +1012,12 @@ function bar(s){
   return '<div class="mbar"><i class="m" style="width:'+p1.toFixed(1)+'%"></i><i class="h" style="width:'+p2.toFixed(1)+'%"></i></div>';
 }
 function viewHome(){
-  const acc = activeAcc();
   const sel = PICK.cats, lv = PICK.levels;
   const nSel = sel.reduce((a,c)=>a+catCount(c,lv),0);
 
   let h = '<div class="row" style="align-items:center;margin-top:4px">'+
     '<h1 style="flex:1 1 auto;margin:0">'+APP_TITLE+'クイズ</h1>'+
-    '<span class="acc-pill">👤 '+esc(acc.name)+'</span>'+
-    '<button class="btn-sm" data-act="go" data-v="accounts" style="flex:0 0 auto">切替</button></div>'+
+    '<button class="acc-pill" id="accBtn" data-act="toPortal" style="flex:0 0 auto"></button></div>'+
     '<p class="muted" style="margin:.3em 0 0">全'+KPS.length+'語　二字'+KP_BY_CAT.niji.length+
     '／三字'+KP_BY_CAT.sanji.length+'／四字'+KP_BY_CAT.yoji.length+
     '／対義語'+KP_BY_CAT.taigi.length+'／類義語'+KP_BY_CAT.ruigi.length+'</p>';
@@ -958,7 +1048,7 @@ function viewHome(){
   /* --- 覚えるモード --- */
   const sst = studyStore();
   const seenN = KPS.filter(k=>sel.includes(k.cat) && lv.includes(k.level) && sst.seen[k.id]).length;
-  const markN = KPS.filter(k=>sst.marked[k.id]).length;
+  const markN = Object.keys(sst.marked).length;
   h += '<div class="card"><h3 style="margin-top:0">覚えるモード</h3>'+
     '<p class="muted" style="margin:.2em 0 .8em;font-size:.85rem">テストの前に、意味を見ながら覚えるためのモードです。'+
     '正解数や習得状況には影響しません。</p>'+
@@ -966,7 +1056,7 @@ function viewHome(){
     '<p class="tiny" style="margin-top:8px">選択中の'+nSel+'語のうち <b>'+seenN+'語</b> を確認ずみ'+
     (markN?'　／　🔖 チェック中 '+markN+'語':'')+'</p></div>';
 
-  /* --- 習得状況（v1.0 §6-2） --- */
+  /* --- 習得状況 --- */
   const all = {total:0,mast:0,half:0};
   CATS.forEach(c=>{ const s=statFor(c.id,null); all.total+=s.total; all.mast+=s.mast; all.half+=s.half; });
   h += '<div class="card"><h3 style="margin-top:0">習得状況</h3>'+
@@ -980,10 +1070,10 @@ function viewHome(){
   h += '<p class="tiny" style="margin-top:10px">■ 濃色＝習得済み　■ 中間色＝1回正解　□ 淡色＝未着手・誤答</p>'+
     '<div class="row" style="margin-top:8px"><button class="btn-sm" data-act="showList">📊 全問一覧を見る</button></div></div>';
 
-  /* --- 間違いランキング（v1.0 §9-2） --- */
-  const items = accProg(db.activeAccountId).items;
+  /* --- 間違いランキング --- */
+  const items = (prog()||{items:{}}).items;
   const rank = KPS.map(k=>({k, it:items[k.id]})).filter(x=>x.it && (x.it.totalWrong|0)>0)
-    .sort((a,b)=>(b.it.totalWrong-a.it.totalWrong)||(b.it.totalWrong-a.it.totalWrong)).slice(0,15);
+    .sort((a,b)=>b.it.totalWrong-a.it.totalWrong).slice(0,15);
   h += '<div class="card"><h3 style="margin-top:0">間違いランキング</h3>';
   if(!rank.length) h += '<p class="muted">まだ誤答の記録はありません。</p>';
   else{
@@ -1002,33 +1092,30 @@ function viewHome(){
   h += '</div>';
 
   h += mgmtPanel();
-  h += '<p class="tiny center" style="margin-top:20px">'+esc(APP)+'　／　共通仕様 v1.0＋追補 v1.1 準拠</p>';
   return h;
 }
 
-/* ---------- 記録データの管理パネル（追補§3・必須UI） ---------- */
+/* ---------- 記録データの管理（§J） ---------- */
 function mgmtPanel(){
-  const on = syncEnabled();
-  let h = '<div class="card"><h3 style="margin-top:0">記録データの管理</h3>';
-  h += '<p class="tiny" id="mgmtState">'+(on
-      ? '☁ 同期先：'+esc((syncCfg.url||'').replace(/^https?:\/\//,'').slice(0,42))+'…　最終同期 '+fmtDT(syncCfg.lastSync)
-      : '☁ クラウド同期は未設定です（この端末にだけ記録が残ります）')+'</p>';
-  h += '<div class="stack">'+
-    '<button data-act="expJson">📤 記録を書き出す（JSON）</button>'+
+  let h = '<div class="card"><h3 style="margin-top:0">💾 記録データの管理</h3>';
+  h += '<div class="syncbar '+(syncState.cls==='ok'?'ok':syncState.cls==='ng'?'err':'busy')+'" id="panelSync">'+syncHTML()+'</div>';
+  h += '<div class="stack" style="margin-top:10px">'+
+    '<button data-act="syncNow">🔄 今すぐ同期</button>'+
+    '<button class="btn-s" data-act="pushList">📋 全問一覧をDriveへ</button>'+
+    '<button class="btn-s" data-act="csv">📄 CSVをダウンロード</button>'+
+    '<button data-act="expJson">📤 記録を書き出す</button>'+
     '<button data-act="impJson">📥 記録を読み込む</button>'+
-    '<button class="btn-s" data-act="syncCfg">☁ クラウド同期設定</button>'+
-    (on?'<button class="btn-s" data-act="syncNow">🔄 今すぐ同期</button>':'')+
-    (on?'<button class="btn-s" data-act="pushList">📋 全問一覧をDriveへ</button>':'')+
+    '<button class="btn-d" data-act="resetRecords">🗑 このツールの記録を消す</button>'+
     '</div>';
-  h += '<div class="sep"></div><div class="row">'+
-    '<button class="btn-sm btn-d" data-act="resetAcc">このアカウントの記録をリセット</button>'+
-    '<button class="btn-sm btn-d" data-act="resetAll">全データをリセット</button></div>';
+  h += '<a class="btn-s" id="toPortal2" data-act="toPortal" style="display:block;text-align:center;text-decoration:none;padding:12px;border-radius:12px;margin-top:10px;border:1px solid #cfdcf4">⚙ 同期設定・ログアウトはポータルへ</a>';
+  h += '<p class="tiny" style="margin-top:10px">ID '+esc(AUTH.id)+'　／　ツール識別子 '+esc(APP)+
+       '　／　共通仕様 '+VER+'　／　全'+KPS.length+'知識ポイント</p>';
   h += '<input type="file" id="impFile" accept="application/json,.json" class="hide"></div>';
   return h;
 }
 
 /* ============================================================
-   出題画面（v1.0 §6-1／§5 ナビゲーション）
+   出題画面
    ============================================================ */
 function viewQuiz(){
   const t = sessTotals();
@@ -1089,12 +1176,12 @@ function viewQuiz(){
 }
 
 /* ============================================================
-   結果画面（v1.0 §7）
+   結果画面
    ============================================================ */
 function viewResult(){
   const R = RESULT;
   const rate = (R.c+R.w)?Math.round(R.c/(R.c+R.w)*100):0;
-  let h = '<h1>結果</h1><p class="muted">'+esc(activeAcc().name)+'　'+esc(R.modeLabel)+'　'+fmtDT(R.at)+'</p>';
+  let h = '<h1>結果</h1><p class="muted">ID '+esc(AUTH.id)+'　'+esc(R.modeLabel)+'　'+fmtDT(R.at)+'</p>';
   h += '<div class="card"><div class="scoregrid">'+
     '<div><b style="color:var(--ok)">'+R.c+'</b><span>正解</span></div>'+
     '<div><b style="color:var(--ng)">'+R.w+'</b><span>誤答</span></div>'+
@@ -1104,14 +1191,13 @@ function viewResult(){
     R.needReview.map(id=>esc(KPMAP[id].front)).join('・')+' は「要復習」です。</p>';
   h += '</div>';
 
-  /* 間違えた問題一覧（今回分） */
   const wrongs = R.log.filter(e=>!e.correct);
   h += '<div class="card"><h3 style="margin-top:0">間違えた問題（今回）</h3>';
   if(!wrongs.length) h += '<p class="muted">ありません。全問正解です！</p>';
   else{
     h += '<table><thead><tr><th>知識ポイント</th><th>形式</th><th>自分の解答</th><th>正解</th></tr></thead><tbody>';
     wrongs.forEach(e=>{
-      const kp = KPMAP[e.kpId], q = qText(kp,e.fmt);
+      const kp = KPMAP[e.kpId];
       h += '<tr><td><b>'+esc(kp.front)+'</b><br><span class="muted" style="font-size:.75rem">'+CAT[kp.cat].short+'</span></td>'+
         '<td class="muted" style="font-size:.75rem">'+esc(e.fmt+'：'+(e.fmt==='A'?CAT[kp.cat].fa:CAT[kp.cat].fb))+'</td>'+
         '<td style="color:var(--ng)">'+esc(e.picked)+'</td><td style="color:var(--ok)">'+esc(answerOf(kp,e.fmt))+'</td></tr>'+
@@ -1126,11 +1212,11 @@ function viewResult(){
   return h;
 }
 
-/* ---------- カテゴリー別 全問一覧（v1.0 §7-3） ---------- */
+/* ---------- カテゴリー別 全問一覧 ---------- */
 function listRows(){
-  const items = accProg(db.activeAccountId).items;
+  const items = (prog()||{items:{}}).items;
   let rows = KPS.map(k=>{
-    const it = items[k.id]||newItem();
+    const it = items[k.id]||blankItem();
     return {k, it, st:stateOf(it), wrong:it.totalWrong|0, correct:it.totalCorrect|0};
   });
   if(LISTF.cat) rows = rows.filter(r=>r.k.cat===LISTF.cat);
@@ -1184,7 +1270,7 @@ function listCard(inResult){
   });
   h += '</tbody></table>';
   h += '<div class="row" style="margin-top:12px"><button class="btn-s" data-act="csv">⬇ CSVでダウンロード</button>'+
-    (syncEnabled()?'<button class="btn-s" data-act="pushList">📋 全問一覧をDriveへ</button>':'')+'</div>';
+    '<button class="btn-s" data-act="pushList">📋 全問一覧をDriveへ</button></div>';
   if(!inResult) h += '<div class="row" style="margin-top:8px"><button data-act="go" data-v="home">閉じる</button></div>';
   h += '</div>';
   return h;
@@ -1197,15 +1283,19 @@ function bind(){
     const a = el.dataset.act;
     if(el.tagName==='SELECT'){
       el.onchange = ()=>{
-        if(a==='sset'){ STUDY[el.dataset.k]=el.value; STUDY.idx=0; STUDY.open=false; STUDY.list=null; }
+        if(a==='sset'){ STUDY[el.dataset.k]=el.value; UI.study[el.dataset.k]=el.value; saveUI();
+                        STUDY.idx=0; STUDY.open=false; STUDY.list=null; }
         else LISTF[el.dataset.k]=el.value;
         render();
       };
       return;
     }
     if(el.tagName==='INPUT' && el.type==='checkbox'){ el.onchange = ()=>ACT[a](el); return; }
+    if(el.tagName==='A' && a==='toPortal'){ el.href = portalURL(); return; }
     el.onclick = (ev)=>{ ev.stopPropagation(); ACT[a] && ACT[a](el); };
   });
+  const ab = $('accBtn');
+  if(ab && AUTH) ab.textContent = '👤 '+(AUTH.label||AUTH.id)+'（'+AUTH.id+'）';
   bindSwipe();
 }
 /* カードの左右スワイプ */
@@ -1223,16 +1313,24 @@ function bindSwipe(){
 }
 const ACT = {
   go(el){ if(VIEW==='study') studyLeave(); VIEW = el.dataset.v; openKp=null; render(); },
+  toPortal(){ if(loggedIn()) location.href = portalURL(); },
+  reloadAuth(){
+    loadAll();
+    VIEW = (loggedIn()&&ready())?'home':'gate';
+    render();
+    if(ready()&&AUTH) pullCloud();          // 初回ログイン時はここでクラウドから取り込む
+  },
   cat(el){
     const id = el.dataset.id;
     PICK.cats = el.checked ? [...new Set([...PICK.cats,id])] : PICK.cats.filter(x=>x!==id);
-    render();
+    if(!PICK.cats.length) PICK.cats = [id];
+    STUDY.list = null; render();
   },
   lv(el){
     const l = el.dataset.id;
     let n = PICK.levels.includes(l) ? PICK.levels.filter(x=>x!==l) : [...PICK.levels,l];
     if(!n.length) n = [l];
-    PICK.levels = n; render();
+    PICK.levels = n; STUDY.list = null; render();
   },
   f(){},
   kp(el){ openKp = (openKp===el.dataset.id)?null:el.dataset.id; render(); },
@@ -1242,7 +1340,7 @@ const ACT = {
   study(){ STUDY.list=null; STUDY.idx=0; STUDY.open=false; VIEW='study'; render(); },
   leaveStudy(){ studyLeave(); VIEW='home'; render(); },
   sset(){},
-  stab(el){ STUDY.tab = el.dataset.v; STUDY.open=false; render(); },
+  stab(el){ STUDY.tab = el.dataset.v; UI.study.tab = el.dataset.v; saveUI(); STUDY.open=false; render(); },
   flip(){
     const list = studyList();
     if(!list.length) return;
@@ -1285,50 +1383,17 @@ const ACT = {
     STUDY.list = null; render();
   },
 
-  /* ---- アカウント ---- */
-  accAdd(){
-    const v = ($('newAcc').value||'').trim();
-    if(!v) return alertM('入力してください','名前を入れてから「追加」を押してください。');
-    if(db.accounts.some(a=>a.name===v)) return alertM('同じ名前があります','別の名前にしてください。');
-    const id = uid('acc');
-    db.accounts.push({id, name:v, createdAt:new Date().toISOString()});
-    db.progress[id] = {items:{}, sessions:[]};
-    db.activeAccountId = id;
-    saveDB(); syncPush(true);                       // 追補§5 アカウント追加でpush
-    VIEW='home'; render();
-  },
-  accUse(el){ db.activeAccountId = el.dataset.id; saveDB(); VIEW='home'; render(); },
-  accRename(el){
-    const a = db.accounts.find(x=>x.id===el.dataset.id); if(!a) return;
-    modal('<h3>名前を変える</h3><input type="text" id="rnV" value="'+esc(a.name)+'">'+
-      '<div class="row" style="margin-top:14px"><button id="rnC">キャンセル</button><button class="btn-p" id="rnO">変更</button></div>');
-    $('rnC').onclick = closeModal;
-    $('rnO').onclick = ()=>{
-      const v = ($('rnV').value||'').trim(); if(!v) return;
-      a.name = v; closeModal(); saveDB(); syncPush(true); render();
-    };
-  },
-  accDel(el){
-    const a = db.accounts.find(x=>x.id===el.dataset.id); if(!a) return;
-    confirmM('アカウントを削除しますか？','<b>'+esc(a.name)+'</b> の学習記録もすべて消えます。この操作は取り消せません。','削除する',()=>{
-      db.accounts = db.accounts.filter(x=>x.id!==a.id);
-      delete db.progress[a.id];
-      if(db.activeAccountId===a.id) db.activeAccountId = db.accounts[0]?db.accounts[0].id:null;
-      saveDB(); syncPush(true); render();
-    }, true);
-  },
-
   /* ---- 出題 ---- */
   start(el){
     const m = el.dataset.m;
     const s = startSession({mode:m, cats:PICK.cats, levels:PICK.levels});
     if(!s) return alertM('出題できません','選んだ条件に出題できる語がありません（すべて習得済みかもしれません）。<br>「全問モード」なら習得済みも出題できます。');
-    const start = ()=>{ VIEW='quiz'; render(); };
-    if(S.shortfall) alertM('出題数のお知らせ','出題できる語が '+S.kpIds.length+' 語しかないため、その数で出題します。', start);
-    else start();
+    const go = ()=>{ VIEW='quiz'; render(); };
+    if(S.shortfall) alertM('出題数のお知らせ','出題できる語が '+S.kpIds.length+' 語しかないため、その数で出題します。', go);
+    else go();
   },
   startWrong(){
-    const items = accProg(db.activeAccountId).items;
+    const items = (prog()||{items:{}}).items;
     const ids = KPS.filter(k=>((items[k.id]||{}).totalWrong|0)>0).map(k=>k.id);
     if(!ids.length) return;
     const s = startSession({mode:'all', cats:CATS.map(c=>c.id), levels:['A','B'], onlyIds:ids, label:'間違い復習'});
@@ -1337,7 +1402,7 @@ const ACT = {
   },
   pick(el){
     const v = el.dataset.v;
-    if(S.viewIdx!==null){                         // §5-1 直前1問のみ再解答可
+    if(S.viewIdx!==null){
       if(S.viewIdx!==S.log.length-1) return;
       reAnswer(S.viewIdx, v); render(); return;
     }
@@ -1362,36 +1427,33 @@ const ACT = {
     else S.viewIdx++;
     render();
   },
-  quitQuiz(){
-    confirmM('学習を中断しますか？','とちゅうでやめると<b>今回の成績は記録されません</b>（習得状況も変わりません）。','中断する',()=>{
-      S=null; VIEW='home'; render();
-    }, true);
-  },
+  quitQuiz(){ leaveQuiz(); },
 
-  /* ---- 記録データの管理（追補§3） ---- */
+  /* ---- 記録データの管理 ---- */
   expJson(){
-    const blob = new Blob([JSON.stringify(db,null,1)], {type:'application/json'});
-    dl(blob, APP_TITLE+'記録_'+fmtFile()+'.json');
+    const blob = new Blob([JSON.stringify(DB,null,1)], {type:'application/json'});
+    dl(blob, TOOL+'記録_'+AUTH.id+'_'+ymd()+'.json');
   },
   impJson(){ $('impFile').value=''; $('impFile').click(); },
   csv(){ downloadCSV(); },
-  pushList(){ doPushList(); },
-  syncNow(){ syncPull().then(()=>render()); },
-  syncCfg(){ syncModal(); },
-  resetAcc(){
-    const a = activeAcc(); if(!a) return;
-    confirmM('記録をリセットしますか？','<b>'+esc(a.name)+'</b> の学習記録（習得状況・履歴）をすべて消します。','リセットする',()=>{
-      db.progress[a.id] = {items:{}, sessions:[]};
-      saveDB(); syncPush(true); render();
-    }, true);
-  },
-  resetAll(){
-    confirmM('全データをリセットしますか？','すべてのアカウントと学習記録を消します。この操作は取り消せません。','全部消す',()=>{
-      db = newDB(); saveDB(); syncPush(true); VIEW='accounts'; render();
-    }, true);
+  pushList(){ exportListToDrive(); },
+  syncNow(){ pullCloud(); },
+  resetRecords(){
+    confirmM('このツールの記録を消しますか？',
+      'ID <b>'+esc(AUTH.id)+'</b> の「'+esc(TOOL)+'」の学習記録（習得状況・履歴・覚えるモードの記録）を消します。<br>ほかのツールの記録は消えません。',
+      '消す',()=>{
+        DB.progress[AUTH.id] = {items:{}, sessions:[], study:{seen:{},marked:{}}};
+        saveDB(); pushCloud(true); render();
+      }, true);
   },
 };
 
+function leaveQuiz(){
+  if(!(S && S.log.length)){ S=null; VIEW='home'; render(); return; }
+  confirmM('学習を中断しますか？','とちゅうでやめると<b>今回の成績は記録されません</b>（習得状況も変わりません）。','中断する',()=>{
+    S=null; VIEW='home'; render();
+  }, true);
+}
 function finishSession(){
   const r = commitSession();
   RESULT = {c:r.c, w:r.w, newlyMastered:r.newlyMastered, log:S.log.slice(),
@@ -1417,117 +1479,116 @@ function lastAnswerOf(it){
   const w = it.wrongLog[it.wrongLog.length-1];
   return w?w.answered:'';
 }
-/* v1.0 §7-4 CSV（UTF-8 BOM付き・13列） */
+/* CSV（UTF-8 BOM付き・13列） */
 function downloadCSV(){
-  const items = accProg(db.activeAccountId).items;
+  const items = (prog()||{items:{}}).items;
   const header = ['カテゴリー','知識ポイント','問題文','正解','直近の解答','状態','累計正解数','累計誤答数',
                   '形式A誤答数','形式B誤答数','過去の誤答内容','最終誤答日','習得日'];
   const rows = KPS.map(k=>{
-    const it = items[k.id]||newItem();
+    const it = items[k.id]||blankItem();
     const lw = it.wrongLog[it.wrongLog.length-1];
     return [CAT[k.cat].name, k.front, qLabelFor(k), k.back, lastAnswerOf(it), stateOf(it).t,
       it.totalCorrect|0, it.totalWrong|0, it.byFormat.A.wrong|0, it.byFormat.B.wrong|0,
       it.wrongLog.map(w=>w.answered).join(';'), lw?fmtD(lw.at):'', it.masteredAt?fmtD(it.masteredAt):''];
   }).sort((a,b)=>b[7]-a[7]);
   const csv = [header, ...rows].map(r=>r.map(csvCell).join(',')).join('\r\n');
-  dl(new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'}), '結果_'+activeAcc().name+'_'+fmtFile()+'.csv');
+  dl(new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'}), TOOL+'結果_'+AUTH.id+'_'+ymd()+'.csv');
 }
-/* 追補§6 全問一覧をDriveへ（14列・全アカウント×全KP） */
+/* 全問一覧をDriveへ（14列・1列目はID） */
 const LIST_HEADER = ['名前','カテゴリー','記号','知識ポイント','よみがな','重要度','状態',
   '累計正解数','累計誤答数','形式A誤答数','形式B誤答数','過去の誤答内容','最終誤答日','習得日'];
-function buildListRows(){
-  const rows = [];
-  db.accounts.forEach(a=>{
-    const items = accProg(a.id).items;
-    KPS.forEach(k=>{
-      const it = items[k.id]||newItem();
-      const lw = it.wrongLog[it.wrongLog.length-1];
-      rows.push([a.name, CAT[k.cat].name, k.mark||'', k.front, k.frontYomi||'', 'レベル'+k.level, stateOf(it).t,
-        it.totalCorrect|0, it.totalWrong|0, it.byFormat.A.wrong|0, it.byFormat.B.wrong|0,
-        it.wrongLog.map(w=>w.answered).join(';'), lw?fmtD(lw.at):'', it.masteredAt?fmtD(it.masteredAt):'']);
-    });
-  });
-  return rows;
+function rowFor(kp, it){
+  it = it || blankItem();
+  const lw = it.wrongLog[it.wrongLog.length-1];
+  return [ AUTH?AUTH.id:'', CAT[kp.cat].name, kp.mark||'', kp.front, kp.frontYomi||'', 'レベル'+kp.level, stateOf(it).t,
+    it.totalCorrect|0, it.totalWrong|0, it.byFormat.A.wrong|0, it.byFormat.B.wrong|0,
+    it.wrongLog.map(w=>w.answered).join(';'), lw?fmtD(lw.at):'', it.masteredAt?fmtD(it.masteredAt):''];
 }
-async function doPushList(){
-  if(!syncEnabled()) return;
-  await syncPull(true);                                   // 追補§6 空上書き防止：必ず先にpull
-  if(!dbHasRecords(db)){
+function buildListRows(){
+  const items = (prog()||{items:{}}).items;
+  return KPS.map(k=>rowFor(k, items[k.id]));
+}
+async function exportListToDrive(){
+  if(!ready()||!AUTH) return;
+  await pullCloud(true);                                   // 空上書き防止：先に最新を取り込む
+  if(!hasRecords(prog())){
     return alertM('書き出しを中止しました',
-      'この端末にもクラウドにも学習記録がありません。<br>空のデータで既存の一覧シートを上書きしないよう、書き出しを中止しました。<br><br>先に学習するか、記録のある端末で同期してからお試しください。');
+      'この端末にもクラウドにも学習記録がありません。<br>空のデータで既存の一覧シートを上書きしないよう、書き出しを中止しました。<br><br>先に学習してからお試しください。');
   }
-  const r = await syncPushList(buildListRows(), LIST_HEADER);
+  setSync('','☁… 全問一覧を書き出しています');
+  let j;
+  try{ j = await api({app:APP, id:AUTH.id, list:{header:LIST_HEADER, rows:buildListRows()}}); }
+  catch(e){
+    if(/GASの応答/.test(e.message)) setSync('ng','☁⚠ '+e.message);
+    else setSync('','☁ オフライン（ローカルには保存済み）');
+    return;
+  }
+  if(!j.ok){
+    if(j.error==='auth'){ setSync('ng','☁⚠ '+apiError(j)); onAuthLost(); return; }
+    setSync('ng','☁⚠ '+apiError(j));
+    alertM('書き出しに失敗しました', esc(apiError(j)));
+    return;
+  }
+  SYNC.lastSync = nowISO(); saveSync();
+  setSync('ok','☁✓ 全問一覧をスプレッドシートに書き出しました');
   render();
-  if(!r.ok) alertM('書き出しに失敗しました', esc(r.error||'もう一度お試しください。'));
 }
 
-/* ---------- インポート（追補§3） ---------- */
+/* ---------- インポート（自分のIDだけ） ---------- */
+function openImport(){ $('impFile').value=''; $('impFile').click(); }
 function handleImport(file){
   const rd = new FileReader();
   rd.onload = ()=>{
-    let d;
-    try{ d = JSON.parse(rd.result); }catch(e){ return alertM('読み込めません','JSONファイルとして読めませんでした。'); }
-    if(!d || d.app!==APP){
-      return alertM('このツールの記録ではありません','ファイルの app は「'+esc((d&&d.app)||'不明')+'」です。<br>このツール（'+esc(APP)+'）の記録ファイルを選んでください。');
+    let raw;
+    try{ raw = JSON.parse(rd.result); }catch(e){ return alertM('読み込めません','JSONファイルとして読めませんでした。'); }
+    if(!raw || raw.app!==APP){
+      return alertM('このツールの記録ではありません','ファイルの app は「'+esc((raw&&raw.app)||'不明')+'」です。<br>このツール（'+esc(APP)+'）の記録ファイルを選んでください。');
     }
-    const names = (d.accounts||[]).map(a=>a.name).join('、')||'（なし）';
+    const p = (raw.progress||{})[AUTH.id];
+    if(!p){
+      return toastModal('このIDの記録がありません',
+        'このファイルには ID '+esc(AUTH.id)+' の記録が入っていません（別のお子さんの記録の可能性があります）。');
+    }
     confirmM('記録を置き換えますか？',
-      'アカウント：<b>'+esc(names)+'</b><br>保存日時：<b>'+fmtDT(d.updatedAt)+'</b><br><br>'+
-      '現在この端末にある記録は<b>すべて置き換えられます</b>。',
+      'ID：<b>'+esc(AUTH.id)+'</b><br>保存日時：<b>'+fmtDT(raw.updatedAt)+'</b><br><br>'+
+      'いまこの端末にある「'+esc(TOOL)+'」の記録は<b>置き換えられます</b>。',
       '置き換える', async ()=>{
-        db = migrate(d);
-        saveDB();                                   // 追補§3 置換後 updatedAt更新＋push
-        await syncPush(true);
-        VIEW = db.activeAccountId?'home':'accounts'; render();
+        DB.progress[AUTH.id] = normProgress(p);
+        saveDB();
+        await pushCloud(true);
+        VIEW='home'; render();
         alertM('読み込みました','記録を置き換えました。');
       }, true);
   };
   rd.readAsText(file);
 }
 
-/* ---------- 同期設定モーダル（追補§3・§7） ---------- */
-function syncModal(){
-  const on = syncEnabled();
-  modal('<h3>☁ クラウド同期設定</h3>'+
-    '<p class="tiny">Google Apps Script のウェブアプリURL（<b>/exec</b> で終わるもの）と合言葉を入力してください。'+
-    'この情報はこの端末の中だけに保存され、ほかには送信されません。</p>'+
-    '<label class="fld">GASのURL</label><input type="url" id="sUrl" placeholder="https://script.google.com/macros/s/～/exec" value="'+esc(on?syncCfg.url:'')+'">'+
-    '<label class="fld">合言葉</label><input type="password" id="sKey" placeholder="合言葉" value="'+esc(on?syncCfg.key:'')+'">'+
-    '<div class="row" style="margin-top:16px"><button id="sC">閉じる</button>'+
-    (on?'<button class="btn-d" id="sD">同期を解除</button>':'')+
-    '<button class="btn-p" id="sS">保存して同期</button></div>', {sticky:true});
-  $('sC').onclick = closeModal;
-  if(on) $('sD').onclick = ()=>{
-    confirmM('同期を解除しますか？','この端末の同期設定（URLと合言葉）を消します。学習記録はこの端末に残ります。','解除する',()=>{
-      syncCfg=null; saveSyncCfg(); setBar('force',''); $('syncBar').style.display='none'; render();
-    }, true);
-  };
-  $('sS').onclick = async ()=>{
-    const url = ($('sUrl').value||'').trim(), key = ($('sKey').value||'').trim();
-    if(!/^https?:\/\/.+\/exec$/.test(url)) return alertM('URLを確認してください','GASのウェブアプリURLは <b>https://…/exec</b> の形（末尾が /exec）です。');
-    if(!key) return alertM('合言葉を入れてください','サーバー側と同じ合言葉を入力してください。');
-    syncCfg = {url, key, lastSync:(syncCfg&&syncCfg.lastSync)||null};
-    saveSyncCfg(); closeModal();
-    await syncPull();                                // 追補§5 同期設定の保存直後にpull
-    render();
-  };
-}
-
 /* ============================================================
    起動
    ============================================================ */
-(async function boot(){
-  loadDB(); loadSyncCfg();
+loadAll();
+STUDY.target = UI.study.target; STUDY.order = UI.study.order;
+STUDY.dir = UI.study.dir;       STUDY.tab   = UI.study.tab;
+if(ready() && loggedIn()) setSync('','☁… クラウドと同期しています');
+render();
+if(ready() && loggedIn()) pullCloud(true);
+
+document.addEventListener('change', e=>{
+  if(e.target && e.target.id==='impFile' && e.target.files[0]) handleImport(e.target.files[0]);
+});
+/* 他のツール／ポータルでログイン状態が変わったら追従する */
+window.addEventListener('storage', function(ev){
+  if(ev.key!=='kj-quiz:auth' && ev.key!=='kj-quiz:sync') return;
+  if(VIEW==='quiz' && S && S.log.length) return;
+  const wasOut = !loggedIn();
+  loadAll();
+  if(loggedIn() && ready()){ if(VIEW==='gate') VIEW='home'; } else VIEW='gate';
   render();
-  $('impFile') && ($('impFile').onchange = e=>{ if(e.target.files[0]) handleImport(e.target.files[0]); });
-  document.addEventListener('change', e=>{
-    if(e.target && e.target.id==='impFile' && e.target.files[0]) handleImport(e.target.files[0]);
-  });
-  if(syncEnabled()){ setBar('busy','クラウドと同期中'); await syncPull(true); render(); }  // 追補§5 起動直後にpull
-  window.addEventListener('beforeunload', e=>{
-    if(VIEW==='quiz' && S && S.log.length){ e.preventDefault(); e.returnValue=''; }        // v1.0 §5-2
-  });
-})();
+  if(wasOut && loggedIn() && ready()) pullCloud();   // ログインした瞬間にクラウドから取り込む
+});
+window.addEventListener('beforeunload', e=>{
+  if(VIEW==='quiz' && S && S.log.length){ e.preventDefault(); e.returnValue=''; }
+});
 </script>
 </body>
 </html>

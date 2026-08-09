@@ -6,16 +6,9 @@
 <title>慣用句マスター｜四科のまとめ</title>
 <style>
   :root{
-    --paper:#FAF6EC;
-    --card:#FFFDF6;
-    --ink:#33404E;
-    --ink-light:#7A8494;
-    --shu:#C73E3A;      /* 朱色 */
-    --shu-soft:#F6E3DE;
-    --midori:#3E7C59;   /* 正解の緑 */
-    --midori-soft:#E2EFE5;
-    --line:#E6DEC9;
-    --gold:#B7923F;
+    --paper:#FAF6EC; --card:#FFFDF6; --ink:#33404E; --ink-light:#7A8494;
+    --shu:#C73E3A; --shu-soft:#F6E3DE; --midori:#3E7C59; --midori-soft:#E2EFE5;
+    --line:#E6DEC9; --gold:#B7923F; --amber:#D98B2B; --amber-soft:#FBEEDC;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{
@@ -28,94 +21,95 @@
   }
   .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px}
   .mincho{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}
-
-  /* ---------- header ---------- */
   header{display:flex;align-items:center;gap:12px;padding:10px 2px 18px}
-  .hanko{
-    width:46px;height:46px;border-radius:8px;background:var(--shu);color:#fff;
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;
-    font-size:20px;line-height:1.1;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.12);
-    writing-mode:vertical-rl;
-  }
+  .hanko{width:46px;height:46px;border-radius:8px;background:var(--shu);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;line-height:1.1;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.12);writing-mode:vertical-rl}
   header h1{font-size:21px;letter-spacing:.12em}
-  header .sub{font-size:11px;color:var(--ink-light);letter-spacing:.18em;margin-top:3px}
-
+  header .sub{font-size:11px;color:var(--ink-light);letter-spacing:.14em;margin-top:3px}
+  header .sub b{color:var(--gold);font-weight:700}
   .screen{display:none}
   .screen.active{display:block;animation:fadein .25s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(70,50,20,.05)}
   .label{font-size:12px;color:var(--shu);letter-spacing:.25em;margin-bottom:10px;font-weight:700}
-
-  /* ---------- home ---------- */
   .chips{display:flex;flex-wrap:wrap;gap:8px}
-  .chip{
-    border:1.5px solid var(--line);background:#fff;border-radius:999px;
-    padding:9px 16px;font-size:14px;cursor:pointer;color:var(--ink);
-    transition:all .15s;font-family:inherit;
-  }
+  .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-size:13.5px;cursor:pointer;color:var(--ink);transition:all .15s;font-family:inherit}
   .chip.on{border-color:var(--shu);background:var(--shu);color:#fff;font-weight:700}
-  .chip.add{border-style:dashed;color:var(--ink-light)}
-  .countrow{display:flex;gap:8px}
-  .countrow .chip{flex:1;text-align:center}
-  .startbtns{display:flex;flex-direction:column;gap:10px;margin-top:4px}
-  .btn{
-    display:block;width:100%;border:none;border-radius:12px;padding:16px;
-    font-size:16px;font-weight:700;letter-spacing:.1em;cursor:pointer;
-    font-family:inherit;transition:transform .1s;
-  }
+  .chip small{opacity:.75;font-size:11px;margin-left:2px}
+  .countrow{display:flex;gap:8px;flex-wrap:wrap}
+  .countrow .chip{flex:1;text-align:center;min-width:60px}
+  .startbtns{display:flex;flex-direction:column;gap:10px;margin:4px 0 14px}
+  .btn{display:block;width:100%;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;letter-spacing:.1em;cursor:pointer;font-family:inherit;transition:transform .1s;text-align:center;text-decoration:none;color:inherit}
   .btn:active{transform:scale(.98)}
   .btn.primary{background:var(--ink);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18)}
   .btn.shu{background:var(--shu);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.15)}
   .btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn.small{padding:11px;font-size:13.5px;letter-spacing:.05em}
   .btn:disabled{opacity:.4;cursor:default}
   .note{font-size:12px;color:var(--ink-light);line-height:1.7;margin-top:8px}
-  .statline{font-size:13px;color:var(--ink-light);margin-top:10px;line-height:1.8}
+  .statline{font-size:13px;color:var(--ink-light);margin-top:6px;line-height:1.8}
   .statline b{color:var(--midori)}
   .statline .bad{color:var(--shu)}
+
+  /* ---------- home: mastery bars / ranking ---------- */
+  .mrow{margin-bottom:10px}
+  .mrow .mtitle{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-light);margin-bottom:4px}
+  .mbar{height:12px;background:#EDE6D4;border-radius:99px;overflow:hidden;display:flex}
+  .mbar i{display:block;height:100%}
+  .mbar .seg-m{background:var(--midori)}
+  .mbar .seg-a{background:var(--amber)}
+  .mbar .seg-p{background:#B9CDBB}
+  .legend2{font-size:11px;color:var(--ink-light);line-height:1.8;margin-top:6px}
+  .legend2 i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin:0 3px 0 8px}
+  .attnbtn{margin-top:10px;background:var(--amber-soft);border:1.5px solid var(--amber);color:#8A5A18;border-radius:12px;padding:12px;font-size:14px;font-weight:700;width:100%;cursor:pointer;font-family:inherit}
+  .rankrow{display:flex;align-items:center;gap:10px;border-bottom:1px dashed var(--line);padding:10px 2px;font-size:14px;cursor:pointer}
+  .rankrow:last-child{border-bottom:none}
+  .rankrow .no{color:var(--gold);font-weight:700;width:22px;flex-shrink:0;text-align:center}
+  .rankrow .id2{font-weight:700;letter-spacing:.03em;flex:1}
+  .rankrow .id2 em{font-style:normal;color:var(--shu)}
+  .wbadge{font-size:11px;border:1px solid var(--shu);color:var(--shu);border-radius:99px;padding:1px 8px;flex-shrink:0}
+  .wbadge.hot{background:var(--shu);color:#fff}
+
+  /* ---------- sync / manage ---------- */
+  .warnbar{background:var(--amber-soft);border:1px solid var(--gold);color:#8A6E2F;border-radius:10px;font-size:12.5px;padding:9px 12px;margin-bottom:12px;line-height:1.7;display:none}
+  .syncstatus{font-size:12.5px;line-height:1.7;margin-bottom:10px;color:var(--ink-light);word-break:break-all}
+  .syncstatus.okc{color:var(--midori)}
+  .syncstatus.ngc{color:var(--shu)}
+  .mgmtrow{display:flex;flex-direction:column;gap:8px}
+  .portal-link{display:block;text-align:center;font-size:12.5px;color:var(--ink-light);margin-top:10px;text-decoration:underline}
+  .overlay{position:fixed;inset:0;background:rgba(40,30,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .overlay.show{display:flex}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:480px;width:100%;max-height:85vh;overflow:auto}
+  .modal h3{font-size:15px;letter-spacing:.15em;color:var(--shu);margin-bottom:12px}
+  .modal .mrow2{display:flex;gap:8px;margin-top:14px}
+  .modal .mrow2 .btn{flex:1}
+  .modal .desc{font-size:12.5px;color:var(--ink-light);line-height:1.8;margin-bottom:8px}
+  .modal .desc b{color:var(--ink)}
 
   /* ---------- quiz ---------- */
   .qbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:13px;color:var(--ink-light)}
   .qbar .quit{color:var(--ink-light);text-decoration:underline;cursor:pointer;background:none;border:none;font-size:13px;font-family:inherit}
   .qbar .backlink{color:var(--ink);text-decoration:underline;cursor:pointer;background:none;border:none;font-size:13px;font-family:inherit;margin-right:12px}
   .ftag{display:inline-block;font-size:10px;border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:1px 8px;margin-left:7px;letter-spacing:.15em;vertical-align:1px}
-  .qinfo{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-light);margin:0 0 8px}
+  .qinfo{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-light);margin:0 0 6px}
   .gdot{color:#C9C2B0;font-size:13px;letter-spacing:2px}
   .gdot .on{color:var(--midori)}
+  .hurdle{display:none;background:var(--amber-soft);border:1px solid var(--amber);color:#8A5A18;border-radius:8px;font-size:12px;padding:6px 10px;margin-bottom:8px;line-height:1.6}
   .progress{height:6px;background:#EDE6D4;border-radius:99px;overflow:hidden;margin-bottom:16px}
   .progress i{display:block;height:100%;background:var(--shu);border-radius:99px;transition:width .3s}
-  .reviewbar{
-    background:#FBF3DC;border:1px solid var(--gold);color:#8A6E2F;border-radius:10px;
-    font-size:12.5px;padding:8px 12px;margin-bottom:12px;letter-spacing:.06em;line-height:1.6;
-  }
-  .meaning{
-    background:var(--shu-soft);border-radius:10px;padding:12px 14px;
-    font-size:14px;line-height:1.8;margin-bottom:18px;
-  }
+  .reviewbar{background:#FBF3DC;border:1px solid var(--gold);color:#8A6E2F;border-radius:10px;font-size:12.5px;padding:8px 12px;margin-bottom:12px;letter-spacing:.06em;line-height:1.6}
+  .meaning{background:var(--shu-soft);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.8;margin-bottom:18px}
   .meaning::before{content:"意味";display:inline-block;background:var(--shu);color:#fff;font-size:10px;padding:2px 8px;border-radius:99px;margin-right:8px;letter-spacing:.2em;vertical-align:2px}
   .meaning.ask{background:#EFEBDD}
   .meaning.ask::before{content:"問題";background:var(--gold)}
-  .idiom{
-    text-align:center;font-size:30px;letter-spacing:.06em;line-height:1.6;
-    padding:6px 0 22px;font-weight:600;
-  }
-  .blank{
-    display:inline-block;min-width:1.35em;border:2.5px solid var(--shu);
-    border-radius:6px;color:var(--shu);background:#fff;
-    padding:0 .12em;margin:0 .06em;text-align:center;
-  }
+  .idiom{text-align:center;font-size:30px;letter-spacing:.06em;line-height:1.6;padding:6px 0 22px;font-weight:600}
+  .blank{display:inline-block;min-width:1.35em;border:2.5px solid var(--shu);border-radius:6px;color:var(--shu);background:#fff;padding:0 .12em;margin:0 .06em;text-align:center}
   .blank.empty::after{content:"？";opacity:.45;font-size:.8em}
   .blank.ok{border-color:var(--midori);color:var(--midori);background:var(--midori-soft)}
   .blank.ng{border-color:var(--shu);color:var(--shu);background:var(--shu-soft)}
   .blank.fill{border-color:var(--gold);color:var(--ink);background:#fff}
   .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .opts.single{grid-template-columns:1fr}
-  .opt{
-    border:1.5px solid var(--line);background:#fff;border-radius:12px;
-    padding:16px 8px;font-size:20px;font-weight:600;cursor:pointer;
-    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.1em;
-    color:var(--ink);transition:all .12s;position:relative;
-  }
+  .opt{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:16px 8px;font-size:20px;font-weight:600;cursor:pointer;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.1em;color:var(--ink);transition:all .12s;position:relative}
   .opt.mean{font-family:inherit;font-size:14px;font-weight:600;text-align:left;line-height:1.7;padding:12px 34px 12px 14px;letter-spacing:.02em}
   .opt:not(:disabled):active{transform:scale(.97)}
   .opt:disabled{cursor:default;opacity:.45}
@@ -123,14 +117,8 @@
   .opt.wrong{border-color:var(--shu);background:var(--shu-soft);color:var(--shu);opacity:1}
   .opt.right::after{content:"○";position:absolute;top:2px;right:8px;font-size:14px}
   .opt.wrong::after{content:"×";position:absolute;top:2px;right:8px;font-size:14px}
-  .judge{
-    text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;
-    gap:10px;margin-top:6px;
-  }
-  .maru{
-    width:44px;height:44px;border:4px solid var(--midori);border-radius:50%;
-    flex-shrink:0;animation:stamp .25s ease;
-  }
+  .judge{text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px}
+  .maru{width:44px;height:44px;border:4px solid var(--midori);border-radius:50%;flex-shrink:0;animation:stamp .25s ease}
   .batsu{font-size:44px;color:var(--shu);line-height:1;animation:stamp .25s ease}
   @keyframes stamp{from{transform:scale(1.6);opacity:0}to{transform:scale(1);opacity:1}}
   .judge .msg{font-size:14px;color:var(--ink-light);text-align:left;line-height:1.6}
@@ -147,67 +135,61 @@
   .resline{text-align:center;font-size:13.5px;color:var(--ink-light);line-height:1.9;padding-bottom:6px}
   .resline b{color:var(--midori)}
   .resline .bad{color:var(--shu)}
-  .misslist{margin-top:6px}
   .miss{border-top:1px dashed var(--line);padding:12px 2px;font-size:14px;line-height:1.7}
   .miss:first-child{border-top:none}
   .miss .id{font-size:17px;font-weight:700;letter-spacing:.05em}
   .miss .id em{font-style:normal;color:var(--shu)}
   .miss .mn{color:var(--ink-light);font-size:13px}
+  .miss .ans{font-size:13px;margin-top:2px}
+  .miss .ans .ng2{color:var(--shu);font-weight:700}
+  .miss .ans .ok2{color:var(--midori);font-weight:700}
   .fbadge{display:inline-block;font-size:10px;border:1px solid var(--shu);color:var(--shu);border-radius:99px;padding:1px 7px;margin-left:6px;letter-spacing:.1em;vertical-align:2px}
   .fbadge.rev{background:var(--shu);color:#fff}
-  .perfect{text-align:center;color:var(--midori);font-size:15px;padding:14px 0;letter-spacing:.1em}
+  .sbadge{display:inline-block;font-size:10.5px;border-radius:99px;padding:2px 9px;letter-spacing:.05em;flex-shrink:0}
+  .sbadge.st-m{background:var(--midori);color:#fff}
+  .sbadge.st-a{background:var(--amber);color:#fff}
+  .sbadge.st-p{background:#DCE7DD;color:#3E6B4C}
+  .sbadge.st-w{background:var(--shu-soft);color:var(--shu);border:1px solid var(--shu)}
+  .sbadge.st-n{background:#EFEAD9;color:var(--ink-light)}
+  .arow{border-bottom:1px dashed var(--line);padding:10px 2px;font-size:14px;cursor:pointer}
+  .arow .top{display:flex;align-items:center;gap:8px}
+  .arow .id3{font-weight:700;letter-spacing:.03em;flex:1;line-height:1.6}
+  .arow .id3 em{font-style:normal;color:var(--shu)}
+  .arow .detail{display:none;font-size:12.5px;color:var(--ink-light);line-height:1.9;padding:8px 4px 2px}
+  .arow.open .detail{display:block}
+  .filterbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+  .filterbar select{border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;background:#fff;color:var(--ink)}
 
-  /* ---------- list ---------- */
+  /* ---------- learn ---------- */
+  .lbar{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-light);margin-bottom:8px}
+  .ltabs{display:flex;gap:8px;margin-bottom:12px}
+  .ltabs .chip{flex:1;text-align:center}
+  .lchips{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .lcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 18px;min-height:300px;display:flex;flex-direction:column;justify-content:center;text-align:center;cursor:pointer;margin-bottom:12px;box-shadow:0 2px 6px rgba(70,50,20,.07)}
+  .lcard .cat{font-size:11px;color:var(--gold);letter-spacing:.3em;margin-bottom:16px}
+  .lcard .idm{font-size:29px;font-weight:600;letter-spacing:.06em;line-height:1.7}
+  .lcard .mean2{margin-top:20px;font-size:14.5px;line-height:1.9;color:var(--ink);background:var(--shu-soft);border-radius:10px;padding:12px 14px;text-align:left}
+  .lcard .hint{margin-top:20px;font-size:12px;color:var(--ink-light);letter-spacing:.1em}
+  .lcard .qside{font-size:15px;line-height:2;text-align:left;background:#EFEBDD;border-radius:10px;padding:14px}
+  .lnav{display:flex;gap:10px}
+  .lnav .btn{flex:1}
   .cat-h{font-size:14px;letter-spacing:.2em;color:#fff;background:var(--ink);display:inline-block;padding:4px 14px;border-radius:99px;margin:14px 0 10px}
-  .li{display:flex;gap:10px;align-items:baseline;border-bottom:1px dashed var(--line);padding:10px 2px;font-size:14px;line-height:1.7}
+  .li{display:flex;gap:10px;align-items:baseline;border-bottom:1px dashed var(--line);padding:10px 2px;font-size:14px;line-height:1.7;cursor:pointer}
   .li .mark{flex-shrink:0;width:20px;text-align:center;font-weight:700}
   .li .mark.m2{color:var(--midori)}
+  .li .mark.ma{color:var(--amber)}
   .li .mark.mx{color:var(--shu)}
   .li .mark.m0{color:#C9C2B0}
+  .li .imp{flex-shrink:0;width:18px;color:var(--gold);font-weight:700}
   .li .id{font-weight:700;font-size:16px;letter-spacing:.04em;flex-shrink:0}
   .li .id em{font-style:normal;color:var(--shu)}
   .li .mn{color:var(--ink-light);font-size:13px}
   .backrow{position:sticky;bottom:0;padding:10px 0;background:linear-gradient(transparent,var(--paper) 40%)}
-  .legend{font-size:12px;color:var(--ink-light);margin:6px 0 2px;line-height:1.8}
-
-  /* ---------- sync / manage ---------- */
-  .warnbar{background:#FBEEDC;border:1px solid var(--gold);color:#8A6E2F;border-radius:10px;font-size:12.5px;padding:9px 12px;margin-bottom:12px;line-height:1.7;display:none}
-  .syncstatus{font-size:12.5px;line-height:1.7;margin-bottom:10px;color:var(--ink-light);word-break:break-all}
-  .syncstatus.okc{color:var(--midori)}
-  .syncstatus.ngc{color:var(--shu)}
-  .mgmtrow{display:flex;flex-direction:column;gap:8px}
-  .btn.small{padding:11px;font-size:13.5px;letter-spacing:.05em}
-  .overlay{position:fixed;inset:0;background:rgba(40,30,20,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
-  .overlay.show{display:flex}
-  .modal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:480px;width:100%;max-height:85vh;overflow:auto}
-  .modal h3{font-size:15px;letter-spacing:.15em;color:var(--shu);margin-bottom:12px}
-  .modal .fld{margin-bottom:12px}
-  .modal .fld label{display:block;font-size:12px;color:var(--ink-light);margin-bottom:4px}
-  .modal input[type=text],.modal input[type=password]{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px;font-size:14px;font-family:inherit;background:#fff}
-  .modal .mrow{display:flex;gap:8px;margin-top:14px}
-  .modal .mrow .btn{flex:1}
-  .modal .desc{font-size:12.5px;color:var(--ink-light);line-height:1.8;margin-bottom:8px}
-  .modal .desc b{color:var(--ink)}
-
-  /* ---------- learn（覚えるモード） ---------- */
-  .lbar{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-light);margin-bottom:8px}
-  .lmark{font-weight:700}
-  .lmark.m2{color:var(--midori)}
-  .lmark.mx{color:var(--shu)}
-  .lmark.m0{color:#C9C2B0}
-  .lchips{display:flex;gap:8px;margin-bottom:12px}
-  .lcard{
-    background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:28px 18px;min-height:300px;display:flex;flex-direction:column;
-    justify-content:center;text-align:center;cursor:pointer;margin-bottom:12px;
-    box-shadow:0 2px 6px rgba(70,50,20,.07);
-  }
-  .lcard .cat{font-size:11px;color:var(--gold);letter-spacing:.3em;margin-bottom:16px}
-  .lcard .idm{font-size:31px;font-weight:600;letter-spacing:.06em;line-height:1.7}
-  .lcard .mean{margin-top:20px;font-size:14.5px;line-height:1.9;color:var(--ink);background:var(--shu-soft);border-radius:10px;padding:12px 14px;text-align:left}
-  .lcard .hint{margin-top:20px;font-size:12px;color:var(--ink-light);letter-spacing:.1em}
-  .lnav{display:flex;gap:10px}
-  .lnav .btn{flex:1}
+  .dwrap{text-align:left}
+  .dwrap .idm2{font-size:26px;font-weight:600;text-align:center;letter-spacing:.05em;line-height:1.7;padding:8px 0 14px}
+  .dwrap .idm2 em{font-style:normal;color:var(--shu)}
+  .dmeta{font-size:13px;color:var(--ink-light);line-height:2;margin-top:8px}
+  .dmeta b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -216,22 +198,35 @@
     <div class="hanko mincho">慣用句</div>
     <div>
       <h1 class="mincho">慣用句マスター</h1>
-      <div class="sub">四科のまとめ・語句の知識</div>
+      <div class="sub">四科のまとめ・語句の知識<span id="whoami" style="cursor:pointer"></span></div>
     </div>
   </header>
 
   <div class="warnbar" id="warnBar"></div>
 
-  <!-- ============ HOME ============ -->
-  <section id="home" class="screen active">
+  <!-- ============ GATE（未設定・未ログイン） ============ -->
+  <section id="gate" class="screen">
     <div class="card">
-      <div class="label">だれが挑戦する？</div>
-      <div class="chips" id="userChips"></div>
-      <div class="statline" id="userStat"></div>
+      <div class="label">🔑 ポータルで準備してください</div>
+      <p class="note" style="font-size:13.5px;color:var(--ink)" id="gateReason"></p>
+      <p class="note" style="font-size:13px">ポータル（トップページ）で<b>同期設定とログイン</b>を1回だけ行うと、すべての学習ツールがそのまま使えるようになります。</p>
+      <ul class="note" style="padding-left:1.4em;line-height:2.1;font-size:12.5px">
+        <li>GASのURLと合言葉 … ポータルで入力</li>
+        <li>ID（5桁）とパスワード … ポータルでログイン</li>
+        <li>はじめて使う端末でも、ログインすればクラウドの記録がこの端末に入ります</li>
+      </ul>
+      <div class="startbtns" style="margin-top:14px">
+        <a class="btn shu" id="gatePortal" href="index.html">ポータルをひらく</a>
+        <button class="btn ghost" onclick="boot()">ログイン済みなら、ここを押して読み込み直す</button>
+      </div>
     </div>
+  </section>
 
+  <!-- ============ HOME ============ -->
+  <section id="home" class="screen">
     <div class="card">
-      <div class="label">出題する種類</div>
+      <div class="label">出題範囲</div>
+      <div class="countrow" id="impChips" style="margin-bottom:10px"></div>
       <div class="chips" id="catChips"></div>
     </div>
 
@@ -243,24 +238,39 @@
 
     <div class="startbtns">
       <button class="btn shu" onclick="startNormal()">クイズをはじめる</button>
-      <button class="btn primary" onclick="startWeak()">苦手だけ復習する</button>
-      <button class="btn ghost" onclick="startLearn()">カードで覚える（覚えるモード）</button>
-      <button class="btn ghost" onclick="showList()">慣用句一覧をみる</button>
+      <button class="btn ghost" onclick="startLearn()">覚えるモード（一覧・単語カード）</button>
     </div>
+
+    <div class="card">
+      <div class="label">習得状況（全体）</div>
+      <div id="masteryBars"></div>
+      <p class="legend2"><i style="background:var(--midori)"></i>習得済み<i style="background:var(--amber)"></i>要注意習得<i style="background:#B9CDBB"></i>1回以上正解<i style="background:#EDE6D4"></i>未着手・誤答</p>
+      <button class="attnbtn" id="attnBtn" onclick="startRecheck()"></button>
+    </div>
+
+    <div class="card" id="rankCard">
+      <div class="label">間違いランキング</div>
+      <div id="rankBody"></div>
+      <p class="note">タップすると、その言葉を中心に復習をはじめるよ。</p>
+    </div>
+
     <div class="card">
       <div class="label">記録データの管理</div>
       <div class="syncstatus" id="syncStatus"></div>
       <div class="mgmtrow">
+        <button class="btn primary small" onclick="syncNow()">🔄 今すぐ同期</button>
+        <button class="btn primary small" onclick="exportListToDrive()">📋 全問一覧をDriveへ</button>
+        <button class="btn ghost small" onclick="downloadCSV()">📄 CSVダウンロード</button>
         <button class="btn ghost small" onclick="exportJSON()">📤 記録を書き出す（JSON）</button>
         <button class="btn ghost small" onclick="byId('importFile').click()">📥 記録を読み込む</button>
         <input type="file" id="importFile" accept=".json,application/json" style="display:none">
-        <button class="btn ghost small" onclick="openSyncModal()">☁ クラウド同期設定</button>
-        <button class="btn primary small" id="syncNowBtn" style="display:none" onclick="syncNow()">今すぐ同期</button>
-        <button class="btn primary small" id="listDriveBtn" style="display:none" onclick="exportListToDrive()">📋 全問一覧をDriveへ</button>
+        <button class="btn ghost small" onclick="resetRecords()">🗑 このツールの記録を消す</button>
       </div>
+      <a class="portal-link" href="index.html">⚙ 同期設定・ログアウトはポータルへ</a>
+      <div class="note" id="metaLine" style="margin-top:8px"></div>
     </div>
 
-    <p class="note">1つの慣用句には「<b>□うめ</b>（言葉を入れる）」と「<b>意味あて</b>（意味を選ぶ）」の2つの形式があるよ。<b>ちがう形式で2回連続正解</b>すると「マスター◎」！ まちがえた問題は、少しあとにもう一度出てくるよ。</p>
+    <p class="note">1つの慣用句には「<b>□うめ</b>」と「<b>意味あて</b>」の2つの形式があるよ。<b>ちがう形式で連続正解</b>するとマスター◎。よく間違える言葉ほど必要な連続正解数が増えるよ（2回→3回→4回）。マスター後にまちがえると「要注意」になって、再確認モードに出てくるよ。</p>
   </section>
 
   <!-- ============ QUIZ ============ -->
@@ -277,6 +287,7 @@
       <span id="leftKp"></span>
       <span id="cwCount"></span>
     </div>
+    <div class="hurdle" id="hurdleNote"></div>
     <div class="progress"><i id="pbar" style="width:0%"></i></div>
     <div class="reviewbar" id="reviewBar" style="display:none"></div>
     <div class="card">
@@ -304,7 +315,32 @@
     </div>
     <div class="card" id="missCard">
       <div class="label">まちがえた問題</div>
-      <div class="misslist" id="missList"></div>
+      <div id="missList"></div>
+    </div>
+    <div class="card">
+      <div class="label">全問一覧（るいけい）</div>
+      <div class="filterbar">
+        <select id="afCat" onchange="renderAllList()">
+          <option value="all">すべての分類</option>
+          <option value="0">身体</option>
+          <option value="1">動物・植物</option>
+          <option value="2">そのほか</option>
+        </select>
+        <select id="afState" onchange="renderAllList()">
+          <option value="all">すべての状態</option>
+          <option value="習得済み">習得済み</option>
+          <option value="要注意習得">要注意習得</option>
+          <option value="正解">◯回正解</option>
+          <option value="誤答">誤答</option>
+          <option value="未出題">未出題</option>
+        </select>
+        <select id="afSort" onchange="renderAllList()">
+          <option value="wrong">誤答が多い順</option>
+          <option value="order">ならび順</option>
+        </select>
+      </div>
+      <div id="allList"></div>
+      <button class="btn ghost small" style="margin-top:12px" onclick="downloadCSV()">📄 CSVダウンロード</button>
     </div>
     <div class="startbtns">
       <button class="btn shu" id="retryMissBtn" onclick="retryMiss()">まちがいだけ、もう一回</button>
@@ -316,55 +352,45 @@
   <!-- ============ LEARN ============ -->
   <section id="learn" class="screen">
     <div class="lbar">
-      <span id="lnum"></span>
-      <span class="lmark" id="lmark"></span>
+      <span>覚えるモード（成績には記録されないよ）</span>
       <button class="quit" onclick="goHome()">やめる</button>
     </div>
-    <div class="progress"><i id="lpbar" style="width:0%"></i></div>
-    <div class="lchips">
-      <button class="chip" id="lFilterBtn" onclick="toggleLearnFilter()">未習得だけ</button>
-      <button class="chip" onclick="shuffleLearn()">シャッフル</button>
+    <div class="ltabs">
+      <button class="chip" id="ltabList" onclick="setLearnTab('list')">一覧で確認</button>
+      <button class="chip" id="ltabCard" onclick="setLearnTab('card')">単語カード</button>
     </div>
-    <div class="lcard" id="lcard" onclick="toggleReveal()"></div>
-    <div class="lnav">
-      <button class="btn ghost" id="lPrev" onclick="learnMove(-1)">◀ まえ</button>
-      <button class="btn shu" id="lRevealBtn" onclick="toggleReveal()">答えをみる</button>
-      <button class="btn ghost" id="lNext" onclick="learnMove(1)">つぎ ▶</button>
-    </div>
-    <p class="note">カードをタップすると答えと意味が出るよ。覚えるモードは見るだけだから、成績には記録されないよ。クイズで2回連続正解するとマスター◎！</p>
-  </section>
 
-  <!-- ============ LIST ============ -->
-  <section id="list" class="screen">
-    <div class="card">
-      <div class="label">慣用句一覧</div>
-      <p class="legend">◎＝マスター（ちがう形式で2回連続正解）　×＝苦手（要復習）　・＝未挑戦/挑戦中</p>
-      <div id="listBody"></div>
+    <div id="learnListPane" style="display:none">
+      <div class="card">
+        <p class="legend2" style="margin:0 0 4px">◎＝マスター　⚠＝要注意　×＝苦手　・＝未挑戦/挑戦中　／　金色の◎○は重要度だよ。タップでくわしく見られるよ。</p>
+        <div id="learnListBody"></div>
+      </div>
+      <div class="backrow"><button class="btn ghost" onclick="goHome()">ホームへもどる</button></div>
     </div>
-    <div class="backrow"><button class="btn ghost" onclick="goHome()">ホームへもどる</button></div>
-  </section>
 
-<!-- ============ MODALS ============ -->
-<div class="overlay" id="syncModal">
-  <div class="modal">
-    <h3>☁ クラウド同期設定</h3>
-    <p class="desc">Google Apps Script のウェブアプリURL（<b>/exec で終わるもの</b>）と合言葉を入力してね。この設定は<b>この端末にだけ</b>保存され、記録データには含まれません。</p>
-    <div class="fld"><label>GASのURL</label><input type="text" id="syncUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
-    <div class="fld"><label>合言葉</label><input type="password" id="syncKeyIn" placeholder="合言葉"></div>
-    <div class="mrow">
-      <button class="btn shu" onclick="saveSyncSettings()">保存して同期</button>
-      <button class="btn ghost" onclick="closeModal('syncModal')">とじる</button>
+    <div id="learnCardPane" style="display:none">
+      <div class="lchips">
+        <button class="chip" id="dirA" onclick="setDeckDir('A')">□うめ方向（意味→ことば）</button>
+        <button class="chip" id="dirB" onclick="setDeckDir('B')">意味あて方向（ことば→意味）</button>
+      </div>
+      <div class="lbar"><span id="deckLeft"></span><span id="deckDone"></span></div>
+      <div class="lcard" id="deckCard" onclick="flipDeck()"></div>
+      <div class="lnav" id="deckBtns">
+        <button class="btn ghost" onclick="deckLater()">まだ（あとでもう一回）</button>
+        <button class="btn shu" onclick="deckGot()">覚えた！</button>
+      </div>
+      <button class="btn primary" id="deckRestart" style="display:none;margin-top:10px" onclick="startDeck()">もう一度はじめから</button>
     </div>
-    <div class="mrow"><button class="btn ghost" id="syncOffBtn" onclick="clearSyncSettings()">同期を解除</button></div>
-  </div>
+  </section>
 </div>
 
+<!-- ============ MODALS ============ -->
 <div class="overlay" id="importModal">
   <div class="modal">
     <h3>📥 記録を読み込む</h3>
     <p class="desc" id="importInfo"></p>
     <p class="desc"><b>いまの記録はこのファイルの内容で置き換えられます。</b>心配なときは、先に「📤 記録を書き出す」でバックアップしてね。</p>
-    <div class="mrow">
+    <div class="mrow2">
       <button class="btn shu" onclick="confirmImport()">置き換える</button>
       <button class="btn ghost" onclick="cancelImport()">やめる</button>
     </div>
@@ -375,9 +401,20 @@
   <div class="modal">
     <h3 id="msgTitle">お知らせ</h3>
     <p class="desc" id="msgBody"></p>
-    <div class="mrow"><button class="btn primary" onclick="closeModal('msgModal')">とじる</button></div>
+    <div class="mrow2"><button class="btn primary" onclick="closeModal('msgModal')">とじる</button></div>
   </div>
 </div>
+
+<div class="overlay" id="detailModal">
+  <div class="modal dwrap">
+    <h3>ことばの確認</h3>
+    <div id="detailBody"></div>
+    <div class="mrow2">
+      <button class="btn ghost" id="dPrev" onclick="detailMove(-1)">◀ 前へ</button>
+      <button class="btn ghost" id="dNext" onclick="detailMove(1)">次へ ▶</button>
+    </div>
+    <div class="mrow2"><button class="btn primary" onclick="closeModal('detailModal')">とじる</button></div>
+  </div>
 </div>
 
 <script>
@@ -646,153 +683,232 @@ const DATA=[
 [2,"□を引く","気","それとなく、相手の関心をさそう"]
 ];
 /* ============================================================
-   共通仕様 v1.0 準拠ロジック
+   重要度 imp（§3-5）：2=◎最重要 / 1=○重要 / 0=標準
+   DATAと同じ並び。入試頻出度から設定（元教材に印がないため）
+============================================================ */
+const IMP=(()=>{
+  const a=new Array(255).fill(0);
+  /* ◎ 最重要 */
+  [0,1,2,3,5,7,13,14,15,16,17,18,20,23,27,32,34,36,37,40,41,42,47,50,51,57,58,60,64,67,69,71,76,78,82,84,85,105,114,115,118,128,129,132,
+   134,135,136,137,139,142,144,146,150,152,153,157,159,160,161,162,164,166,168,170,176,180,
+   186,187,188,189,192,193,194,195,196,197,198,199,200,207,208,209,212,213,214,216,218,221,223,224,229,230,232,237,238,243,244,246,249,250,253
+  ].forEach(i=>a[i]=2);
+  /* ○ 重要 */
+  [4,6,8,10,11,12,19,22,24,25,28,29,30,31,33,38,43,44,45,46,48,49,52,53,55,56,59,62,63,65,68,70,73,75,79,81,83,88,89,90,91,92,93,97,98,99,102,104,107,109,110,116,119,124,125,126,127,131,
+   133,138,140,141,143,147,151,154,155,156,158,165,169,172,174,175,178,181,182,183,184,185,
+   191,201,202,203,204,206,211,215,217,219,220,222,225,226,227,228,233,235,240,241,245,247,248,251
+  ].forEach(i=>a[i]=1);
+  return a;
+})();
+function impMark(i){return IMP[i]===2?"◎":(IMP[i]===1?"○":"");}
+
+/* ============================================================
+   共通仕様 v3.0（統合版）準拠ロジック
    形式A=□うめ(意味→語)  形式B=意味あて(慣用句→意味)
 ============================================================ */
 const CATS=["身体","動物・植物","そのほか"];
-const KEY="kj-quiz-kokugo-kanyoku";      /* v2 保存キー */
-const OLDKEY="kanyoku_quiz_v1";          /* v1 からの移行元 */
-const MASTERY_STREAK=2;                  /* 習得に必要な連続正解(異なる形式) */
-const REASK_WRONG=3;                     /* 誤答→3問後に再出題 */
-const REASK_OK=6;                        /* 正解未習得→6問後に再出題 */
-const REASK_MAX=4;                       /* 1セッション内の再投入上限 */
+const KEY="kj-quiz-kokugo-kanyoku";        /* app（変更しない） */
+const VER="v3.0";
+const TOOL_NAME="慣用句マスター";
+const SYNC_KEY="kj-quiz:sync";             /* 全ツール共通 */
+const AUTH_KEY="kj-quiz:auth";             /* 全ツール共通 */
+const OLD_SYNC_KEY=KEY+":sync";            /* 旧・ツール別キー（移行元） */
+const UI_KEY=KEY+":ui";
+const REASK_WRONG=3, REASK_OK=6, REASK_MAX=4;
+const WRONGLOG_MAX=5;
+const SESSIONS_MAX=100;
 const FMT_NAME={A:"□うめ",B:"意味あて"};
+const MODE_LABEL={n10:"10問",n20:"20問",all:"全問",recheck:"再確認",retry:"10問",rank:"10問"};
+const GAS_ERR="GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
+const OFFLINE_ERR="オフライン（ローカルには保存済み。次につながったときに送ります）";
 
 function byId(id){return document.getElementById(id);}
 function nowISO(){return new Date().toISOString();}
 function deep(o){return JSON.parse(JSON.stringify(o));}
+function ts(x){const t=x?Date.parse(x):NaN;return isNaN(t)?0:t;}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fmtD(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return"";return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;}
+function fmtDT(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return"";const mm=String(d.getMinutes()).padStart(2,"0");return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${mm}`;}
 
-/* 同じ問題文で別解になる語を自動で除外する表 */
+/* §4-1 適応ハードル */
+function requiredStreak(item){
+  const w=(item&&item.totalWrong)||0;
+  if(w>=6)return 4;
+  if(w>=3)return 3;
+  return 2;
+}
+
+/* 別解の自動除外・選択肢プール */
 const altMap={};
 DATA.forEach(d=>{const k=d[0]+"|"+d[1];(altMap[k]=altMap[k]||new Set()).add(d[2]);});
-/* 分類ごとの選択肢プール（A=語 / B=意味） */
 const poolsA=[new Set(),new Set(),new Set()];
 const poolsB=[new Set(),new Set(),new Set()];
 DATA.forEach(d=>{poolsA[d[0]].add(d[2]);poolsB[d[0]].add(d[3]);});
 
-/* ---------------- 保存（スキーマ v2 + v1移行） ---------------- */
+/* ---------------- localStorage（例外環境でも継続動作） ---------------- */
+let lsOK=true;
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){lsOK=false;return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){lsOK=false;}}
+function lsDel(k){try{localStorage.removeItem(k);}catch(e){lsOK=false;}}
+try{localStorage.setItem(KEY+":t","1");localStorage.removeItem(KEY+":t");}catch(e){lsOK=false;}
+
+/* ---------------- 共有キー（同期設定・ログイン） ---------------- */
+let syncCfg=null, auth=null;
+function loadShared(){
+  /* 旧 <app>:sync → kj-quiz:sync へ移行 */
+  if(!lsGet(SYNC_KEY)){
+    const o=lsGet(OLD_SYNC_KEY);
+    if(o)lsSet(SYNC_KEY,o);
+  }
+  try{const s=lsGet(SYNC_KEY);syncCfg=s?JSON.parse(s):null;}catch(e){syncCfg=null;}
+  try{const a=lsGet(AUTH_KEY);auth=a?JSON.parse(a):null;}catch(e){auth=null;}
+}
+function saveSyncCfgLS(){if(syncCfg)lsSet(SYNC_KEY,JSON.stringify(syncCfg));}
+function saveAuthLS(){if(auth)lsSet(AUTH_KEY,JSON.stringify(auth));}
+
+/* ---------------- UI設定（<app>:ui・同期しない） ---------------- */
+let ui={category:"all",impFilter:"all",ruby:false};
+function loadUI(){try{const s=lsGet(UI_KEY);if(s)ui=Object.assign(ui,JSON.parse(s));}catch(e){}}
+function saveUI(){lsSet(UI_KEY,JSON.stringify(ui));}
+function impMatch(imp){
+  if(ui.impFilter==="top")return imp===2;
+  if(ui.impFilter==="hi")return imp>=1;
+  return true;
+}
+function rangePool(){
+  return DATA.map((d,i)=>i).filter(i=>
+    (ui.category==="all"||DATA[i][0]===ui.category)&&impMatch(IMP[i]));
+}
+
+/* ---------------- 保存スキーマ §10（accounts は常に1件） ---------------- */
 function newItem(){
-  return {streak:0,mastered:false,masteredAt:null,lastFormat:null,
+  return {streak:0,mastered:false,masteredAt:null,postMasterWrong:0,lastFormat:null,
     totalCorrect:0,totalWrong:0,
     byFormat:{A:{correct:0,wrong:0},B:{correct:0,wrong:0}},
     wrongLog:[],lastSeenAt:null};
 }
 let store=null;
-function loadStore(){
-  try{
-    const s=localStorage.getItem(KEY);
-    if(s){const p=JSON.parse(s);if(p&&p.version===2){store=p;return;}}
-  }catch(e){}
-  store={app:KEY,version:2,activeAccountId:null,accounts:[],progress:{}};
-  /* v1 データがあれば引き継ぐ */
-  try{
-    const o=localStorage.getItem(OLDKEY);
-    if(o){
-      const old=JSON.parse(o);
-      Object.keys(old.users||{}).forEach((name,i)=>{
-        const id="acc_"+(i+1);
-        store.accounts.push({id,name,createdAt:nowISO()});
-        const items={};
-        const u=old.users[name]||{};
-        Object.keys(u).forEach(k=>{
-          const s1=u[k];if(!s1||!s1.n)return;
-          const it=newItem();
-          it.streak=s1.s||0;
-          it.mastered=(s1.s||0)>=MASTERY_STREAK;
-          if(it.mastered)it.masteredAt=nowISO();
-          it.totalWrong=s1.w||0;
-          it.totalCorrect=Math.max(0,(s1.n||0)-(s1.w||0));
-          it.byFormat.A={correct:it.totalCorrect,wrong:it.totalWrong};
-          it.lastFormat="A";
-          it.lastSeenAt=nowISO();
-          items[k]=it;
-        });
-        store.progress[id]={items,sessions:[]};
-        if(old.current===name)store.activeAccountId=id;
-      });
-    }
-  }catch(e){}
+function ensureStore(){
+  let p=null;
+  try{const s=lsGet(KEY);if(s)p=JSON.parse(s);}catch(e){}
+  const valid=p&&p.version===2&&Array.isArray(p.accounts)&&p.accounts.length===1&&p.accounts[0].id===auth.id;
+  if(valid){store=p;return;}
+  /* 旧形式（複数アカウント等）は消さずに退避してから作り直す */
+  if(p&&!lsGet(KEY+":backup-v2"))lsSet(KEY+":backup-v2",JSON.stringify(p));
+  store={app:KEY,version:2,updatedAt:nowISO(),activeAccountId:auth.id,
+    accounts:[{id:auth.id,name:auth.id,label:auth.label||auth.id,createdAt:nowISO()}],
+    progress:{}};
+  store.progress[auth.id]={items:{},sessions:[]};
   save();
 }
-let lsOK=true;
-try{localStorage.setItem(KEY+":t","1");localStorage.removeItem(KEY+":t");}catch(e){lsOK=false;}
 function save(touch){
-  /* 追補§2: 保存のたびに updatedAt を更新（クラウド取り込み時は touch=false で維持） */
   if(touch!==false)store.updatedAt=nowISO();
-  if(!lsOK)return;
-  try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){lsOK=false;updateWarnBar();}
+  lsSet(KEY,JSON.stringify(store));
 }
-function acc(){
-  if(!store.accounts.length)store.accounts.push({id:"acc_1",name:"ゲスト",createdAt:nowISO()});
-  let a=store.accounts.find(x=>x.id===store.activeAccountId);
-  if(!a){a=store.accounts[0];store.activeAccountId=a.id;}
-  if(!store.progress[a.id])store.progress[a.id]={items:{},sessions:[]};
-  return a;
+function pProg(){
+  if(!store.progress[auth.id])store.progress[auth.id]={items:{},sessions:[]};
+  return store.progress[auth.id];
 }
-function pItems(){return store.progress[acc().id].items;}
+function pItems(){return pProg().items;}
 function pItem(i){const t=pItems();return t[i]||(t[i]=newItem());}
 function pView(i){return pItems()[i]||null;}
+function dbHasRecords(d){
+  if(!d||!d.progress)return false;
+  for(const id in d.progress){
+    const p=d.progress[id];
+    if(p&&p.sessions&&p.sessions.length>0)return true;
+    if(p&&p.items){
+      for(const k in p.items){
+        const it=p.items[k];
+        if(it&&((it.totalCorrect||0)+(it.totalWrong||0))>0)return true;
+      }
+    }
+  }
+  return false;
+}
+
+/* ---------------- 起動判定 §1-4 ---------------- */
+let pendingAuthReload=false;
+function portalURL(){return "index.html";}
+function ready(){return !!(syncCfg&&syncCfg.url&&syncCfg.key);}
+function loggedIn(){return !!(auth&&auth.id&&auth.pw);}
+function renderGate(){
+  const r=[];
+  if(!ready())r.push("クラウド同期がまだ設定されていません。");
+  else if(!loggedIn())r.push("まだログインしていません。");
+  if(!lsOK)r.push("（この環境では設定を保存できないため、毎回ポータルからひらいてください）");
+  byId("gateReason").textContent=r.join(" ");
+  byId("whoami").textContent="";
+  show("gate");
+}
+function boot(){
+  loadShared();loadUI();
+  if(!ready()||!loggedIn()){renderGate();return false;}
+  const firstDevice=!lsGet(KEY);        /* はじめて使う端末か（記録キーなし） */
+  ensureStore();
+  byId("whoami").innerHTML="｜<b>"+esc(store.accounts[0].label||auth.id)+"</b>（"+esc(auth.id)+"）";
+  byId("whoami").onclick=()=>{if(!sess&&typeof location!=="undefined")location.href=portalURL();};
+  renderHome();
+  show("home");
+  pullFetch(firstDevice);               /* 初回端末はクラウドの記録を取り込んで反映 */
+  return true;
+}
+function applyAuthChangeIfPending(){
+  if(pendingAuthReload){
+    pendingAuthReload=false;
+    if(typeof location!=="undefined"&&location.reload)location.reload();
+    else boot();
+  }
+}
+
+/* ---------------- 画面 ---------------- */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  byId(id).classList.add("active");
+  if(typeof window!=="undefined"&&window.scrollTo)window.scrollTo(0,0);
+}
+function goHome(){sess=null;applyAuthChangeIfPending();renderHome();show("home");}
+function showMsg(body,title){
+  byId("msgTitle").textContent=title||"お知らせ";
+  byId("msgBody").innerHTML=body;
+  byId("msgModal").classList.add("show");
+}
+function closeModal(id){byId(id).classList.remove("show");}
 
 /* ---------------- ホーム ---------------- */
-let selCats=[true,true,true];
-let selMode="n10";   /* n10 / n20 / all */
+let selMode="n10";
 const MODE_NOTE={
-  n10:"10語モード：10個の言葉を、□うめ・意味あての両方で出題（正解し続けると実質20問）。まちがえた問題は少しあとにもう一度出るよ。",
-  n20:"20語モード：20個の言葉を、□うめ・意味あての両方で出題（正解し続けると実質40問）。",
-  all:"全問モード：マスター済みもふくめた全部の言葉を1問ずつ出題する実力チェック。まちがえても再出題はなし。"
+  n10:"10語モード：範囲内の未習得から10語を、□うめ・意味あての両方で出題（正解し続けると実質20問）。",
+  n20:"20語モード：範囲内の未習得から20語を、□うめ・意味あての両方で出題（実質40問）。",
+  all:"全問モード：マスター済みもふくめた範囲内の全語を1問ずつ出す実力チェック。まちがえても再出題なし。",
+  recheck:"再確認モード：マスター後にまちがえた「要注意」の言葉を、両方の形式で確認するよ。"
 };
 
 function renderHome(){
-  acc();
-  const uc=byId("userChips");
-  uc.innerHTML="";
-  store.accounts.forEach(a=>{
+  /* 範囲セレクタ §3-5 */
+  const seg=[["all","すべて"],["hi","◎○のみ"],["top","◎のみ"]];
+  const ic=byId("impChips");ic.innerHTML="";
+  seg.forEach(([v,lab])=>{
     const b=document.createElement("button");
-    b.className="chip"+(a.id===store.activeAccountId?" on":"");
-    b.textContent=a.name;
-    b.onclick=()=>{store.activeAccountId=a.id;save();renderHome();};
-    uc.appendChild(b);
+    b.className="chip"+(ui.impFilter===v?" on":"");
+    b.textContent=lab;
+    b.onclick=()=>{ui.impFilter=v;saveUI();renderHome();};
+    ic.appendChild(b);
   });
-  const add=document.createElement("button");
-  add.className="chip add";add.textContent="＋追加";
-  add.onclick=()=>{
-    const n=prompt("なまえを入力してね");
-    if(n&&n.trim()){
-      const name=n.trim();
-      let a=store.accounts.find(x=>x.name===name);
-      const isNew=!a;
-      if(!a){a={id:"acc_"+Date.now(),name,createdAt:nowISO()};store.accounts.push(a);}
-      store.activeAccountId=a.id;save();renderHome();
-      if(isNew)pushAsync();
-    }
-  };
-  uc.appendChild(add);
-
-  const items=pItems();let mastered=0,weak=0,tried=0;
-  DATA.forEach((d,i)=>{
-    const it=items[i];if(!it)return;
-    if(it.lastSeenAt)tried++;
-    if(it.mastered)mastered++;
-    else if(it.totalWrong>0)weak++;
-  });
-  byId("userStat").innerHTML=
-    `全${DATA.length}語中：マスター◎ <b>${mastered}</b>語　／　苦手 <span class="bad">${weak}</span>語　／　挑戦済み ${tried}語`;
-
-  const cc=byId("catChips");
-  cc.innerHTML="";
-  CATS.forEach((c,i)=>{
+  const cc=byId("catChips");cc.innerHTML="";
+  const cnt=c=>DATA.map((d,i)=>i).filter(i=>(c==="all"||DATA[i][0]===c)&&impMatch(IMP[i])).length;
+  [["all","すべて"],[0,CATS[0]],[1,CATS[1]],[2,CATS[2]]].forEach(([v,lab])=>{
     const b=document.createElement("button");
-    b.className="chip"+(selCats[i]?" on":"");
-    b.textContent=c;
-    b.onclick=()=>{selCats[i]=!selCats[i];if(!selCats.some(x=>x))selCats[i]=true;renderHome();};
+    b.className="chip"+(ui.category===v?" on":"");
+    b.innerHTML=esc(lab)+`<small>${cnt(v)}語</small>`;
+    b.onclick=()=>{ui.category=v;saveUI();renderHome();};
     cc.appendChild(b);
   });
 
-  const mc=byId("modeChips");
-  mc.innerHTML="";
-  [["n10","10語"],["n20","20語"],["all","全問"]].forEach(([v,lab])=>{
+  /* モード */
+  const mc=byId("modeChips");mc.innerHTML="";
+  [["n10","10問"],["n20","20問"],["all","全問"],["recheck","再確認"]].forEach(([v,lab])=>{
     const b=document.createElement("button");
     b.className="chip"+(selMode===v?" on":"");
     b.textContent=lab;
@@ -800,67 +916,128 @@ function renderHome(){
     mc.appendChild(b);
   });
   byId("modeNote").textContent=MODE_NOTE[selMode];
+
+  /* 習得バー（範囲に関係なく全KP §3-5③） */
+  renderMasteryBars();
+  renderRanking();
   renderSyncPanel();
 }
-
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  byId(id).classList.add("active");
-  window.scrollTo(0,0);
+function itemStateKey(it){
+  if(it&&it.mastered&&(it.postMasterWrong||0)>0)return"attn";
+  if(it&&it.mastered)return"m";
+  if(!it||!it.lastSeenAt)return"none";
+  if((it.totalWrong||0)>0)return"w";
+  if((it.totalCorrect||0)>0)return"p";
+  return"none";
 }
-function goHome(){sess=null;renderHome();show("home");}
+function renderMasteryBars(){
+  const box=byId("masteryBars");
+  const items=pItems();
+  let html="";
+  const groups=[["すべて",null],[CATS[0],0],[CATS[1],1],[CATS[2],2]];
+  groups.forEach(([lab,c])=>{
+    const idxs=DATA.map((d,i)=>i).filter(i=>c===null||DATA[i][0]===c);
+    let m=0,a=0,p=0;
+    idxs.forEach(i=>{
+      const k=itemStateKey(items[i]);
+      if(k==="attn"){a++;}
+      else if(k==="m")m++;
+      else if(k==="p")p++;
+    });
+    const total=idxs.length,mast=m+a;
+    const pct=total?Math.round(mast/total*100):0;
+    const w=x=>total?(x/total*100):0;
+    html+=`<div class="mrow"><div class="mtitle"><span>${esc(lab)}</span><span>習得済み ${mast} ／ 全 ${total}（${pct}%）</span></div>`+
+      `<div class="mbar"><i class="seg-m" style="width:${w(m)}%"></i><i class="seg-a" style="width:${w(a)}%"></i><i class="seg-p" style="width:${w(p)}%"></i></div></div>`;
+  });
+  box.innerHTML=html;
+  /* 要注意バッジ（対象は範囲 §3-5③） */
+  const attn=rangePool().filter(i=>{const it=pView(i);return it&&it.mastered&&(it.postMasterWrong||0)>0;});
+  const btn=byId("attnBtn");
+  if(attn.length){btn.style.display="block";btn.textContent=`⚠ 要注意 ${attn.length}語 → 再確認モードでたしかめる`;}
+  else btn.style.display="none";
+}
+function renderRanking(){
+  const card=byId("rankCard"),body=byId("rankBody");
+  const items=pItems();
+  const rank=DATA.map((d,i)=>i)
+    .filter(i=>items[i]&&(items[i].totalWrong||0)>0)
+    .sort((a,b)=>(items[b].totalWrong||0)-(items[a].totalWrong||0))
+    .slice(0,10);
+  if(!rank.length){card.style.display="none";return;}
+  card.style.display="block";
+  body.innerHTML="";
+  rank.forEach((i,n)=>{
+    const d=DATA[i],it=items[i];
+    const row=document.createElement("div");
+    row.className="rankrow";
+    row.innerHTML=`<span class="no">${n+1}</span>`+
+      `<span class="id2 mincho">${esc(d[1]).replace("□","<em>"+esc(d[2])+"</em>")}</span>`+
+      `<span class="wbadge${(it.totalWrong||0)>=2?" hot":""}">×${it.totalWrong}</span>`;
+    row.onclick=()=>startFromRanking(i);
+    body.appendChild(row);
+  });
+}
 
 /* ---------------- セッション ---------------- */
-let sess=null;        /* 進行中セッション（結果確定まで localStorage には書かない） */
-let lastMissed=[];    /* 「まちがいだけもう一回」用 */
+let sess=null;
+let lastMissed=[];
 
-function catPool(){return DATA.map((d,i)=>i).filter(i=>selCats[DATA[i][0]]);}
-
-/* 出題KPの選定：誤答が多い→未出題→出題が古い の優先順（未習得から） */
 function rankKps(list){
   return list.map(i=>{
     const it=pView(i)||newItem();
     const unseen=it.lastSeenAt?0:1;
-    const age=it.lastSeenAt?Math.min((Date.now()-Date.parse(it.lastSeenAt))/36e5,400):0;
-    const score=it.totalWrong*1e6+unseen*5e5+age*1000+Math.random()*999;
+    const age=it.lastSeenAt?Math.min((Date.now()-ts(it.lastSeenAt))/36e5,400):0;
+    const score=(it.totalWrong||0)*1e6+unseen*5e5+age*1000+Math.random()*999;
     return [i,score];
   }).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
 }
 
 function startNormal(){
-  const pool=catPool();
-  if(!pool.length){alert("出題できる問題がありません。");return;}
+  if(!loggedIn()||!ready()){renderGate();return;}
+  const pool=rangePool();
+  if(!pool.length){alert("いまの出題範囲に言葉がありません。範囲を広げてね。");return;}
   if(selMode==="all"){
     beginSession(shuffle(pool.slice()),"all",false);
     return;
   }
+  if(selMode==="recheck"){startRecheck();return;}
   const n=(selMode==="n20")?20:10;
   const unm=pool.filter(i=>{const it=pView(i);return !(it&&it.mastered);});
-  let chosen=rankKps(unm).slice(0,n);
-  if(chosen.length<n){
-    const mast=pool.filter(i=>{const it=pView(i);return it&&it.mastered;});
-    const extra=rankKps(mast).slice(0,n-chosen.length);
-    if(extra.length){
-      alert(`未習得の言葉が残り${chosen.length}語なので、マスター済みから${extra.length}語を足して出題するよ。`);
-      chosen=chosen.concat(extra);
-    }else if(chosen.length){
-      alert(`出題できる言葉が${chosen.length}語だけなので、その数で出題するよ。`);
-    }
-  }
-  if(!chosen.length){alert("出題できる問題がありません。");return;}
-  beginSession(shuffle(chosen),"" + (n===20?"n20":"n10"),true);
+  const chosen=rankKps(unm).slice(0,n);
+  if(!chosen.length){alert("いまの範囲は全部マスター済みだよ。すばらしい！\n範囲を広げるか、全問モードで実力チェックしてね。");return;}
+  if(chosen.length<n)alert(`範囲内の未習得が${chosen.length}語だけなので、その数で出題するよ。`);
+  beginSession(shuffle(chosen),(n===20?"n20":"n10"),true);
 }
-function startWeak(){
-  const pool=catPool().filter(i=>{const it=pView(i);return it&&it.totalWrong>0&&!it.mastered;});
-  if(!pool.length){alert("苦手な問題はありません。すばらしい！\nまずは通常クイズに挑戦してね。");return;}
-  beginSession(shuffle(rankKps(pool)),"weak",true);
+function startRecheck(){
+  if(!loggedIn()||!ready()){renderGate();return;}
+  const kps=rangePool().filter(i=>{const it=pView(i);return it&&it.mastered&&(it.postMasterWrong||0)>0;});
+  if(!kps.length){alert("要注意の言葉はありません。");return;}
+  beginSession(shuffle(kps.slice()),"recheck",true,{bothFormats:true});
+}
+function startFromRanking(kp){
+  const items=pItems();
+  const it=items[kp];
+  if(it&&it.mastered){
+    /* マスター済み→再確認モードで確認 */
+    const kps=rangePool().filter(i=>{const x=pView(i);return x&&x.mastered&&(x.postMasterWrong||0)>0;});
+    const set=new Set(kps);set.delete(kp);
+    beginSession([kp,...shuffle([...set])],"recheck",true,{bothFormats:true});
+    return;
+  }
+  const weak=DATA.map((d,i)=>i)
+    .filter(i=>i!==kp&&items[i]&&(items[i].totalWrong||0)>0&&!(items[i]&&items[i].mastered))
+    .sort((a,b)=>(items[b].totalWrong||0)-(items[a].totalWrong||0))
+    .slice(0,9);
+  beginSession([kp,...shuffle(weak)],"rank",true);
 }
 function retryMiss(){
   if(!lastMissed.length){goHome();return;}
   beginSession(shuffle(lastMissed.slice()),"retry",true);
 }
 
-function beginSession(kps,mode,useQueue){
+function beginSession(kps,mode,useQueue,opts){
+  opts=opts||{};
   sess={
     mode,useQueue,kps:kps.slice(),
     queue:[],qi:0,correct:0,wrong:0,
@@ -870,11 +1047,15 @@ function beginSession(kps,mode,useQueue){
     startedAt:nowISO(),finished:false
   };
   kps.forEach(k=>{sess.items[k]=deep(pItem(k));sess.reask[k]=0;});
-  /* 初回の形式：前回と異なる形式を優先、履歴なしはランダム */
   kps.forEach(k=>{
     const it=sess.items[k];
-    const fmt=it.lastFormat?(it.lastFormat==="A"?"B":"A"):(Math.random()<.5?"A":"B");
-    sess.queue.push({kp:k,fmt});
+    if(opts.bothFormats){
+      sess.queue.push({kp:k,fmt:"A"});
+      sess.queue.push({kp:k,fmt:"B"});
+    }else{
+      const fmt=it.lastFormat?(it.lastFormat==="A"?"B":"A"):(Math.random()<.5?"A":"B");
+      sess.queue.push({kp:k,fmt});
+    }
   });
   shuffle(sess.queue);
   show("quiz");
@@ -898,14 +1079,22 @@ function makeOptions(kp,fmt){
   }
 }
 
-/* ---------------- 画面描画 ---------------- */
-function gaugeHTML(streak){
+/* ---------------- 描画 ---------------- */
+function gaugeHTML(it){
+  const need=requiredStreak(it);
   let h="";
-  for(let i=0;i<MASTERY_STREAK;i++)h+=`<span class="${i<streak?"on":""}">●</span>`;
+  for(let i=0;i<need;i++)h+=`<span class="${i<(it.streak||0)?"on":""}">●</span>`;
   return h;
 }
+function updateHurdle(it){
+  const el=byId("hurdleNote");
+  const need=requiredStreak(it);
+  if(need>2&&!it.mastered){
+    el.style.display="block";
+    el.textContent=`この言葉はよく間違えているから、マスターには ちがう形式で${need}回連続正解が必要！`;
+  }else el.style.display="none";
+}
 function paintQuestion(kp,fmt,optsArr,state){
-  /* state: {mode:"active"|"answered"|"review", chosen, ok} */
   const d=DATA[kp];
   const mBox=byId("qMeaning");
   if(fmt==="A"){
@@ -962,22 +1151,25 @@ function updateBar(kp,fmt){
   byId("qnum").textContent=`第 ${sess.qi+1} 問 ／ 全 ${sess.queue.length} 問`;
   byId("ftag").textContent=FMT_NAME[fmt];
   byId("pbar").style.width=(sess.qi/sess.queue.length*100)+"%";
-  byId("kpGauge").innerHTML=gaugeHTML(sess.items[kp].streak);
-  if(sess.useQueue){
+  byId("kpGauge").innerHTML=gaugeHTML(sess.items[kp]);
+  updateHurdle(sess.items[kp]);
+  updateCounters();
+}
+function updateCounters(){
+  byId("cwCount").textContent=`正解 ${sess.correct} ／ 誤答 ${sess.wrong}`;
+  if(sess.mode==="recheck")byId("leftKp").textContent=`要注意 ${sess.kps.length}語`;
+  else if(sess.useQueue){
     const left=sess.kps.filter(k=>!sess.items[k].mastered).length;
     byId("leftKp").textContent=`あと ${left} 語`;
-  }else{
-    byId("leftKp").textContent="実力チェック";
-  }
-  byId("cwCount").textContent=`正解 ${sess.correct} ／ 誤答 ${sess.wrong}`;
+  }else byId("leftKp").textContent="実力チェック";
 }
-function setButtons({next=false,re=false,nav=false,back=null}){
-  byId("nextBtn").style.display=next?"block":"none";
-  byId("reBtn").style.display=re?"block":"none";
-  byId("revNav").style.display=nav?"flex":"none";
-  if(back!==null)byId("backBtn").style.display=back?"":"none";
+function setButtons(o){
+  o=o||{};
+  byId("nextBtn").style.display=o.next?"block":"none";
+  byId("reBtn").style.display=o.re?"block":"none";
+  byId("revNav").style.display=o.nav?"flex":"none";
+  if(o.back!==undefined)byId("backBtn").style.display=o.back?"":"none";
 }
-
 function renderQ(){
   sess.view=null;sess.reMode=false;
   byId("reviewBar").style.display="none";
@@ -985,7 +1177,6 @@ function renderQ(){
   if(!e.opts)e.opts=makeOptions(e.kp,e.fmt);
   updateBar(e.kp,e.fmt);
   if(e.answered){
-    /* ふりかえりから戻ってきた等：解答済みの現在問題 */
     paintQuestion(e.kp,e.fmt,e.opts,{mode:"answered",chosen:e.chosen,ok:e.ok});
     byId("nextBtn").textContent=(sess.qi===sess.queue.length-1)?"結果をみる":"次へ";
     setButtons({next:true,back:sess.history.length>0});
@@ -995,7 +1186,7 @@ function renderQ(){
   }
 }
 
-/* ---------------- 解答処理（⑤：一時領域のみ更新） ---------------- */
+/* ---------------- 解答処理（結果画面まで一時領域のみ §6-2） ---------------- */
 function snapshot(kp){
   return {
     item:deep(sess.items[kp]),
@@ -1019,39 +1210,51 @@ function restoreSnapshot(kp,pre){
 }
 function applyAnswer(kp,fmt,chosen,ok){
   const it=sess.items[kp];
-  it.lastSeenAt=nowISO();
+  const recheck=(sess.mode==="recheck");
   if(ok){
     sess.correct++;
     it.totalCorrect++;it.byFormat[fmt].correct++;
-    /* 同じ形式の連続正解ではカウントを進めない */
-    if(it.streak===0||it.lastFormat!==fmt)it.streak++;
-    if(it.streak>=MASTERY_STREAK&&!it.mastered){
+    if(it.streak===0||it.lastFormat!==fmt)it.streak++;   /* 同形式連続では進めない */
+    if(!it.mastered&&it.streak>=requiredStreak(it)){
       it.mastered=true;it.masteredAt=nowISO();sess.newMastered.add(kp);
     }
+    it.lastSeenAt=nowISO();it.lastFormat=fmt;
   }else{
     sess.wrong++;
-    it.totalWrong++;it.byFormat[fmt].wrong++;
-    it.streak=0;
-    if(it.mastered){it.mastered=false;it.masteredAt=null;}
-    sess.newMastered.delete(kp);
-    it.wrongLog.push({at:nowISO(),format:fmt,answered:chosen});
-    if(it.wrongLog.length>20)it.wrongLog=it.wrongLog.slice(-20);
+    if(it.mastered){
+      /* §4-2 習得は降格しない。習得後の誤答は postMasterWrong */
+      it.postMasterWrong=(it.postMasterWrong||0)+1;
+      if(!recheck){
+        /* 再確認モード以外（全問モード等）では通常の誤答記録も付ける */
+        it.totalWrong++;it.byFormat[fmt].wrong++;
+        it.streak=0;
+        it.wrongLog.push({at:nowISO(),format:fmt,answered:chosen});
+        if(it.wrongLog.length>WRONGLOG_MAX)it.wrongLog=it.wrongLog.slice(-WRONGLOG_MAX);
+        it.lastSeenAt=nowISO();it.lastFormat=fmt;
+      }
+      /* §3-3 再確認モードの誤答は postMasterWrong 以外の状態変更をしない */
+    }else{
+      it.totalWrong++;it.byFormat[fmt].wrong++;
+      it.streak=0;
+      it.wrongLog.push({at:nowISO(),format:fmt,answered:chosen});
+      if(it.wrongLog.length>WRONGLOG_MAX)it.wrongLog=it.wrongLog.slice(-WRONGLOG_MAX);
+      it.lastSeenAt=nowISO();it.lastFormat=fmt;
+    }
     sess.missedKps.add(kp);
     (sess.missedFmt[kp]=sess.missedFmt[kp]||new Set()).add(fmt);
   }
-  it.lastFormat=fmt;
 }
-/* ③ 復習キュー */
-function insertEntry(ent,offset){
-  const pos=Math.min(sess.queue.length,sess.qi+offset);
+/* §5 復習キュー（基準位置は答えた問題自体の位置） */
+function insertEntry(ent,basePos,offset){
+  const pos=Math.max(sess.qi+1,Math.min(sess.queue.length,basePos+offset));
   sess.queue.splice(pos,0,ent);
 }
-function queueDecision(kp,fmt,ok){
+function queueDecision(kp,fmt,ok,basePos){
   if(!sess.useQueue)return null;
   const alt=(fmt==="A")?"B":"A";
   if(!ok){
     if(sess.reask[kp]<REASK_MAX){
-      const ent={kp,fmt:alt};insertEntry(ent,REASK_WRONG);sess.reask[kp]++;return ent;
+      const ent={kp,fmt:alt};insertEntry(ent,basePos,REASK_WRONG);sess.reask[kp]++;return ent;
     }
     sess.needReview.add(kp);return null;
   }
@@ -1059,7 +1262,7 @@ function queueDecision(kp,fmt,ok){
     const pending=sess.queue.slice(sess.qi+1).some(x=>x.kp===kp);
     if(!pending){
       if(sess.reask[kp]<REASK_MAX){
-        const ent={kp,fmt:alt};insertEntry(ent,REASK_OK);sess.reask[kp]++;return ent;
+        const ent={kp,fmt:alt};insertEntry(ent,basePos,REASK_OK);sess.reask[kp]++;return ent;
       }
       sess.needReview.add(kp);
     }
@@ -1077,10 +1280,9 @@ function answer(chosen,btn){
   const ok=(e.fmt==="A")?(chosen===d[2]):(chosen===d[3]);
   const pre=snapshot(e.kp);
   applyAnswer(e.kp,e.fmt,chosen,ok);
-  const inserted=queueDecision(e.kp,e.fmt,ok);
+  const inserted=queueDecision(e.kp,e.fmt,ok,sess.qi);
   e.answered=true;e.chosen=chosen;e.ok=ok;
   sess.history.push({kp:e.kp,fmt:e.fmt,opts:e.opts,chosen,ok,pre,inserted});
-  /* 表示更新 */
   paintQuestion(e.kp,e.fmt,e.opts,{mode:"answered",chosen,ok});
   updateBar(e.kp,e.fmt);
   byId("nextBtn").textContent=(sess.qi===sess.queue.length-1)?"結果をみる":"次へ";
@@ -1099,7 +1301,7 @@ function quitQuiz(){
   goHome();
 }
 
-/* ---------------- ④ ふりかえり／再解答 ---------------- */
+/* ---------------- ふりかえり／再解答 §6-1 ---------------- */
 function goBackReview(){
   if(!sess||!sess.history.length||sess.reMode)return;
   sess.view=sess.history.length-1;
@@ -1115,7 +1317,8 @@ function renderReview(){
     :`ふりかえり中（${i+1}問目）：見るだけ（答え直せるのは直前の1問だけ）。`;
   byId("qnum").textContent=`ふりかえり ${i+1} ／ ${sess.history.length} 問`;
   byId("ftag").textContent=FMT_NAME[rec.fmt];
-  byId("kpGauge").innerHTML=gaugeHTML(sess.items[rec.kp].streak);
+  byId("kpGauge").innerHTML=gaugeHTML(sess.items[rec.kp]);
+  updateHurdle(sess.items[rec.kp]);
   paintQuestion(rec.kp,rec.fmt,rec.opts,{mode:"review",chosen:rec.chosen,ok:rec.ok});
   setButtons({nav:true,re:isLatest,back:false});
   byId("revPrev").disabled=(i===0);
@@ -1125,7 +1328,7 @@ function revMove(dir){
   if(sess.reMode)return;
   const nv=sess.view+dir;
   if(nv<0)return;
-  if(nv>sess.history.length-1){renderQ();return;}   /* 元の位置へ戻る */
+  if(nv>sess.history.length-1){renderQ();return;}
   sess.view=nv;
   renderReview();
 }
@@ -1133,13 +1336,11 @@ function startReanswer(){
   const i=sess.view;
   if(i===null||i!==sess.history.length-1)return;
   const rec=sess.history[i];
-  /* 直前の解答を取り消す：一時成績・キュー投入・カウンタを巻き戻し */
   restoreSnapshot(rec.kp,rec.pre);
   if(rec.inserted){
     const idx=sess.queue.indexOf(rec.inserted);
     if(idx>sess.qi)sess.queue.splice(idx,1);
   }
-  /* 該当エントリ（1つ前の問題）を未解答状態に */
   const entIdx=sess.qi-1;
   if(entIdx>=0&&sess.queue[entIdx]&&sess.queue[entIdx].kp===rec.kp){
     sess.queue[entIdx].answered=false;
@@ -1150,7 +1351,7 @@ function startReanswer(){
   byId("reviewBar").innerHTML="もう一度、答えてね。（正誤は答え直した結果で上書きされるよ）";
   byId("qnum").textContent=`ふりかえり ${i+1} ／ ${sess.history.length} 問`;
   byId("ftag").textContent=FMT_NAME[rec.fmt];
-  byId("kpGauge").innerHTML=gaugeHTML(sess.items[rec.kp].streak);
+  byId("kpGauge").innerHTML=gaugeHTML(sess.items[rec.kp]);
   paintQuestion(rec.kp,rec.fmt,rec.opts,{mode:"active"});
   setButtons({back:false});
   updateCounters();
@@ -1161,7 +1362,7 @@ function answerRe(chosen){
   const ok=(rec.fmt==="A")?(chosen===d[2]):(chosen===d[3]);
   const pre=snapshot(rec.kp);
   applyAnswer(rec.kp,rec.fmt,chosen,ok);
-  const inserted=queueDecision(rec.kp,rec.fmt,ok);
+  const inserted=queueDecision(rec.kp,rec.fmt,ok,sess.qi-1);
   rec.chosen=chosen;rec.ok=ok;rec.pre=pre;rec.inserted=inserted;
   const entIdx=sess.qi-1;
   if(entIdx>=0&&sess.queue[entIdx]&&sess.queue[entIdx].kp===rec.kp){
@@ -1170,40 +1371,35 @@ function answerRe(chosen){
   }
   sess.reMode=false;sess.view=sess.history.length-1;
   paintQuestion(rec.kp,rec.fmt,rec.opts,{mode:"answered",chosen,ok});
-  byId("kpGauge").innerHTML=gaugeHTML(sess.items[rec.kp].streak);
+  byId("kpGauge").innerHTML=gaugeHTML(sess.items[rec.kp]);
   updateCounters();
   byId("reviewBar").innerHTML=`答え直した結果で記録したよ。「つぎ ▶」で元の問題にもどってね。`;
   setButtons({nav:true,back:false});
   byId("revPrev").disabled=true;
 }
-function updateCounters(){
-  byId("cwCount").textContent=`正解 ${sess.correct} ／ 誤答 ${sess.wrong}`;
-  if(sess.useQueue){
-    const left=sess.kps.filter(k=>!sess.items[k].mastered).length;
-    byId("leftKp").textContent=`あと ${left} 語`;
-  }
-}
 
-/* ---------------- ⑤ 終了時に確定・記録 ---------------- */
+/* ---------------- 終了時に確定・記録 §6-2 / §11 ---------------- */
 function finishSession(){
   const items=pItems();
   sess.kps.forEach(k=>{items[k]=sess.items[k];});
+  let totalMastered=0;
+  DATA.forEach((d,i)=>{const it=items[i];if(it&&it.mastered)totalMastered++;});
   const rec={
     startedAt:sess.startedAt,finishedAt:nowISO(),
-    mode:sess.mode,
+    mode:MODE_LABEL[sess.mode]||"10問",
     correct:sess.correct,wrong:sess.wrong,
     newlyMastered:[...sess.newMastered],
-    wrongKpIds:[...sess.missedKps]
+    wrongKpIds:[...sess.missedKps],
+    totalMastered
   };
-  const sessions=store.progress[acc().id].sessions;
+  const sessions=pProg().sessions;
   sessions.push(rec);
-  if(sessions.length>50)sessions.splice(0,sessions.length-50);
+  if(sessions.length>SESSIONS_MAX)sessions.splice(0,sessions.length-SESSIONS_MAX);
   save();
-  pushAsync();               /* 追補§5: セッション終了の保存直後に自動push */
+  pushSave();          /* §13-1 セッション終了直後に自動push */
   sess.finished=true;
   renderResult();
 }
-
 function renderResult(){
   byId("pbar").style.width="100%";
   const total=sess.history.length;
@@ -1211,141 +1407,199 @@ function renderResult(){
   const rate=total?sess.correct/total:0;
   byId("scoreWord").textContent=
     rate===1?"満点！お見事！":rate>=0.8?"あと少しで満点！":rate>=0.5?"いい調子！":"復習して再挑戦だ！";
-  const nm=sess.newMastered.size;
-  const nr=sess.needReview.size;
+  const nm=sess.newMastered.size, nr=sess.needReview.size;
   byId("resSummary").innerHTML=
+    `正解 ${sess.correct} ／ 誤答 ${sess.wrong}（正答率 ${total?Math.round(rate*100):0}%）<br>`+
     `今回あたらしくマスター◎になった言葉：<b>${nm}</b>語`+
     (nr?`<br><span class="bad">むずかしくてスキップした言葉（要復習）：${nr}語</span>`:"");
   const mc=byId("missCard"),ml=byId("missList"),rb=byId("retryMissBtn");
   lastMissed=[...sess.missedKps];
   if(lastMissed.length){
     mc.style.display="block";rb.style.display="block";
-    ml.innerHTML=lastMissed.map(k=>{
-      const d=DATA[k];
-      const fm=[...(sess.missedFmt[k]||[])].map(f=>`<span class="fbadge">${FMT_NAME[f]}</span>`).join("");
-      const rev=sess.needReview.has(k)?`<span class="fbadge rev">要復習</span>`:"";
-      return `<div class="miss"><div class="id mincho">${esc(d[1]).replace("□","<em>"+esc(d[2])+"</em>")}${fm}${rev}</div><div class="mn">${esc(d[3])}</div></div>`;
+    const wrongRecs=sess.history.filter(h=>!h.ok);
+    ml.innerHTML=wrongRecs.map(h=>{
+      const d=DATA[h.kp];
+      const rev=sess.needReview.has(h.kp)?`<span class="fbadge rev">要復習</span>`:"";
+      const correctVal=(h.fmt==="A")?d[2]:d[3];
+      return `<div class="miss">`+
+        `<div class="id mincho">${esc(d[1]).replace("□","<em>"+esc(d[2])+"</em>")}<span class="fbadge">${FMT_NAME[h.fmt]}</span>${rev}</div>`+
+        `<div class="ans">自分の答え：<span class="ng2">${esc(h.chosen)}</span>　→　正解：<span class="ok2">${esc(correctVal)}</span></div>`+
+        `<div class="mn">${esc(d[3])}</div></div>`;
     }).join("");
   }else{
     mc.style.display="none";rb.style.display="none";
   }
+  byId("afCat").value="all";byId("afState").value="all";byId("afSort").value="wrong";
+  renderAllList();
   show("result");
 }
-
-/* ---------------- 覚えるモード（成績には記録しない） ---------------- */
-let learn=null;
-function learnBuildList(unmOnly){
-  let l=catPool();
-  if(unmOnly)l=l.filter(i=>{const it=pView(i);return !(it&&it.mastered);});
-  /* ならび：苦手 → 未出題 → 挑戦中 → マスター済み */
-  const w=i=>{
-    const it=pView(i);
-    if(it&&it.totalWrong>0&&!it.mastered)return 0;
-    if(!it||!it.lastSeenAt)return 1;
-    if(it.mastered)return 3;
-    return 2;
-  };
-  return l.sort((a,b)=>w(a)-w(b)||a-b);
+function stateLabel(it){
+  if(it&&it.mastered&&(it.postMasterWrong||0)>0)return"要注意習得";
+  if(it&&it.mastered)return"習得済み";
+  if(!it||!it.lastSeenAt)return"未出題";
+  if((it.totalWrong||0)>0)return"誤答";
+  return `${it.totalCorrect||0}回正解`;
 }
-function startLearn(){
-  const list=learnBuildList(false);
-  if(!list.length){alert("表示できる言葉がありません。");return;}
-  learn={list,idx:0,revealed:false,unmOnly:false};
-  show("learn");renderLearn();
+function stateClass(s){
+  if(s==="要注意習得")return"st-a";
+  if(s==="習得済み")return"st-m";
+  if(s==="未出題")return"st-n";
+  if(s==="誤答")return"st-w";
+  return"st-p";
 }
-function toggleLearnFilter(){
-  const un=!learn.unmOnly;
-  const list=learnBuildList(un);
-  if(!list.length){alert("未習得の言葉はありません。全部マスター、すばらしい！");return;}
-  const cur=learn.list[learn.idx];
-  learn.unmOnly=un;learn.list=list;
-  const ni=list.indexOf(cur);
-  learn.idx=ni>=0?ni:0;
-  learn.revealed=false;
-  renderLearn();
-}
-function shuffleLearn(){shuffle(learn.list);learn.idx=0;learn.revealed=false;renderLearn();}
-function learnMove(d){
-  const n=learn.idx+d;
-  if(n<0||n>=learn.list.length)return;
-  learn.idx=n;learn.revealed=false;renderLearn();
-}
-function toggleReveal(){learn.revealed=!learn.revealed;renderLearn();}
-function renderLearn(){
-  const kp=learn.list[learn.idx],d=DATA[kp],it=pView(kp);
-  byId("lnum").textContent=`${learn.idx+1} ／ ${learn.list.length} 枚`;
-  byId("lpbar").style.width=((learn.idx+1)/learn.list.length*100)+"%";
-  let mk="・",cls="m0";
-  if(it&&it.mastered){mk="◎マスター";cls="m2";}
-  else if(it&&it.totalWrong>0){mk="×苦手";cls="mx";}
-  const lm=byId("lmark");lm.textContent=mk;lm.className="lmark "+cls;
-  byId("lFilterBtn").className="chip"+(learn.unmOnly?" on":"");
-  byId("lPrev").disabled=(learn.idx===0);
-  byId("lNext").disabled=(learn.idx===learn.list.length-1);
-  const card=byId("lcard");
-  if(!learn.revealed){
-    card.innerHTML=`<div class="cat">${CATS[d[0]]}</div>`+
-      `<div class="idm mincho">${esc(d[1]).replace("□",'<span class="blank empty"></span>')}</div>`+
-      `<div class="hint">タップして答えをみる</div>`;
-    byId("lRevealBtn").textContent="答えをみる";
-  }else{
-    card.innerHTML=`<div class="cat">${CATS[d[0]]}</div>`+
-      `<div class="idm mincho">${esc(d[1]).replace("□",`<span class="blank fill">${esc(d[2])}</span>`)}</div>`+
-      `<div class="mean">${esc(d[3])}</div>`;
-    byId("lRevealBtn").textContent="かくす";
-  }
-}
-
-/* ---------------- 一覧 ---------------- */
-function showList(){
+function renderAllList(){
   const items=pItems();
-  let html="";
-  CATS.forEach((c,ci)=>{
-    html+=`<div class="cat-h">${c}</div>`;
-    DATA.forEach((d,i)=>{
-      if(d[0]!==ci)return;
-      const it=items[i];
-      let mk="・",cls="m0";
-      if(it&&it.mastered){mk="◎";cls="m2";}
-      else if(it&&it.totalWrong>0){mk="×";cls="mx";}
-      html+=`<div class="li"><span class="mark ${cls}">${mk}</span><span class="id mincho">${esc(d[1]).replace("□","<em>"+esc(d[2])+"</em>")}</span><span class="mn">${esc(d[3])}</span></div>`;
-    });
+  const fc=byId("afCat").value, fsRaw=byId("afState").value, so=byId("afSort").value;
+  let idxs=DATA.map((d,i)=>i);
+  if(fc!=="all")idxs=idxs.filter(i=>DATA[i][0]===Number(fc));
+  if(fsRaw!=="all")idxs=idxs.filter(i=>{
+    const s=stateLabel(items[i]);
+    return fsRaw==="正解"?/回正解$/.test(s):s===fsRaw;
   });
-  byId("listBody").innerHTML=html;
-  show("list");
+  if(so==="wrong")idxs.sort((a,b)=>((items[b]&&items[b].totalWrong)||0)-((items[a]&&items[a].totalWrong)||0));
+  const html=idxs.slice(0,300).map(i=>{
+    const d=DATA[i],it=items[i];
+    const s=stateLabel(it);
+    const w=(it&&it.totalWrong)||0;
+    const wb=w?`<span class="wbadge${w>=2?" hot":""}">誤答${w}回</span>`:"";
+    const A=(it&&it.byFormat&&it.byFormat.A)||{correct:0,wrong:0};
+    const B=(it&&it.byFormat&&it.byFormat.B)||{correct:0,wrong:0};
+    const wl=(it&&it.wrongLog)||[];
+    const det=`□うめ：正解${A.correct||0}・誤答${A.wrong||0}　／　意味あて：正解${B.correct||0}・誤答${B.wrong||0}`+
+      (wl.length?`<br>過去のまちがい：${wl.map(x=>esc(x.answered)).join("、")}`:"")+
+      ((it&&it.postMasterWrong)?`<br>マスター後のまちがい：${it.postMasterWrong}回`:"");
+    return `<div class="arow" onclick="this.classList.toggle('open')">`+
+      `<div class="top"><span class="sbadge ${stateClass(s)}">${s}</span>`+
+      `<span class="id3 mincho">${esc(d[1]).replace("□","<em>"+esc(d[2])+"</em>")}</span>${wb}</div>`+
+      `<div class="detail">${esc(d[3])}<br>${det}</div></div>`;
+  }).join("");
+  byId("allList").innerHTML=html||`<p class="note">この条件の言葉はないよ。</p>`;
 }
 
-/* とちゅう離脱の警告（⑤） */
-window.addEventListener("beforeunload",ev=>{
-  if(sess&&!sess.finished&&sess.history.length){
-    ev.preventDefault();ev.returnValue="";
+/* ---------------- 覚えるモード §3-4（記録・同期に一切影響しない） ---------------- */
+let learnTab="list";
+let learnListIdx=[];      /* 一覧学習の並び（範囲内） */
+let detailPos=0;
+let deck=null;            /* 単語カード {list,flipped,dir,got} */
+
+function startLearn(){
+  if(!loggedIn()||!ready()){renderGate();return;}
+  setLearnTab(learnTab||"list");
+  show("learn");
+}
+function setLearnTab(t){
+  learnTab=t;
+  byId("ltabList").className="chip"+(t==="list"?" on":"");
+  byId("ltabCard").className="chip"+(t==="card"?" on":"");
+  byId("learnListPane").style.display=(t==="list")?"block":"none";
+  byId("learnCardPane").style.display=(t==="card")?"block":"none";
+  if(t==="list")renderLearnList();
+  else{if(!deck)startDeck();else renderDeck();}
+}
+function learnMarks(i){
+  const it=pView(i);
+  let mk="・",cls="m0";
+  if(it&&it.mastered&&(it.postMasterWrong||0)>0){mk="⚠";cls="ma";}
+  else if(it&&it.mastered){mk="◎";cls="m2";}
+  else if(it&&(it.totalWrong||0)>0){mk="×";cls="mx";}
+  return {mk,cls};
+}
+function renderLearnList(){
+  learnListIdx=rangePool();
+  let html="",lastCat=-1;
+  learnListIdx.forEach((i,pos)=>{
+    const d=DATA[i];
+    if(d[0]!==lastCat){lastCat=d[0];html+=`<div class="cat-h">${CATS[d[0]]}</div>`;}
+    const {mk,cls}=learnMarks(i);
+    html+=`<div class="li" onclick="openDetail(${pos})">`+
+      `<span class="mark ${cls}">${mk}</span><span class="imp">${impMark(i)}</span>`+
+      `<span class="id mincho">${esc(d[1]).replace("□","<em>"+esc(d[2])+"</em>")}</span>`+
+      `<span class="mn">${esc(d[3])}</span></div>`;
+  });
+  byId("learnListBody").innerHTML=html||`<p class="note">いまの範囲に言葉がないよ。</p>`;
+}
+function openDetail(pos){
+  detailPos=pos;
+  renderDetail();
+  byId("detailModal").classList.add("show");
+}
+function renderDetail(){
+  const i=learnListIdx[detailPos];
+  const d=DATA[i],it=pView(i);
+  const impTxt=IMP[i]===2?"◎ 最重要":(IMP[i]===1?"○ 重要":"標準");
+  byId("detailBody").innerHTML=
+    `<div class="idm2 mincho">${esc(d[1]).replace("□","<em>"+esc(d[2])+"</em>")}</div>`+
+    `<div class="lcard-mean" style="background:var(--shu-soft);border-radius:10px;padding:12px 14px;font-size:14.5px;line-height:1.9">${esc(d[3])}</div>`+
+    `<div class="dmeta">分類：<b>${CATS[d[0]]}</b>　重要度：<b>${impTxt}</b><br>いまの状態：<b>${stateLabel(it)}</b>（${detailPos+1}／${learnListIdx.length}語）</div>`;
+  byId("dPrev").disabled=(detailPos===0);
+  byId("dNext").disabled=(detailPos===learnListIdx.length-1);
+}
+function detailMove(d){
+  const n=detailPos+d;
+  if(n<0||n>=learnListIdx.length)return;
+  detailPos=n;renderDetail();
+}
+/* 単語カード（「覚えた」は画面上の一時状態のみ） */
+function startDeck(){
+  deck={list:shuffle(rangePool()),flipped:false,dir:(deck&&deck.dir)||"A",got:0};
+  if(!deck.list.length){alert("いまの範囲に言葉がないよ。");deck=null;goHome();return;}
+  deck.total=deck.list.length;
+  renderDeck();
+}
+function setDeckDir(d){if(!deck)return;deck.dir=d;deck.flipped=false;renderDeck();}
+function flipDeck(){if(!deck||!deck.list.length)return;deck.flipped=!deck.flipped;renderDeck();}
+function deckGot(){if(!deck||!deck.list.length)return;deck.list.shift();deck.got++;deck.flipped=false;renderDeck();}
+function deckLater(){if(!deck||deck.list.length<2){if(deck)deck.flipped=false;renderDeck();return;}deck.list.push(deck.list.shift());deck.flipped=false;renderDeck();}
+function renderDeck(){
+  byId("dirA").className="chip"+(deck.dir==="A"?" on":"");
+  byId("dirB").className="chip"+(deck.dir==="B"?" on":"");
+  byId("deckLeft").textContent=`のこり ${deck.list.length} 枚`;
+  byId("deckDone").textContent=`覚えた ${deck.got} ／ ${deck.total} 枚`;
+  const card=byId("deckCard");
+  if(!deck.list.length){
+    card.innerHTML=`<div class="idm mincho">ぜんぶ覚えた！</div><div class="hint">おつかれさま◎　クイズでマスターをねらおう！</div>`;
+    byId("deckBtns").style.display="none";
+    byId("deckRestart").style.display="block";
+    return;
   }
-});
-
-/* ============================================================
-   追補v1.1：クラウド同期・Drive管理
-   同期設定は db とは別キー（<app>:sync）に保存し、同期対象に含めない
-============================================================ */
-const SYNCKEY=KEY+":sync";
-const TOOL_NAME="慣用句マスター";
-const GAS_ERR="GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
-const OFFLINE_ERR="オフライン（ローカルには保存済み）";
-let syncCfg=null;
-let pendingImport=null;
-
-function loadSyncCfg(){
-  try{const s=localStorage.getItem(SYNCKEY);if(s)syncCfg=JSON.parse(s);}catch(e){}
+  byId("deckRestart").style.display="none";
+  const i=deck.list[0],d=DATA[i];
+  const idiomFilled=esc(d[1]).replace("□",`<span class="blank fill">${esc(d[2])}</span>`);
+  const idiomBlank=esc(d[1]).replace("□",'<span class="blank empty"></span>');
+  if(!deck.flipped){
+    byId("deckBtns").style.display="none";
+    if(deck.dir==="A"){
+      card.innerHTML=`<div class="cat">${CATS[d[0]]}　${impMark(i)}</div>`+
+        `<div class="qside"><b>意味：</b>${esc(d[3])}</div>`+
+        `<div class="idm mincho" style="margin-top:16px">${idiomBlank}</div>`+
+        `<div class="hint">タップして答えをみる</div>`;
+    }else{
+      card.innerHTML=`<div class="cat">${CATS[d[0]]}　${impMark(i)}</div>`+
+        `<div class="idm mincho">${idiomFilled}</div>`+
+        `<div class="hint">この意味は？　タップして答えをみる</div>`;
+    }
+  }else{
+    byId("deckBtns").style.display="flex";
+    card.innerHTML=`<div class="cat">${CATS[d[0]]}　${impMark(i)}</div>`+
+      `<div class="idm mincho">${idiomFilled}</div>`+
+      `<div class="mean2">${esc(d[3])}</div>`;
+  }
 }
-function saveSyncCfg(){
+
+/* ---------------- 同期 §12・§13（GAS v4.2） ---------------- */
+async function apiPOST(bodyObj){
+  let res;
   try{
-    if(syncCfg)localStorage.setItem(SYNCKEY,JSON.stringify(syncCfg));
-    else localStorage.removeItem(SYNCKEY);
-  }catch(e){}
+    res=await fetch(syncCfg.url,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(bodyObj)
+    });
+  }catch(e){throw{type:"net"};}
+  let txt;
+  try{txt=await res.text();}catch(e){throw{type:"net"};}
+  try{return JSON.parse(txt);}catch(e){throw{type:"gas"};}
 }
-function fmtD(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return"";return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;}
-function fmtDT(iso){if(!iso)return"";const d=new Date(iso);if(isNaN(d))return"";const mm=String(d.getMinutes()).padStart(2,"0");return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${mm}`;}
-
-/* ---------------- 状態表示 ---------------- */
 function setSync(msg,cls){
   const el=byId("syncStatus");if(!el)return;
   el.className="syncstatus"+(cls?" "+cls:"");
@@ -1354,191 +1608,273 @@ function setSync(msg,cls){
   el.textContent=t;
 }
 function renderSyncPanel(){
-  const on=!!syncCfg;
-  const sn=byId("syncNowBtn"),ld=byId("listDriveBtn");
-  if(sn)sn.style.display=on?"block":"none";
-  if(ld)ld.style.display=on?"block":"none";
   const el=byId("syncStatus");
-  if(el&&!el.textContent){
-    if(on)setSync("☁ 同期設定ずみ");
-    else setSync("同期は未設定（記録はこの端末にだけ保存されます）");
-  }
+  if(el&&!el.textContent)setSync("☁ 同期設定ずみ");
+  const ml=byId("metaLine");
+  if(ml&&auth)ml.textContent=`ID ${auth.id}　／　ツール識別子 ${KEY}　／　共通仕様 ${VER}　／　全${DATA.length}知識ポイント`;
   updateWarnBar();
 }
 function updateWarnBar(){
   const wb=byId("warnBar");if(!wb)return;
   if(lsOK){wb.style.display="none";return;}
   wb.style.display="block";
-  wb.innerHTML=syncCfg
+  wb.innerHTML=(syncCfg&&auth)
     ?"☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます"
-    :"⚠ この環境では記録を保存できません（ページを閉じると進捗が消えます）。クラウド同期を設定すると記録を残せます。";
-}
-function showMsg(body,title){
-  byId("msgTitle").textContent=title||"お知らせ";
-  byId("msgBody").innerHTML=body;
-  byId("msgModal").classList.add("show");
-}
-function closeModal(id){byId(id).classList.remove("show");}
-
-/* ---------------- 記録の有無判定（追補§5-1） ---------------- */
-function dbHasRecords(d){
-  if(!d||!d.progress)return false;
-  for(const id in d.progress){
-    const p=d.progress[id];
-    if(p&&p.sessions&&p.sessions.length>0)return true;
-    if(p&&p.items){
-      for(const k in p.items){
-        const it=p.items[k];
-        if(it&&((it.totalCorrect||0)+(it.totalWrong||0))>0)return true;
-      }
-    }
-  }
-  return false;
-}
-
-/* ---------------- API（追補§4：契約を変えない） ---------------- */
-async function apiGET(){
-  let res;
-  try{
-    res=await fetch(`${syncCfg.url}?key=${encodeURIComponent(syncCfg.key)}&app=${encodeURIComponent(KEY)}`);
-  }catch(e){throw{type:"net"};}
-  let txt;
-  try{txt=await res.text();}catch(e){throw{type:"net"};}
-  try{return JSON.parse(txt);}catch(e){throw{type:"gas"};}
-}
-async function apiPOST(bodyObj){
-  let res;
-  try{
-    res=await fetch(syncCfg.url,{
-      method:"POST",
-      headers:{"Content-Type":"text/plain;charset=utf-8"},   /* プリフライト回避 */
-      body:JSON.stringify(bodyObj)
-    });
-  }catch(e){throw{type:"net"};}
-  let txt;
-  try{txt=await res.text();}catch(e){throw{type:"net"};}
-  try{return JSON.parse(txt);}catch(e){throw{type:"gas"};}
+    :"⚠ この環境では記録を保存できません（ページを閉じると進捗が消えます）。";
 }
 function handleSyncErr(e){
   if(e&&e.type==="gas")setSync("☁⚠ "+GAS_ERR,"ngc");
   else setSync("☁⚠ "+OFFLINE_ERR,"ngc");
 }
+function apiError(j){
+  const e=String((j&&j.error)||"");
+  if(e==="auth")return "ログインが無効になりました。ポータルでログインし直してください";
+  if(/合言葉|key/i.test(e))return "合言葉が違います";
+  return e||"エラー";
+}
+function authFail(){
+  lsDel(AUTH_KEY);auth=null;
+  byId("whoami").textContent="";
+  byId("gateReason").textContent="ログインが無効になりました（パスワード変更など）。ポータルでログインし直してください。この端末の学習記録は消えていません。";
+  show("gate");
+}
+function cleanObj(o){
+  const out={};
+  for(const k in o){
+    const v=o[k];
+    if(v===null||v===undefined)continue;
+    if(Array.isArray(v))out[k]=v.map(x=>(x&&typeof x==="object"&&!Array.isArray(x))?cleanObj(x):x);
+    else if(typeof v==="object")out[k]=cleanObj(v);
+    else out[k]=v;
+  }
+  return out;
+}
 
-/* ---------------- push / pull（追補§5） ---------------- */
-async function push(){
-  if(!syncCfg)return false;
+/* §13-2 項目ごとの合流 */
+function normItem(x){
+  x=x||{};
+  const bf=x.byFormat||{};
+  const A=bf.A||{},B=bf.B||{};
+  const out={
+    streak:x.streak||0,
+    mastered:!!x.mastered,
+    masteredAt:x.masteredAt||null,
+    postMasterWrong:x.postMasterWrong||0,
+    lastFormat:x.lastFormat||null,
+    totalCorrect:x.totalCorrect||0,
+    totalWrong:x.totalWrong||0,
+    byFormat:{A:{correct:A.correct||0,wrong:A.wrong||0},B:{correct:B.correct||0,wrong:B.wrong||0}},
+    wrongLog:(x.wrongLog||[]).slice(-WRONGLOG_MAX),
+    lastSeenAt:x.lastSeenAt||null
+  };
+  if(out.mastered&&!out.masteredAt)out.masteredAt=nowISO();
+  return out;
+}
+function mergeItem(a,b){
+  if(!a&&!b)return null;
+  if(!a)return normItem(b);
+  if(!b)return normItem(a);
+  a=normItem(a);b=normItem(b);
+  const newer=(ts(a.lastSeenAt)>=ts(b.lastSeenAt))?a:b;
+  const mA=(x,y)=>Math.max(x||0,y||0);
+  const out={
+    streak:newer.streak||0,                             /* lastSeenAtが新しい側 */
+    mastered:!!(a.mastered||b.mastered),
+    masteredAt:null,
+    postMasterWrong:mA(a.postMasterWrong,b.postMasterWrong),
+    lastFormat:newer.lastFormat||null,
+    totalCorrect:mA(a.totalCorrect,b.totalCorrect),
+    totalWrong:mA(a.totalWrong,b.totalWrong),
+    byFormat:{
+      A:{correct:mA(a.byFormat&&a.byFormat.A&&a.byFormat.A.correct,b.byFormat&&b.byFormat.A&&b.byFormat.A.correct),
+         wrong:mA(a.byFormat&&a.byFormat.A&&a.byFormat.A.wrong,b.byFormat&&b.byFormat.A&&b.byFormat.A.wrong)},
+      B:{correct:mA(a.byFormat&&a.byFormat.B&&a.byFormat.B.correct,b.byFormat&&b.byFormat.B&&b.byFormat.B.correct),
+         wrong:mA(a.byFormat&&a.byFormat.B&&a.byFormat.B.wrong,b.byFormat&&b.byFormat.B&&b.byFormat.B.wrong)}
+    },
+    wrongLog:[],
+    lastSeenAt:(ts(a.lastSeenAt)>=ts(b.lastSeenAt)?a.lastSeenAt:b.lastSeenAt)||null
+  };
+  /* masteredAt は早い方（片方nullなら非null） */
+  const ma=ts(a.masteredAt),mb=ts(b.masteredAt);
+  if(ma&&mb)out.masteredAt=(ma<=mb)?a.masteredAt:b.masteredAt;
+  else out.masteredAt=a.masteredAt||b.masteredAt||null;
+  if(out.mastered&&!out.masteredAt)out.masteredAt=nowISO();
+  /* wrongLog：at+format で重複排除 → 新しい順に5件 → 古い順で保持 */
+  const seen=new Set(),all=[...(a.wrongLog||[]),...(b.wrongLog||[])];
+  const uniq=[];
+  all.forEach(x=>{
+    const k=(x.at||"")+"|"+(x.format||"");
+    if(seen.has(k))return;seen.add(k);uniq.push(x);
+  });
+  uniq.sort((x,y)=>ts(y.at)-ts(x.at));
+  out.wrongLog=uniq.slice(0,WRONGLOG_MAX).reverse();
+  return out;
+}
+function mergeProgress(l,r){
+  l=l||{items:{},sessions:[]};r=r||{items:{},sessions:[]};
+  const items={};
+  new Set([...Object.keys(l.items||{}),...Object.keys(r.items||{})]).forEach(k=>{
+    const m=mergeItem((l.items||{})[k],(r.items||{})[k]);
+    if(m)items[k]=m;
+  });
+  const seen=new Set(),sessions=[];
+  [...(l.sessions||[]),...(r.sessions||[])].forEach(s=>{
+    const k=s.finishedAt||"";
+    if(seen.has(k))return;seen.add(k);sessions.push(s);
+  });
+  sessions.sort((x,y)=>ts(x.finishedAt)-ts(y.finishedAt));
+  return {items,sessions:sessions.slice(-SESSIONS_MAX)};
+}
+
+async function pullFetch(firstDevice){
+  if(!syncCfg||!auth)return false;
+  setSync("☁… クラウドと同期しています");
+  try{
+    const r=await apiPOST({key:syncCfg.key,action:"fetch",app:KEY,id:auth.id,pw:auth.pw});
+    if(!r.ok){
+      if(r.error==="auth"){setSync("☁⚠ "+apiError(r),"ngc");authFail();return false;}
+      setSync("☁⚠ "+apiError(r),"ngc");return false;
+    }
+    /* label はクラウド（アカウントシート）が正 */
+    if(r.label){
+      if(store.accounts[0].label!==r.label){store.accounts[0].label=r.label;save(false);}
+      if(auth.label!==r.label){auth.label=r.label;saveAuthLS();}
+      byId("whoami").innerHTML="｜<b>"+esc(r.label)+"</b>（"+esc(auth.id)+"）";
+    }
+    const rp=r.data&&r.data.progress&&r.data.progress[auth.id];
+    let needPush=false;
+    if(rp){
+      const lp=pProg();
+      const merged=mergeProgress(lp,rp);
+      const mj=JSON.stringify(merged);
+      if(mj!==JSON.stringify(lp)){store.progress[auth.id]=merged;save(false);renderHome();}
+      if(mj!==JSON.stringify(mergeProgress(rp,rp)))needPush=true;   /* クラウドと差があればpush */
+    }else{
+      needPush=dbHasRecords(store);
+    }
+    syncCfg.lastSync=nowISO();saveSyncCfgLS();
+    const mg=pProg();
+    const n=Object.keys(mg.items).length;
+    const m=Object.keys(mg.items).filter(k=>mg.items[k].mastered).length;
+    const doneMsg=rp
+      ?(firstDevice
+        ?`☁✓ クラウドの記録をこの端末に取り込みました（${n}語・習得${m}）`
+        :`☁✓ クラウドと合流しました（${n}語・習得${m}）`)
+      :"☁✓ 同期しました";
+    if(needPush){const okp=await pushSave();if(okp)setSync(doneMsg,"okc");return okp;}
+    setSync(doneMsg,"okc");
+    return true;
+  }catch(e){handleSyncErr(e);return false;}
+}
+async function pushSave(){
+  if(!syncCfg||!auth)return false;
   setSync("☁… クラウドに保存中");
   try{
-    const r=await apiPOST({key:syncCfg.key,data:store});
-    if(!r.ok){setSync("☁⚠ "+(r.error||"保存エラー"),"ngc");return false;}
-    syncCfg.lastSync=nowISO();saveSyncCfg();
+    const p=pProg();
+    const body={key:syncCfg.key,action:"save",app:KEY,id:auth.id,pw:auth.pw,
+      account:cleanObj({id:auth.id,name:auth.id,label:store.accounts[0].label||auth.id,createdAt:store.accounts[0].createdAt}),
+      progress:cleanObj({items:p.items,sessions:p.sessions})};
+    const r=await apiPOST(body);
+    if(!r.ok){
+      if(r.error==="auth"){setSync("☁⚠ "+apiError(r),"ngc");authFail();return false;}
+      setSync("☁⚠ "+apiError(r),"ngc");return false;
+    }
+    syncCfg.lastSync=nowISO();saveSyncCfgLS();
     setSync("☁✓ クラウド保存ずみ","okc");
     return true;
   }catch(e){handleSyncErr(e);return false;}
 }
-function pushAsync(){if(syncCfg)push();}   /* 非同期・失敗しても学習は続行 */
+function pushAsync(){if(syncCfg&&auth)pushSave();}
+function syncNow(){pullFetch();}
 
-/* クラウド採用時のアカウント合流（名前で判定・ローカル分は消さない） */
-function mergeLocalAccounts(remote){
-  let merged=false;
-  remote.accounts=remote.accounts||[];
-  remote.progress=remote.progress||{};
-  const activeName=(store.accounts.find(a=>a.id===store.activeAccountId)||{}).name;
-  const accHasRecords=(p)=>{
-    if(!p)return false;
-    if(p.sessions&&p.sessions.length)return true;
-    for(const k in (p.items||{})){const it=p.items[k];if(it&&((it.totalCorrect||0)+(it.totalWrong||0))>0)return true;}
-    return false;
-  };
-  store.accounts.forEach(la=>{
-    /* 自動生成された記録ゼロの「ゲスト」はクラウドを汚さないよう合流しない */
-    if(la.name==="ゲスト"&&!accHasRecords(store.progress[la.id]))return;
-    if(!remote.accounts.some(ra=>ra.name===la.name)){
-      let id=la.id;
-      if(remote.accounts.some(ra=>ra.id===id))id="acc_"+Date.now()+"_"+Math.floor(Math.random()*10000);
-      remote.accounts.push({id,name:la.name,createdAt:la.createdAt||nowISO()});
-      remote.progress[id]=(store.progress[la.id])||{items:{},sessions:[]};
-      merged=true;
-    }
+/* ---------------- 一覧書き出し §15 ---------------- */
+function buildList(){
+  const header=["名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
+    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数",
+    "過去の誤答内容","最終誤答日","習得日"];
+  const items=pItems();
+  const rows=DATA.map((d,i)=>{
+    const it=items[i];
+    const wl=(it&&it.wrongLog)||[];
+    return [
+      auth.id,                                /* 1列目は管理ID */
+      CATS[d[0]],
+      "",
+      d[1].replace("□",d[2]),
+      "",
+      impMark(i),
+      stateLabel(it),
+      it?(it.totalCorrect||0):0,
+      it?(it.totalWrong||0):0,
+      it?((it.byFormat&&it.byFormat.A&&it.byFormat.A.wrong)||0):0,
+      it?((it.byFormat&&it.byFormat.B&&it.byFormat.B.wrong)||0):0,
+      wl.map(x=>x.answered).join(";"),
+      wl.length?fmtD(wl[wl.length-1].at):"",
+      it&&it.masteredAt?fmtD(it.masteredAt):""
+    ];
   });
-  if(activeName){
-    const ra=remote.accounts.find(a=>a.name===activeName);
-    if(ra)remote.activeAccountId=ra.id;
+  return {header,rows};
+}
+async function exportListToDrive(){
+  if(!syncCfg||!auth)return;
+  const ok=await pullFetch();
+  if(!ok){showMsg("同期できなかったため、一覧の書き出しを中止しました。通信できる場所でもう一度ためしてね。");return;}
+  if(!dbHasRecords(store)){
+    showMsg("まだ学習記録がないため、一覧の書き出しを中止しました。<br>（空のデータで既存の一覧を上書きしないための安全装置です）");
+    return;
   }
-  return merged;
-}
-async function pull(){
-  if(!syncCfg)return false;
-  setSync("☁… 同期中");
+  setSync("☁… 一覧を書き出し中");
   try{
-    const r=await apiGET();
-    if(!r.ok){setSync("☁⚠ "+(r.error||"同期エラー"),"ngc");return false;}
-    const remote=r.data;
-    if(!remote){return await push();}                    /* §5-5 クラウドが空ならpush */
-    const lh=dbHasRecords(store),rh=dbHasRecords(remote);
-    let adoptRemote;
-    if(!lh&&rh)adoptRemote=true;                          /* §5-2 空ローカルは無条件でクラウド採用 */
-    else if(lh&&!rh)adoptRemote=false;                    /* §5-2 逆なら無条件push */
-    else adoptRemote=(Date.parse(remote.updatedAt||0)>=Date.parse(store.updatedAt||0)); /* §5-3 */
-    if(adoptRemote){
-      const merged=mergeLocalAccounts(remote);            /* §5-4 */
-      store=remote;
-      save(false);                                        /* クラウド由来：updatedAtは維持 */
-      syncCfg.lastSync=nowISO();saveSyncCfg();
-      renderHome();
-      if(merged){save();await push();}                    /* 合流が発生したら直後にpush */
-      else setSync("☁✓ クラウドの記録を取り込みました","okc");
-      return true;
+    const r=await apiPOST({key:syncCfg.key,app:KEY,id:auth.id,list:buildList()});
+    if(!r.ok){
+      if(r.error==="auth"){authFail();return;}
+      setSync("☁⚠ "+(r.error||"書き出しエラー"),"ngc");return;
     }
-    return await push();
-  }catch(e){handleSyncErr(e);return false;}
-}
-function syncNow(){pull();}
-
-/* ---------------- 同期設定モーダル ---------------- */
-function openSyncModal(){
-  byId("syncUrl").value=(syncCfg&&syncCfg.url)||"";
-  byId("syncKeyIn").value=(syncCfg&&syncCfg.key)||"";
-  byId("syncOffBtn").style.display=syncCfg?"block":"none";
-  byId("syncModal").classList.add("show");
-}
-function saveSyncSettings(){
-  const url=byId("syncUrl").value.trim();
-  const key=byId("syncKeyIn").value.trim();
-  if(!url||!key){showMsg("URLと合言葉の両方を入力してね。");return;}
-  if(!/\/exec$/.test(url)){showMsg("URLは <b>/exec</b> で終わるウェブアプリURLを入れてね。（「デプロイ→ウェブアプリ」のURLだよ）");return;}
-  syncCfg={url,key,lastSync:(syncCfg&&syncCfg.lastSync)||null};
-  saveSyncCfg();
-  closeModal("syncModal");
-  renderSyncPanel();
-  pull();                                                 /* 保存して同期 → pull実行 */
-}
-function clearSyncSettings(){
-  if(!confirm("クラウド同期を解除しますか？（クラウド上の記録は消えません）"))return;
-  syncCfg=null;saveSyncCfg();
-  closeModal("syncModal");
-  const el=byId("syncStatus");if(el)el.textContent="";
-  renderSyncPanel();
+    setSync("☁✓ 全問一覧をスプレッドシートに書き出しました","okc");
+  }catch(e){handleSyncErr(e);}
 }
 
-/* ---------------- 📤 書き出し / 📥 読み込み ---------------- */
-function exportFileName(){
+/* ---------------- CSV §9-2（15列目に表示名） ---------------- */
+function csvCell(v){
+  v=String(v==null?"":v);
+  if(/[",\n\r]/.test(v))v='"'+v.replace(/"/g,'""')+'"';
+  return v;
+}
+function buildCSV(){
+  const l=buildList();
+  const header=[...l.header,"表示名"];
+  const label=store.accounts[0].label||auth.id;
+  const rows=l.rows.map(r=>[...r,label]);
+  rows.sort((a,b)=>(b[8]||0)-(a[8]||0));   /* 累計誤答数の多い順 */
+  return "\uFEFF"+[header,...rows].map(r=>r.map(csvCell).join(",")).join("\r\n");
+}
+function ymd(){
   const d=new Date();
-  const s=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
-  return `${TOOL_NAME}記録_${s}.json`;
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
 }
+function downloadCSV(){
+  const blob=new Blob([buildCSV()],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`${TOOL_NAME}結果_${auth.id}_${ymd()}.csv`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
+
+/* ---------------- 📤 / 📥 / 🗑 ---------------- */
 function exportJSON(){
   const blob=new Blob([JSON.stringify(store,null,1)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download=exportFileName();
+  a.download=`${TOOL_NAME}記録_${auth.id}_${ymd()}.json`;
   document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
 }
+let pendingImport=null;
 function validateImport(p){
   if(!p||typeof p!=="object")return "ファイルの中身を読み取れませんでした。";
-  if(p.app!==KEY)return `このファイルは別のツールの記録です（app: ${esc(String(p.app||"不明"))}）。「${TOOL_NAME}」の記録ファイルを選んでね。`;
-  if(!Array.isArray(p.accounts)||!p.progress)return "記録ファイルの形式が正しくありません。";
+  if(p.app!==KEY)return `このファイルは別のツールの記録です（app: ${esc(String(p.app||"不明"))}）。`;
+  if(!p.progress||!p.progress[auth.id])return `このファイルには、いまログインしているID（${esc(auth.id)}）の記録が入っていません。`;
   return null;
 }
 function handleImportFile(file){
@@ -1549,91 +1885,55 @@ function handleImportFile(file){
     const err=validateImport(p);
     if(err){showMsg(err);return;}
     pendingImport=p;
-    const names=p.accounts.map(a=>esc(a.name)).join("、")||"（アカウントなし）";
     byId("importInfo").innerHTML=
-      `アカウント：<b>${names}</b><br>保存日時：<b>${fmtDT(p.updatedAt)||"不明"}</b>`;
+      `ID：<b>${esc(auth.id)}</b>　保存日時：<b>${fmtDT(p.updatedAt)||"不明"}</b>`;
     byId("importModal").classList.add("show");
   };
   reader.readAsText(file);
 }
 function applyImport(p){
-  store=p;
-  save();                                                 /* 置換後 updatedAt更新 */
+  store.progress[auth.id]=p.progress[auth.id];
+  save();
   renderHome();
   setSync("☁✓ 記録ファイルを読み込みました","okc");
-  pushAsync();                                            /* +push */
+  pushAsync();
 }
 function confirmImport(){
   if(pendingImport){applyImport(pendingImport);pendingImport=null;}
   closeModal("importModal");
 }
 function cancelImport(){pendingImport=null;closeModal("importModal");}
-
-/* ---------------- 📋 全問一覧をDriveへ（追補§6） ---------------- */
-function itemState(it){
-  if(!it||!it.lastSeenAt)return"未出題";
-  if(it.mastered)return"習得済み";
-  if((it.totalWrong||0)>0)return"誤答";
-  return `${it.totalCorrect||0}回正解`;
-}
-function buildList(){
-  const header=["名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
-    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数",
-    "過去の誤答内容","最終誤答日","習得日"];
-  const rows=[];
-  store.accounts.forEach(a=>{
-    const items=(store.progress[a.id]||{}).items||{};
-    DATA.forEach((d,i)=>{
-      const it=items[i];
-      const wl=(it&&it.wrongLog)||[];
-      rows.push([
-        a.name,
-        CATS[d[0]],
-        "",                                   /* 記号：この教科は空欄（列は維持） */
-        d[1].replace("□",d[2]),
-        "",                                   /* よみがな */
-        "",                                   /* 重要度 */
-        itemState(it),
-        it?(it.totalCorrect||0):0,
-        it?(it.totalWrong||0):0,
-        it?((it.byFormat&&it.byFormat.A&&it.byFormat.A.wrong)||0):0,
-        it?((it.byFormat&&it.byFormat.B&&it.byFormat.B.wrong)||0):0,
-        wl.map(x=>x.answered).join(";"),
-        wl.length?fmtD(wl[wl.length-1].at):"",
-        it&&it.masteredAt?fmtD(it.masteredAt):""
-      ]);
-    });
-  });
-  return {header,rows};
-}
-async function exportListToDrive(){
-  if(!syncCfg)return;
-  /* 空上書き防止：先に必ずpullして最新記録を取り込む */
-  const ok=await pull();
-  if(!ok){showMsg("同期できなかったため、一覧の書き出しを中止しました。通信できる場所でもう一度ためしてね。");return;}
-  if(!dbHasRecords(store)){
-    showMsg("まだ学習記録がないため、一覧の書き出しを中止しました。<br>（空のデータで既存の一覧シートを上書きしないための安全装置です）");
-    return;
-  }
-  setSync("☁… 一覧を書き出し中");
-  try{
-    const r=await apiPOST({key:syncCfg.key,app:KEY,list:buildList()});
-    if(!r.ok){setSync("☁⚠ "+(r.error||"書き出しエラー"),"ngc");return;}
-    setSync("☁✓ 全問一覧をスプレッドシートに書き出しました","okc");
-  }catch(e){handleSyncErr(e);}
+function resetRecords(){
+  if(!confirm(`このツール（${TOOL_NAME}）の ${auth.id} の学習記録を、すべて消します。\n本当によろしいですか？`))return;
+  if(!confirm("この操作はもとに戻せません。クラウド側も空の記録で上書きされます。\n最終確認：消しますか？"))return;
+  store.progress[auth.id]={items:{},sessions:[]};
+  save();
+  renderHome();
+  setSync("記録をリセットしました");
+  pushAsync();
 }
 
 /* ---------------- 起動 ---------------- */
-loadStore();
-loadSyncCfg();
-const _imp=byId("importFile");
-if(_imp)_imp.addEventListener("change",ev=>{
-  const f=ev.target.files&&ev.target.files[0];
-  if(f)handleImportFile(f);
-  ev.target.value="";
+window.addEventListener("beforeunload",ev=>{
+  if(sess&&!sess.finished&&sess.history.length){
+    ev.preventDefault();ev.returnValue="";
+  }
 });
-renderHome();
-if(syncCfg)pull();                                        /* 追補§5: 起動直後にpull */
+window.addEventListener("storage",ev=>{
+  if(ev&&(ev.key===AUTH_KEY||ev.key===SYNC_KEY)){
+    if(sess&&!sess.finished){pendingAuthReload=true;}
+    else if(typeof location!=="undefined"&&location.reload)location.reload();
+  }
+});
+(function(){
+  const _imp=byId("importFile");
+  if(_imp)_imp.addEventListener("change",ev=>{
+    const f=ev.target.files&&ev.target.files[0];
+    if(f)handleImportFile(f);
+    ev.target.value="";
+  });
+})();
+boot();
 
 </script>
 </body>

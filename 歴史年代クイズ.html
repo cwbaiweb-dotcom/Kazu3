@@ -516,7 +516,7 @@
     <div class="sub">239年〜2011年・全100項目／3回連続正解で復習不要に</div>
     <div class="account-bar" id="accountBar" style="display:none;">
       <span>ログイン中：</span><span class="name-pill" id="accountNamePill"></span>
-      <button class="switch-link" id="switchAccountBtn">アカウント切替</button>
+      <button class="switch-link" id="switchAccountBtn">ポータルへ</button>
     </div>
     <div class="timeline-map" id="timelineMap"></div>
   </header>
@@ -632,16 +632,17 @@ const DATA = [
 
 const MIN_YEAR = 239, MAX_YEAR = 2011;
 const DEFAULT_ACCOUNTS = ["音", "昂", "暁"]; // seed for a brand-new store only; STORE.accounts is the live list
-const APP_ID = "kj-quiz-shakai-nendai";
+const APP_ID = "kj-quiz-shakai-nendai"; // unchanged -- do not rename, existing Drive/sheet data depends on it
 const STORAGE_KEY = APP_ID;
-const SYNC_KEY = APP_ID + ":sync";
-const PREV_V3_KEY = "kj-quiz-rekishi-nendai"; // this tool's own previous (pre-sync) key
-const OLD_V2_KEY = "rekishi100_quiz_v1";       // earlier still (pre-spec) key
+const VER = "v3.0";
+const AUTH_KEY = "kj-quiz:auth";  // shared across all tools -- written by the portal
+const SYNC_KEY = "kj-quiz:sync";  // shared across all tools -- written by the portal
+const OLD_SYNC_KEY = APP_ID + ":sync";       // this tool's own pre-portal sync key, migrated once
 const MASTERY_STREAK = 2;      // consecutive correct answers, in DIFFERENT formats, to master a KP
 const WRONG_REQUEUE_GAP = 3;   // wrong answer -> reappears after this many other problems
 const PARTIAL_REQUEUE_GAP = 6; // correct-but-not-yet-mastered -> reappears after this many
 const MAX_APPEARANCES = 4;     // cap on how many times one KP can appear in a single session
-const WRONG_LOG_MAX = 20;
+const WRONG_LOG_MAX = 5; // per current spec's merge code (was 20 in an earlier addendum)
 const HOME_WRONG_THRESHOLD = 3;    // "よく間違える問題" home list (existing feature, unchanged)
 const RESULT_WRONG_BADGE_THRESHOLD = 2; // spec: highlight 2+ cumulative mistakes in the full KP table
 
@@ -658,12 +659,11 @@ function eraForYear(y){
 function eraName(y){ return ERA_BOUNDARIES[eraForYear(y)][1]; }
 
 // ---------------------------------------------------------------------
-// storage: load / save / migrate  (v1.2: v1.0 §9 schema -- accounts as
-// {id,name,createdAt}, progress keyed by account id, not by name. This is
-// required for the sync server to pick up sessions[] into the session-
-// history sheet; a name-keyed store silently fails that part while list
-// export -- which ships its own header/rows and doesn't depend on this
-// schema -- kept working, which is exactly the symptom being fixed here.)
+// storage: single logged-in account only, per the v3.0 migration spec.
+// Login/sync settings live in shared keys (kj-quiz:auth / kj-quiz:sync)
+// written by the portal -- this tool only ever reads them and never
+// creates, switches, or renames accounts itself. The device only ever
+// holds the currently logged-in ID's records locally.
 // ---------------------------------------------------------------------
 function blankItemStat(){
   return {
@@ -676,83 +676,12 @@ function blankItemStat(){
 function blankAccountProgress(){
   return { items: {}, sessions: [] };
 }
-function genAccountId(){
-  return "acc_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
 function blankStore(){
-  const accounts = DEFAULT_ACCOUNTS.map(name => ({ id: genAccountId(), name, createdAt: nowIso() }));
-  const progress = {};
-  accounts.forEach(a => { progress[a.id] = blankAccountProgress(); });
-  return { app: APP_ID, version: 1, updatedAt: null, activeAccountId: null, accounts, progress };
+  return { app: APP_ID, version: 2, updatedAt: null, accounts: [], progress: {} };
 }
-
-// Detects the pre-v1.2 shape (accounts as plain name strings, progress
-// keyed by name) and converts it to the id-based schema without losing
-// anything. Safe to call on an already-upgraded store (no-op).
-function upgradeToIdSchema(store){
-  if(!store) return store;
-  const accountsAreIdShaped = Array.isArray(store.accounts) && store.accounts.length > 0
-    && typeof store.accounts[0] === "object" && store.accounts[0] && "id" in store.accounts[0];
-  if(accountsAreIdShaped){
-    // still make sure every listed id has a progress bucket, and nothing orphaned is lost
-    store.accounts.forEach(a=>{ if(!store.progress[a.id]) store.progress[a.id] = blankAccountProgress(); });
-    if(store.activeAccountId === undefined) store.activeAccountId = null;
-    if(store.version === undefined) store.version = 1;
-    return store;
-  }
-  const oldNames = Array.isArray(store.accounts) ? store.accounts : Object.keys(store.progress || {});
-  const accounts = [];
-  const progress = {};
-  oldNames.forEach(name=>{
-    const id = genAccountId();
-    accounts.push({ id, name, createdAt: nowIso() });
-    const oldAcc = (store.progress && store.progress[name]) || {};
-    progress[id] = {
-      items: oldAcc.items || {},
-      sessions: Array.isArray(oldAcc.sessions) ? oldAcc.sessions : [],
-    };
-  });
-  return {
-    app: store.app || APP_ID,
-    version: 1,
-    updatedAt: store.updatedAt || null,
-    activeAccountId: null,
-    accounts, progress,
-  };
-}
-
-function migrateFromV2(oldRaw){
-  // Best-effort port of the oldest (v2, pre common-spec) schema so 音/昂/暁 keep their history.
-  let old;
-  try{ old = JSON.parse(oldRaw); }catch(e){ return null; }
-  const nameKeyedStore = { app: APP_ID, accounts: DEFAULT_ACCOUNTS.slice(), progress: {}, updatedAt: null };
-  DEFAULT_ACCOUNTS.forEach(a=>{
-    const oldAcc = old[a];
-    const acc = blankAccountProgress();
-    nameKeyedStore.progress[a] = acc;
-    if(!oldAcc) return;
-    const allIdxKeys = new Set([
-      ...Object.keys(oldAcc.items || {}),
-      ...Object.keys(oldAcc.favorites || {}),
-    ]);
-    allIdxKeys.forEach(idx=>{
-      const oi = (oldAcc.items && oldAcc.items[idx]) || {};
-      const streak = Math.min(oi.correctStreak || 0, MASTERY_STREAK);
-      acc.items[idx] = {
-        streak,
-        mastered: (oi.correctStreak || 0) >= 3, // old mastery threshold was 3-in-a-row same format
-        masteredAt: (oi.correctStreak || 0) >= 3 ? new Date().toISOString() : null,
-        lastFormat: null,
-        totalCorrect: oi.correctTotal || 0,
-        totalWrong: oi.wrongTotal || 0,
-        byFormat: { A: {correct:0, wrong:0}, B: {correct:0, wrong:0} },
-        wrongLog: [],
-        lastSeenAt: null,
-        favorite: !!(oldAcc.favorites && oldAcc.favorites[idx]),
-      };
-    });
-  });
-  return upgradeToIdSchema(nameKeyedStore);
+function normalizeProgress(p){
+  if(!p) return blankAccountProgress();
+  return { items: p.items || {}, sessions: Array.isArray(p.sessions) ? p.sessions : [] };
 }
 
 // Whether this browser can actually persist to localStorage (some private-
@@ -767,81 +696,106 @@ function probeLocalStorage(){
   }catch(e){ return false; }
 }
 
-function loadStore(){
-  LOCAL_STORAGE_OK = probeLocalStorage();
-  if(!LOCAL_STORAGE_OK) return blankStore();
+let AUTH = null; // {id, pw, label} -- written by the portal, this tool never creates it
+let SYNC = null; // {url, key, lastSync}
+
+function readAuth(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return upgradeToIdSchema(JSON.parse(raw));
+    const raw = localStorage.getItem(AUTH_KEY);
+    const a = raw ? JSON.parse(raw) : null;
+    if(a && a.id && a.pw) return a;
   }catch(e){}
-  // try this tool's own previous (pre-id-schema) key
+  return null;
+}
+function saveAuthLabel(label){
+  if(!AUTH) return;
+  AUTH.label = label;
+  try{ localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); }catch(e){}
+}
+function clearAuth(){
+  try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
+  AUTH = null;
+}
+function readSyncConfig(){
   try{
-    const prevRaw = localStorage.getItem(PREV_V3_KEY);
-    if(prevRaw){
-      const prev = JSON.parse(prevRaw);
-      prev.app = APP_ID;
-      if(prev.updatedAt === undefined) prev.updatedAt = null;
-      return upgradeToIdSchema(prev);
-    }
+    const raw = localStorage.getItem(SYNC_KEY);
+    const s = raw ? JSON.parse(raw) : null;
+    if(s && s.url) return s;
   }catch(e){}
-  // fall back further to the original (pre common-spec) key
+  // one-time migration from this tool's own pre-portal sync key
   try{
-    const oldRaw = localStorage.getItem(OLD_V2_KEY);
+    const oldRaw = localStorage.getItem(OLD_SYNC_KEY);
     if(oldRaw){
-      const migrated = migrateFromV2(oldRaw);
-      if(migrated) return migrated;
+      const old = JSON.parse(oldRaw);
+      if(old && old.url){
+        const migrated = { url: old.url, key: old.key || "", lastSync: old.lastSync || null };
+        try{ localStorage.setItem(SYNC_KEY, JSON.stringify(migrated)); }catch(e){}
+        return migrated;
+      }
     }
   }catch(e){}
-  return blankStore();
+  return null;
+}
+function saveSyncConfig(){ try{ localStorage.setItem(SYNC_KEY, JSON.stringify(SYNC)); }catch(e){} }
+
+function ready(){ return !!(SYNC && SYNC.url && SYNC.key); }
+function loggedIn(){ return !!AUTH; }
+function portalURL(){ return "./index.html"; }
+
+// Rebuilds the working store from whatever's under STORAGE_KEY, keeping
+// ONLY the logged-in account's data -- a device only ever holds one
+// child's records. Reconciling old (pre-login) local data that lived
+// under a different key/name is handled server-side by GAS, not here.
+function buildStoreFromRaw(raw){
+  const store = blankStore();
+  if(!AUTH) return store;
+  store.accounts = [{ id: AUTH.id, name: AUTH.id, label: AUTH.label || AUTH.id, createdAt: nowIso() }];
+  let srcProgress = null, srcCreatedAt = null;
+  if(raw && raw.progress && raw.progress[AUTH.id]) srcProgress = raw.progress[AUTH.id];
+  if(raw && Array.isArray(raw.accounts)){
+    const match = raw.accounts.find(a => String(a.id) === String(AUTH.id));
+    if(match && match.createdAt) srcCreatedAt = match.createdAt;
+  }
+  if(srcCreatedAt) store.accounts[0].createdAt = srcCreatedAt;
+  store.progress[AUTH.id] = normalizeProgress(srcProgress);
+  store.updatedAt = (raw && raw.updatedAt) || null;
+  return store;
 }
 
-// preserveUpdatedAt=true is used when we've just adopted a record set that
-// already carries its own updatedAt (e.g. pulled from the cloud) -- in that
-// case we must NOT stamp "now" over it.
+function loadAll(){
+  LOCAL_STORAGE_OK = probeLocalStorage();
+  AUTH = LOCAL_STORAGE_OK ? readAuth() : null;
+  SYNC = LOCAL_STORAGE_OK ? readSyncConfig() : null;
+  if(!LOCAL_STORAGE_OK){ STORE = blankStore(); return; }
+  let raw = null;
+  try{
+    const rawText = localStorage.getItem(STORAGE_KEY);
+    if(rawText) raw = JSON.parse(rawText);
+  }catch(e){}
+  STORE = buildStoreFromRaw(raw);
+}
+
+// fromCloud=true is used when we've just written a record set that already
+// carries a cloud-sourced updatedAt -- in that case we must NOT stamp "now"
+// over it.
 function saveStore(opts){
   opts = opts || {};
-  if(!opts.preserveUpdatedAt) STORE.updatedAt = nowIso();
-  if(!LOCAL_STORAGE_OK){
-    // Nothing we can do locally; the in-memory STORE object is still live
-    // for this session, and syncStatus messaging tells the user why.
-    return;
-  }
+  if(!AUTH) return;
+  if(!opts.fromCloud) STORE.updatedAt = nowIso();
+  STORE.app = APP_ID;
+  STORE.version = 2;
+  if(!LOCAL_STORAGE_OK) return;
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STORE)); }
   catch(e){ LOCAL_STORAGE_OK = false; }
 }
 
-let STORE = loadStore();
+let STORE;
+loadAll();
 
-function accountList(){ return STORE.accounts; }
-function findAccountByName(name){ return STORE.accounts.find(a => a.name === name); }
-function findAccountById(id){ return STORE.accounts.find(a => a.id === id); }
-function accountName(id){
-  const a = findAccountById(id);
-  return a ? a.name : "(不明)";
-}
-
-function addAccount(name){
-  name = (name || "").trim();
-  if(!name) return { ok: false, error: "名前を入力してください。" };
-  if(name.length > 12) return { ok: false, error: "名前は12文字以内にしてください。" };
-  if(findAccountByName(name)) return { ok: false, error: "同じ名前のアカウントがすでにあります。" };
-  const id = genAccountId();
-  STORE.accounts.push({ id, name, createdAt: nowIso() });
-  STORE.progress[id] = blankAccountProgress();
-  saveStore();
-  pushOnly(); // spec: push after account add/rename/delete
-  return { ok: true, id };
-}
-
-function deleteAccount(id){
-  STORE.accounts = STORE.accounts.filter(a => a.id !== id);
-  delete STORE.progress[id];
-  if(STORE.activeAccountId === id) STORE.activeAccountId = null;
-  saveStore();
-  pushOnly();
-}
+function accountName(){ return AUTH ? (AUTH.label || AUTH.id) : ""; }
 
 function getCommittedStats(accountId){
+  if(!AUTH) return blankAccountProgress();
   if(!STORE.progress[accountId]) STORE.progress[accountId] = blankAccountProgress();
   return STORE.progress[accountId];
 }
@@ -1019,13 +973,13 @@ function applyAnswer(progress, dataIdx, format, correct, answeredText){
 // global UI state
 // ---------------------------------------------------------------------
 let state = {
-  screen: "login", // login | home | quiz | result | favorites | study
-  accountId: null,
+  screen: "gate", // gate | home | quiz | result | favorites | study
+  accountId: AUTH ? AUTH.id : null,
   quizMode: "choice", // choice | input  (answer style for format-A questions)
   session: null,
   study: null, // {indices:[...], pos, filterUnmastered}
   syncStatus: { kind: "idle", message: "" }, // idle | pending | success | error
-  modal: null, // {type: "syncSettings" | "importConfirm" | "listBlocked" | "importMismatch", ...}
+  modal: null, // {type: "importConfirm" | "importMismatch" | "listBlocked" | "resetRecordsConfirm", ...}
 };
 
 // ---------------------------------------------------------------------
@@ -1040,6 +994,7 @@ function buildStudyIndices(filterUnmastered){
   return indices; // DATA is already chronological, so no sort needed
 }
 function startStudyMode(){
+  if(!loggedIn()){ state.screen = "gate"; return; }
   state.study = { indices: buildStudyIndices(false), pos: 0, filterUnmastered: false };
   state.screen = "study";
 }
@@ -1061,6 +1016,7 @@ function jumpStudyToEra(eraIdx){
 }
 
 function startSession(mode, opts){
+  if(!loggedIn()){ state.screen = "gate"; render(); return; }
   const committed = getCommittedStats(state.accountId);
   const pendingProgress = deepClone(committed);
   const kpIndices = selectSessionKPs(mode, committed, opts);
@@ -1207,8 +1163,8 @@ function statusLabel(s){
 function exportCsv(account){
   const progress = getCommittedStats(account);
   const rows = [[
-    "カテゴリー","知識ポイント","問題文","正解","直近の解答","状態",
-    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"
+    "名前","カテゴリー","知識ポイント","問題文","正解","直近の解答","状態",
+    "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日","表示名"
   ]];
   const indices = DATA.map((d,i)=>i).sort((a,b)=>{
     const sa = progress.items[a], sb = progress.items[b];
@@ -1222,10 +1178,10 @@ function exportCsv(account){
     const wrongHistory = s ? s.wrongLog.map(w=>w.answered).join(";") : "";
     const lastWrongDate = s && s.wrongLog.length ? s.wrongLog[s.wrongLog.length-1].at : "";
     rows.push([
-      eraName(year), item, `${item}（${year}年）`, String(year), lastAnswered, statusLabel(s),
+      AUTH ? AUTH.id : "", eraName(year), item, `${item}（${year}年）`, String(year), lastAnswered, statusLabel(s),
       s ? s.totalCorrect : 0, s ? s.totalWrong : 0,
       s ? s.byFormat.A.wrong : 0, s ? s.byFormat.B.wrong : 0,
-      wrongHistory, lastWrongDate, (s && s.masteredAt) || "",
+      wrongHistory, lastWrongDate, (s && s.masteredAt) || "", accountName(),
     ]);
   });
   const csv = rows.map(r => r.map(cell=>{
@@ -1236,7 +1192,7 @@ function exportCsv(account){
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `結果_${accountName(account)}_${todayStamp()}.csv`;
+  a.download = `結果_${AUTH ? AUTH.id : "未ログイン"}_${todayStamp()}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1244,21 +1200,10 @@ function exportCsv(account){
 }
 
 // ---------------------------------------------------------------------
-// v4: cloud sync (addendum v1.1)
+// cloud sync -- v3.0 migration instruction: action-based API (fetch/save),
+// single logged-in ID only. No account UI, no GAS URL embedded, no whole-
+// DB push (that would erase siblings' cloud records).
 // ---------------------------------------------------------------------
-function loadSyncConfig(){
-  try{
-    const raw = localStorage.getItem(SYNC_KEY);
-    return raw ? JSON.parse(raw) : null;
-  }catch(e){ return null; }
-}
-function saveSyncConfig(cfg){
-  try{ localStorage.setItem(SYNC_KEY, JSON.stringify(cfg)); }catch(e){}
-}
-function clearSyncConfig(){
-  try{ localStorage.removeItem(SYNC_KEY); }catch(e){}
-}
-
 function dbHasRecords(db){
   if(!db || !db.progress) return false;
   return Object.values(db.progress).some(acc=>{
@@ -1280,6 +1225,7 @@ function classifySyncError(e){
 function syncErrorMessage(e){
   switch(e.kind){
     case "network": return "オフライン（ローカルには保存済み）";
+    case "auth": return "ログインが無効になりました。ポータルでログインし直してください";
     case "badkey": return "合言葉が違います";
     case "badresponse": return "GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
     default: return e.message || "同期エラーが発生しました";
@@ -1287,42 +1233,36 @@ function syncErrorMessage(e){
 }
 function handleSyncError(e){
   const c = classifySyncError(e);
-  setSyncStatus("error", (c.kind === "badkey" ? "☁⚠ " : "☁⚠ ") + syncErrorMessage(c));
+  setSyncStatus("error", "☁⚠ " + syncErrorMessage(c));
+  if(c.kind === "auth") onAuthLost();
+}
+// Server says the ID/password is no longer valid (password changed,
+// disabled, etc). Clear the login only -- never touch learning records.
+function onAuthLost(){
+  clearAuth();
+  state.accountId = null;
+  render();
 }
 
-async function fetchJson(url, options){
+async function api(body){
   let res;
-  try{ res = await fetch(url, options); }
-  catch(e){ throw { kind: "network" }; }
+  try{
+    res = await fetch(SYNC.url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(Object.assign({ key: SYNC.key }, body)),
+    });
+  }catch(e){ throw { kind: "network" }; }
   let text;
   try{ text = await res.text(); }catch(e){ throw { kind: "network" }; }
   let json;
   try{ json = JSON.parse(text); }catch(e){ throw { kind: "badresponse" }; }
   if(!json.ok){
-    const msg = json.error || "";
-    throw { kind: /合言葉|key|unauthorized/i.test(msg) ? "badkey" : "servererror", message: msg };
+    const msg = String(json.error || "");
+    const kind = msg === "auth" ? "auth" : /合言葉|key/i.test(msg) ? "badkey" : "servererror";
+    throw { kind, message: msg };
   }
   return json;
-}
-
-async function pullFromCloud(cfg){
-  const url = cfg.url + "?key=" + encodeURIComponent(cfg.key) + "&app=" + encodeURIComponent(APP_ID);
-  const json = await fetchJson(url, { method: "GET" });
-  return json.data; // db object, or null
-}
-async function pushToCloud(cfg, data){
-  await fetchJson(cfg.url, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ key: cfg.key, data }),
-  });
-}
-async function pushListToCloud(cfg, list){
-  await fetchJson(cfg.url, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ key: cfg.key, app: APP_ID, list }),
-  });
 }
 
 function mergeItemStat(a, b){
@@ -1334,24 +1274,29 @@ function mergeItemStat(a, b){
                wrong:   Math.max((a.byFormat&&a.byFormat.B.wrong)||0,   (b.byFormat&&b.byFormat.B.wrong)||0) };
   const mastered = !!(a.mastered || b.mastered);
   let masteredAt = null;
-  const masteredCandidates = [a.mastered && a.masteredAt, b.mastered && b.masteredAt].filter(Boolean);
-  if(masteredCandidates.length) masteredAt = masteredCandidates.sort()[0];
-
-  const aSeen = a.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
-  const bSeen = b.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
-  const newer = aSeen >= bSeen ? a : b;
+  if(a.masteredAt && b.masteredAt) masteredAt = (new Date(a.masteredAt) <= new Date(b.masteredAt)) ? a.masteredAt : b.masteredAt;
+  else masteredAt = a.masteredAt || b.masteredAt || null;
+  if(mastered && !masteredAt) masteredAt = nowIso();
 
   const seen = new Set();
   const wrongLog = [];
   [...(a.wrongLog||[]), ...(b.wrongLog||[])].forEach(w=>{
-    const key = w.at + "|" + w.format + "|" + w.answered;
+    const key = w.at + "|" + w.format;
     if(!seen.has(key)){ seen.add(key); wrongLog.push(w); }
   });
-  wrongLog.sort((x,y)=> new Date(x.at) - new Date(y.at));
-  const trimmedWrongLog = wrongLog.length > WRONG_LOG_MAX ? wrongLog.slice(-WRONG_LOG_MAX) : wrongLog;
+  wrongLog.sort((x,y)=> new Date(y.at) - new Date(x.at)); // newest first
+  const trimmedWrongLog = wrongLog.slice(0, WRONG_LOG_MAX).reverse(); // then back to chronological
+
+  // CRITICAL: streak must come from whichever side saw this KP more
+  // recently, NOT the larger of the two values. If device A just got this
+  // wrong (streak reset to 0) while device B's stale copy still has
+  // streak=2, taking max() would resurrect the 2 and undo the reset.
+  const aSeen = a.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
+  const bSeen = b.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
+  const newer = aSeen >= bSeen ? a : b;
 
   return {
-    streak: Math.max(a.streak||0, b.streak||0),
+    streak: newer.streak || 0,
     mastered, masteredAt,
     lastFormat: newer.lastFormat || a.lastFormat || b.lastFormat || null,
     totalCorrect: Math.max(a.totalCorrect||0, b.totalCorrect||0),
@@ -1369,139 +1314,70 @@ function mergeAccountProgress(a, b){
   const items = {};
   const allIdx = new Set([...Object.keys(a.items||{}), ...Object.keys(b.items||{})]);
   allIdx.forEach(idx=>{ items[idx] = mergeItemStat((a.items||{})[idx], (b.items||{})[idx]); });
-  const sessionsMap = new Map();
+  const seen = new Set();
+  const sessions = [];
   [...(a.sessions||[]), ...(b.sessions||[])].forEach(s=>{
-    if(!sessionsMap.has(s.finishedAt)) sessionsMap.set(s.finishedAt, s);
+    if(!seen.has(s.finishedAt)){ seen.add(s.finishedAt); sessions.push(s); }
   });
-  let sessions = Array.from(sessionsMap.values()).sort((x,y)=> new Date(x.finishedAt) - new Date(y.finishedAt));
-  if(sessions.length > 100) sessions = sessions.slice(-100);
-  return { items, sessions };
-}
-
-// Always-merge cloud adoption per addendum v1.2 §5-3: never "newer wins"
-// wholesale -- accounts are matched by NAME (ids are per-device and may
-// legitimately differ), and each matched account's stats are combined
-// (max counters, OR'd mastered flag, unioned wrongLog, sessions de-duped
-// by finishedAt) rather than one side clobbering the other. This is what
-// lets two devices, used alternately, converge instead of only ever
-// pushing past each other.
-function mergeWithCloud(cloudData){
-  const cloud = deepClone(cloudData);
-  cloud.app = APP_ID;
-  if(!Array.isArray(cloud.accounts)) cloud.accounts = [];
-  if(!cloud.progress) cloud.progress = {};
-
-  const localByName = new Map(STORE.accounts.map(a=>[a.name, a]));
-  const cloudByName = new Map(cloud.accounts.map(a=>[a.name, a]));
-  const allNames = new Set([...localByName.keys(), ...cloudByName.keys()]);
-
-  const mergedAccounts = [];
-  const mergedProgress = {};
-  let changed = false;
-  const idReassignments = {};
-
-  allNames.forEach(name=>{
-    const localAcc = localByName.get(name);
-    const cloudAcc = cloudByName.get(name);
-    const canonical = cloudAcc || localAcc; // prefer the cloud's id/createdAt as canonical when both sides have this account
-    mergedAccounts.push(canonical);
-    const localProg = localAcc ? STORE.progress[localAcc.id] : null;
-    const cloudProg = cloudAcc ? cloud.progress[cloudAcc.id] : null;
-    const mergedProg = mergeAccountProgress(localProg, cloudProg);
-    mergedProgress[canonical.id] = mergedProg;
-    if(localAcc && cloudAcc && localAcc.id !== cloudAcc.id){
-      idReassignments[localAcc.id] = cloudAcc.id;
-    }
-    if(!cloudAcc || JSON.stringify(cloudProg) !== JSON.stringify(mergedProg)){
-      changed = true;
-    }
-  });
-
-  const merged = {
-    app: APP_ID, version: 1,
-    updatedAt: cloud.updatedAt || null,
-    activeAccountId: STORE.activeAccountId,
-    accounts: mergedAccounts,
-    progress: mergedProgress,
-  };
-  if(merged.activeAccountId && idReassignments[merged.activeAccountId]){
-    merged.activeAccountId = idReassignments[merged.activeAccountId];
-  }
-  // keep the currently logged-in account (if any) pointing at valid data
-  // even if its canonical id changed during this merge
-  if(state.accountId && idReassignments[state.accountId]){
-    state.accountId = idReassignments[state.accountId];
-  }
-
-  STORE = merged;
-  saveStore({ preserveUpdatedAt: !changed });
-  return changed;
+  sessions.sort((x,y)=> new Date(y.finishedAt) - new Date(x.finishedAt)); // newest first
+  return { items, sessions: sessions.slice(0, 100).reverse() }; // cap 100, back to chronological
 }
 
 function syncSummaryMessage(prefix){
-  const accCount = STORE.accounts.length;
-  let totalAnswered = 0, totalMastered = 0;
-  STORE.accounts.forEach(a=>{
-    const p = STORE.progress[a.id];
-    if(!p) return;
-    totalMastered += masteredCount(p);
-    Object.values(p.items||{}).forEach(it=>{ totalAnswered += (it.totalCorrect||0) + (it.totalWrong||0); });
-  });
-  return `${prefix}（${accCount}人・出題済み${totalAnswered}・習得${totalMastered}）`;
+  const p = getCommittedStats(AUTH ? AUTH.id : null);
+  const n = Object.keys(p.items || {}).length;
+  const mastered = masteredCount(p);
+  return `${prefix}（${n}語・習得${mastered}）`;
+}
+
+async function pullCloud(silent){
+  if(!ready() || !AUTH) return;
+  if(!silent) setSyncStatus("pending", "☁… クラウドと同期しています");
+  let j;
+  try{ j = await api({ action: "fetch", app: APP_ID, id: AUTH.id, pw: AUTH.pw }); }
+  catch(e){ handleSyncError(e); return; }
+
+  const cloudProgress = normalizeProgress(((j.data||{}).progress||{})[AUTH.id]);
+  const localProgress = getCommittedStats(AUTH.id);
+  const before = JSON.stringify(localProgress);
+  const merged = mergeAccountProgress(localProgress, cloudProgress);
+  STORE.progress[AUTH.id] = merged;
+
+  if(j.label){ saveAuthLabel(j.label); STORE.accounts[0].label = j.label; }
+  const cloudAcc = (j.data||{}).accounts && j.data.accounts[0];
+  if(cloudAcc && cloudAcc.createdAt) STORE.accounts[0].createdAt = cloudAcc.createdAt;
+
+  saveStore({ fromCloud: true });
+  SYNC.lastSync = nowIso(); saveSyncConfig();
+  setSyncStatus("success", syncSummaryMessage("☁✓ クラウドと合流しました"));
+
+  if(before !== JSON.stringify(merged)) await pushCloud(true, state.syncStatus.message);
+}
+
+async function pushCloud(silent, okMsg){
+  if(!ready() || !AUTH) return false;
+  if(!silent) setSyncStatus("pending", "☁… 送信しています");
+  let j;
+  try{
+    j = await api({
+      action: "save", app: APP_ID, id: AUTH.id, pw: AUTH.pw,
+      account: STORE.accounts[0],
+      progress: getCommittedStats(AUTH.id),
+    });
+  }catch(e){ handleSyncError(e); return false; }
+  SYNC.lastSync = nowIso(); saveSyncConfig();
+  setSyncStatus("success", okMsg || "☁✓ クラウドに保存しました");
+  return true;
 }
 
 // Push-only: used for the deterministic "local just changed" triggers
-// (session finished, import replaced data, account added/deleted) where
-// local is unambiguously the freshest copy and a full pull/merge would be
-// the wrong move.
-async function pushOnly(){
-  const cfg = loadSyncConfig();
-  if(!cfg) return;
-  setSyncStatus("pending", "☁… 同期中");
-  try{
-    await pushToCloud(cfg, STORE);
-    cfg.lastSync = nowIso();
-    saveSyncConfig(cfg);
-    setSyncStatus("success", "☁✓ クラウド保存ずみ");
-  }catch(e){ handleSyncError(e); }
-}
+// (session finished, JSON import replaced data, record reset) where local
+// is unambiguously the freshest copy and a full pull/merge would be the
+// wrong move.
+async function pushOnly(){ await pushCloud(true, "☁✓ クラウド保存ずみ"); }
 
-// Full pull + always-merge, per addendum v1.2 §5.
-async function doSync(){
-  const cfg = loadSyncConfig();
-  if(!cfg) return;
-  setSyncStatus("pending", "☁… 同期中");
-  try{
-    const cloudData = await pullFromCloud(cfg);
-    const localHas = dbHasRecords(STORE);
-    const cloudHas = dbHasRecords(cloudData);
-
-    if(!cloudData){
-      await pushToCloud(cfg, STORE);
-      cfg.lastSync = nowIso(); saveSyncConfig(cfg);
-      setSyncStatus("success", localHas ? "☁ クラウドに進捗が無かったので送りました" : "☁✓ クラウド保存ずみ");
-      return;
-    }
-    if(!localHas && cloudHas){
-      mergeWithCloud(cloudData);
-      cfg.lastSync = nowIso(); saveSyncConfig(cfg);
-      setSyncStatus("success", syncSummaryMessage("☁✓ クラウドから取り込みました"));
-      return;
-    }
-    if(localHas && !cloudHas){
-      await pushToCloud(cfg, STORE);
-      cfg.lastSync = nowIso(); saveSyncConfig(cfg);
-      setSyncStatus("success", "☁ クラウドに進捗が無かったので送りました");
-      return;
-    }
-    // both sides have records -> always merge, never let one side just clobber the other
-    const changed = mergeWithCloud(cloudData);
-    if(changed) await pushToCloud(cfg, STORE);
-    cfg.lastSync = nowIso();
-    saveSyncConfig(cfg);
-    setSyncStatus("success", syncSummaryMessage("☁✓ クラウドと合流しました"));
-  }catch(e){ handleSyncError(e); }
-}
+// Full pull + merge -- called on launch and "今すぐ同期".
+async function doSync(){ await pullCloud(false); }
 
 // ---- JSON export / import (§3) ----
 function exportJsonDb(){
@@ -1510,7 +1386,7 @@ function exportJsonDb(){
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `歴史年代クイズ記録_${todayStamp()}.json`;
+  a.download = `歴史年代クイズ記録_${AUTH ? AUTH.id : "未ログイン"}_${todayStamp()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1518,6 +1394,7 @@ function exportJsonDb(){
 }
 
 function handleImportFile(file){
+  if(!AUTH) return;
   const reader = new FileReader();
   reader.onload = ()=>{
     let parsed;
@@ -1532,16 +1409,20 @@ function handleImportFile(file){
       render();
       return;
     }
-    parsed = upgradeToIdSchema(parsed); // accept exports made before the id-based schema too
-    const accountSummaries = parsed.accounts.map(({id, name})=>{
-      const acc = parsed.progress && parsed.progress[id];
-      const has = acc && dbHasRecords({ progress: { [id]: acc } });
-      return `${name}：${has ? "記録あり" : "記録なし"}`;
-    }).join(" / ");
+    const myProgress = parsed.progress && parsed.progress[AUTH.id];
+    if(!myProgress){
+      state.modal = {
+        type: "importMismatch",
+        reason: `このファイルには ID ${AUTH.id} の記録が入っていません（別のお子さんの記録の可能性があります）。`,
+      };
+      render();
+      return;
+    }
+    const has = dbHasRecords({ progress: { [AUTH.id]: myProgress } });
     state.modal = {
       type: "importConfirm",
-      pendingData: parsed,
-      summary: accountSummaries,
+      pendingProgress: normalizeProgress(myProgress),
+      summary: `ID ${AUTH.id}：${has ? "記録あり" : "記録なし"}`,
       savedAt: parsed.updatedAt || "（不明）",
     };
     render();
@@ -1549,21 +1430,25 @@ function handleImportFile(file){
   reader.readAsText(file);
 }
 function confirmImportReplace(){
-  const data = state.modal && state.modal.pendingData;
-  if(!data) return;
-  STORE = data;
-  STORE.app = APP_ID;
+  const progress = state.modal && state.modal.pendingProgress;
+  if(!progress || !AUTH) return;
+  STORE.progress[AUTH.id] = progress;
   saveStore(); // updatedAt refreshed -- this is now a fresh local change
   state.modal = null;
-  if(state.accountId && !findAccountById(state.accountId)){
-    state.accountId = null;
-    state.screen = "login";
-  }
   render();
   pushOnly(); // spec: push right after an import replace
 }
 
-// ---- full KP list export to Drive (§6) ----
+function resetMyRecords(){
+  if(!AUTH) return;
+  STORE.progress[AUTH.id] = blankAccountProgress();
+  saveStore();
+  state.modal = null;
+  render();
+  pushOnly();
+}
+
+// ---- full KP list export to Drive (§15) ----
 function statusLabelForList(s){
   if(!s || (s.totalCorrect||0)+(s.totalWrong||0) === 0) return "未出題";
   if(s.mastered) return "習得済み";
@@ -1582,42 +1467,37 @@ function buildFullKpList(){
     "過去の誤答内容","最終誤答日","習得日",
   ];
   const rows = [];
-  STORE.accounts.forEach(({id, name})=>{
-    const acc = STORE.progress[id] || blankAccountProgress();
-    DATA.forEach((d,idx)=>{
-      const [item, year] = d;
-      const s = acc.items[idx];
-      const wrongHistory = s ? s.wrongLog.map(w=>w.answered).join(";") : "";
-      const lastWrongDate = s && s.wrongLog.length ? formatDateJP(s.wrongLog[s.wrongLog.length-1].at) : "";
-      rows.push([
-        name, eraName(year), "", item, "", "",
-        statusLabelForList(s),
-        s ? s.totalCorrect : 0, s ? s.totalWrong : 0,
-        s ? s.byFormat.A.wrong : 0, s ? s.byFormat.B.wrong : 0,
-        wrongHistory, lastWrongDate, formatDateJP(s && s.masteredAt),
-      ]);
-    });
+  const acc = getCommittedStats(AUTH.id);
+  DATA.forEach((d,idx)=>{
+    const [item, year] = d;
+    const s = acc.items[idx];
+    const wrongHistory = s ? s.wrongLog.map(w=>w.answered).join(";") : "";
+    const lastWrongDate = s && s.wrongLog.length ? formatDateJP(s.wrongLog[s.wrongLog.length-1].at) : "";
+    rows.push([
+      AUTH.id, eraName(year), "", item, "", "",
+      statusLabelForList(s),
+      s ? s.totalCorrect : 0, s ? s.totalWrong : 0,
+      s ? s.byFormat.A.wrong : 0, s ? s.byFormat.B.wrong : 0,
+      wrongHistory, lastWrongDate, formatDateJP(s && s.masteredAt),
+    ]);
   });
   return { header, rows };
 }
 async function exportListToDrive(){
-  const cfg = loadSyncConfig();
-  if(!cfg) return;
+  if(!ready() || !AUTH) return;
   setSyncStatus("pending", "☁… 一覧を書き出し中");
+  // anti-empty-overwrite: always fetch (and merge) the latest first
+  await pullCloud(true);
+  if(!dbHasRecords(STORE)){
+    state.modal = { type: "listBlocked" };
+    setSyncStatus("idle", "");
+    render();
+    return;
+  }
+  const list = buildFullKpList();
   try{
-    // anti-empty-overwrite: always pull (and merge) the latest first
-    const cloudData = await pullFromCloud(cfg);
-    if(cloudData) mergeWithCloud(cloudData);
-    if(!dbHasRecords(STORE)){
-      state.modal = { type: "listBlocked" };
-      setSyncStatus("idle", "");
-      render();
-      return;
-    }
-    const list = buildFullKpList();
-    await pushListToCloud(cfg, list);
-    cfg.lastSync = nowIso();
-    saveSyncConfig(cfg);
+    await api({ app: APP_ID, id: AUTH.id, list }); // note: no "action" field, per the list-export contract
+    SYNC.lastSync = nowIso(); saveSyncConfig();
     setSyncStatus("success", "全問一覧をスプレッドシートに書き出しました");
   }catch(e){ handleSyncError(e); }
 }
@@ -1643,50 +1523,6 @@ function renderModalOverlay(){
   }
   overlay.className = 'modal-overlay';
   const m = state.modal;
-
-  if(m.type === 'syncSettings'){
-    const cfg = loadSyncConfig();
-    overlay.innerHTML = `
-      <div class="modal-box">
-        <h3>☁ クラウド同期設定</h3>
-        <p>GAS（Google Apps Script）で公開したウェブアプリのURLと、合言葉を入力してください。この端末にだけ保存され、他の場所には送信されません。</p>
-        <div class="modal-field">
-          <label>URL（.../exec で終わるもの）</label>
-          <input type="text" id="syncUrlInput" value="${cfg ? cfg.url : ''}" placeholder="https://script.google.com/macros/s/.../exec">
-        </div>
-        <div class="modal-field">
-          <label>合言葉</label>
-          <input type="text" id="syncKeyInput" value="${cfg ? cfg.key : ''}" placeholder="合言葉">
-        </div>
-        <div class="modal-btn-row">
-          <button class="sync-btn" id="syncSaveBtn">保存して同期</button>
-          ${cfg ? `<button class="sync-btn warn" id="syncDisconnectBtn">同期を解除</button>` : ''}
-          <button class="ghost-btn" id="modalCancelBtn">閉じる</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('syncSaveBtn').onclick = ()=>{
-      const url = document.getElementById('syncUrlInput').value.trim();
-      const key = document.getElementById('syncKeyInput').value.trim();
-      if(!url.endsWith('/exec') || !key){
-        alert('URLは「/exec」で終わる形式で、合言葉も入力してください。');
-        return;
-      }
-      saveSyncConfig({ url, key, lastSync: null });
-      state.modal = null;
-      render();
-      doSync();
-    };
-    const discBtn = document.getElementById('syncDisconnectBtn');
-    if(discBtn) discBtn.onclick = ()=>{
-      clearSyncConfig();
-      state.modal = null;
-      state.syncStatus = { kind: 'idle', message: '' };
-      render();
-    };
-    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
-    return;
-  }
 
   if(m.type === 'importConfirm'){
     overlay.innerHTML = `
@@ -1729,60 +1565,21 @@ function renderModalOverlay(){
     return;
   }
 
-  if(m.type === 'addAccount'){
+  if(m.type === 'resetRecordsConfirm'){
+    const acc = AUTH ? getCommittedStats(AUTH.id) : blankAccountProgress();
+    const hasRecords = dbHasRecords({ progress: { x: acc } });
     overlay.innerHTML = `
       <div class="modal-box">
-        <h3>アカウントを追加</h3>
-        <p>新しく挑戦する人の名前を入力してください。</p>
-        <div class="modal-field">
-          <label>名前（12文字まで）</label>
-          <input type="text" id="newAccountNameInput" maxlength="12" placeholder="例：つばさ" autocomplete="off">
-        </div>
-        <p id="addAccountError" style="color:var(--shuiro); display:none;"></p>
+        <h3>このツールの記録を消しますか？</h3>
+        <p>ID ${AUTH ? AUTH.id : ""} の、このツール（歴史年代クイズ）の記録だけを消します。他のツールや、他のお子さんの記録には影響しません。</p>
+        <p style="color:var(--shuiro);"><b>${hasRecords ? "この操作は元に戻せません。学習の記録がすべて消えます。" : "（今のところ記録はまだありません）"}</b></p>
         <div class="modal-btn-row">
-          <button class="sync-btn" id="addAccountConfirmBtn">追加する</button>
+          <button class="sync-btn warn" id="resetConfirmBtn">記録を消す</button>
           <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
         </div>
       </div>
     `;
-    const input = document.getElementById('newAccountNameInput');
-    input.focus();
-    const doAdd = ()=>{
-      const result = addAccount(input.value);
-      if(!result.ok){
-        const err = document.getElementById('addAccountError');
-        err.textContent = result.error;
-        err.style.display = 'block';
-        return;
-      }
-      state.modal = null;
-      render();
-    };
-    document.getElementById('addAccountConfirmBtn').onclick = doAdd;
-    input.addEventListener('keydown', e=>{ if(e.key === 'Enter') doAdd(); });
-    document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
-    return;
-  }
-
-  if(m.type === 'deleteAccountConfirm'){
-    const acc = STORE.progress[m.id] || blankAccountProgress();
-    const hasRecords = dbHasRecords({ progress: { [m.id]: acc } });
-    const sessionCount = (acc.sessions || []).length;
-    overlay.innerHTML = `
-      <div class="modal-box">
-        <h3>「${m.name}」を削除しますか？</h3>
-        <p>挑戦回数：${sessionCount}回${hasRecords ? '<br><b style="color:var(--shuiro);">この操作は元に戻せません。学習の記録もすべて削除されます。</b>' : '（記録はまだありません）'}</p>
-        <div class="modal-btn-row">
-          <button class="sync-btn warn" id="deleteAccountConfirmBtn">削除する</button>
-          <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('deleteAccountConfirmBtn').onclick = ()=>{
-      deleteAccount(m.id);
-      state.modal = null;
-      render();
-    };
+    document.getElementById('resetConfirmBtn').onclick = resetMyRecords;
     document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
     return;
   }
@@ -1793,60 +1590,52 @@ function renderScreen(){
   const app = document.getElementById('app');
   const accountBar = document.getElementById('accountBar');
 
-  if(state.screen === "login"){
+  if(!ready() || !loggedIn()){
     accountBar.style.display = "none";
     renderTimelineMap(null);
+    const why = !ready() ? "クラウド同期がまだ設定されていません。" : "まだログインしていません。";
     app.innerHTML = `
       <div class="card center-card">
-        <div class="qtype-tag">アカウントを選んでね</div>
-        <div class="question-text">だれのクイズ？</div>
-        <div class="avatar-grid">
-          ${STORE.accounts.map(a=>`
-            <div class="avatar-tile">
-              <button class="avatar-delete-btn" data-id="${a.id}" data-name="${a.name}" title="このアカウントを削除">✕</button>
-              <button class="avatar-btn" data-id="${a.id}">${a.name}<span class="kana">タップして開始</span></button>
-            </div>
-          `).join("")}
-          <div class="avatar-tile">
-            <button class="avatar-add-btn" id="addAccountBtn">＋<br>アカウントを追加</button>
-          </div>
+        <div class="qtype-tag">🔑 ポータルで準備してください</div>
+        <div class="question-text">${why}</div>
+        <p style="font-size:13px; color:var(--sumi-soft); line-height:1.9; text-align:left;">
+          ポータル（トップページ）で<b>同期設定とログイン</b>を1回だけ行うと、すべての学習ツールがそのまま使えるようになります。
+        </p>
+        <ul style="text-align:left; font-size:12.5px; color:var(--sumi-soft); line-height:2; padding-left:1.3em;">
+          <li>GASのURLと合言葉 … ポータルで入力</li>
+          <li>ID（5桁）とパスワード … ポータルでログイン</li>
+          <li>この画面に戻ってくれば、すぐ学習を始められます</li>
+        </ul>
+        <div class="btn-row">
+          <a class="big-btn" style="display:block; text-decoration:none; text-align:center;" href="${portalURL()}">ポータルをひらく</a>
+          <button class="ghost-btn" id="reloadAuthBtn">ログイン済みなら、ここを押して読み込み直す</button>
         </div>
       </div>
     `;
-    app.querySelectorAll('.avatar-btn').forEach(btn=>{
-      btn.onclick = ()=>{
-        state.accountId = btn.dataset.id;
-        STORE.activeAccountId = btn.dataset.id;
-        saveStore();
-        state.screen = "home";
-        render();
-      };
-    });
-    app.querySelectorAll('.avatar-delete-btn').forEach(btn=>{
-      btn.onclick = (e)=>{
-        e.stopPropagation();
-        state.modal = { type: "deleteAccountConfirm", id: btn.dataset.id, name: btn.dataset.name };
-        render();
-      };
-    });
-    document.getElementById('addAccountBtn').onclick = ()=>{
-      state.modal = { type: "addAccount" };
+    document.getElementById('reloadAuthBtn').onclick = ()=>{
+      loadAll();
+      state.accountId = AUTH ? AUTH.id : null;
+      state.screen = (ready() && loggedIn()) ? "home" : "gate";
       render();
+      if(ready() && AUTH) pullCloud(true);
     };
     return;
   }
 
   accountBar.style.display = "flex";
-  document.getElementById('accountNamePill').textContent = accountName(state.accountId);
+  document.getElementById('accountNamePill').textContent = `${accountName()}（${AUTH.id}）`;
   document.getElementById('switchAccountBtn').onclick = ()=>{
-    if(!confirmLeaveSession()) return;
-    state.session = null;
-    state.screen = "login";
-    state.accountId = null;
-    render();
+    if(state.screen === "quiz" && state.session && state.session.log.length){
+      if(!confirmLeaveSession()) return;
+      state.session = null;
+      state.screen = "home";
+      render();
+      return;
+    }
+    window.location.href = portalURL();
   };
 
-  if(state.screen === "home"){ renderHome(app); return; }
+  if(state.screen === "home" || state.screen === "gate"){ renderHome(app); return; }
   if(state.screen === "quiz"){ renderQuiz(app); return; }
   if(state.screen === "result"){ renderResult(app); return; }
   if(state.screen === "favorites"){ renderFavorites(app); return; }
@@ -1884,7 +1673,6 @@ function renderEraBars(progress){
 function renderHome(app){
   renderTimelineMap(null);
   const progress = getCommittedStats(state.accountId);
-  const syncCfg = loadSyncConfig();
   const totalAnswered = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect+s.totalWrong,0);
   const totalCorrect = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect,0);
   const overallPct = totalAnswered ? Math.round((totalCorrect/totalAnswered)*100) : 0;
@@ -1915,8 +1703,8 @@ function renderHome(app){
   app.innerHTML = `
     <div class="card center-card">
       ${!LOCAL_STORAGE_OK ? renderStorageWarning() : ''}
-      <div class="qtype-tag">${accountName(state.accountId)} さんの成績</div>
-      <div class="question-text">${accountName(state.accountId)} さん、ようこそ</div>
+      <div class="qtype-tag">${accountName()} さんの成績</div>
+      <div class="question-text">${accountName()} さん、ようこそ</div>
       <div class="stat-grid">
         <div class="stat-box"><div class="num">${(progress.sessions||[]).length}</div><div class="label">挑戦回数</div></div>
         <div class="stat-box"><div class="num">${overallPct}%</div><div class="label">全体正解率</div></div>
@@ -1980,13 +1768,16 @@ function renderHome(app){
         <h3>記録データの管理</h3>
         ${renderSyncStatusPill()}
         <div class="sync-btn-grid">
-          <button class="sync-btn" id="exportJsonBtn">📤 記録を書き出す(JSON)</button>
+          <button class="sync-btn" id="syncNowBtn">🔄 今すぐ同期</button>
+          <button class="sync-btn" id="listExportBtn">📋 全問一覧をDriveへ</button>
+          <button class="sync-btn" id="csvBtn2">📄 CSVをダウンロード</button>
+          <button class="sync-btn" id="exportJsonBtn">📤 記録を書き出す</button>
           <button class="sync-btn" id="importJsonBtn">📥 記録を読み込む</button>
           <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
-          <button class="sync-btn" id="syncSettingsBtn">☁ クラウド同期設定</button>
-          ${syncCfg ? `<button class="sync-btn" id="syncNowBtn">今すぐ同期</button>` : ''}
-          ${syncCfg ? `<button class="sync-btn" id="listExportBtn">📋 全問一覧をDriveへ</button>` : ''}
+          <button class="sync-btn warn" id="resetRecordsBtn">🗑 このツールの記録を消す</button>
         </div>
+        <a class="ghost-btn" style="display:block; text-align:center; text-decoration:none; margin-top:10px;" href="${portalURL()}">⚙ 同期設定・ログアウトはポータルへ</a>
+        <div class="tiny" style="font-size:11px; color:var(--sumi-soft); margin-top:8px;">ID ${AUTH.id}　／　ツール識別子 ${APP_ID}　／　共通仕様 ${VER}　／　全${DATA.length}知識ポイント</div>
       </div>
     </div>
   `;
@@ -2023,6 +1814,7 @@ function renderHome(app){
   };
   document.getElementById('favBtn').onclick = ()=>{ state.screen = "favorites"; render(); };
   document.getElementById('csvBtn').onclick = ()=>exportCsv(state.accountId);
+  document.getElementById('csvBtn2').onclick = ()=>exportCsv(state.accountId);
 
   document.getElementById('exportJsonBtn').onclick = exportJsonDb;
   const importInput = document.getElementById('importJsonFile');
@@ -2031,29 +1823,22 @@ function renderHome(app){
     if(e.target.files && e.target.files[0]) handleImportFile(e.target.files[0]);
     importInput.value = "";
   };
-  document.getElementById('syncSettingsBtn').onclick = ()=>{ state.modal = { type: "syncSettings" }; render(); };
-  const syncNowBtn = document.getElementById('syncNowBtn');
-  if(syncNowBtn) syncNowBtn.onclick = doSync;
-  const listExportBtn = document.getElementById('listExportBtn');
-  if(listExportBtn) listExportBtn.onclick = exportListToDrive;
+  document.getElementById('syncNowBtn').onclick = ()=>doSync();
+  document.getElementById('listExportBtn').onclick = ()=>exportListToDrive();
+  document.getElementById('resetRecordsBtn').onclick = ()=>{ state.modal = { type: "resetRecordsConfirm" }; render(); };
 }
 
 function renderStorageWarning(){
-  const cfg = loadSyncConfig();
-  if(cfg){
+  if(ready()){
     return `<div class="storage-warning ok-with-cloud">☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます</div>`;
   }
-  return `<div class="storage-warning">⚠ この端末（ブラウザ）には記録を保存できません（プライベートブラウジング等）。記録を残すには「☁ クラウド同期設定」から同期を設定してください。</div>`;
+  return `<div class="storage-warning">⚠ この端末（ブラウザ）には記録を保存できません（プライベートブラウジング等）。記録を残すにはポータルでクラウド同期を設定してください。</div>`;
 }
 
 function renderSyncStatusPill(){
   const s = state.syncStatus;
-  const cfg = loadSyncConfig();
-  if(s.kind === 'idle' && !cfg){
-    return `<div class="sync-status idle">☁ 未設定（この端末にのみ記録が保存されます）</div>`;
-  }
-  const lastSyncTxt = cfg && cfg.lastSync ? `｜最終同期 ${formatDateJP(cfg.lastSync)} ${new Date(cfg.lastSync).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}` : '';
-  const msg = s.message || (cfg ? '☁ 同期設定ずみ' : '☁ 未設定');
+  const lastSyncTxt = SYNC && SYNC.lastSync ? `｜最終同期 ${formatDateJP(SYNC.lastSync)} ${new Date(SYNC.lastSync).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}` : '';
+  const msg = s.message || '☁ 同期設定ずみ';
   return `<div class="sync-status ${s.kind}">${msg}${lastSyncTxt}</div>`;
 }
 
@@ -2263,7 +2048,7 @@ function renderResult(app){
   const eraFilterOptions = ['すべて', ...ERA_BOUNDARIES.map(e=>e[1])];
   app.innerHTML = `
     <div class="card center-card">
-      <div class="qtype-tag">${accountName(state.accountId)} さんの結果（${modeLabel(sess)}モード）</div>
+      <div class="qtype-tag">${accountName()} さんの結果（${modeLabel(sess)}モード）</div>
       <div class="result-score">${sess.score}<span> / ${total} 問正解</span></div>
       <div class="result-comment">${comment}</div>
       <div class="result-comment" style="color:var(--moss);">今回新しく習得：${sess.newlyMastered.size}問</div>
@@ -2353,7 +2138,7 @@ function renderFavorites(app){
   }).join("") : `<div class="fav-empty">まだお気に入りはありません。クイズ中に★ボタンで登録できます。</div>`;
   app.innerHTML = `
     <div class="card">
-      <div class="qtype-tag">${accountName(state.accountId)} さんのお気に入り</div>
+      <div class="qtype-tag">${accountName()} さんのお気に入り</div>
       <div class="question-text">忘れそう・気になる問題</div>
       <div class="review-list">${listHtml}</div>
       <div class="btn-row"><button class="ghost-btn" id="backHomeBtn">成績ページにもどる</button></div>
@@ -2478,7 +2263,19 @@ function sessionAnsweredYears(){
 }
 
 render();
-if(loadSyncConfig()) doSync(); // §5: pull on app launch
+if(ready() && loggedIn()) setSyncStatus("pending", "☁… クラウドと同期しています");
+if(ready() && loggedIn()) pullCloud(true);
+
+// Follow login/sync changes made elsewhere (the portal, or another tool's
+// tab) -- but never yank the rug out from under an in-progress quiz.
+window.addEventListener('storage', (ev)=>{
+  if(ev.key !== AUTH_KEY && ev.key !== SYNC_KEY) return;
+  if(state.screen === "quiz" && state.session && state.session.log.length) return;
+  loadAll();
+  state.accountId = AUTH ? AUTH.id : null;
+  render();
+  if(ready() && loggedIn()) pullCloud(true);
+});
 </script>
 </body>
 </html>

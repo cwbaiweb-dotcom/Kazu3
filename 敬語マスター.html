@@ -117,14 +117,16 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
   <div class="inner">
     <h1>敬語マスター</h1>
     <div class="who">
-      <span id="whoName">—</span>
-      <button class="btn sm ghost" id="btnSwitch">切替</button>
+      <button class="btn sm ghost" id="accBtn">👤 —</button>
     </div>
   </div>
 </header>
 
 <div class="wrap">
   <div id="lsWarn" class="warnbar hide"></div>
+
+  <!-- ============ GATE ============ -->
+  <div id="scGate" class="hide"><div class="card" id="gateCard"></div></div>
 
   <!-- ============ HOME ============ -->
   <div id="scHome">
@@ -167,18 +169,16 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
       <h2>💾 記録データの管理</h2>
       <div id="syncStatus" class="status">☁ 同期は未設定です</div>
       <div class="row">
+        <button class="btn sm" id="btnSyncNow">🔄 今すぐ同期</button>
+        <button class="btn sm" id="btnPushList">📋 全問一覧をDriveへ</button>
+        <button class="btn sm" id="btnCsv2">📄 CSVをダウンロード</button>
         <button class="btn sm" id="btnExport">📤 記録を書き出す</button>
         <button class="btn sm" id="btnImport">📥 記録を読み込む</button>
-        <button class="btn sm" id="btnSyncCfg">☁ クラウド同期設定</button>
-        <button class="btn sm hide" id="btnSyncNow">🔄 今すぐ同期</button>
-        <button class="btn sm hide" id="btnPushList">📋 全問一覧をDriveへ</button>
+        <button class="btn sm ghost" id="btnReset">🗑 このツールの記録を消す</button>
       </div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn sm ghost" id="btnAccounts">👤 アカウント管理</button>
-        <button class="btn sm ghost" id="btnReset">🗑 このアカウントの記録を消す</button>
-      </div>
+      <a class="btn ghost wide" id="btnPortal" href="./index.html" style="display:block;text-decoration:none;margin-top:10px">⚙ 同期設定・ログアウトはポータルへ</a>
+      <div class="muted" id="footInfo" style="margin-top:10px;font-size:12px"></div>
     </div>
-    <div class="muted" style="text-align:center;padding:10px 0">app: <code id="appId"></code></div>
   </div>
 
   <!-- ============ QUIZ ============ -->
@@ -237,33 +237,39 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
 const APP   = 'kj-quiz-kokugo-keigo';
 const TITLE = '敬語';
 const SCHEMA_VERSION = 2;
+const VER   = 'v3.0';
 
 /* 出題形式の定義（このツール）
-   A = 「ふつうの言い方 → 敬語」／「ことば → 敬語の種類」／「誤文 → 正しい言い方」
-   B = 「敬語 → ふつうの言い方」／「種類 → あてはまることば」／「誤文 → まちがいの理由」 */
-const FMT_NAME = { A:'A（ふつう→敬語・種類・直し）', B:'B（敬語→ふつう・見分け・理由）' };
+   A ＝ 種類の判定 … 「召し上がる」は尊敬語・謙譲語・丁寧語・美化語のどれ？
+                      （まちがい直しの語群では「この文はどこがまちがっている？」）
+   B ＝ 敬語への変換 … 「食べる」の尊敬語は？
+                      （まちがい直しの語群では「正しく直すと？」）        */
+const FMT_NAME = { A:'A（種類の判定・まちがいの指摘）', B:'B（敬語への変換・正しい言い方）' };
+const TYPES = ['尊敬語','謙譲語','丁寧語','美化語'];
 
 const REASONS = {
-  R1:'自分や身内の動作に尊敬語を使っている',
+  R1:'自分の動作に尊敬語を使っている',
   R2:'相手（目上）の動作に謙譲語を使っている',
   R3:'二重敬語になっている（敬語の重ねすぎ）',
-  R4:'相手への依頼なのに「お〜する」（謙譲語）を使っている'
+  R4:'依頼なのに「お〜する」（謙譲語）を使っている',
+  R5:'身内のことを外の人に話すのに高めている',
+  R6:'目上の人の動作なのに敬語を使っていない'
 };
 
 /* ================= 知識ポイント =================
-   kind: conv=言いかえ / cls=種類の見分け / err=まちがい直し
+   kind: conv=言いかえ（A=種類判定／B=変換） / err=まちがい直し（A=理由／B=正しい形）
    imp : 2=◎最重要 1=○重要 0=標準 */
 const DATA = [
-/* --- 尊敬語（特別な形） --- */
-{id:'s01',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'言う',a:'おっしゃる',yomi:'おっしゃる',exp:'先生や目上の人が「言う」ときは尊敬語「おっしゃる」。自分が言うときは謙譲語「申す・申し上げる」。'},
-{id:'s02',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'行く',a:'いらっしゃる',yomi:'いらっしゃる',exp:'「行く・来る・いる」はどれも尊敬語では「いらっしゃる」。「おいでになる」も可。'},
+/* ---------- 1. 尊敬語（特別な形） ---------- */
+{id:'s01',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'言う',a:'おっしゃる',yomi:'おっしゃる',exp:'目上の人の「言う」を高める尊敬語。自分が言うときは謙譲語「申す・申し上げる」。'},
+{id:'s02',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'行く',a:'いらっしゃる',yomi:'いらっしゃる',exp:'「行く・来る・いる」はどれも尊敬語では「いらっしゃる」。「おいでになる」も同じ。'},
 {id:'s03',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'来る',a:'お見えになる',yomi:'おみえになる',exp:'「来る」の尊敬語は「いらっしゃる・お見えになる・お越しになる」。「参られる」は誤り。'},
 {id:'s04',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:1,q:'いる',a:'いらっしゃる',yomi:'いらっしゃる',exp:'「先生は職員室にいらっしゃいます」。謙譲語は「おる」。'},
-{id:'s05',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'食べる',a:'召し上がる',yomi:'めしあがる',exp:'「食べる・飲む」の尊敬語。「いただく」は謙譲語なので相手にはすすめられない。'},
+{id:'s05',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'食べる',a:'召し上がる',yomi:'めしあがる',exp:'「食べる・飲む」の尊敬語。自分が食べるときは謙譲語「いただく」。'},
 {id:'s06',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:1,q:'飲む',a:'召し上がる',yomi:'めしあがる',exp:'「お飲みになる」も尊敬語。「お召し上がりになられる」は二重敬語で誤り。'},
 {id:'s07',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'見る',a:'ご覧になる',yomi:'ごらんになる',exp:'相手が見るときは「ご覧になる」、自分が見るときは謙譲語「拝見する」。'},
 {id:'s08',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'する',a:'なさる',yomi:'なさる',exp:'「先生が研究をなさる」。自分の動作なら謙譲語「いたす」。'},
-{id:'s09',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'くれる',a:'くださる',yomi:'くださる',exp:'相手が自分に与える動作。反対に自分が与えるときは謙譲語「差し上げる」。'},
+{id:'s09',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:2,q:'くれる',a:'くださる',yomi:'くださる',exp:'相手が自分に与える動作を高める。自分が与えるときは謙譲語「差し上げる」。'},
 {id:'s10',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:1,q:'着る',a:'お召しになる',yomi:'おめしになる',exp:'「先生が和服をお召しになる」。'},
 {id:'s11',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:1,q:'寝る',a:'お休みになる',yomi:'おやすみになる',exp:'「もうお休みになりました」。'},
 {id:'s12',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:1,q:'知っている',a:'ご存じだ',yomi:'ごぞんじだ',exp:'相手が知っている＝「ご存じ」。自分が知っている＝謙譲語「存じる」。'},
@@ -271,85 +277,113 @@ const DATA = [
 {id:'s14',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:0,q:'死ぬ',a:'お亡くなりになる',yomi:'おなくなりになる',exp:'「亡くなられる」も使う。'},
 {id:'s15',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:0,q:'買う',a:'お求めになる',yomi:'おもとめになる',exp:'店などで客の動作をいうときに使う。'},
 {id:'s16',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:0,q:'気に入る',a:'お気に召す',yomi:'おきにめす',exp:'「お気に召しましたか」。'},
-{id:'s17',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:0,q:'思う',a:'おぼしめす',yomi:'おぼしめす',exp:'古い言い方。「思う」の謙譲語は「存じる」。'},
+{id:'s17',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:0,q:'思う',a:'おぼしめす',yomi:'おぼしめす',exp:'古い言い方の尊敬語。「思う」の謙譲語は「存じる」。'},
+{id:'s18',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:0,q:'命じる',a:'仰せになる',yomi:'おおせになる',exp:'「言いつける」の尊敬語。「仰せのとおりです」。'},
+{id:'s19',cat:'尊敬語',kind:'conv',sym:'尊敬語',imp:1,q:'〜てくれる',a:'〜てくださる',yomi:'てくださる',exp:'「教えてくださる」。「〜てくださられる」は二重敬語で誤り。'},
 
-/* --- 謙譲語（特別な形） --- */
-{id:'k01',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'言う',a:'申し上げる',yomi:'もうしあげる',exp:'自分の動作をへりくだる。「申す」も謙譲語。「先生が申された」は誤り。'},
-{id:'k02',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'行く',a:'伺う',yomi:'うかがう',exp:'「明日お宅に伺います」。「参る」も可。相手の動作には使えない。'},
-{id:'k03',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'来る',a:'参る',yomi:'まいる',exp:'「ただいま参ります」。お客に「参られました」と使うのは誤り。'},
-{id:'k04',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'いる',a:'おる',yomi:'おる',exp:'「私は家におります」。「先生はおられますか」は本来誤りで「いらっしゃいますか」。'},
-{id:'k05',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'食べる',a:'いただく',yomi:'いただく',exp:'自分が食べる動作。相手にすすめるときは尊敬語「召し上がる」。'},
-{id:'k06',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'飲む',a:'いただく',yomi:'いただく',exp:'「お茶をいただきます」。'},
-{id:'k07',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'もらう',a:'頂戴する',yomi:'ちょうだいする',exp:'「いただく」も同じ。反対語は「差し上げる」。'},
-{id:'k08',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'見る',a:'拝見する',yomi:'はいけんする',exp:'自分が見る動作。「拝見させていただく」は敬語の重ねすぎ。'},
-{id:'k09',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'する',a:'いたす',yomi:'いたす',exp:'「私がいたします」。相手の動作には尊敬語「なさる」。'},
-{id:'k10',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'あげる',a:'差し上げる',yomi:'さしあげる',exp:'自分が相手に与える。もらうときは「いただく」。'},
-{id:'k11',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'聞く',a:'伺う',yomi:'うかがう',exp:'「先生に伺いました」。「拝聴する」も謙譲語。'},
-{id:'k12',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'知る',a:'存じる',yomi:'ぞんじる',exp:'「その件は存じております」。人について言うときは「存じ上げる」。'},
-{id:'k13',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'思う',a:'存じます',yomi:'ぞんじます',exp:'「よろしいかと存じます」。'},
-{id:'k14',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'訪ねる',a:'お邪魔する',yomi:'おじゃまする',exp:'「伺う」も同じ意味で使える。'},
-{id:'k15',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'会う',a:'お目にかかる',yomi:'おめにかかる',exp:'「先生にお目にかかりました」。「お目にかける」は「見せる」。'},
-{id:'k16',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'見せる',a:'お目にかける',yomi:'おめにかける',exp:'「ご覧に入れる」も同じ。'},
-{id:'k17',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'借りる',a:'拝借する',yomi:'はいしゃくする',exp:'「お力を拝借します」。'},
-{id:'k18',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'引き受ける',a:'承る',yomi:'うけたまわる',exp:'「ご注文を承ります」。「聞く」の意味でも使う。'},
-{id:'k19',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'読む',a:'拝読する',yomi:'はいどくする',exp:'「お手紙を拝読しました」。'},
-{id:'k20',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'受け取る',a:'拝受する',yomi:'はいじゅする',exp:'手紙文で使うかたい言い方。'},
-{id:'k21',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'わかる',a:'承知する',yomi:'しょうちする',exp:'「かしこまりました」も同じはたらき。'},
-{id:'k22',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'帰る',a:'失礼する',yomi:'しつれいする',exp:'「お先に失礼します」。'},
+/* ---------- 2. 謙譲語（特別な形） ---------- */
+{id:'k01',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'言う',a:'申し上げる',yomi:'もうしあげる',exp:'自分の「言う」をへりくだる語。「先生が申された」は誤り。'},
+{id:'k02',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'言う（相手を選ばず）',a:'申す',yomi:'もうす',exp:'「私は山田と申します」。相手の動作には使えない。'},
+{id:'k03',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'行く',a:'伺う',yomi:'うかがう',exp:'「明日お宅に伺います」。目上のところへ行くときに使う。'},
+{id:'k04',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'行く（かしこまって）',a:'参る',yomi:'まいる',exp:'「ただいま参ります」。相手の動作に「参られる」とは使えない。'},
+{id:'k05',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'来る',a:'参る',yomi:'まいる',exp:'自分が来ることをへりくだって言う。'},
+{id:'k06',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'いる',a:'おる',yomi:'おる',exp:'「私は家におります」。目上には「いらっしゃる」。'},
+{id:'k07',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'食べる',a:'いただく',yomi:'いただく',exp:'自分が食べる動作。相手にすすめるときは尊敬語「召し上がる」。'},
+{id:'k08',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'飲む',a:'いただく',yomi:'いただく',exp:'「お茶をいただきます」。'},
+{id:'k09',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'もらう',a:'頂戴する',yomi:'ちょうだいする',exp:'反対の意味の謙譲語は「差し上げる」。'},
+{id:'k10',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'もらう（へりくだって）',a:'いただく',yomi:'いただく',exp:'「先生に本をいただきました」。'},
+{id:'k11',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'見る',a:'拝見する',yomi:'はいけんする',exp:'自分が見る動作。「拝見させていただく」は敬語の重ねすぎ。'},
+{id:'k12',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'する',a:'いたす',yomi:'いたす',exp:'「私がいたします」。相手の動作には尊敬語「なさる」。'},
+{id:'k13',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'あげる',a:'差し上げる',yomi:'さしあげる',exp:'自分が相手に与える動作。'},
+{id:'k14',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'聞く',a:'伺う',yomi:'うかがう',exp:'「先生に伺いました」。相手に聞かせるときは「お聞きください」。'},
+{id:'k15',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'聞く（かしこまって）',a:'拝聴する',yomi:'はいちょうする',exp:'講演などをつつしんで聞くこと。'},
+{id:'k16',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'知る',a:'存じる',yomi:'ぞんじる',exp:'「その件は存じております」。相手が知っているときは「ご存じ」。'},
+{id:'k17',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'（人を）知っている',a:'存じ上げる',yomi:'ぞんじあげる',exp:'人について言うときは「存じ上げる」を使う。'},
+{id:'k18',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'思う',a:'存じます',yomi:'ぞんじます',exp:'「よろしいかと存じます」。'},
+{id:'k19',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'訪ねる',a:'お邪魔する',yomi:'おじゃまする',exp:'「伺う」も同じ意味で使える。'},
+{id:'k20',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:2,q:'会う',a:'お目にかかる',yomi:'おめにかかる',exp:'「先生にお目にかかりました」。'},
+{id:'k21',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'見せる',a:'お目にかける',yomi:'おめにかける',exp:'自分が相手に見せる動作。'},
+{id:'k22',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'見せる（あらたまって）',a:'ご覧に入れる',yomi:'ごらんにいれる',exp:'「お目にかける」と同じ。「ご覧になる」（尊敬語）と混同しない。'},
+{id:'k23',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'借りる',a:'拝借する',yomi:'はいしゃくする',exp:'「お力を拝借します」。'},
+{id:'k24',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'引き受ける',a:'承る',yomi:'うけたまわる',exp:'「ご注文を承ります」。「聞く」の意味でも使う。'},
+{id:'k25',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'読む',a:'拝読する',yomi:'はいどくする',exp:'「お手紙を拝読しました」。'},
+{id:'k26',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'受け取る',a:'拝受する',yomi:'はいじゅする',exp:'手紙文で使うかたい言い方。'},
+{id:'k27',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:1,q:'わかる',a:'承知する',yomi:'しょうちする',exp:'「かしこまりました」も同じはたらき。'},
+{id:'k28',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'帰る',a:'失礼する',yomi:'しつれいする',exp:'「お先に失礼します」。'},
+{id:'k29',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'自分の家',a:'拙宅',yomi:'せったく',exp:'自分の家をへりくだって言う謙譲の名詞。相手の家は「お宅」。'},
+{id:'k30',cat:'謙譲語',kind:'conv',sym:'謙譲語',imp:0,q:'自分が贈る品物',a:'粗品',yomi:'そしな',exp:'自分の物をへりくだって言う謙譲の名詞。'},
 
-/* --- 丁寧語・美化語 --- */
-{id:'t01',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:2,q:'だ',a:'です',yomi:'です',exp:'聞き手に対して丁寧に言う語。上下関係ではなく話し方の丁寧さを表す。'},
-{id:'t02',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:2,q:'ある',a:'ございます',yomi:'ございます',exp:'「あります」よりさらに丁寧な丁寧語。'},
-{id:'t03',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'する',a:'します',yomi:'します',exp:'「ます」を付けた丁寧語。謙譲語は「いたします」。'},
-{id:'t04',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'だろう',a:'でしょう',yomi:'でしょう',exp:'「です」の推量の形。'},
-{id:'t05',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'いる',a:'います',yomi:'います',exp:'謙譲語の「おります」と区別する。'},
-{id:'t06',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:1,q:'飯',a:'ご飯',yomi:'ごはん',exp:'ものごとを上品に言う美化語。敬意の相手がいなくても使える。'},
-{id:'t07',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:1,q:'茶',a:'お茶',yomi:'おちゃ',exp:'美化語。「お」「ご」を付けて上品に言う。'},
-{id:'t08',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'菓子',a:'お菓子',yomi:'おかし',exp:'美化語。'},
-{id:'t09',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'水',a:'お水',yomi:'おみず',exp:'美化語。'},
-{id:'t10',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'料理',a:'お料理',yomi:'おりょうり',exp:'美化語。'},
+/* ---------- 3. 丁寧語・美化語 ---------- */
+{id:'t01',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:2,q:'だ',a:'です',yomi:'です',exp:'聞き手に丁寧に伝える語。動作をする人を高めてはいない。'},
+{id:'t02',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'ある',a:'あります',yomi:'あります',exp:'「ます」を付けた丁寧語。'},
+{id:'t03',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:2,q:'ある（あらたまって）',a:'ございます',yomi:'ございます',exp:'「あります」よりさらに丁寧な丁寧語。'},
+{id:'t04',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'する',a:'します',yomi:'します',exp:'謙譲語は「いたします」。丁寧語との区別に注意。'},
+{id:'t05',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'だろう',a:'でしょう',yomi:'でしょう',exp:'「です」の推量の形。'},
+{id:'t06',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'いる',a:'います',yomi:'います',exp:'謙譲語の「おります」と区別する。'},
+{id:'t07',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:0,q:'だった',a:'でした',yomi:'でした',exp:'「です」の過去の形。'},
+{id:'t08',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:1,q:'ない',a:'ありません',yomi:'ありません',exp:'「ございません」はさらに丁寧。'},
+{id:'t09',cat:'丁寧語・美化語',kind:'conv',sym:'丁寧語',imp:0,q:'そうだ',a:'そうです',yomi:'そうです',exp:'聞き手への丁寧さだけを表す。'},
+{id:'t10',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:1,q:'飯',a:'ご飯',yomi:'ごはん',exp:'ものごとを上品に言う美化語。敬う相手がいなくても使える。'},
+{id:'t11',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:1,q:'茶',a:'お茶',yomi:'おちゃ',exp:'美化語。「お」「ご」を付けて上品に言う。'},
+{id:'t12',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'菓子',a:'お菓子',yomi:'おかし',exp:'美化語。'},
+{id:'t13',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'水',a:'お水',yomi:'おみず',exp:'美化語。'},
+{id:'t14',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'料理',a:'お料理',yomi:'おりょうり',exp:'美化語。'},
+{id:'t15',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:1,q:'金',a:'お金',yomi:'おかね',exp:'美化語。'},
+{id:'t16',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'手紙',a:'お手紙',yomi:'おてがみ',exp:'相手の手紙をさすときは尊敬の意味にもなる。'},
+{id:'t17',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'花',a:'お花',yomi:'おはな',exp:'美化語。'},
+{id:'t18',cat:'丁寧語・美化語',kind:'conv',sym:'美化語',imp:0,q:'話',a:'お話',yomi:'おはなし',exp:'美化語。相手の話をさすときは尊敬の意味にもなる。'},
 
-/* --- 敬語の形（お〜になる／お〜する／れる・られる） --- */
+/* ---------- 4. 敬語の形（お〜になる／お〜する／れる・られる） ---------- */
 {id:'f01',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:2,q:'書く',a:'お書きになる',yomi:'おかきになる',exp:'「お〜になる」は尊敬の形。「お書きになられる」は二重敬語で誤り。'},
-{id:'f02',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'読む',a:'お読みになる',yomi:'およみになる',exp:'「お〜になる」＝尊敬。「お読みする」だと謙譲になってしまう。'},
-{id:'f03',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'待つ',a:'お待ちになる',yomi:'おまちになる',exp:'依頼の形は「お待ちください」。「お待ちしてください」は誤り。'},
-{id:'f04',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'出席する',a:'ご出席になる',yomi:'ごしゅっせきになる',exp:'漢語には「ご〜になる」を使う。'},
-{id:'f05',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'帰る',a:'帰られる',yomi:'かえられる',exp:'「れる・られる」も尊敬を表す。受け身・可能と形が同じなので注意。'},
-{id:'f06',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'話す',a:'話される',yomi:'はなされる',exp:'「れる・られる」の尊敬。「お話しになる」より軽い敬意。'},
-{id:'f07',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:2,q:'持つ',a:'お持ちする',yomi:'おもちする',exp:'「お〜する」は謙譲の形。自分が相手のために行う動作に使う。'},
-{id:'f08',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'送る',a:'お送りする',yomi:'おおくりする',exp:'「お送りになる」だと相手の動作（尊敬）になる。'},
-{id:'f09',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'知らせる',a:'お知らせする',yomi:'おしらせする',exp:'自分が相手に知らせる動作。'},
-{id:'f10',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:2,q:'案内する',a:'ご案内する',yomi:'ごあんないする',exp:'漢語には「ご〜する」。'},
-{id:'f11',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'説明する',a:'ご説明する',yomi:'ごせつめいする',exp:'「ご説明になる」は相手の動作。'},
-{id:'f12',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:0,q:'招く',a:'お招きする',yomi:'おまねきする',exp:'自分が相手を招く動作。'},
+{id:'f02',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'読む',a:'お読みになる',yomi:'およみになる',exp:'「お読みする」だと謙譲になってしまう。'},
+{id:'f03',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'待つ',a:'お待ちになる',yomi:'おまちになる',exp:'「お〜になる」＝尊敬。'},
+{id:'f04',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'会う',a:'お会いになる',yomi:'おあいになる',exp:'自分が会うときは謙譲語「お目にかかる」。'},
+{id:'f05',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'帰る',a:'お帰りになる',yomi:'おかえりになる',exp:'「帰られる」も尊敬。'},
+{id:'f06',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:0,q:'使う',a:'お使いになる',yomi:'おつかいになる',exp:'「お〜になる」の形。'},
+{id:'f07',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'出席する',a:'ご出席になる',yomi:'ごしゅっせきになる',exp:'漢語には「ご〜になる」を使う。'},
+{id:'f08',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:0,q:'利用する',a:'ご利用になる',yomi:'ごりようになる',exp:'漢語には「ご〜になる」。'},
+{id:'f09',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'帰る（「れる・られる」で）',a:'帰られる',yomi:'かえられる',exp:'「れる・られる」も尊敬を表す。受け身・可能と形が同じなので注意。'},
+{id:'f10',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'話す（「れる・られる」で）',a:'話される',yomi:'はなされる',exp:'「お話しになる」より軽い敬意。'},
+{id:'f11',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'来る（「れる・られる」で）',a:'来られる',yomi:'こられる',exp:'尊敬・受け身・可能を文脈で見分ける。'},
+{id:'f12',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:2,q:'読んでください',a:'お読みください',yomi:'およみください',exp:'依頼は「お〜ください」。「お読みしてください」は誤り。'},
+{id:'f13',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:2,q:'待ってください',a:'お待ちください',yomi:'おまちください',exp:'「お待ちしてください」は謙譲の形なので誤り。'},
+{id:'f14',cat:'敬語の形',kind:'conv',sym:'尊敬語',imp:1,q:'注意してください',a:'ご注意ください',yomi:'ごちゅういください',exp:'漢語には「ご〜ください」。'},
+{id:'f15',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:2,q:'持つ',a:'お持ちする',yomi:'おもちする',exp:'「お〜する」は謙譲の形。自分が相手のために行う動作に使う。'},
+{id:'f16',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'送る',a:'お送りする',yomi:'おおくりする',exp:'「お送りになる」だと相手の動作（尊敬）になる。'},
+{id:'f17',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'知らせる',a:'お知らせする',yomi:'おしらせする',exp:'自分が相手に知らせる動作。'},
+{id:'f18',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'届ける',a:'お届けする',yomi:'おとどけする',exp:'「お〜する」の形。'},
+{id:'f19',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:0,q:'教える',a:'お教えする',yomi:'おおしえする',exp:'目上の人に教えるときの言い方。'},
+{id:'f20',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'尋ねる',a:'お尋ねする',yomi:'おたずねする',exp:'自分が尋ねる動作。「伺う」も同じ。'},
+{id:'f21',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:2,q:'案内する',a:'ご案内する',yomi:'ごあんないする',exp:'漢語には「ご〜する」。'},
+{id:'f22',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'説明する',a:'ご説明する',yomi:'ごせつめいする',exp:'「ご説明になる」は相手の動作。'},
+{id:'f23',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:1,q:'連絡する',a:'ご連絡する',yomi:'ごれんらくする',exp:'「ご連絡いたします」はさらに丁寧。'},
+{id:'f24',cat:'敬語の形',kind:'conv',sym:'謙譲語',imp:0,q:'招く',a:'お招きする',yomi:'おまねきする',exp:'自分が相手を招く動作。'},
 
-/* --- 種類の見分け --- */
-{id:'c01',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'おっしゃる',a:'尊敬語',yomi:'おっしゃる',exp:'相手（目上）の「言う」を高める語なので尊敬語。'},
-{id:'c02',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'伺う',a:'謙譲語',yomi:'うかがう',exp:'自分の「行く・聞く」をへりくだる語なので謙譲語。'},
-{id:'c03',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'ございます',a:'丁寧語',yomi:'ございます',exp:'聞き手に対して丁寧に述べる語。動作の主を高めてはいない。'},
-{id:'c04',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'お菓子',a:'美化語',yomi:'おかし',exp:'ものを上品に言う美化語。敬う相手がいなくても使える。'},
-{id:'c05',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'召し上がる',a:'尊敬語',yomi:'めしあがる',exp:'相手の「食べる・飲む」を高める語。'},
-{id:'c06',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'いただく',a:'謙譲語',yomi:'いただく',exp:'自分の「食べる・もらう」をへりくだる語。'},
-{id:'c07',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'です',a:'丁寧語',yomi:'です',exp:'聞き手への丁寧さを表す。'},
-{id:'c08',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'拝見する',a:'謙譲語',yomi:'はいけんする',exp:'自分の「見る」をへりくだる語。'},
-{id:'c09',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'ご覧になる',a:'尊敬語',yomi:'ごらんになる',exp:'相手の「見る」を高める語。'},
-{id:'c10',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'くださる',a:'尊敬語',yomi:'くださる',exp:'相手が与える動作を高める語。'},
-{id:'c11',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'差し上げる',a:'謙譲語',yomi:'さしあげる',exp:'自分が与える動作をへりくだる語。'},
-{id:'c12',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'なさる',a:'尊敬語',yomi:'なさる',exp:'相手の「する」を高める語。'},
-{id:'c13',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'いたす',a:'謙譲語',yomi:'いたす',exp:'自分の「する」をへりくだる語。'},
-{id:'c14',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'お花',a:'美化語',yomi:'おはな',exp:'ものを上品に言う語。'},
-{id:'c15',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'おる',a:'謙譲語',yomi:'おる',exp:'自分の「いる」をへりくだる語。'},
-{id:'c16',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'参る',a:'謙譲語',yomi:'まいる',exp:'自分の「行く・来る」をへりくだる語。'},
-{id:'c17',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'お休みになる',a:'尊敬語',yomi:'おやすみになる',exp:'「お〜になる」は尊敬の形。'},
-{id:'c18',cat:'種類の見分け',kind:'cls',sym:'',imp:2,q:'申し上げる',a:'謙譲語',yomi:'もうしあげる',exp:'自分の「言う」をへりくだる語。'},
-{id:'c19',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'ご存じ',a:'尊敬語',yomi:'ごぞんじ',exp:'相手が「知っている」ことを高める語。自分には「存じる」。'},
-{id:'c20',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'頂戴する',a:'謙譲語',yomi:'ちょうだいする',exp:'自分の「もらう」をへりくだる語。'},
-{id:'c21',cat:'種類の見分け',kind:'cls',sym:'',imp:0,q:'ご飯',a:'美化語',yomi:'ごはん',exp:'ものを上品に言う語。'},
-{id:'c22',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'ます',a:'丁寧語',yomi:'ます',exp:'聞き手への丁寧さを表す助動詞。'},
-{id:'c23',cat:'種類の見分け',kind:'cls',sym:'',imp:0,q:'承る',a:'謙譲語',yomi:'うけたまわる',exp:'自分の「聞く・引き受ける」をへりくだる語。'},
-{id:'c24',cat:'種類の見分け',kind:'cls',sym:'',imp:1,q:'お目にかかる',a:'謙譲語',yomi:'おめにかかる',exp:'自分の「会う」をへりくだる語。'},
+/* ---------- 5. 場面のことば ---------- */
+{id:'b01',cat:'場面のことば',kind:'conv',sym:'丁寧語',imp:2,q:'ありがとう',a:'ありがとうございます',yomi:'ありがとうございます',exp:'「ございます」を付けた丁寧語。目上の人にはこの形を使う。'},
+{id:'b02',cat:'場面のことば',kind:'conv',sym:'丁寧語',imp:2,q:'ごめんなさい',a:'申し訳ございません',yomi:'もうしわけございません',exp:'あらたまった場面のわびの言い方。'},
+{id:'b03',cat:'場面のことば',kind:'conv',sym:'謙譲語',imp:2,q:'わかりました',a:'かしこまりました',yomi:'かしこまりました',exp:'「承知しました」も同じ。相手の言うことをつつしんで受ける言い方。'},
+{id:'b04',cat:'場面のことば',kind:'conv',sym:'丁寧語',imp:1,q:'いいですか',a:'よろしいでしょうか',yomi:'よろしいでしょうか',exp:'ていねいにたずねる言い方。'},
+{id:'b05',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:1,q:'だれですか',a:'どちら様でしょうか',yomi:'どちらさまでしょうか',exp:'相手を高めてたずねる言い方。電話でよく使う。'},
+{id:'b06',cat:'場面のことば',kind:'conv',sym:'丁寧語',imp:1,q:'どうですか',a:'いかがですか',yomi:'いかがですか',exp:'「どう」をあらたまって言う語。'},
+{id:'b07',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:2,q:'ちょっと待って',a:'少々お待ちください',yomi:'しょうしょうおまちください',exp:'相手への依頼なので「お〜ください」。'},
+{id:'b08',cat:'場面のことば',kind:'conv',sym:'謙譲語',imp:1,q:'知りません',a:'存じません',yomi:'ぞんじません',exp:'自分が知らないことをへりくだって言う。'},
+{id:'b09',cat:'場面のことば',kind:'conv',sym:'謙譲語',imp:0,q:'できません',a:'いたしかねます',yomi:'いたしかねます',exp:'「いたす」を使ったていねいな断り方。'},
+{id:'b10',cat:'場面のことば',kind:'conv',sym:'丁寧語',imp:0,q:'そうです（あらたまって）',a:'さようでございます',yomi:'さようでございます',exp:'「ございます」を使った丁寧語。'},
+{id:'b11',cat:'場面のことば',kind:'conv',sym:'丁寧語',imp:0,q:'元気ですか',a:'お変わりございませんか',yomi:'おかわりございませんか',exp:'手紙のあいさつでよく使う。'},
+{id:'b12',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:1,q:'来てください',a:'お越しください',yomi:'おこしください',exp:'「おいでください」も同じ。'},
+{id:'b13',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:2,q:'見てください',a:'ご覧ください',yomi:'ごらんください',exp:'「ご覧になってください」も可。「拝見してください」は誤り。'},
+{id:'b14',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:2,q:'食べてください',a:'召し上がってください',yomi:'めしあがってください',exp:'「いただいてください」は謙譲語なので誤り。'},
+{id:'b15',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:1,q:'座ってください',a:'おかけください',yomi:'おかけください',exp:'「お座りしてください」は誤り。'},
+{id:'b16',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:1,q:'教えてください',a:'お教えください',yomi:'おおしえください',exp:'「お教えしてください」は謙譲の形なので誤り。'},
+{id:'b17',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:0,q:'聞いてください',a:'お聞きください',yomi:'おききください',exp:'「伺ってください」は謙譲語なので誤り。'},
+{id:'b18',cat:'場面のことば',kind:'conv',sym:'謙譲語',imp:1,q:'手伝います',a:'お手伝いします',yomi:'おてつだいします',exp:'自分の動作なので「お〜する」。'},
+{id:'b19',cat:'場面のことば',kind:'conv',sym:'尊敬語',imp:1,q:'もらってください',a:'お受け取りください',yomi:'おうけとりください',exp:'相手への依頼なので尊敬の「お〜ください」。'},
+{id:'b20',cat:'場面のことば',kind:'conv',sym:'謙譲語',imp:1,q:'電話します',a:'お電話いたします',yomi:'おでんわいたします',exp:'「お〜いたす」は謙譲をよりあらたまって言う形。'},
+{id:'b21',cat:'場面のことば',kind:'conv',sym:'謙譲語',imp:0,q:'聞きたいことがあります',a:'お尋ねしたいことがございます',yomi:'おたずねしたいことがございます',exp:'謙譲語と丁寧語を組み合わせた言い方。'},
+{id:'b22',cat:'場面のことば',kind:'conv',sym:'謙譲語',imp:0,q:'名前を教えてください',a:'お名前を伺ってもよろしいでしょうか',yomi:'おなまえをうかがってもよろしいでしょうか',exp:'聞くのは自分なので謙譲語「伺う」。'},
 
-/* --- まちがい直し --- */
+/* ---------- 6. まちがい直し ---------- */
 {id:'e01',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R2',
  q:'先生が朝礼でそう申されました。',a:'先生が朝礼でそうおっしゃいました。',
  dis:['先生が朝礼でそう申し上げました。','先生が朝礼でそうお申しになりました。','先生が朝礼でそう申しました。'],
@@ -357,59 +391,141 @@ const DATA = [
 {id:'e02',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R3',
  q:'校長先生がお話しになられる。',a:'校長先生がお話しになる。',
  dis:['校長先生がお話しになられます。','校長先生がお話しくださられる。','校長先生がお話しいたす。'],
- yomi:'',exp:'「お話しになる」で尊敬は足りている。「〜になられる」は敬語の重ねすぎ（二重敬語）。'},
+ yomi:'',exp:'「お話しになる」で尊敬は足りている。「〜になられる」は敬語の重ねすぎ。'},
 {id:'e03',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R2',
  q:'お客様が受付に参られました。',a:'お客様が受付にいらっしゃいました。',
  dis:['お客様が受付に参りました。','お客様が受付においでになられました。','お客様が受付に伺いました。'],
  yomi:'',exp:'「参る」は謙譲語なのでお客様の動作には使えない。「お見えになる」も可。'},
-{id:'e04',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R1',
- q:'（他人に父のことを）お父さんがそうおっしゃいました。',a:'父がそう申しました。',
- dis:['お父さんがそう申されました。','父がそうおっしゃいました。','お父さんがそう言われました。'],
- yomi:'',exp:'身内のことは外の人に言うとき高めない。「お父さん」→「父」、「おっしゃる」→「申す」。'},
-{id:'e05',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R3',
+{id:'e04',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R3',
  q:'先生が私の作文をご覧になられる。',a:'先生が私の作文をご覧になる。',
  dis:['先生が私の作文を拝見なさる。','先生が私の作文をご覧になられます。','先生が私の作文をご覧する。'],
  yomi:'',exp:'「ご覧になる」だけで尊敬語。「〜になられる」と重ねてはいけない。'},
-{id:'e06',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R1',
+{id:'e05',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R1',
  q:'私が先生の絵をご覧になります。',a:'私が先生の絵を拝見します。',
  dis:['私が先生の絵をご覧になられます。','私が先生の絵をお見になります。','私が先生の絵を見られます。'],
  yomi:'',exp:'自分の動作に尊敬語は使えない。「見る」の謙譲語は「拝見する」。'},
-{id:'e07',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R4',
+{id:'e06',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R4',
  q:'お客様、こちらでお待ちしてください。',a:'お客様、こちらでお待ちください。',
  dis:['こちらでお待ちしていてください。','こちらでお待ち申し上げてください。','こちらでお待ちいたしください。'],
  yomi:'',exp:'「お〜する」は謙譲。相手にお願いするときは「お〜ください」。'},
-{id:'e08',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R2',
+{id:'e07',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R2',
  q:'先生は職員室におられますか。',a:'先生は職員室にいらっしゃいますか。',
  dis:['先生は職員室におりますか。','先生は職員室にいますか。','先生は職員室に参られますか。'],
  yomi:'',exp:'「おる」は謙譲語。目上の人の「いる」は「いらっしゃる」。'},
-{id:'e09',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R2',
+{id:'e08',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R2',
  q:'どうぞ遠慮なくいただいてください。',a:'どうぞ遠慮なく召し上がってください。',
  dis:['どうぞ遠慮なく頂戴してください。','どうぞ遠慮なくお食べしてください。','どうぞ遠慮なくお召し上がりになられてください。'],
  yomi:'',exp:'「いただく」は自分がへりくだる語。相手にすすめるのは尊敬語「召し上がる」。'},
-{id:'e10',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R2',
+{id:'e09',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R2',
  q:'わからないことは先生に伺ってください。',a:'わからないことは先生にお聞きください。',
  dis:['わからないことは先生に伺われてください。','わからないことは先生にお伺いしてください。','わからないことは先生に承ってください。'],
- yomi:'',exp:'聞くのは相手（あなた）なので謙譲語「伺う」は使えない。「お尋ねください」も可。'},
-{id:'e11',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R3',
+ yomi:'',exp:'聞くのは相手なので謙譲語「伺う」は使えない。「お尋ねください」も可。'},
+{id:'e10',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R3',
  q:'資料を拝見させていただきます。',a:'資料を拝見します。',
  dis:['資料をご覧になります。','資料を拝見されます。','資料を拝見していただきます。'],
  yomi:'',exp:'「拝見する」がすでに謙譲語。「させていただく」を重ねると過剰敬語になる。'},
-{id:'e12',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R1',
- q:'（先生に）母がよろしくとおっしゃっていました。',a:'母がよろしくと申しておりました。',
- dis:['母がよろしくと言われていました。','お母さんがよろしくと申していました。','母がよろしくとおっしゃっておりました。'],
- yomi:'',exp:'身内である母の動作は高めない。「申す・おる」を使う。'},
-{id:'e13',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R2',
+{id:'e11',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R2',
  q:'あなたはいつ帰国いたしますか。',a:'あなたはいつ帰国なさいますか。',
  dis:['あなたはいつ帰国いたされますか。','あなたはいつ帰国申しますか。','あなたはいつ帰国させていただきますか。'],
  yomi:'',exp:'「いたす」は自分の動作の謙譲語。相手の動作は「なさる」。'},
-{id:'e14',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R1',
- q:'（他人に）私の母がお作りになったお菓子です。',a:'私の母が作ったお菓子です。',
- dis:['私の母がお作りしたお菓子です。','お母さんが作られたお菓子です。','私の母がお作りになられたお菓子です。'],
- yomi:'',exp:'身内の動作に尊敬語は使わない。ふつうの言い方にする。'},
-{id:'e15',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R4',
+{id:'e12',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R4',
  q:'先生、その本を私にお貸ししてください。',a:'先生、その本を私にお貸しください。',
  dis:['その本を私に拝借してください。','その本を私にお貸しいたしてください。','その本を私に貸してさしあげてください。'],
- yomi:'',exp:'貸すのは先生なので謙譲の「お〜する」は使えない。「お貸しくださいませんか」も可。'}
+ yomi:'',exp:'貸すのは先生なので謙譲の「お〜する」は使えない。'},
+{id:'e13',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R2',
+ q:'先生は何時に参られますか。',a:'先生は何時にいらっしゃいますか。',
+ dis:['先生は何時に参りますか。','先生は何時にお参りになりますか。','先生は何時に伺いますか。'],
+ yomi:'',exp:'「参る」は謙譲語。尊敬語は「いらっしゃる・お見えになる」。'},
+{id:'e14',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R3',
+ q:'お客様がケーキをお召し上がりになられました。',a:'お客様がケーキを召し上がりました。',
+ dis:['お客様がケーキをいただきました。','お客様がケーキをお食べになられました。','お客様がケーキを頂戴しました。'],
+ yomi:'',exp:'「召し上がる」だけで尊敬語。「お〜になられる」を付けると重ねすぎになる。'},
+{id:'e15',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R1',
+ q:'先生、ぼくがかばんをお持ちになります。',a:'先生、ぼくがかばんをお持ちします。',
+ dis:['ぼくがかばんをお持ちになられます。','ぼくがかばんを持たれます。','ぼくがかばんをお持ちくださいます。'],
+ yomi:'',exp:'自分の動作なので謙譲の「お〜する」。「お〜になる」は相手の動作に使う形。'},
+{id:'e16',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R3',
+ q:'校長先生が話をしてくださられた。',a:'校長先生が話をしてくださった。',
+ dis:['校長先生が話をしてくださられました。','校長先生が話をしていただかれた。','校長先生が話をしてさしあげた。'],
+ yomi:'',exp:'「くださる」がすでに尊敬語。「くださられる」は重ねすぎ。'},
+{id:'e17',cat:'まちがい直し',kind:'err',sym:'',imp:2,reason:'R3',
+ q:'先生がお書きになられた本を拝見しました。',a:'先生がお書きになった本を拝見しました。',
+ dis:['先生がお書きした本を拝見しました。','先生がお書きになられた本をご覧になりました。','先生が書かれられた本を拝見しました。'],
+ yomi:'',exp:'「お書きになる」で尊敬は足りている。自分が見る側は「拝見する」でよい。'},
+{id:'e18',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R4',
+ q:'どうぞ、こちらにお座りしてください。',a:'どうぞ、こちらにおかけください。',
+ dis:['こちらにお座りいたしてください。','こちらに座ってさしあげてください。','こちらにお座りになられてください。'],
+ yomi:'',exp:'「お〜する」は謙譲。相手への依頼は「おかけください」。'},
+{id:'e19',cat:'まちがい直し',kind:'err',sym:'',imp:1,reason:'R3',
+ q:'お客様、ご注文は何になさられますか。',a:'お客様、ご注文は何になさいますか。',
+ dis:['ご注文は何にいたしますか。','ご注文は何になられますか。','ご注文は何にご注文されますか。'],
+ yomi:'',exp:'「なさる」がすでに尊敬語。「なさられる」は重ねすぎ。'},
+
+/* ---------- 7. 敬意の方向 ---------- */
+{id:'d01',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R5',
+ q:'（他の人に）お父さんがそうおっしゃいました。',a:'父がそう申しました。',
+ dis:['お父さんがそう申されました。','父がそうおっしゃいました。','お父さんがそう言われました。'],
+ yomi:'',exp:'身内のことを外の人に話すときは高めない。「お父さん」→「父」、「おっしゃる」→「申す」。'},
+{id:'d02',cat:'敬意の方向',kind:'err',sym:'',imp:1,reason:'R5',
+ q:'（他の人に）私の母がお作りになったお菓子です。',a:'私の母が作ったお菓子です。',
+ dis:['私の母がお作りしたお菓子です。','お母さんが作られたお菓子です。','私の母がお作りになられたお菓子です。'],
+ yomi:'',exp:'身内の動作に尊敬語は使わない。ふつうの言い方にする。'},
+{id:'d03',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R5',
+ q:'（よその人に）私の母は今、お出かけになっています。',a:'私の母は今、出かけております。',
+ dis:['母は今、お出かけしております。','お母さんは今、出かけています。','母は今、出かけられています。'],
+ yomi:'',exp:'身内は高めず、「おる」を使ってへりくだる。'},
+{id:'d04',cat:'敬意の方向',kind:'err',sym:'',imp:1,reason:'R5',
+ q:'（電話で外の人に）部長の田中さんは席をはずしていらっしゃいます。',a:'部長の田中は席をはずしております。',
+ dis:['田中部長は席をはずしております。','部長の田中さんは席をはずしております。','田中さんは席をはずしていらっしゃいます。'],
+ yomi:'',exp:'自分の側の人は、外の人に対しては高めない。呼び方も「田中」とする。'},
+{id:'d05',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R6',
+ q:'（友だちに）山田先生がぼくに本をくれた。',a:'山田先生がぼくに本をくださった。',
+ dis:['山田先生がぼくに本をいただいた。','山田先生がぼくに本を差し上げた。','山田先生がぼくに本をくれられた。'],
+ yomi:'',exp:'目上の人の動作なので尊敬語「くださる」を使う。'},
+{id:'d06',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R5',
+ q:'（先生に）ぼくの母がお会いしたいとおっしゃっています。',a:'母がお目にかかりたいと申しております。',
+ dis:['母がお会いになりたいと申しております。','お母さんがお会いしたいと言っています。','母がお目にかかりたいとおっしゃっています。'],
+ yomi:'',exp:'母は身内なので高めない。会うのも母なので謙譲語「お目にかかる」。'},
+{id:'d07',cat:'敬意の方向',kind:'err',sym:'',imp:1,reason:'R2',
+ q:'（校長先生に）田中先生がそう申しました。',a:'（校長先生に）田中先生がそうおっしゃいました。',
+ dis:['田中先生がそう申し上げました。','田中先生がそう申されました。','田中先生がそう言いました。'],
+ yomi:'',exp:'田中先生は身内ではないので高める。学校の中でも先生の動作は尊敬語。'},
+{id:'d08',cat:'敬意の方向',kind:'err',sym:'',imp:1,reason:'R5',
+ q:'（お客に）弟がご案内になります。',a:'弟がご案内いたします。',
+ dis:['弟がご案内なさいます。','弟がご案内になられます。','弟がご案内してくださいます。'],
+ yomi:'',exp:'弟は身内なので高めない。案内するのは自分の側なので謙譲語。'},
+{id:'d09',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R6',
+ q:'（友だちに）校長先生が来て、話をした。',a:'校長先生がいらっしゃって、お話しになった。',
+ dis:['校長先生が参って、お話しになった。','校長先生がいらっしゃって、お話しした。','校長先生がおいでになって、お話しになられた。'],
+ yomi:'',exp:'話し相手が友だちでも、話題の中の目上の人の動作には尊敬語を使う。'},
+{id:'d10',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R2',
+ q:'先生は私の父を存じておりますか。',a:'先生は私の父をご存じですか。',
+ dis:['先生は私の父を存じ上げておりますか。','先生は私の父を知られていますか。','先生は私のお父さんをご存じですか。'],
+ yomi:'',exp:'知っているのは先生なので尊敬語「ご存じ」。「存じる」は自分の動作。'},
+{id:'d11',cat:'敬意の方向',kind:'err',sym:'',imp:1,reason:'R5',
+ q:'（よその人に）兄が明日そちらに参られます。',a:'兄が明日そちらに参ります。',
+ dis:['兄が明日そちらにいらっしゃいます。','お兄さんが明日そちらに参ります。','兄が明日そちらにお伺いになります。'],
+ yomi:'',exp:'兄は身内。「参る」でよく、「参られる」と高めてはいけない。'},
+{id:'d12',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R6',
+ q:'先生がくれたプリントをなくしました。',a:'先生がくださったプリントをなくしました。',
+ dis:['先生がいただいたプリントをなくしました。','先生が差し上げたプリントをなくしました。','先生がくれられたプリントをなくしました。'],
+ yomi:'',exp:'くれたのは先生なので尊敬語「くださる」。「いただく」は自分の動作。'},
+{id:'d13',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R5',
+ q:'（お客に）母は今、いらっしゃいません。',a:'母は今、おりません。',
+ dis:['お母さんは今、いません。','母は今、おられません。','母は今、いらっしゃらないです。'],
+ yomi:'',exp:'身内には謙譲語「おる」を使う。'},
+{id:'d14',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R1',
+ q:'（先生に）私は明日、学校にいらっしゃいます。',a:'私は明日、学校に参ります。',
+ dis:['私は明日、学校においでになります。','私は明日、学校にお越しになります。','私は明日、学校に行かれます。'],
+ yomi:'',exp:'自分の動作に尊敬語は使えない。「行く」の謙譲語は「参る・伺う」。'},
+{id:'d15',cat:'敬意の方向',kind:'err',sym:'',imp:1,reason:'R1',
+ q:'（先生に）この漢字を教えてやりましょうか。',a:'（先生に）この漢字をお教えしましょうか。',
+ dis:['この漢字をお教えになりましょうか。','この漢字を教えられましょうか。','この漢字をご教授になりましょうか。'],
+ yomi:'',exp:'教えるのは自分なので謙譲の「お〜する」。「〜てやる」は目上に使えない。'},
+{id:'d16',cat:'敬意の方向',kind:'err',sym:'',imp:2,reason:'R2',
+ q:'先生も一緒に参りませんか。',a:'先生も一緒にいらっしゃいませんか。',
+ dis:['先生も一緒に参られませんか。','先生も一緒に伺いませんか。','先生も一緒においでになられませんか。'],
+ yomi:'',exp:'行くのは先生なので尊敬語。「参る・伺う」は自分の動作にしか使えない。'}
 ];
 const BY_ID = {}; DATA.forEach(d=>BY_ID[d.id]=d);
 const CATS = []; DATA.forEach(d=>{ if(CATS.indexOf(d.cat)<0) CATS.push(d.cat); });
@@ -421,14 +537,18 @@ function lsGet(k){ if(!LS_OK) return (k in MEM)?MEM[k]:null; try{return localSto
 function lsSet(k,v){ if(!LS_OK){MEM[k]=v;return;} try{localStorage.setItem(k,v);}catch(e){MEM[k]=v;} }
 function lsDel(k){ if(!LS_OK){delete MEM[k];return;} try{localStorage.removeItem(k);}catch(e){delete MEM[k];} }
 
-const K_DB=APP, K_SYNC=APP+':sync', K_UI=APP+':ui';
+/* 共通キー（全ツールで共有する。ツール名を付けてはいけない） */
+const K_DB=APP, K_UI=APP+':ui', K_SYNC='kj-quiz:sync', K_AUTH='kj-quiz:auth';
+const LEGACY_SYNC_KEY=APP.concat(':sync');       /* v2.1 の端末別同期設定からの引き継ぎ用 */
+let SYNC=null, AUTH=null, FRESH=false;           /* FRESH=この端末にこのIDの記録がまだ無い */
+
+function jparse(s){ try{ return JSON.parse(s||'null'); }catch(e){ return null; } }
 
 /* ================= DB ================= */
 function nowISO(){ return new Date().toISOString(); }
 function emptyDB(){ return {app:APP,version:SCHEMA_VERSION,updatedAt:nowISO(),activeAccountId:null,accounts:[],progress:{}}; }
 function newItem(){ return {streak:0,mastered:false,masteredAt:null,postMasterWrong:0,lastFormat:null,
   totalCorrect:0,totalWrong:0,byFormat:{A:{correct:0,wrong:0},B:{correct:0,wrong:0}},wrongLog:[],lastSeenAt:null}; }
-function newAccId(){ return 'acc_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
 function normalizeItem(it){
   const n=newItem();
@@ -446,61 +566,76 @@ function normalizeItem(it){
   if(n.mastered&&!n.masteredAt) n.masteredAt=n.lastSeenAt||nowISO();
   return n;
 }
-function normalizeDB(d){
-  if(!d||typeof d!=='object') return emptyDB();
-  const out=emptyDB();
-  out.app=APP;
-  out.updatedAt=d.updatedAt||nowISO();
-  out.accounts=Array.isArray(d.accounts)?d.accounts.filter(a=>a&&a.id&&a.name)
-    .map(a=>({id:String(a.id),name:String(a.name),createdAt:a.createdAt||nowISO()})):[];
-  const prog=d.progress&&typeof d.progress==='object'?d.progress:{};
-  out.accounts.forEach(a=>{
-    const p=prog[a.id]||{};
-    const items={}; const src=p.items&&typeof p.items==='object'?p.items:{};
-    Object.keys(src).forEach(k=>{ if(BY_ID[k]) items[k]=normalizeItem(src[k]); });
-    const ses=Array.isArray(p.sessions)?p.sessions.slice(0,100):[];
-    out.progress[a.id]={items:items,sessions:ses};
-  });
-  out.activeAccountId=(d.activeAccountId&&out.accounts.some(a=>a.id===d.activeAccountId))
-    ? d.activeAccountId : (out.accounts[0]?out.accounts[0].id:null);
+function normProgress(p){
+  const out={items:{},sessions:[]};
+  if(!p||typeof p!=='object') return out;
+  const src=p.items&&typeof p.items==='object'?p.items:{};
+  Object.keys(src).forEach(k=>{ if(BY_ID[k]) out.items[k]=normalizeItem(src[k]); });
+  out.sessions=Array.isArray(p.sessions)?p.sessions.filter(s=>s&&s.finishedAt).slice(0,100):[];
   return out;
 }
-/* 旧スキーマ（{users:{名前:{st:{...}}}} など）からの移行 */
-function migrateLegacy(raw){
+function hasRecords(p){
+  if(!p) return false;
+  if((p.sessions||[]).length) return true;
+  const its=p.items||{};
+  return Object.keys(its).some(k=>((its[k].totalCorrect||0)+(its[k].totalWrong||0))>0);
+}
+
+/* 端末に持つのは常に「ログイン中のID 1件だけ」。他のIDは読み捨てる */
+function buildDB(raw){
   const d=emptyDB();
-  const users=raw.users||raw.accountsData||null;
-  if(users&&typeof users==='object'){
-    Object.keys(users).forEach(name=>{
-      const id=newAccId();
-      d.accounts.push({id:id,name:String(name),createdAt:nowISO()});
-      const items={};
-      const st=users[name].st||users[name].items||users[name]||{};
-      Object.keys(st).forEach(k=>{ if(BY_ID[k]) items[k]=normalizeItem(st[k]); });
-      d.progress[id]={items:items,sessions:[]};
-    });
-    d.activeAccountId=d.accounts[0]?d.accounts[0].id:null;
-  }
+  if(!AUTH) return d;
+  d.activeAccountId=AUTH.id;
+  const a={id:AUTH.id,name:AUTH.id,label:AUTH.label||AUTH.id,createdAt:nowISO()};
+  const src=raw&&Array.isArray(raw.accounts)?raw.accounts.filter(x=>x&&String(x.id)===AUTH.id)[0]:null;
+  if(src&&src.createdAt) a.createdAt=src.createdAt;
+  d.accounts=[a];
+  d.progress[AUTH.id]=normProgress(raw&&raw.progress?raw.progress[AUTH.id]:null);
+  d.updatedAt=(raw&&raw.updatedAt)||nowISO();
   return d;
 }
-function loadDB(){
-  const raw=lsGet(K_DB);
-  if(!raw) return emptyDB();
-  let o; try{ o=JSON.parse(raw); }catch(e){ return emptyDB(); }
-  if(o&&Array.isArray(o.accounts)) return normalizeDB(o);
-  return normalizeDB(migrateLegacy(o||{}));
+
+let db=emptyDB();
+
+function loadAll(){
+  /* 同期設定：共通キー。無ければ v2.1 の端末別キーから引き継ぐ */
+  SYNC=jparse(lsGet(K_SYNC));
+  if(!SYNC||!SYNC.url){
+    const old=jparse(lsGet(LEGACY_SYNC_KEY));
+    if(old&&old.url){ SYNC={url:old.url,key:old.key||'',lastSync:old.lastSync||null}; lsSet(K_SYNC,JSON.stringify(SYNC)); }
+  }
+  if(!SYNC||typeof SYNC!=='object') SYNC={url:'',key:'',lastSync:null};
+
+  AUTH=jparse(lsGet(K_AUTH));
+  if(!AUTH||!AUTH.id||!AUTH.pw) AUTH=null;
+  else AUTH.id=String(AUTH.id);
+
+  db=buildDB(jparse(lsGet(K_DB)));
+  FRESH=!!AUTH&&!hasRecords(db.progress[AUTH.id]);   /* 初めて使う端末か */
 }
-let db=loadDB();
 
 function saveDB(fromCloud){
+  if(!AUTH) return;
   db.app=APP; db.version=SCHEMA_VERSION;
   if(!fromCloud) db.updatedAt=nowISO();     /* クラウド取り込み時は上書きしない */
   lsSet(K_DB,JSON.stringify(db));
 }
-function accId(){ return db.activeAccountId; }
-function accName(){ const a=db.accounts.find(x=>x.id===accId()); return a?a.name:'—'; }
+function saveSync(){ lsSet(K_SYNC,JSON.stringify(SYNC)); }
+function ready(){ return !!(SYNC&&SYNC.url&&SYNC.key); }
+function loggedIn(){ return !!AUTH; }
+function portalURL(){ return './index.html'; }
+
+function acc(){ return db.accounts[0]||null; }
+function accId(){ return AUTH?AUTH.id:null; }
+function accName(){ return AUTH?(AUTH.label||AUTH.id):'—'; }
+function prog(){
+  if(!AUTH) return null;
+  if(!db.progress[AUTH.id]) db.progress[AUTH.id]={items:{},sessions:[]};
+  const p=db.progress[AUTH.id]; if(!p.items)p.items={}; if(!p.sessions)p.sessions=[]; return p;
+}
 function progOf(id){ if(!db.progress[id]) db.progress[id]={items:{},sessions:[]}; return db.progress[id]; }
 function itemOf(id,kpId,store){ const p=store||progOf(id).items; if(!p[kpId]) p[kpId]=newItem(); return p[kpId]; }
-function itemsOf(id){ return progOf(id).items; }
+function itemsOf(id){ return id?progOf(id).items:{}; }
 function getIt(kpId){ return itemsOf(accId())[kpId]||newItem(); }
 
 /* ================= UI状態（同期対象外） ================= */
@@ -545,52 +680,35 @@ function uniqPush(arr,v){ if(v&&arr.indexOf(v)<0) arr.push(v); }
 function buildQ(kp,fmt){
   const Q={kp:kp,fmt:fmt,stem:'',main:'',choices:[],correct:'',note:''};
   if(kp.kind==='conv'){
-    const pool=DATA.filter(x=>x.kind==='conv'&&x.sym===kp.sym&&x.id!==kp.id);
-    if(fmt==='A'){
+    if(fmt==='A'){                      /* A＝種類の判定 */
+      Q.stem='次の敬語は、どの種類ですか？';
+      Q.main='「'+kp.a+'」';
+      Q.correct=kp.sym;
+      Q.choices=shuffle(TYPES.slice());
+    }else{                              /* B＝敬語への変換 */
       Q.stem='次のことばを'+kp.sym+'にすると？';
       Q.main='「'+kp.q+'」';
       Q.correct=kp.a;
-      const cand=shuffle(pool.filter(x=>x.q!==kp.q&&x.a!==kp.a));
-      const cs=[kp.a]; for(let i=0;i<cand.length&&cs.length<4;i++) uniqPush(cs,cand[i].a);
-      const extra=shuffle(DATA.filter(x=>x.kind==='conv'&&x.a!==kp.a));
+      const cs=[kp.a];
+      const same=shuffle(DATA.filter(x=>x.kind==='conv'&&x.sym===kp.sym&&x.q!==kp.q&&x.a!==kp.a));
+      for(let i=0;i<same.length&&cs.length<4;i++) uniqPush(cs,same[i].a);
+      const extra=shuffle(DATA.filter(x=>x.kind==='conv'&&x.q!==kp.q&&x.a!==kp.a));
       for(let i=0;i<extra.length&&cs.length<4;i++) uniqPush(cs,extra[i].a);
-      Q.choices=shuffle(cs);
-    }else{
-      Q.stem='次の敬語を、ふつうの言い方にすると？';
-      Q.main='「'+kp.a+'」';
-      Q.correct=kp.q;
-      const cand=shuffle(pool.filter(x=>x.a!==kp.a&&x.q!==kp.q));
-      const cs=[kp.q]; for(let i=0;i<cand.length&&cs.length<4;i++) uniqPush(cs,cand[i].q);
-      const extra=shuffle(DATA.filter(x=>x.kind==='conv'&&x.q!==kp.q));
-      for(let i=0;i<extra.length&&cs.length<4;i++) uniqPush(cs,extra[i].q);
       Q.choices=shuffle(cs);
     }
     Q.note=kp.sym;
-  }else if(kp.kind==='cls'){
-    if(fmt==='A'){
-      Q.stem='次のことばは、どの敬語ですか？';
+  }else{                                /* err */
+    if(fmt==='A'){                      /* A＝まちがいの指摘 */
+      Q.stem='次の文の敬語は、どこがまちがっていますか？';
       Q.main='「'+kp.q+'」';
-      Q.correct=kp.a;
-      Q.choices=shuffle(['尊敬語','謙譲語','丁寧語','美化語']);
-    }else{
-      Q.stem='次のうち、「'+kp.a+'」はどれですか？';
-      Q.main='';
-      Q.correct=kp.q;
-      const cand=shuffle(DATA.filter(x=>x.kind==='cls'&&x.a!==kp.a));
-      const cs=[kp.q]; for(let i=0;i<cand.length&&cs.length<4;i++) uniqPush(cs,cand[i].q);
-      Q.choices=shuffle(cs);
-    }
-  }else{ /* err */
-    if(fmt==='A'){
+      Q.correct=REASONS[kp.reason];
+      const others=shuffle(Object.keys(REASONS).filter(k=>k!==kp.reason)).slice(0,3).map(k=>REASONS[k]);
+      Q.choices=shuffle([Q.correct].concat(others));
+    }else{                              /* B＝正しい言い方に直す */
       Q.stem='次の文の敬語の使い方を、正しく直すと？';
       Q.main='「'+kp.q+'」';
       Q.correct=kp.a;
       Q.choices=shuffle([kp.a].concat(kp.dis));
-    }else{
-      Q.stem='次の文の敬語は、どこがまちがっていますか？';
-      Q.main='「'+kp.q+'」';
-      Q.correct=REASONS[kp.reason];
-      Q.choices=shuffle(Object.keys(REASONS).map(k=>REASONS[k]));
     }
   }
   return Q;
@@ -613,7 +731,7 @@ function otherFmt(f){ return f==='A'?'B':'A'; }
 function firstFmt(it){ return it&&it.lastFormat?otherFmt(it.lastFormat):(Math.random()<0.5?'A':'B'); }
 
 function startSession(mode){
-  if(!accId()){ toast('先にアカウントを作ってください'); openAccounts(); return; }
+  if(!loggedIn()){ render(); return; }
   const src=itemsOf(accId());
   const clone=JSON.parse(JSON.stringify(src));
   DATA.forEach(kp=>{ if(!clone[kp.id]) clone[kp.id]=newItem(); });
@@ -761,7 +879,7 @@ function finishSession(){
 const $=s=>document.querySelector(s);
 const $$=s=>Array.prototype.slice.call(document.querySelectorAll(s));
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function show(id){ ['scHome','scQuiz','scResult','scMemo'].forEach(x=>$('#'+x).classList.toggle('hide',x!==id)); window.scrollTo(0,0); if(id==='scHome') renderHome(); }
+function show(id){ ['scGate','scHome','scQuiz','scResult','scMemo'].forEach(x=>$('#'+x).classList.toggle('hide',x!==id)); window.scrollTo(0,0); if(id==='scHome') renderHome(); }
 let toastT=null;
 function toast(msg){
   const old=$('#toastEl'); if(old) old.remove();
@@ -779,16 +897,18 @@ function modalConfirm(title,msg,onYes,yesLabel){
   $('#mNo').onclick=closeModal; $('#mYes').onclick=function(){ closeModal(); onYes(); };
 }
 function impMark(v){ return v===2?'◎':(v===1?'○':''); }
-function symMark(kp){ return kp.kind==='cls'?(SYM_MARK[kp.a]||''):(kp.kind==='err'?'誤':(SYM_MARK[kp.sym]||'')); }
+function symMark(kp){ return kp.kind==='err'?'誤':(SYM_MARK[kp.sym]||''); }
 function symTagCls(m){ return {'尊':'t-son','謙':'t-ken','丁':'t-tei','美':'t-bik','誤':'t-err'}[m]||'t-err'; }
 function fmtDate(iso){ if(!iso) return ''; const d=new Date(iso); if(isNaN(d)) return ''; return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
 function fmtDT(iso){ if(!iso) return '—'; const d=new Date(iso); if(isNaN(d)) return '—'; return fmtDate(iso)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
-function kpLabel(kp){ return kp.kind==='err'?kp.q.replace(/^（[^）]*）/,''):kp.q; }
+function kpLabel(kp){ return kp.kind==='err'?kp.q.replace(/^（[^）]*）/,''):(kp.q+'→'+kp.a); }
 
 /* ================= ホーム ================= */
+function render(){ if(!ready()||!loggedIn()){ show('scGate'); renderGate(); return; } show('scHome'); }
 function renderHome(){
-  $('#whoName').textContent=accName();
-  $('#appId').textContent=APP;
+  if(!ready()||!loggedIn()){ show('scGate'); renderGate(); return; }
+  $('#accBtn').textContent='👤 '+(AUTH.label||AUTH.id)+'（'+AUTH.id+'）';
+  $('#footInfo').textContent='ID '+AUTH.id+'　／　ツール識別子 '+APP+'　／　共通仕様 '+VER+'　／　全'+DATA.length+'知識ポイント';
   /* 範囲セレクタ */
   $$('#impSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===UI.impFilter));
   const chips=['all'].concat(CATS).map(c=>
@@ -880,7 +1000,6 @@ function renderQuiz(){
     const ok=viewing?rec.ok:S.answeredThis.ok;
     let extra='';
     if(kp.kind==='conv') extra='<div class="muted">'+esc(kp.q)+' → <b>'+esc(kp.a)+'</b>（'+esc(kp.sym)+'）'+(kp.yomi?'　よみ：'+esc(kp.yomi):'')+'</div>';
-    if(kp.kind==='cls') extra='<div class="muted">「'+esc(kp.q)+'」＝ <b>'+esc(kp.a)+'</b></div>';
     if(kp.kind==='err') extra='<div class="muted">正しい言い方：<b>'+esc(kp.a)+'</b>／まちがいの理由：'+esc(REASONS[kp.reason])+'</div>';
     $('#qFb').innerHTML='<div class="fb '+(ok?'ok':'ng')+'"><b>'+(ok?'⭕ 正解！':'❌ ざんねん')+'</b>'+
       (ok?'':'<div>正しい答え：<b>'+esc(Q.correct)+'</b></div>')+extra+'<div style="margin-top:6px">'+esc(kp.exp)+'</div></div>';
@@ -957,11 +1076,11 @@ const LIST_HEADER=['名前','カテゴリー','記号','知識ポイント','よ
 function rowsFor(accIds){
   const rows=[];
   accIds.forEach(id=>{
-    const a=db.accounts.find(x=>x.id===id); if(!a) return;
+    if(!id) return;
     const its=itemsOf(id);
     DATA.forEach(kp=>{
       const it=its[kp.id]||newItem();
-      rows.push([a.name,kp.cat,symMark(kp),kpLabel(kp),kp.yomi||'',impMark(kp.imp),stateOf(its[kp.id]),
+      rows.push([id,kp.cat,symMark(kp),kpLabel(kp),kp.yomi||'',impMark(kp.imp),stateOf(its[kp.id]),
         it.totalCorrect,it.totalWrong,it.byFormat.A.wrong,it.byFormat.B.wrong,
         it.wrongLog.map(w=>w.answered).join(';'),
         it.wrongLog.length?fmtDate(it.wrongLog[0].at):'',
@@ -971,15 +1090,16 @@ function rowsFor(accIds){
   return rows;
 }
 function downloadCSV(){
-  const rows=rowsFor([accId()]).sort((a,b)=>b[8]-a[8]);
-  const csv=[LIST_HEADER].concat(rows).map(r=>r.map(c=>{
+  if(!AUTH) return;
+  const rows=rowsFor([accId()]).map(r=>r.concat([AUTH.label||''])).sort((a,b)=>b[8]-a[8]);
+  const csv=[LIST_HEADER.concat(['表示名'])].concat(rows).map(r=>r.map(c=>{
     const s=String(c==null?'':c);
     return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
   }).join(',')).join('\r\n');
   const d=new Date(); const ymd=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download=TITLE+'結果_'+accName()+'_'+ymd+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  a.href=url; a.download=TITLE+'結果_'+(AUTH?AUTH.id:'')+'_'+ymd+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
 /* ================= 覚えるモード（記録に影響しない） ================= */
@@ -1003,7 +1123,7 @@ function renderMemoList(){
       const st=stateOf(its[kp.id]); const m=symMark(kp);
       return '<div class="li" data-id="'+kp.id+'"><span class="tag '+symTagCls(m)+'">'+m+'</span>'+
         '<div class="g"><b>'+esc(kpLabel(kp))+'</b> <span class="'+(kp.imp===2?'imp2':(kp.imp===1?'imp1':'muted'))+'">'+impMark(kp.imp)+'</span>'+
-        '<div class="muted">'+esc(kp.kind==='err'?'正：'+kp.a:kp.a)+'</div></div>'+
+        '<div class="muted">'+esc(kp.kind==='err'?'正：'+kp.a:kp.sym)+'</div></div>'+
         '<span class="muted" style="white-space:nowrap">'+st+'</span></div>';
     }).join('');
   });
@@ -1017,9 +1137,7 @@ function showDetail(){
   if(kp.kind==='conv'){
     body+='<div style="font-size:22px;font-weight:800;margin:8px 0">'+esc(kp.q)+' → '+esc(kp.a)+'</div>';
     if(kp.yomi) body+='<div class="muted">よみがな：'+esc(kp.yomi)+'</div>';
-  }else if(kp.kind==='cls'){
-    body+='<div style="font-size:22px;font-weight:800;margin:8px 0">'+esc(kp.q)+'　＝　'+esc(kp.a)+'</div>';
-    if(kp.yomi) body+='<div class="muted">よみがな：'+esc(kp.yomi)+'</div>';
+    body+='<div class="muted">種類：<b>'+esc(kp.sym)+'</b></div>';
   }else{
     body+='<div style="margin:8px 0"><div class="st-x">✗ '+esc(kp.q)+'</div><div class="st-m">○ '+esc(kp.a)+'</div>'+
       '<div class="muted">理由：'+esc(REASONS[kp.reason])+'</div></div>';
@@ -1035,9 +1153,12 @@ function showDetail(){
   $('#dNext').onclick=()=>{ MEMO.detail=(MEMO.detail+1)%MEMO.detailList.length; showDetail(); };
 }
 function cardFace(kp,dir){
-  if(kp.kind==='conv') return dir==='A'?{f:kp.q,fl:'ふつうの言い方',b:kp.a,bl:kp.sym}:{f:kp.a,fl:kp.sym,b:kp.q,bl:'ふつうの言い方'};
-  if(kp.kind==='cls')  return dir==='A'?{f:kp.q,fl:'このことばの種類は？',b:kp.a,bl:'種類'}:{f:kp.a,fl:'この種類のことばは？',b:kp.q,bl:'例'};
-  return dir==='A'?{f:kp.q,fl:'この文のどこがへん？',b:kp.a,bl:'正しい言い方'}:{f:kp.q,fl:'まちがいの理由は？',b:REASONS[kp.reason],bl:'理由'};
+  if(kp.kind==='conv') return dir==='A'
+    ?{f:kp.a,fl:'この敬語の種類は？',b:kp.sym,bl:'種類'}
+    :{f:kp.q,fl:'これを'+kp.sym+'にすると？',b:kp.a,bl:kp.sym};
+  return dir==='A'
+    ?{f:kp.q,fl:'この文はどこがまちがっている？',b:REASONS[kp.reason],bl:'まちがいの理由'}
+    :{f:kp.q,fl:'正しく直すと？',b:kp.a,bl:'正しい言い方'};
 }
 function renderMemoCard(){
   if(!MEMO.deck){ MEMO.deck=shuffle(rangeKPs()).map(k=>k.id); MEMO.idx=0; MEMO.flipped=false; }
@@ -1065,38 +1186,28 @@ function renderMemoCard(){
   $('#cNo').onclick=()=>{const x=MEMO.deck.shift();MEMO.deck.push(x);MEMO.flipped=false;renderMemoCard();};
   $$('#dirSeg button').forEach(b=>b.onclick=()=>{MEMO.dir=b.dataset.d;MEMO.deck=null;renderMemoCard();});
 }
-/* ================= 同期 ================= */
-function getSync(){ try{ return JSON.parse(lsGet(K_SYNC)||'null')||null; }catch(e){ return null; } }
-function setSync(o){ if(o) lsSet(K_SYNC,JSON.stringify(o)); else lsDel(K_SYNC); }
-let syncMsg={cls:'',text:'☁ 同期は未設定です'};
+/* ================= 同期（v3.0：ポータル発行のID＋パスワードで自分の1件だけ） ================= */
+let syncMsg={cls:'',text:'☁ ポータルで同期設定をしてください'};
 
 function renderSyncStatus(){
-  const s=getSync();
-  $('#btnSyncNow').classList.toggle('hide',!s);
-  $('#btnPushList').classList.toggle('hide',!s);
-  const el=$('#syncStatus');
+  const el=$('#syncStatus'); if(!el) return;
   el.className='status'+(syncMsg.cls?' '+syncMsg.cls:'');
-  el.innerHTML=esc(syncMsg.text)+(s&&s.lastSync?' ｜ 最終同期 '+fmtDT(s.lastSync):'');
+  el.innerHTML=esc(syncMsg.text)+(SYNC&&SYNC.lastSync?' ｜ 最終同期 '+fmtDT(SYNC.lastSync):'');
 }
 function setSyncMsg(text,cls){ syncMsg={text:text,cls:cls||''}; renderSyncStatus(); }
 
 function dbHasRecords(d){
-  if(!d||!d.progress) return false;
-  return Object.keys(d.progress).some(id=>{
-    const p=d.progress[id]||{};
-    if(Array.isArray(p.sessions)&&p.sessions.length) return true;
-    const its=p.items||{};
-    return Object.keys(its).some(k=>((its[k].totalCorrect||0)+(its[k].totalWrong||0))>0);
-  });
+  const p=d&&d.progress?d.progress[AUTH?AUTH.id:'']:null;
+  return hasRecords(p);
 }
-function statOf(d){
-  let people=0,seen=0,mast=0;
-  Object.keys(d.progress||{}).forEach(id=>{ people++;
-    const its=(d.progress[id]||{}).items||{};
-    Object.keys(its).forEach(k=>{ const i=its[k]; if((i.totalCorrect||0)+(i.totalWrong||0)>0) seen++; if(i.mastered) mast++; });
-  });
-  return people+'人・出題済み'+seen+'・習得'+mast;
+function statOf(p){
+  const its=(p||{}).items||{};
+  let seen=0,mast=0;
+  Object.keys(its).forEach(k=>{ const i=its[k]; if((i.totalCorrect||0)+(i.totalWrong||0)>0) seen++; if(i.mastered) mast++; });
+  return '出題済み'+seen+'語・習得'+mast+'語';
 }
+
+/* ---- 合流 ---- */
 function mergeItem(l,r){
   if(!l) return normalizeItem(r);
   if(!r) return normalizeItem(l);
@@ -1109,7 +1220,7 @@ function mergeItem(l,r){
   o.mastered=a.mastered||b.mastered;
   if(a.masteredAt&&b.masteredAt) o.masteredAt=(a.masteredAt<b.masteredAt)?a.masteredAt:b.masteredAt;
   else o.masteredAt=a.masteredAt||b.masteredAt||null;
-  const map={}; a.wrongLog.concat(b.wrongLog).forEach(w=>{ if(w&&w.at) map[w.at]=w; });
+  const map={}; a.wrongLog.concat(b.wrongLog).forEach(w=>{ if(w&&w.at) map[w.at+'|'+(w.format||'')]=w; });
   o.wrongLog=Object.keys(map).sort().reverse().map(k=>map[k]).slice(0,5);
   const aNew=(a.lastSeenAt||'')>=(b.lastSeenAt||'');
   o.lastSeenAt=aNew?(a.lastSeenAt||b.lastSeenAt):(b.lastSeenAt||a.lastSeenAt);
@@ -1118,238 +1229,197 @@ function mergeItem(l,r){
   if(o.mastered&&!o.masteredAt) o.masteredAt=o.lastSeenAt||nowISO();
   return o;
 }
-function mergeDB(local,remote){
-  const out=emptyDB();
-  out.updatedAt=local.updatedAt;
-  const order=[],byName={};
-  local.accounts.forEach(a=>{ if(!byName[a.name]){byName[a.name]={l:a,r:null};order.push(a.name);} });
-  remote.accounts.forEach(a=>{ if(!byName[a.name]){byName[a.name]={l:null,r:a};order.push(a.name);} else byName[a.name].r=a; });
-  order.forEach(name=>{
-    const pair=byName[name];
-    const id=pair.l?pair.l.id:pair.r.id;
-    const created=(pair.l&&pair.l.createdAt)||(pair.r&&pair.r.createdAt)||nowISO();
-    out.accounts.push({id:id,name:name,createdAt:created});
-    const lp=pair.l?(local.progress[pair.l.id]||{items:{},sessions:[]}):{items:{},sessions:[]};
-    const rp=pair.r?(remote.progress[pair.r.id]||{items:{},sessions:[]}):{items:{},sessions:[]};
-    const items={},keys={};
-    Object.keys(lp.items||{}).forEach(k=>keys[k]=1); Object.keys(rp.items||{}).forEach(k=>keys[k]=1);
-    Object.keys(keys).forEach(k=>{ if(BY_ID[k]) items[k]=mergeItem((lp.items||{})[k],(rp.items||{})[k]); });
-    const smap={};
-    (lp.sessions||[]).concat(rp.sessions||[]).forEach(s=>{ if(s&&s.finishedAt) smap[s.finishedAt]=s; });
-    const sessions=Object.keys(smap).sort().reverse().map(k=>smap[k]).slice(0,100);
-    out.progress[id]={items:items,sessions:sessions};
-  });
-  const cur=local.accounts.find(a=>a.id===local.activeAccountId);
-  const keep=cur?out.accounts.find(a=>a.name===cur.name):null;
-  out.activeAccountId=keep?keep.id:(out.accounts[0]?out.accounts[0].id:null);
-  return out;
+function mergeProgress(L,C){
+  L=normProgress(L); C=normProgress(C);
+  const M={items:{},sessions:[]}, ids={};
+  Object.keys(L.items).forEach(k=>ids[k]=1);
+  Object.keys(C.items).forEach(k=>ids[k]=1);
+  Object.keys(ids).forEach(k=>{ if(BY_ID[k]) M.items[k]=mergeItem(L.items[k],C.items[k]); });
+  const seen={}, ss=[];
+  L.sessions.concat(C.sessions).forEach(s=>{ if(s&&s.finishedAt&&!seen[s.finishedAt]){ seen[s.finishedAt]=1; ss.push(s); } });
+  ss.sort((x,y)=>new Date(y.finishedAt)-new Date(x.finishedAt));
+  M.sessions=ss.slice(0,100).reverse();
+  return M;
 }
-function sig(d){
-  return JSON.stringify({a:d.accounts.map(x=>x.name).sort(),
-    p:d.accounts.map(x=>({n:x.name,i:d.progress[x.id]?d.progress[x.id].items:{},s:(d.progress[x.id]||{sessions:[]}).sessions.length})).sort((m,n)=>m.n<n.n?-1:1)});
-}
+function sigP(p){ return JSON.stringify({i:(p||{}).items||{},s:((p||{}).sessions||[]).length}); }
+
+/* ---- 通信 ---- */
 function gasErr(){ return 'GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください'; }
-
-async function gasFetch(opt){
-  const s=getSync(); if(!s||!s.url) throw {kind:'nocfg'};
-  let res;
-  try{
-    if(opt.method==='POST'){
-      res=await fetch(s.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(opt.body)});
-    }else{
-      res=await fetch(s.url+(s.url.indexOf('?')<0?'?':'&')+'key='+encodeURIComponent(s.key)+'&app='+encodeURIComponent(APP));
-    }
-  }catch(e){ throw {kind:'net'}; }
-  const t=await res.text();
-  let j; try{ j=JSON.parse(t); }catch(e){ throw {kind:'parse'}; }
-  return j;
+async function api(body){
+  const r=await fetch(SYNC.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(Object.assign({key:SYNC.key},body))});
+  const txt=await r.text();
+  try{ return JSON.parse(txt); }catch(e){ throw new Error(gasErr()); }
 }
-function syncFail(e){
-  if(!e||e.kind==='nocfg'){ setSyncMsg('☁ 同期は未設定です',''); return; }
-  if(e.kind==='net'){ setSyncMsg('☁ オフライン（ローカルには保存済み）',''); return; }
-  if(e.kind==='parse'){ setSyncMsg('☁⚠ '+gasErr(),'err'); return; }
-  const m=String(e.error||e.message||'');
-  if(/key|合言葉|unauthor/i.test(m)) setSyncMsg('☁⚠ 合言葉が違います','err');
-  else setSyncMsg('☁⚠ 同期に失敗しました：'+m,'err');
+function apiError(j){
+  const e=String((j&&j.error)||'');
+  if(e==='auth') return 'ログインが無効になりました。ポータルでログインし直してください';
+  if(/合言葉|key/i.test(e)) return '合言葉が違います';
+  return e||'エラー';
 }
-function touchLastSync(){ const s=getSync(); if(s){ s.lastSync=nowISO(); setSync(s); } }
-
-async function pushDB(silent){
-  const s=getSync(); if(!s) return false;
-  try{
-    setSyncMsg('☁… 送信中','');
-    const j=await gasFetch({method:'POST',body:{key:s.key,data:db}});
-    if(!j||!j.ok) throw j||{};
-    touchLastSync();
-    if(!silent) setSyncMsg('☁✓ クラウドに保存しました（'+statOf(db)+'）','ok');
-    else setSyncMsg('☁✓ 記録をクラウドに保存しました','ok');
-    return true;
-  }catch(e){ syncFail(e); return false; }
+function onAuthLost(){ lsDel(K_AUTH); AUTH=null; render(); }
+function netFail(e){
+  if(/GASの応答/.test(e.message||'')) setSyncMsg('☁⚠ '+e.message,'err');
+  else setSyncMsg('☁ オフライン（ローカルには保存済み）','');
 }
-function autoPush(){ if(getSync()) pushDB(true); }
+function touchLastSync(){ SYNC.lastSync=nowISO(); saveSync(); }
 
-async function pullSync(quiet){
-  const s=getSync(); if(!s){ if(!quiet) setSyncMsg('☁ 同期は未設定です',''); return; }
-  try{
-    setSyncMsg('☁… 同期中','');
-    const j=await gasFetch({method:'GET'});
-    if(!j||!j.ok) throw j||{};
-    const cloud=j.data?normalizeDB(j.data):null;
-    if(!cloud){                                   /* クラウドが空 → push */
-      await pushDB(true); setSyncMsg('☁ クラウドに進捗が無かったので送りました','ok'); renderHome(); return;
-    }
-    const localHas=dbHasRecords(db), cloudHas=dbHasRecords(cloud);
-    const before=sig(db);
-    db=mergeDB(db,cloud);                         /* 両方に記録があっても無くても必ず合流 */
-    const changedLocal=(sig(db)!==before);
-    const changedCloud=(sig(db)!==sig(cloud));
-    if(changedLocal) saveDB(false);
-    else { db.updatedAt=cloud.updatedAt; saveDB(true); }   /* 変わらなければpull側のupdatedAtを維持 */
-    touchLastSync();
-    if(changedCloud) await pushDB(true);
-    if(!localHas&&cloudHas) setSyncMsg('☁✓ クラウドの記録を取り込みました（'+statOf(db)+'）','ok');
-    else if(localHas&&!cloudHas) setSyncMsg('☁ クラウドに進捗が無かったので送りました','ok');
-    else if(changedLocal||changedCloud) setSyncMsg('☁✓ クラウドと合流しました（'+statOf(db)+'）','ok');
-    else setSyncMsg('☁✓ クラウドと同じ内容です（'+statOf(db)+'）','ok');
-    renderHome();
-  }catch(e){ syncFail(e); }
+/* ---- 取り込み（初めての端末はここでクラウドの記録が入る） ---- */
+async function pullCloud(silent){
+  if(!ready()||!AUTH) return;
+  const firstTime=FRESH;                       /* この端末にまだ記録が無い＝初回 */
+  if(!silent) setSyncMsg(firstTime?'☁… 初めての端末です。クラウドから記録を取り込みます':'☁… クラウドと同期しています','');
+  let j;
+  try{ j=await api({action:'fetch',app:APP,id:AUTH.id,pw:AUTH.pw}); }
+  catch(e){ netFail(e); return; }
+  if(!j||!j.ok){
+    if(j&&j.error==='auth'){ setSyncMsg('☁⚠ '+apiError(j),'err'); onAuthLost(); return; }
+    setSyncMsg('☁⚠ '+apiError(j||{}),'err'); return;
+  }
+  const cloudP=normProgress(((j.data||{}).progress||{})[AUTH.id]);
+  const localP=prog();
+  const localHad=hasRecords(localP), cloudHas=hasRecords(cloudP);
+  const before=sigP(localP);
+  const merged=mergeProgress(localP,cloudP);
+  db.progress[AUTH.id]=merged;
+  if(j.label){ AUTH.label=j.label; lsSet(K_AUTH,JSON.stringify(AUTH)); if(db.accounts[0]) db.accounts[0].label=j.label; }
+  const cd=(j.data||{}).accounts&&j.data.accounts[0];
+  if(cd&&cd.createdAt&&db.accounts[0]) db.accounts[0].createdAt=cd.createdAt;
+  const changed=(before!==sigP(merged));
+  saveDB(!changed);
+  touchLastSync();
+  FRESH=!hasRecords(merged);
+  if(firstTime&&cloudHas) setSyncMsg('☁✓ この端末にクラウドの記録を取り込みました（'+statOf(merged)+'）','ok');
+  else if(!cloudHas&&!localHad) setSyncMsg('☁✓ クラウドにもまだ記録はありません','ok');
+  else if(changed) setSyncMsg('☁✓ クラウドと合流しました（'+statOf(merged)+'）','ok');
+  else setSyncMsg('☁✓ クラウドと同じ内容です（'+statOf(merged)+'）','ok');
+  renderHome();
+  /* 端末にしか無い記録があったときだけ返す（初回取り込みでは送り返さない） */
+  if(localHad&&changed) await pushCloud(true,syncMsg.text);
 }
 
+/* ---- 送信（自分のID 1件だけ。DB丸ごとは送らない） ---- */
+async function pushCloud(silent,okMsg){
+  if(!ready()||!AUTH) return false;
+  if(!silent) setSyncMsg('☁… 送信しています','');
+  let j;
+  try{ j=await api({action:'save',app:APP,id:AUTH.id,pw:AUTH.pw,account:db.accounts[0],progress:prog()}); }
+  catch(e){
+    if(/GASの応答/.test(e.message||'')) setSyncMsg('☁⚠ '+e.message,'err');
+    else setSyncMsg('☁ オフライン（ローカルには保存済み。次につながったときに送ります）','');
+    return false;
+  }
+  if(!j||!j.ok){
+    if(j&&j.error==='auth'){ setSyncMsg('☁⚠ '+apiError(j),'err'); onAuthLost(); return false; }
+    setSyncMsg('☁⚠ '+apiError(j||{}),'err'); return false;
+  }
+  touchLastSync();
+  setSyncMsg(okMsg||'☁✓ クラウドに保存しました','ok');
+  return true;
+}
+function autoPush(){ if(ready()&&AUTH) pushCloud(true); }
+
+/* ---- 全問一覧をスプレッドシートへ（旧仕様のまま。IDだけ足す） ---- */
 async function pushList(){
-  const s=getSync(); if(!s) return;
+  if(!ready()||!AUTH) return;
   setSyncMsg('☁… 一覧を書き出し中','');
-  try{
-    const j=await gasFetch({method:'GET'});
-    if(j&&j.ok&&j.data){
-      const cloud=normalizeDB(j.data);
-      if(!dbHasRecords(db)&&dbHasRecords(cloud)){ db=cloud; saveDB(true); renderHome(); }
-    }
-  }catch(e){ syncFail(e); return; }
-  if(!dbHasRecords(db)){
+  if(!hasRecords(prog())){
     modalInfo('書き出しを中止しました','記録がまだ1件もありません。空の一覧でスプレッドシートを上書きしてしまうため、書き出しを中止しました。<br>まず1回学習して結果画面まで進んでください。');
     setSyncMsg('☁ 記録が無いため一覧の書き出しを中止しました','');
     return;
   }
-  try{
-    const rows=rowsFor(db.accounts.map(a=>a.id)).map(r=>r.slice(0,14));
-    const j=await gasFetch({method:'POST',body:{key:s.key,app:APP,list:{header:LIST_HEADER,rows:rows}}});
-    if(!j||!j.ok) throw j||{};
-    touchLastSync();
-    setSyncMsg('☁✓ 全問一覧をスプレッドシートに書き出しました','ok');
-    toast('全問一覧をスプレッドシートに書き出しました');
-  }catch(e){ syncFail(e); }
+  let j;
+  try{ j=await api({app:APP,id:AUTH.id,list:{header:LIST_HEADER,rows:rowsFor([AUTH.id]).map(r=>r.slice(0,14))}}); }
+  catch(e){ netFail(e); return; }
+  if(!j||!j.ok){
+    if(j&&j.error==='auth'){ setSyncMsg('☁⚠ '+apiError(j),'err'); onAuthLost(); return; }
+    setSyncMsg('☁⚠ '+apiError(j||{}),'err'); return;
+  }
+  touchLastSync();
+  setSyncMsg('☁✓ 全問一覧をスプレッドシートに書き出しました','ok');
+  toast('全問一覧をスプレッドシートに書き出しました');
 }
 
-/* ================= アカウント ================= */
-function openAccounts(){
-  let h='<h3>👤 アカウント</h3>';
-  h+=db.accounts.map(a=>'<div class="li"><div class="g"><b>'+esc(a.name)+'</b>'+(a.id===accId()?' <span class="tag t-son">使用中</span>':'')+
-      '<div class="muted">作成 '+fmtDate(a.createdAt)+'</div></div>'+
-      '<button class="btn sm" data-use="'+a.id+'">切替</button>'+
-      '<button class="btn sm ghost" data-ren="'+a.id+'">改名</button>'+
-      '<button class="btn sm ghost" data-del="'+a.id+'">削除</button></div>').join('')||'<div class="muted">まだアカウントがありません。</div>';
-  h+='<label class="f">新しいアカウント名</label><input type="text" id="newAcc" placeholder="例：長男">';
-  h+='<div class="row" style="margin-top:12px"><button class="btn pri" id="addAcc">＋ 追加する</button><span style="margin-left:auto"><button class="btn" id="acCls">とじる</button></span></div>';
-  openModal(h);
-  $('#acCls').onclick=closeModal;
-  $('#addAcc').onclick=()=>{
-    const n=$('#newAcc').value.trim(); if(!n){ toast('名前を入力してください'); return; }
-    if(db.accounts.some(a=>a.name===n)){ toast('同じ名前があります'); return; }
-    const id=newAccId();
-    db.accounts.push({id:id,name:n,createdAt:nowISO()});
-    db.progress[id]={items:{},sessions:[]};
-    if(!db.activeAccountId) db.activeAccountId=id;
-    saveDB(false); autoPush(); closeModal(); renderHome(); toast('「'+n+'」を追加しました');
-  };
-  $$('#modalRoot [data-use]').forEach(b=>b.onclick=()=>{ db.activeAccountId=b.dataset.use; saveDB(false); closeModal(); renderHome(); toast(accName()+'に切り替えました'); });
-  $$('#modalRoot [data-ren]').forEach(b=>b.onclick=()=>{
-    const a=db.accounts.find(x=>x.id===b.dataset.ren);
-    openModal('<h3>名前を変える</h3><label class="f">新しい名前</label><input type="text" id="rn" value="'+esc(a.name)+'">'+
-      '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn" id="rc">やめる</button><button class="btn pri" id="rk">変更</button></div>');
-    $('#rc').onclick=openAccounts;
-    $('#rk').onclick=()=>{ const v=$('#rn').value.trim(); if(!v) return; a.name=v; saveDB(false); autoPush(); closeModal(); renderHome(); toast('名前を変更しました'); };
-  });
-  $$('#modalRoot [data-del]').forEach(b=>b.onclick=()=>{
-    const a=db.accounts.find(x=>x.id===b.dataset.del);
-    modalConfirm('アカウントの削除','「'+esc(a.name)+'」の記録をすべて削除します。もとに戻せません。よろしいですか？',()=>{
-      db.accounts=db.accounts.filter(x=>x.id!==a.id); delete db.progress[a.id];
-      if(db.activeAccountId===a.id) db.activeAccountId=db.accounts[0]?db.accounts[0].id:null;
-      saveDB(false); autoPush(); renderHome(); toast('削除しました');
-    },'削除する');
-  });
-}
-function openSwitch(){
-  if(!db.accounts.length){ openAccounts(); return; }
-  openModal('<h3>だれが学習する？</h3>'+db.accounts.map(a=>
-    '<button class="btn wide '+(a.id===accId()?'pri':'')+'" style="margin:6px 0" data-s="'+a.id+'">'+esc(a.name)+'</button>').join('')+
-    '<div class="row" style="margin-top:10px"><button class="btn sm ghost" id="swMan">👤 アカウント管理</button><span style="margin-left:auto"><button class="btn" id="swCls">とじる</button></span></div>');
-  $('#swCls').onclick=closeModal; $('#swMan').onclick=openAccounts;
-  $$('#modalRoot [data-s]').forEach(b=>b.onclick=()=>{ db.activeAccountId=b.dataset.s; saveDB(false); closeModal(); renderHome(); });
-}
-
-/* ================= 書き出し／読み込み／設定 ================= */
+/* ================= 書き出し／読み込み／消去 ================= */
+function ymdNow(){ const d=new Date(); return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
 function exportJSON(){
-  const d=new Date(); const ymd=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  if(!AUTH) return;
   const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download=TITLE+'記録_'+ymd+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  a.href=url; a.download=TITLE+'記録_'+AUTH.id+'_'+ymdNow()+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function importJSON(){
+  if(!AUTH) return;
   const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
   inp.onchange=()=>{
     const f=inp.files[0]; if(!f) return;
     const rd=new FileReader();
     rd.onload=()=>{
-      let o; try{ o=JSON.parse(rd.result); }catch(e){ modalInfo('読み込めません','JSONとして読めませんでした。'); return; }
+      const o=jparse(rd.result);
+      if(!o){ modalInfo('読み込めません','JSONとして読めませんでした。'); return; }
       if(o.app&&o.app!==APP){ modalInfo('ツールが違います','このファイルは「'+esc(o.app)+'」のものです。このツール（'+APP+'）には読み込めません。'); return; }
-      const nd=normalizeDB(o);
+      const p=(o.progress||{})[AUTH.id];
+      if(!p){ modalInfo('このIDの記録がありません','このファイルには ID '+esc(AUTH.id)+' の記録が入っていません（別のお子さんの記録の可能性があります）。'); return; }
+      const np=normProgress(p);
       modalConfirm('記録を置き換えますか？',
-        '<div>ファイルのアカウント：<b>'+esc(nd.accounts.map(a=>a.name).join('、')||'（なし）')+'</b></div>'+
+        '<div>ID：<b>'+esc(AUTH.id)+'</b>（'+esc(AUTH.label||AUTH.id)+'）</div>'+
+        '<div>ファイルの内容：<b>'+esc(statOf(np))+'</b></div>'+
         '<div>保存日時：<b>'+fmtDT(o.updatedAt)+'</b></div>'+
-        '<div class="warnbar">いまの記録はすべて置き換えられます。</div>',
-        ()=>{ db=nd; saveDB(false); autoPush(); renderHome(); toast('記録を読み込みました'); },'置き換える');
+        '<div class="warnbar">いまのこのツールの記録は置き換えられます。</div>',
+        ()=>{ db.progress[AUTH.id]=np; FRESH=!hasRecords(np); saveDB(false); autoPush(); renderHome(); toast('記録を読み込みました'); },'置き換える');
     };
     rd.readAsText(f);
   };
   inp.click();
 }
-function openSyncCfg(){
-  const s=getSync()||{url:'',key:''};
-  openModal('<h3>☁ クラウド同期設定</h3>'+
-    '<div class="muted">GASのウェブアプリURL（末尾が <code>/exec</code>）と合言葉を入力します。この設定はこの端末にだけ保存され、ほかの端末には同期されません。</div>'+
-    '<label class="f">GASのURL</label><input type="text" id="sUrl" value="'+esc(s.url)+'" placeholder="https://script.google.com/macros/s/.../exec">'+
-    '<label class="f">合言葉</label><input type="text" id="sKey" value="'+esc(s.key)+'" placeholder="合言葉">'+
-    '<div class="row" style="margin-top:14px"><button class="btn" id="sOff">同期を解除</button>'+
-    '<span style="margin-left:auto"><button class="btn" id="sCls">とじる</button> <button class="btn pri" id="sSave">保存して同期</button></span></div>');
-  $('#sCls').onclick=closeModal;
-  $('#sOff').onclick=()=>{ setSync(null); closeModal(); setSyncMsg('☁ 同期は未設定です',''); renderHome(); };
-  $('#sSave').onclick=()=>{
-    const u=$('#sUrl').value.trim(), k=$('#sKey').value.trim();
-    if(!/\/exec$/.test(u)){ toast('URLの末尾は /exec にしてください'); return; }
-    setSync({url:u,key:k,lastSync:null}); closeModal(); renderHome(); pullSync();
-  };
-}
 function resetRecords(){
-  if(!accId()) return;
-  modalConfirm('記録を消す','「'+esc(accName())+'」の学習記録をすべて消します。もとに戻せません。',()=>{
-    db.progress[accId()]={items:{},sessions:[]};
+  if(!AUTH) return;
+  modalConfirm('このツールの記録を消す','ID '+esc(AUTH.id)+'（'+esc(AUTH.label||AUTH.id)+'）の<b>'+esc(TITLE)+'</b>の学習記録をすべて消します。もとに戻せません。',()=>{
+    db.progress[AUTH.id]={items:{},sessions:[]}; FRESH=true;
     saveDB(false); autoPush(); renderHome(); toast('記録を消しました');
   },'消す');
 }
 
+/* ================= ゲート画面（未設定・未ログイン） ================= */
+function renderGate(){
+  const btn=$('#accBtn'); if(btn) btn.textContent='👤 —';
+  const why=!ready()?'クラウド同期がまだ設定されていません。':'まだログインしていません。';
+  $('#gateCard').innerHTML=
+    '<h2>🔑 ポータルで準備してください</h2>'+
+    '<div class="muted">'+esc(why)+'<br>ポータル（トップページ）で<b>同期設定とログイン</b>を1回だけ行うと、'+
+    'すべての学習ツールがそのまま使えるようになります。</div>'+
+    '<ul class="muted" style="padding-left:1.2em;line-height:2;margin:10px 0">'+
+    '<li>GASのURLと合言葉 … ポータルで入力</li>'+
+    '<li>ID（5けた）とパスワード … ポータルでログイン</li>'+
+    '<li>この画面に戻ってくれば、すぐ学習を始められます</li>'+
+    '<li>初めて使う端末では、ログインするとクラウドの記録を自動で取り込みます</li></ul>'+
+    '<a class="btn pri wide" href="'+portalURL()+'" style="display:block;text-decoration:none">ポータルをひらく</a>'+
+    '<button class="btn ghost wide" id="gateReload" style="margin-top:8px">ログイン済みなら、ここを押して読み込み直す</button>'+
+    '<div class="status" id="syncStatus" style="margin-top:10px">'+esc(syncMsg.text)+'</div>';
+  $('#gateReload').onclick=()=>{
+    loadAll();
+    if(ready()&&loggedIn()){ render(); pullCloud(false); }
+    else { renderGate(); toast('まだポータルでの準備が終わっていません'); }
+  };
+}
+
 /* ================= 起動 ================= */
 function wire(){
-  $('#btnSwitch').onclick=openSwitch;
+  $('#accBtn').onclick=()=>{
+    if(!$('#scQuiz').classList.contains('hide')&&S&&S.history.length){
+      modalConfirm('学習を中断しますか？','いま解いたぶんは<b>記録されません</b>。',()=>{ S=null; show('scHome'); },'中断する'); return; }
+    if(loggedIn()) location.href=portalURL();
+  };
   $$('#scHome [data-mode]').forEach(b=>b.onclick=()=>startSession(b.dataset.mode));
   $('#btnMemo').onclick=openMemo;
   $$('#impSeg button').forEach(b=>b.onclick=()=>{ UI.impFilter=b.dataset.v; saveUI(); renderHome(); });
+  $('#btnSyncNow').onclick=()=>pullCloud(false);
+  $('#btnPushList').onclick=pushList;
+  $('#btnCsv2').onclick=downloadCSV;
   $('#btnExport').onclick=exportJSON;
   $('#btnImport').onclick=importJSON;
-  $('#btnSyncCfg').onclick=openSyncCfg;
-  $('#btnSyncNow').onclick=()=>pullSync();
-  $('#btnPushList').onclick=pushList;
-  $('#btnAccounts').onclick=openAccounts;
   $('#btnReset').onclick=resetRecords;
+  $('#btnPortal').href=portalURL();
 
   $('#btnNext').onclick=()=>{ S.pos++; nextQuestion(); };
   $('#btnPrev').onclick=()=>{
@@ -1367,22 +1437,29 @@ function wire(){
   $('#mTabList').onclick=()=>{MEMO.tab='list';renderMemoTab();};
   $('#mTabCard').onclick=()=>{MEMO.tab='card';renderMemoTab();};
   window.addEventListener('beforeunload',e=>{ if(S&&S.history.length){ e.preventDefault(); e.returnValue=''; } });
+
+  /* 他のツール／ポータルでログイン状態が変わったら追従する */
+  window.addEventListener('storage',ev=>{
+    if(ev.key!==K_AUTH&&ev.key!==K_SYNC) return;
+    if(S&&S.history.length) return;
+    const wasId=AUTH?AUTH.id:null;
+    loadAll();
+    render();
+    if(ready()&&loggedIn()&&(AUTH.id!==wasId||FRESH)) pullCloud(false);   /* ログイン直後はクラウドを取り込む */
+  });
 }
 function boot(){
+  loadAll();
   if(!LS_OK){
     $('#lsWarn').classList.remove('hide');
-    $('#lsWarn').innerHTML=getSync()
+    $('#lsWarn').innerHTML=ready()
       ? '☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます。'
-      : '⚠ この端末には記録を保存できません（ブラウザの設定）。クラウド同期を設定すると記録を残せます。';
+      : '⚠ この端末には記録を保存できません（ブラウザの設定）。ポータルで同期設定をすると記録を残せます。';
   }
-  if(!db.accounts.length){
-    const id=newAccId();
-    db.accounts.push({id:id,name:'ゲスト',createdAt:nowISO()});
-    db.progress[id]={items:{},sessions:[]};
-    db.activeAccountId=id; saveDB(false);
-  }
-  wire(); show('scHome');
-  if(getSync()) pullSync(true);
+  wire();
+  if(ready()&&loggedIn()) setSyncMsg(FRESH?'☁… 初めての端末です。クラウドから記録を取り込みます':'☁… クラウドと同期しています','');
+  render();
+  if(ready()&&loggedIn()) pullCloud(!FRESH);   /* 初回端末は取り込み結果をはっきり出す */
 }
 boot();
 </script>

@@ -1,362 +1,397 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>べんきょうアプリ</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#EEF1F4">
 <style>
-  :root{
-    --paper:#EEF1F4;
-    --grid:#DDE4EA;
-    --ink:#1F2933;
-    --ink-soft:#69747E;
-    --card:#FFFFFF;
-    --kokugo:#D2452F;
-    --sansu:#2B6CB0;
-    --rika:#2C7A56;
-    --shakai:#B57F00;
-    --sonota:#6B5B95;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",
-                "Noto Sans JP",system-ui,sans-serif;
-    color:var(--ink);
-    background-color:var(--paper);
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size:28px 28px;
-    min-height:100vh;
-    padding:32px 20px 64px;
-    -webkit-text-size-adjust:100%;
-  }
-  .wrap{max-width:760px;margin:0 auto}
-
-  header{margin-bottom:28px;padding-left:4px}
-  .eyebrow{
-    font-size:12px;letter-spacing:.22em;color:var(--ink-soft);
-    font-weight:700;margin-bottom:6px;
-  }
-  h1{font-size:30px;font-weight:800;letter-spacing:.04em}
-  .sub{margin-top:8px;font-size:13.5px;color:var(--ink-soft)}
-
-  /* 教科の見出し */
-  .section{margin-top:32px}
-  .section:first-of-type{margin-top:24px}
-  .sec-head{
-    display:flex;align-items:center;gap:10px;
-    margin:0 0 12px 4px;
-  }
-  .sec-bar{width:6px;height:20px;border-radius:3px;flex:0 0 auto}
-  .sec-title{font-size:18px;font-weight:800;letter-spacing:.06em}
-  .sec-count{font-size:12px;color:var(--ink-soft);font-weight:700}
-
-  .kokugo .sec-bar{background:var(--kokugo)}
-  .rika   .sec-bar{background:var(--rika)}
-  .shakai .sec-bar{background:var(--shakai)}
-  .sansu  .sec-bar{background:var(--sansu)}
-
-  .list{display:grid;gap:12px}
-
-  /* カード＝ノートのインデックスシール */
-  .app{
-    display:flex;align-items:stretch;
-    background:var(--card);
-    border-radius:4px;
-    text-decoration:none;color:inherit;
-    box-shadow:0 1px 0 rgba(31,41,51,.12), 0 2px 8px rgba(31,41,51,.06);
-    overflow:hidden;
-    transition:transform .12s ease, box-shadow .12s ease;
-  }
-  .app:hover,.app:focus-visible{
-    transform:translateY(-2px);
-    box-shadow:0 2px 0 rgba(31,41,51,.14), 0 8px 18px rgba(31,41,51,.10);
-  }
-  .app:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-  .app:active{transform:translateY(0)}
-
-  .tab{
-    flex:0 0 74px;
-    display:flex;align-items:center;justify-content:center;
-    color:#fff;font-weight:800;font-size:15px;letter-spacing:.12em;
-    writing-mode:horizontal-tb;
-  }
-  .body{padding:16px 18px;flex:1;min-width:0}
-  .name{font-size:17.5px;font-weight:700;line-height:1.4}
-  .note{font-size:13px;color:var(--ink-soft);margin-top:5px;line-height:1.6}
-  .arrow{
-    align-self:center;padding:0 18px 0 8px;
-    color:var(--ink-soft);font-size:20px;flex:0 0 auto;
-  }
-
-  .kokugo .tab{background:var(--kokugo)}
-  .sansu  .tab{background:var(--sansu)}
-  .rika   .tab{background:var(--rika)}
-  .shakai .tab{background:var(--shakai)}
-  .sonota .tab{background:var(--sonota)}
-
-  /* 準備中カード */
-  .soon{
-    padding:16px 18px;border-radius:4px;
-    border:1.5px dashed var(--grid);
-    background:rgba(255,255,255,.4);
-    color:var(--ink-soft);font-size:13.5px;
-  }
-
-  footer{
-    margin-top:40px;padding-left:4px;
-    font-size:12px;color:var(--ink-soft);line-height:1.8;
-  }
-
-  @media (max-width:480px){
-    body{padding:24px 14px 48px}
-    h1{font-size:25px}
-    .tab{flex-basis:60px;font-size:14px}
-    .name{font-size:16px}
-    .sec-title{font-size:16px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .app{transition:none}
-    .app:hover{transform:none}
-  }
+:root{
+  --bg:#f2f5f7; --card:#fff; --ink:#2b2f33; --sub:#7c848c; --line:#e3e8ec;
+  --pri:#2f4fb5; --pri-d:#22397f; --pri-l:#e9eefb;
+  --ok:#1f8a5f; --ok-l:#e6f4ec; --ng:#c0392b; --ng-l:#fbeae7; --warn-l:#fbf4dd;
+  --sh:0 1px 2px rgba(16,24,40,.05);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink); font-size:16px; line-height:1.7;
+  font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Noto Sans JP",Meiryo,sans-serif;
+  background-image:linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.wrap{max-width:760px;margin:0 auto;padding:26px 18px 72px}
+h1,h2,h3{margin:0;line-height:1.4}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+.kicker{font-size:11.5px;font-weight:700;color:#9aa2aa;letter-spacing:.22em;margin-bottom:6px}
+h1.title{font-size:30px;font-weight:800;letter-spacing:.02em}
+.lead{font-size:13px;color:var(--sub);margin-top:8px}
+.sec{margin-top:26px}
+.sec h2{font-size:15px;font-weight:800;display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.sec h2 .bar{width:4px;height:17px;border-radius:2px;background:var(--c)}
+.sec h2 .n{font-size:12px;font-weight:700;color:#a3abb3}
+.list{display:grid;gap:9px}
+.tool{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--line);
+  border-radius:9px;box-shadow:var(--sh);overflow:hidden;transition:border-color .15s}
+.tool:hover{border-color:#c8d2da}
+.tool .badge{width:62px;flex:0 0 62px;display:flex;align-items:center;justify-content:center;
+  background:var(--c);color:#fff;font-size:13.5px;font-weight:800;letter-spacing:.04em}
+.tool .body{flex:1;min-width:0;padding:13px 14px}
+.tool .body b{display:block;font-size:15.5px;font-weight:800;line-height:1.5}
+.tool .body span{display:block;font-size:12px;color:var(--sub);margin-top:2px}
+.tool .right{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:0 14px 0 4px;color:#c3ccd4}
+.tool .meta{display:flex;flex-direction:column;align-items:flex-end;line-height:1.4}
+.tool .pc{font-size:12px;font-weight:800;color:var(--pri-d);white-space:nowrap}
+.tool .dt{font-size:11px;font-weight:700;color:var(--sub);white-space:nowrap}
+.tool .dt.new{color:var(--ok)}
+.tool .ch{font-size:18px;line-height:1}
+.tool.off{opacity:.5}
+.notice{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e6d08a;
+  border-left:5px solid #d9a72c;border-radius:9px;padding:12px 14px;margin-top:18px;font-size:13.5px;font-weight:700}
+.notice .go{margin-left:auto;background:var(--pri);color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:800;white-space:nowrap}
+.notice.ok{border-color:#b6e0cd;border-left-color:var(--ok);font-weight:600}
+.parent{margin-top:38px;border-top:1px solid var(--line);padding-top:14px}
+.parent > summary{font-size:14px;font-weight:800;color:var(--sub);cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:8px;padding:6px 2px}
+.parent > summary::-webkit-details-marker{display:none}
+.parent > summary::after{content:'\25be ひらく';margin-left:auto;font-size:12px;font-weight:700;color:#aeb6be}
+.parent[open] > summary::after{content:'\25b4 とじる'}
+.panel{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh);padding:15px;margin-top:11px}
+.panel h3{font-size:13.5px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.panel .muted{font-size:12.5px;color:var(--sub);line-height:1.75}
+label.f{display:block;font-size:12px;font-weight:800;color:var(--sub);margin:11px 0 4px}
+input{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:16px;
+  font-family:inherit;background:#fff;color:var(--ink)}
+input.big{font-size:24px;font-weight:800;text-align:center;letter-spacing:.24em}
+.btn{border-radius:9px;padding:12px 16px;font-weight:800;font-size:14.5px;text-align:center;display:block;width:100%;margin-top:10px}
+.btn.pri{background:var(--pri);color:#fff}
+.btn.gh{background:#fff;border:1.5px solid var(--line);color:var(--sub)}
+.btn.ng{background:#fff;border:1.5px solid #e8b3ac;color:var(--ng)}
+.btn:disabled{opacity:.45}
+.done{font-size:10.5px;font-weight:800;color:var(--ok);background:var(--ok-l);border-radius:5px;padding:1px 7px}
+.bar{border-radius:8px;padding:9px 12px;font-size:12.5px;font-weight:700;background:#eef1f4;color:var(--sub);margin-top:11px}
+.bar.ok{background:var(--ok-l);color:#136344}
+.bar.ng{background:var(--ng-l);color:var(--ng)}
+.idcard{font-size:30px;font-weight:900;text-align:center;letter-spacing:.14em;color:var(--pri);
+  background:var(--pri-l);border-radius:10px;padding:12px 8px;margin:4px 0 8px}
+.warnbar{background:var(--warn-l);border:1px solid #e6d08a;color:#8a6508;border-radius:8px;
+  padding:9px 11px;font-size:12px;font-weight:700;margin:8px 0}
+.mrow{display:flex;gap:9px;margin-top:12px}
+.mrow .btn{margin-top:0}
+.modal{position:fixed;inset:0;background:rgba(20,24,28,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .box{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:86vh;overflow:auto;padding:18px}
+.modal h3{font-size:15.5px;font-weight:800;margin-bottom:8px}
+.foot{text-align:center;font-size:11.5px;color:#a8b0b8;margin-top:22px}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="app"></div>
+<div id="modalHost"></div>
+<script>
+/* =========================================================
+   べんきょうアプリ ポータル（共通仕様 v3.0 §17-2）
+   共有キー kj-quiz:sync / kj-quiz:auth … 同一オリジンなら全ツールで共有される
+   ========================================================= */
+const K_SYNC='kj-quiz:sync', K_AUTH='kj-quiz:auth';
+const ID_MIN=27001, ID_MAX=27999;
 
-  <header>
-    <div class="eyebrow">2027 じゅけん</div>
-    <h1>べんきょうアプリ</h1>
-    <p class="sub">やりたいものをタップしてね。とちゅうまでの記録はそのタブレット／パソコンに残ります。</p>
-  </header>
+const SUBJECTS = [
+  { key:'国語', color:'#c0392b' },
+  { key:'算数', color:'#b5730f' },
+  { key:'理科', color:'#1f7a4d' },
+  { key:'社会', color:'#2f4fb5' }
+];
 
-  <!-- ============================================================
-       ▼ アプリを追加するときは、追加したい教科の <div class="list"> の中に
-         下の <a> ブロックを1つコピーして
-         ① href のファイル名
-         ② name のタイトル / note の説明
-         を書きかえるだけです。（class の教科名は変えない）
-         見出しの (◯) の数字も手で直してください。
-       ============================================================ -->
+/* ---------------------------------------------------------
+   ツール一覧。増やしたらここに1行足す。
+     file … 同じフォルダにあるHTMLのファイル名（実物と一致させること）
+     app  … そのHTML内の APP と一致させること（違うと習得数が出ません）
+     total… 全知識ポイント数（分かるものだけ。無ければ記録から推定）
+   --------------------------------------------------------- */
+const TOOLS = [
+  { sub:'国語', name:'外来語ドリル',   desc:'入試によく出る外来語をチェック',       file:'外来語ドリル.html',   app:'kj-quiz-kokugo-gairaigo' },
+  { sub:'国語', name:'和語ドリル',     desc:'和語・漢語・外来語の見分けかたを確認', file:'和語ドリル.html',     app:'kj-quiz-kokugo-wago' },
+  { sub:'国語', name:'故事成語',       desc:'むかしの話がもとになった言葉の意味',   file:'故事成語.html',       app:'kj-quiz-kokugo-kojiseigo' },
+  { sub:'国語', name:'慣用句',         desc:'体の部分などを使った言い回しをおぼえる', file:'慣用句.html',       app:'kj-quiz-kokugo-kanyoku' },
+  { sub:'国語', name:'ことわざ',       desc:'昔からの言いならわしと、その意味',     file:'ことわざ.html',       app:'kj-quiz-kokugo-kotowaza' },
+  { sub:'国語', name:'熟語対義語類義語', desc:'熟語の組み立てと、反対語・似た意味の言葉', file:'熟語対義語類義語.html', app:'kj-quiz-kokugo-jukugo' },
+  { sub:'国語', name:'同訓異字・同音異義語・同音異字', desc:'同訓異字・同音異義語・同音異字', file:'同訓異字.html', app:'kj-quiz-kokugo-doukun' },
+  { sub:'国語', name:'敬語マスター',   desc:'尊敬語・謙譲語・丁寧語の使い分けを練習', file:'敬語マスター.html', app:'kj-quiz-kokugo-keigo' },
 
-  <!-- 国語 -->
-  <section class="section kokugo">
-    <div class="sec-head">
-      <span class="sec-bar"></span>
-      <span class="sec-title">国語</span>
-      <span class="sec-count">(7)</span>
-    </div>
-    <div class="list">
+  { sub:'理科', name:'植物カード',     desc:'イラストで見わけるポイントを確認',     file:'植物カード.html',     app:'kj-quiz-rika-shokubutsu' },
+  { sub:'理科', name:'動物カード',     desc:'なかま分けや体のつくりを確認',         file:'動物カード.html',     app:'kj-quiz-rika-doubutsu' },
 
-      <a class="app kokugo" href="外来語ドリル.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">外来語ドリル</div>
-          <div class="note">入試によく出る外来語をチェック</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+  { sub:'社会', name:'日本国憲法の条文', desc:'前文と重要条文の穴うめ・条文さがし', file:'日本国憲法の条文.html', app:'kj-quiz-shakai-kenpou', total:171 },
+  { sub:'社会', name:'地理（地形）',   desc:'山地・平野・川などの地形をおぼえる',   file:'地理(地形).html',     app:'kj-quiz-shakai-chikei' },
+  { sub:'社会', name:'都市・交通',     desc:'おもな都市と新幹線・高速道路',         file:'都市・交通.html',     app:'kj-quiz-shakai-toshi' },
+  { sub:'社会', name:'歴史年号',       desc:'できごとと年号をむすびつける',         file:'歴史年号.html',       app:'kj-quiz-shakai-rekishi' }
+];
 
-      <a class="app kokugo" href="和語.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">和語ドリル</div>
-          <div class="note">和語・漢語・外来語の見分けかたを確認</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+function $(s){ return document.querySelector(s); }
+function el(t,c,x){ var e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function jparse(s){ try{ return JSON.parse(s||'null'); }catch(e){ return null; } }
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+function jdt(iso){ if(!iso) return '—'; var d=new Date(iso); if(isNaN(d)) return '—';
+  return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function subColor(k){ var s=SUBJECTS.filter(function(x){return x.key===k;})[0]; return s?s.color:'#6b7280'; }
 
-      <a class="app kokugo" href="故事成語.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">故事成語</div>
-          <div class="note">むかしの話がもとになった言葉の意味</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+var SYNC=null, AUTH=null, msg={cls:'',t:''};
 
-      <a class="app kokugo" href="慣用句.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">慣用句</div>
-          <div class="note">体の部分などを使った言い回しをおぼえる</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+function b64e(o){ return btoa(encodeURIComponent(JSON.stringify(o))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function b64d(t){ t=t.replace(/-/g,'+').replace(/_/g,'/'); while(t.length%4) t+='='; return JSON.parse(decodeURIComponent(atob(t))); }
+function readSetupHash(){
+  var m=(location.hash||'').match(/[#&]s=([^&]+)/);
+  if(!m) return false;
+  var got=false;
+  try{
+    var o=b64d(m[1]);
+    if(o&&o.u){ SYNC={url:String(o.u),key:String(o.k||''),lastSync:null}; lsSet(K_SYNC,JSON.stringify(SYNC)); got=true; }
+  }catch(e){}
+  history.replaceState(null,'',location.pathname+location.search);
+  return got;
+}
+function setupLink(){ return location.origin+location.pathname+'#s='+b64e({u:SYNC.url,k:SYNC.key}); }
+function showSetupLink(){
+  var url=setupLink();
+  openModal('この端末の設定リンク',
+    '<p class="muted">新しい端末では、このリンクを開くだけで同期設定が入ります（ログインは別途必要です）。</p>'+
+    '<input id="lnk" type="text" readonly value="'+esc(url)+'" style="font-size:12px">'+
+    '<div class="warnbar">このリンクには合言葉が含まれます。<b>人に見える場所に貼らないでください。</b></div>',
+    [{t:'コピー',cls:'pri',fn:function(){
+        var i=$('#lnk'); i.select(); i.setSelectionRange(0,99999);
+        try{ navigator.clipboard.writeText(i.value); }catch(e){ try{ document.execCommand('copy'); }catch(e2){} }
+        closeModal(); setMsg('ok','リンクをコピーしました'); render(); }},
+     {t:'閉じる',cls:'gh',fn:closeModal}]);
+}
 
-      <a class="app kokugo" href="ことわざ.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">ことわざ</div>
-          <div class="note">昔からの言いならわしと、その意味</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+function load(){
+  SYNC=jparse(lsGet(K_SYNC));
+  if(!SYNC||!SYNC.url){
+    for(var i=0;i<TOOLS.length;i++){
+      var o=jparse(lsGet(TOOLS[i].app+':sync'));
+      if(o&&o.url){ SYNC={url:o.url,key:o.key||'',lastSync:o.lastSync||null}; lsSet(K_SYNC,JSON.stringify(SYNC)); break; }
+    }
+  }
+  if(!SYNC||typeof SYNC!=='object') SYNC={url:'',key:'',lastSync:null};
+  AUTH=jparse(lsGet(K_AUTH));
+  if(!AUTH||!AUTH.id||!AUTH.pw) AUTH=null;
+}
+function ready(){ return !!(SYNC.url&&SYNC.key); }
+function setMsg(cls,t){ msg={cls:cls,t:t}; var b=$('#bar'); if(b){ b.className='bar '+cls; b.textContent=t; } }
 
-      <a class="app kokugo" href="熟語対義語類義語.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">熟語対義語類義語</div>
-          <div class="note">熟語の組み立てと、反対語・似た意味の言葉</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+async function api(body){
+  var r=await fetch(SYNC.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(Object.assign({key:SYNC.key},body))});
+  var txt=await r.text();
+  try{ return JSON.parse(txt); }
+  catch(e){ throw new Error('GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください'); }
+}
+function closeModal(){ $('#modalHost').innerHTML=''; }
+function openModal(title,html,btns){
+  $('#modalHost').innerHTML='<div class="modal"><div class="box"><h3>'+esc(title)+'</h3><div>'+html+'</div><div class="mrow" id="mb"></div></div></div>';
+  (btns||[{t:'閉じる',cls:'gh',fn:closeModal}]).forEach(function(b){
+    var e=el('button','btn '+(b.cls||'gh'),b.t); e.onclick=b.fn; $('#mb').appendChild(e); });
+}
+function toast(t,m){ openModal(t,'<p class="muted">'+esc(m)+'</p>',[{t:'OK',cls:'pri',fn:closeModal}]); }
 
-      <a class="app kokugo" href="同訓異字・同音異義語・同音異字.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">同訓異字・同音異義語・同音異字</div>
-          <div class="note">同訓異字・同音異義語・同音異字</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+function toolStat(t){
+  var db=jparse(lsGet(t.app));
+  if(!db||!db.progress||!AUTH) return null;
+  var p=db.progress[AUTH.id]; if(!p||!p.items) return null;
+  var ids=Object.keys(p.items); if(!ids.length) return null;
+  var mas=ids.filter(function(k){ return p.items[k].mastered; }).length;
+  var total=t.total||ids.length;
+  /* 最後に勉強した日：セッションの終了時刻と、各語の最終出題日のうち新しい方 */
+  var last=0;
+  (p.sessions||[]).forEach(function(x){ var v=Date.parse(x&&x.finishedAt); if(!isNaN(v)&&v>last) last=v; });
+  ids.forEach(function(k){ var v=Date.parse(p.items[k].lastSeenAt); if(!isNaN(v)&&v>last) last=v; });
+  return { mastered:mas, total:total, last:last||0 };
+}
 
-      <a class="app kokugo" href="敬語マスター.html">
-        <div class="tab">国語</div>
-        <div class="body">
-          <div class="name">敬語マスター</div>
-          <div class="note">尊敬語・謙譲語・丁寧語の使い分けを練習</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+/* 「きょう」「きのう」「3日前」「7/28」 */
+function whenLabel(ms){
+  if(!ms) return '';
+  var d=new Date(ms), now=new Date();
+  var d0=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  var n0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var diff=Math.round((n0-d0)/86400000);
+  if(diff<=0) return 'きょう';
+  if(diff===1) return 'きのう';
+  if(diff<7) return diff+'日前';
+  return (d.getMonth()+1)+'/'+d.getDate();
+}
 
-    </div>
-  </section>
+function render(){
+  var app=$('#app'); app.innerHTML='';
+  app.appendChild(el('div','kicker','2027 じゅけん'));
+  app.appendChild(el('h1','title','べんきょうアプリ'));
+  app.appendChild(el('p','lead','やりたいものをタップしてね。きろくは じどうで ほぞんされます。'));
 
-  <!-- 理科 -->
-  <section class="section rika">
-    <div class="sec-head">
-      <span class="sec-bar"></span>
-      <span class="sec-title">理科</span>
-      <span class="sec-count">(4)</span>
-    </div>
-    <div class="list">
+  var nt=el('div','notice'+(AUTH?' ok':''));
+  if(!AUTH){
+    nt.innerHTML='<span>&#128273;</span><span>さいしょに ログインしてね。</span>';
+    var go=el('a','go','ログインする'); go.href='#parent'; nt.appendChild(go);
+  } else {
+    nt.innerHTML='<span>&#128100;</span><span><b>'+esc(AUTH.label||AUTH.id)+'</b> さん（ID '+esc(AUTH.id)+'）でログイン中</span>';
+  }
+  app.appendChild(nt);
 
-      <a class="app rika" href="植物.html">
-        <div class="tab">理科</div>
-        <div class="body">
-          <div class="name">植物カード</div>
-          <div class="note">イラストで見わけるポイントを確認</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+  var subs=[]; TOOLS.forEach(function(t){ if(subs.indexOf(t.sub)<0) subs.push(t.sub); });
+  subs.sort(function(a,b){
+    var ia=-1, ib=-1;
+    SUBJECTS.forEach(function(x,i){ if(x.key===a) ia=i; if(x.key===b) ib=i; });
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+  subs.forEach(function(sub){
+    var list=TOOLS.filter(function(t){ return t.sub===sub; });
+    var sec=el('section','sec'); sec.style.setProperty('--c', subColor(sub));
+    var h=el('h2'); h.innerHTML='<span class="bar"></span>'+esc(sub)+'<span class="n">('+list.length+')</span>';
+    sec.appendChild(h);
+    var g=el('div','list');
+    list.forEach(function(t){
+      var st=toolStat(t);
+      var a=el('a','tool'+(AUTH?'':' off'));
+      a.style.setProperty('--c', subColor(sub));
+      a.href = AUTH ? encodeURI(t.file) : '#parent';
+      a.innerHTML='<span class="badge">'+esc(sub)+'</span>'+
+        '<span class="body"><b>'+esc(t.name)+'</b><span>'+esc(t.desc)+'</span></span>'+
+        '<span class="right">'+
+          (st?'<span class="meta"><span class="pc">習得 '+st.mastered+'/'+st.total+'</span>'+
+              (st.last?'<span class="dt'+(whenLabel(st.last)==='きょう'?' new':'')+'">'+esc(whenLabel(st.last))+'</span>':'')+
+              '</span>':'')+
+          '<span class="ch">&rsaquo;</span></span>';
+      g.appendChild(a);
+    });
+    sec.appendChild(g);
+    app.appendChild(sec);
+  });
 
-      <a class="app rika" href="動物.html">
-        <div class="tab">理科</div>
-        <div class="body">
-          <div class="name">動物カード</div>
-          <div class="note">なかま分けや体のつくりを確認</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+  var par=el('details','parent'); par.id='parent';
+  if(!(AUTH && ready())) par.open=true;   // 設定・ログインが未完了のときだけ最初から開く
+  var sm=el('summary'); sm.innerHTML='&#9881;&#65039; おうちのかたへ（せってい）'; par.appendChild(sm);
 
-      <a class="app rika" href="rika_interactive.html">
-        <div class="tab">理科</div>
-        <div class="body">
-          <div class="name">計算分野 インタラクティブまとめ</div>
-          <div class="note">溶解度・力・電気などの計算を対話で確認</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+  var p1=el('div','panel');
+  if(!AUTH){
+    p1.innerHTML='<h3>ログイン</h3>'+
+      '<p class="muted">お子さんの<b>5桁のID</b>とパスワードを入れてください。1台につき1回だけです。</p>'+
+      '<label class="f">ID</label><input class="big" type="text" id="lId" inputmode="numeric" maxlength="5" placeholder="27001">'+
+      '<label class="f">パスワード</label><input type="password" id="lPw" inputmode="numeric">';
+    var lb=el('button','btn pri','ログイン'); lb.id='btnLogin'; lb.onclick=doLogin; p1.appendChild(lb);
+    if(!ready()){ lb.disabled=true; p1.appendChild(el('div','warnbar','先に下の「クラウド同期」を保存してください。IDとパスワードはGAS側で管理しているため、同期設定がないと確認できません。')); }
+  } else {
+    p1.innerHTML='<h3>ログイン中 <span class="done">&#10003;</span></h3><div class="idcard">'+esc(AUTH.id)+'</div>'+
+      '<p class="muted" style="text-align:center">'+esc(AUTH.label||'')+'</p>';
+    var ob=el('button','btn ng','ログアウト（この端末から記録を消す）'); ob.onclick=doLogout; p1.appendChild(ob);
+  }
+  par.appendChild(p1);
 
-      <a class="app rika" href="rika_keisan_set.html">
-        <div class="tab">理科</div>
-        <div class="body">
-          <div class="name">計算分野パック（標準）</div>
-          <div class="note">標準レベルの計算問題をまとめて演習</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+  var p2=el('div','panel');
+  p2.innerHTML='<h3>クラウド同期'+(ready()?' <span class="done">&#10003; 済</span>':'')+'</h3>'+
+    '<p class="muted">GASのウェブアプリURL（末尾が /exec）と合言葉。<b>この端末にだけ</b>保存され、すべてのツールで使われます。</p>'+
+    '<label class="f">GASのURL</label><input type="url" id="sUrl" placeholder="https://script.google.com/.../exec" value="'+esc(SYNC.url)+'">'+
+    '<label class="f">合言葉</label><input type="text" id="sKey" value="'+esc(SYNC.key)+'">';
+  var sb=el('button','btn pri','保存する');
+  sb.onclick=function(){
+    SYNC.url=$('#sUrl').value.trim(); SYNC.key=$('#sKey').value.trim();
+    lsSet(K_SYNC,JSON.stringify(SYNC)); setMsg('ok','同期設定を保存しました'); render();
+    var e=$('#parent'); if(e) e.scrollIntoView({block:'start'});
+  };
+  p2.appendChild(sb);
+  if(ready()){
+    var mk=el('button','btn gh','\u{1F517} ほかの端末用の設定リンクを作る'); mk.onclick=showSetupLink; p2.appendChild(mk);
+  }
+  var b=el('div','bar '+msg.cls); b.id='bar';
+  b.textContent = msg.t || (!ready() ? '同期がまだ設定されていません'
+    : (AUTH ? 'ログイン中　｜　最終同期 '+jdt(SYNC.lastSync) : '同期設定ずみ。上でログインしてください'));
+  p2.appendChild(b);
+  par.appendChild(p2);
 
-    </div>
-  </section>
+  app.appendChild(par);
+  app.appendChild(el('div','foot','すべてのツールを同じURL（同じフォルダ）から開いてください。'));
+}
 
-  <!-- 社会 -->
-  <section class="section shakai">
-    <div class="sec-head">
-      <span class="sec-bar"></span>
-      <span class="sec-title">社会</span>
-      <span class="sec-count">(6)</span>
-    </div>
-    <div class="list">
+async function doLogin(){
+  var id=String($('#lId').value||'').trim();
+  var pw=String($('#lPw').value||'').trim();
+  if(!/^\d{5}$/.test(id) || +id<ID_MIN || +id>ID_MAX){
+    toast('IDが正しくありません', ID_MIN+'〜'+ID_MAX+'の5桁の数字を入れてください。'); return;
+  }
+  if(!pw){ toast('パスワードを入れてください','おうちの人に確認してください。'); return; }
+  setMsg('','ログインしています…');
+  var j;
+  try{ j=await api({action:'login', app:TOOLS[0].app, id:id, pw:pw}); }
+  catch(e){ setMsg('ng',e.message); return; }
+  if(!j.ok){
+    if(j.error==='auth'){ setMsg('ng','IDかパスワードが違います');
+      toast('ログインできません','IDかパスワードが違います。おうちの人に確認してください。'); return; }
+    setMsg('ng',(/合言葉|key/i.test(j.error||'')?'合言葉が違います':(j.error||'エラー'))); return;
+  }
+  AUTH={ id:id, pw:pw, label:j.label||id, loggedInAt:new Date().toISOString() };
+  lsSet(K_AUTH,JSON.stringify(AUTH));
+  SYNC.lastSync=new Date().toISOString(); lsSet(K_SYNC,JSON.stringify(SYNC));
+  setMsg('ok',(j.label||id)+' としてログインしました');
+  render();
+  window.scrollTo({top:0});
+}
 
-      <a class="app shakai" href="歴史年代クイズ.html">
-        <div class="tab">社会</div>
-        <div class="body">
-          <div class="name">歴史年号クイズ</div>
-          <div class="note">重要な年号を、おぼえるまでくりかえし出題</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
+async function doLogout(){
+  var pend=[];
+  TOOLS.forEach(function(t){
+    var db=jparse(lsGet(t.app));
+    if(!db||!db.progress||!db.progress[AUTH.id]) return;
+    var p=db.progress[AUTH.id];
+    if((p.sessions||[]).length || Object.keys(p.items||{}).length) pend.push({t:t,db:db,p:p});
+  });
+  openModal('ログアウトしますか？',
+    '<p class="muted">この端末から <b>'+esc(AUTH.id)+'</b> の記録を消します。<br>'+
+    'クラウドには残るので、<b>同じIDでログインし直せば戻ります</b>。</p>'+
+    (pend.length?'<p class="muted">先に '+pend.length+' 個のツールの記録をクラウドへ送ります。</p>':''),
+    [{t:'送ってログアウト',cls:'pri',fn:function(){ closeModal(); runLogout(pend); }},
+     {t:'やめる',cls:'gh',fn:closeModal}]);
+}
+async function runLogout(pend){
+  var failed=[];
+  setMsg('','記録を送っています…');
+  for(var i=0;i<pend.length;i++){
+    var e=pend[i];
+    try{
+      var j=await api({action:'save', app:e.t.app, id:AUTH.id, pw:AUTH.pw,
+        account:(e.db.accounts&&e.db.accounts[0])||{id:AUTH.id,name:AUTH.id,label:AUTH.label},
+        progress:e.p});
+      if(!j.ok) failed.push(e.t.name);
+    }catch(err){ failed.push(e.t.name); }
+  }
+  if(failed.length){
+    openModal('送れなかった記録があります',
+      '<p class="muted"><b>'+esc(failed.join('、'))+'</b> をクラウドへ送れませんでした（オフラインの可能性があります）。<br>'+
+      'このままログアウトすると、<b>その記録は失われます。</b></p>',
+      [{t:'それでもログアウト',cls:'ng',fn:function(){ closeModal(); wipe(); }},
+       {t:'やめる（あとでやり直す）',cls:'gh',fn:function(){ closeModal(); setMsg('ng','送れていない記録があります'); }}]);
+    return;
+  }
+  wipe();
+}
+function wipe(){
+  TOOLS.forEach(function(t){ lsDel(t.app); });
+  lsDel(K_AUTH); AUTH=null;
+  setMsg('ok','ログアウトしました');
+  render();
+}
 
-      <a class="app shakai" href="夏季講習歴史年表クイズ.html">
-        <div class="tab">社会</div>
-        <div class="body">
-          <div class="name">夏季講習 歴史年表クイズ</div>
-          <div class="note">夏期講習の範囲を年表で総ざらい</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
-
-      <a class="app shakai" href="地理用語.html">
-        <div class="tab">社会</div>
-        <div class="body">
-          <div class="name">地理用語</div>
-          <div class="note">地形・気候・産業などの用語を確認</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
-
-      <a class="app shakai" href="都市交通.html">
-        <div class="tab">社会</div>
-        <div class="body">
-          <div class="name">都市・交通</div>
-          <div class="note">おもな都市と交通のつながりを確認</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
-
-      <a class="app shakai" href="旧国名.html">
-        <div class="tab">社会</div>
-        <div class="body">
-          <div class="name">旧国名</div>
-          <div class="note">武蔵・相模など、むかしの国名と今の県</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
-
-      <a class="app shakai" href="日本国憲法の条文.html">
-        <div class="tab">社会</div>
-        <div class="body">
-          <div class="name">日本国憲法の条文</div>
-          <div class="note">よく出る条文と、その意味を確認</div>
-        </div>
-        <div class="arrow" aria-hidden="true">›</div>
-      </a>
-
-    </div>
-  </section>
-
-  <!-- 算数 -->
-  <section class="section sansu">
-    <div class="sec-head">
-      <span class="sec-bar"></span>
-      <span class="sec-title">算数</span>
-      <span class="sec-count">(0)</span>
-    </div>
-    <div class="list">
-      <div class="soon">じゅんび中です</div>
-    </div>
-  </section>
-
-  <footer>
-    このページはこの家のためのものです。<br>
-    調子がわるいときは、いったん閉じてもう一度ひらいてみてください。
-  </footer>
-
-</div>
+load();
+if(readSetupHash()) setMsg('ok','設定リンクから同期設定を読み込みました');
+render();
+window.addEventListener('storage',function(ev){ if(ev.key===K_AUTH||ev.key===K_SYNC){ load(); render(); } });
+window.addEventListener('hashchange',function(){
+  if(!/[#&]s=/.test(location.hash||'')) return;
+  var got=readSetupHash(); load();
+  if(got) setMsg('ok','設定リンクから同期設定を読み込みました');
+  render();
+});
+</script>
 </body>
 </html>
