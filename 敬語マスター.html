@@ -168,12 +168,15 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
     <div class="card">
       <h2>💾 記録データの管理</h2>
       <div id="syncStatus" class="status">☁ 同期は未設定です</div>
+      <div id="legacyBox"></div>
       <div class="row">
         <button class="btn sm" id="btnSyncNow">🔄 今すぐ同期</button>
         <button class="btn sm" id="btnPushList">📋 全問一覧をDriveへ</button>
         <button class="btn sm" id="btnCsv2">📄 CSVをダウンロード</button>
         <button class="btn sm" id="btnExport">📤 記録を書き出す</button>
         <button class="btn sm" id="btnImport">📥 記録を読み込む</button>
+        <button class="btn sm hide" id="btnLegacy">📦 前のアカウントから引き継ぐ</button>
+        <button class="btn sm ghost" id="btnDiag">🩺 同期をしらべる</button>
         <button class="btn sm ghost" id="btnReset">🗑 このツールの記録を消す</button>
       </div>
       <a class="btn ghost wide" id="btnPortal" href="./index.html" style="display:block;text-decoration:none;margin-top:10px">⚙ 同期設定・ログアウトはポータルへ</a>
@@ -529,6 +532,9 @@ const DATA = [
 ];
 const BY_ID = {}; DATA.forEach(d=>BY_ID[d.id]=d);
 const CATS = []; DATA.forEach(d=>{ if(CATS.indexOf(d.cat)<0) CATS.push(d.cat); });
+/* 100語版→148語版で番号を振り直したため、内容が一致するのは尊敬語のこの17語だけ。
+   ここに無いIDは、旧アカウントから引き継ぐと「別のことばが習得済み」になってしまう */
+const LEGACY_SAFE_IDS=['s01','s02','s03','s04','s05','s06','s07','s08','s09','s10','s11','s12','s13','s14','s15','s16','s17'];
 const SYM_MARK = {'尊敬語':'尊','謙譲語':'謙','丁寧語':'丁','美化語':'美'};
 /* ================= ストレージ ================= */
 const MEM={};
@@ -539,8 +545,9 @@ function lsDel(k){ if(!LS_OK){delete MEM[k];return;} try{localStorage.removeItem
 
 /* 共通キー（全ツールで共有する。ツール名を付けてはいけない） */
 const K_DB=APP, K_UI=APP+':ui', K_SYNC='kj-quiz:sync', K_AUTH='kj-quiz:auth';
-const LEGACY_SYNC_KEY=APP.concat(':sync');       /* v2.1 の端末別同期設定からの引き継ぎ用 */
-let SYNC=null, AUTH=null, FRESH=false;           /* FRESH=この端末にこのIDの記録がまだ無い */
+const LEGACY_SYNC_KEY=APP.concat(':sync');
+const K_LEGACY=APP+':legacy';        /* 旧アカウントの記録の退避先（この端末だけ・同期しない） */       /* v2.1 の端末別同期設定からの引き継ぎ用 */
+let SYNC=null, AUTH=null, FRESH=false, LEGACY=[];           /* FRESH=この端末にこのIDの記録がまだ無い */
 
 function jparse(s){ try{ return JSON.parse(s||'null'); }catch(e){ return null; } }
 
@@ -610,8 +617,32 @@ function loadAll(){
   if(!AUTH||!AUTH.id||!AUTH.pw) AUTH=null;
   else AUTH.id=String(AUTH.id);
 
-  db=buildDB(jparse(lsGet(K_DB)));
+  const raw=jparse(lsGet(K_DB));
+  db=buildDB(raw);
   FRESH=!!AUTH&&!hasRecords(db.progress[AUTH.id]);   /* 初めて使う端末か */
+  /* 旧アカウントの記録は、保存で上書きされる前に別キーへ退避しておく（消さないため） */
+  const found=legacyAccounts(raw);
+  if(found.length&&raw) lsSet(K_LEGACY,JSON.stringify({at:nowISO(),accounts:raw.accounts,progress:raw.progress}));
+  LEGACY=found.length?found:legacyAccounts(jparse(lsGet(K_LEGACY)));
+}
+
+/* v2.1までの「名前で分けたアカウント」が端末に残っていれば拾い出す（読むだけ・消さない） */
+function legacyAccounts(raw){
+  const out=[];
+  if(!AUTH||!raw||!Array.isArray(raw.accounts)) return out;
+  const prg=raw.progress||{};
+  raw.accounts.forEach(a=>{
+    if(!a||!a.id||String(a.id)===AUTH.id) return;
+    const p=prg[String(a.id)];
+    if(!p||!p.items) return;
+    let tot=0,safe=0;
+    Object.keys(p.items).forEach(k=>{
+      const it=p.items[k]||{};
+      if(((it.totalCorrect||0)+(it.totalWrong||0))>0){ tot++; if(LEGACY_SAFE_IDS.indexOf(k)>=0) safe++; }
+    });
+    if(tot>0) out.push({id:String(a.id),name:String(a.name||a.id),total:tot,safe:safe,src:p});
+  });
+  return out;
 }
 
 function saveDB(fromCloud){
@@ -640,7 +671,8 @@ function getIt(kpId){ return itemsOf(accId())[kpId]||newItem(); }
 
 /* ================= UI状態（同期対象外） ================= */
 let UI={category:'all',impFilter:'all'};
-(function(){ try{ const o=JSON.parse(lsGet(K_UI)||'{}'); if(o.category)UI.category=o.category; if(o.impFilter)UI.impFilter=o.impFilter; }catch(e){} })();
+(function(){ try{ const o=JSON.parse(lsGet(K_UI)||'{}'); if(o.category)UI.category=o.category; if(o.impFilter)UI.impFilter=o.impFilter;
+  if(o.legacyDone&&typeof o.legacyDone==='object')UI.legacyDone=o.legacyDone; }catch(e){} })();
 function saveUI(){ lsSet(K_UI,JSON.stringify(UI)); }
 
 /* ================= 範囲 ================= */
@@ -953,6 +985,7 @@ function renderHome(){
   ).join(''):'<div class="muted">まだ誤答はありません。</div>';
 
   renderSyncStatus();
+  renderLegacyBox();
 }
 
 /* ================= 出題画面 ================= */
@@ -1243,6 +1276,30 @@ function mergeProgress(L,C){
 }
 function sigP(p){ return JSON.stringify({i:(p||{}).items||{},s:((p||{}).sessions||[]).length}); }
 
+/* ---- 診断用：最後の応答をおぼえておく（合言葉・パスワードは保存しない） ---- */
+let LASTRES=null;
+function noteRes(action,j,err){
+  const dat=(j&&j.data)||{};
+  LASTRES={at:nowISO(),action:action,ok:!!(j&&j.ok),error:err||(j?String(j.error||''):'通信できませんでした'),
+    label:(j&&j.label)||'',
+    topKeys:j?Object.keys(j).filter(k=>k!=='data').join(','):'',
+    dataKeys:dat&&typeof dat==='object'?Object.keys(dat).join(','):String(dat),
+    progKeys:dat&&dat.progress&&typeof dat.progress==='object'?Object.keys(dat.progress):[],
+    accIds:dat&&Array.isArray(dat.accounts)?dat.accounts.map(a=>String(a&&a.id)):[]};
+}
+/* GASの応答の形が多少ちがっても、自分のIDの進捗を拾えるようにする */
+function pickCloudProgress(j,id){
+  const dat=(j&&j.data)||{};
+  const looksP=o=>o&&typeof o==='object'&&(o.items||o.sessions);
+  const cands=[];
+  if(dat.progress&&typeof dat.progress==='object'&&dat.progress[id]) cands.push(dat.progress[id]);
+  if(j&&looksP(j.progress)) cands.push(j.progress);
+  if(looksP(dat)) cands.push(dat);
+  if(looksP(dat.progress)) cands.push(dat.progress);
+  for(let i=0;i<cands.length;i++){ const np=normProgress(cands[i]); if(hasRecords(np)) return np; }
+  return normProgress(cands[0]||null);
+}
+
 /* ---- 通信 ---- */
 function gasErr(){ return 'GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください'; }
 async function api(body){
@@ -1271,12 +1328,13 @@ async function pullCloud(silent){
   if(!silent) setSyncMsg(firstTime?'☁… 初めての端末です。クラウドから記録を取り込みます':'☁… クラウドと同期しています','');
   let j;
   try{ j=await api({action:'fetch',app:APP,id:AUTH.id,pw:AUTH.pw}); }
-  catch(e){ netFail(e); return; }
+  catch(e){ noteRes('fetch',null,e.message||''); netFail(e); return; }
+  noteRes('fetch',j);
   if(!j||!j.ok){
     if(j&&j.error==='auth'){ setSyncMsg('☁⚠ '+apiError(j),'err'); onAuthLost(); return; }
     setSyncMsg('☁⚠ '+apiError(j||{}),'err'); return;
   }
-  const cloudP=normProgress(((j.data||{}).progress||{})[AUTH.id]);
+  const cloudP=pickCloudProgress(j,AUTH.id);
   const localP=prog();
   const localHad=hasRecords(localP), cloudHas=hasRecords(cloudP);
   const before=sigP(localP);
@@ -1289,7 +1347,11 @@ async function pullCloud(silent){
   saveDB(!changed);
   touchLastSync();
   FRESH=!hasRecords(merged);
+  const others=(LASTRES.progKeys||[]).filter(k=>k!==AUTH.id);
   if(firstTime&&cloudHas) setSyncMsg('☁✓ この端末にクラウドの記録を取り込みました（'+statOf(merged)+'）','ok');
+  else if(!cloudHas&&!localHad&&others.length)
+    setSyncMsg('☁⚠ クラウドにID '+AUTH.id+' の記録が見つかりません（クラウドにあるのは '+others.slice(0,3).join('・')+
+               (others.length>3?' ほか'+(others.length-3)+'件':'')+'）。「🩺 同期をしらべる」をご確認ください','err');
   else if(!cloudHas&&!localHad) setSyncMsg('☁✓ クラウドにもまだ記録はありません','ok');
   else if(changed) setSyncMsg('☁✓ クラウドと合流しました（'+statOf(merged)+'）','ok');
   else setSyncMsg('☁✓ クラウドと同じ内容です（'+statOf(merged)+'）','ok');
@@ -1303,8 +1365,8 @@ async function pushCloud(silent,okMsg){
   if(!ready()||!AUTH) return false;
   if(!silent) setSyncMsg('☁… 送信しています','');
   let j;
-  try{ j=await api({action:'save',app:APP,id:AUTH.id,pw:AUTH.pw,account:db.accounts[0],progress:prog()}); }
-  catch(e){
+  try{ j=await api({action:'save',app:APP,id:AUTH.id,pw:AUTH.pw,account:db.accounts[0],progress:prog()}); noteRes('save',j); }
+  catch(e){ noteRes('save',null,e.message||'');
     if(/GASの応答/.test(e.message||'')) setSyncMsg('☁⚠ '+e.message,'err');
     else setSyncMsg('☁ オフライン（ローカルには保存済み。次につながったときに送ります）','');
     return false;
@@ -1329,8 +1391,8 @@ async function pushList(){
   if(!hasRecords(prog())){
     setSyncMsg('☁… この端末に記録がありません。先にクラウドを確認します','');
     let f;
-    try{ f=await api({action:'fetch',app:APP,id:AUTH.id,pw:AUTH.pw}); }
-    catch(e){
+    try{ f=await api({action:'fetch',app:APP,id:AUTH.id,pw:AUTH.pw}); noteRes('fetch',f); }
+    catch(e){ noteRes('fetch',null,e.message||'');
       netFail(e);
       modalInfo('いま書き出せません','クラウドにつながらないため、記録を確認できませんでした。<br>通信のよい場所で、もう一度お試しください。');
       return;
@@ -1341,7 +1403,7 @@ async function pushList(){
       modalInfo('いま書き出せません',esc(apiError(f||{}))+'<br>ポータルで設定を確認してから、もう一度お試しください。');
       return;
     }
-    const cloudP=normProgress(((f.data||{}).progress||{})[AUTH.id]);
+    const cloudP=pickCloudProgress(f,AUTH.id);
     if(hasRecords(cloudP)){
       db.progress[AUTH.id]=mergeProgress(prog(),cloudP);
       if(f.label){ AUTH.label=f.label; lsSet(K_AUTH,JSON.stringify(AUTH)); if(db.accounts[0]) db.accounts[0].label=f.label; }
@@ -1412,6 +1474,107 @@ function resetRecords(){
   },'消す');
 }
 
+/* ================= 前のアカウントからの引き継ぎ ================= */
+function legacyPending(){ return !!(AUTH&&LEGACY.length&&!(UI.legacyDone&&UI.legacyDone[AUTH.id])); }
+function renderLegacyBox(){
+  const box=$('#legacyBox'); if(!box) return;
+  const btn=$('#btnLegacy'); if(btn) btn.classList.toggle('hide',!LEGACY.length);
+  if(!legacyPending()){ box.innerHTML=''; return; }
+  box.innerHTML='<div class="warnbar" style="margin:8px 0">📦 この端末に、前のアカウント（'+
+    LEGACY.map(a=>esc(a.name)).join('・')+'）の学習記録が残っています。'+
+    '<b>'+esc(AUTH.label||AUTH.id)+'</b> に引き継げます。'+
+    ' <button class="btn sm pri" id="lgOpen" style="margin-top:6px">引き継ぎの画面をひらく</button></div>';
+  const b=$('#lgOpen'); if(b) b.onclick=openLegacy;
+}
+function openLegacy(){
+  if(!AUTH) return;
+  if(!LEGACY.length){ modalInfo('引き継げる記録がありません','この端末には、前のアカウントの学習記録が見つかりませんでした。'); return; }
+  let h='<h3>📦 前のアカウントから引き継ぐ</h3>';
+  h+='<div class="muted">いまログイン中：<b>'+esc(AUTH.label||AUTH.id)+'（'+esc(AUTH.id)+'）</b></div>';
+  h+='<div class="warnbar" style="margin:8px 0">引き継ぐのは<b>尊敬語'+LEGACY_SAFE_IDS.length+'語ぶんの習得状況だけ</b>です。'+
+     'いまの'+DATA.length+'語版では、ほかの分野の知識ポイントの並びが変わっているため、'+
+     '「別のことばが習得済み」になってしまわないよう、その部分は引き継ぎません。<br>'+
+     'セッション履歴も引き継ぎません（スプレッドシートには前の履歴が残っています）。</div>';
+  h+=LEGACY.map(a=>'<div class="li"><div class="g"><b>'+esc(a.name)+'</b>'+
+      '<div class="muted">記録のあることば '+a.total+'語 ／ 引き継げる尊敬語 <b>'+a.safe+'語</b></div></div>'+
+      '<button class="btn sm pri" data-lg="'+esc(a.id)+'">引き継ぐ</button></div>').join('');
+  h+='<div class="muted" style="font-size:12px;margin-top:8px">前の記録はこの端末に控えとして残してあります。'+
+     'ごきょうだいぶんの引き継ぎが全部すむまでは、消さずに置いておいてください。</div>';
+  h+='<div class="row" style="margin-top:12px"><button class="btn sm ghost" id="lgSkip">今後この案内を出さない</button>'+
+     '<button class="btn sm ghost" id="lgDrop">控えを削除する</button>'+
+     '<span style="margin-left:auto"><button class="btn" id="lgCls">とじる</button></span></div>';
+  openModal(h);
+  $('#lgCls').onclick=closeModal;
+  $('#lgSkip').onclick=()=>{ markLegacyDone(); closeModal(); renderHome(); toast('案内を消しました'); };
+  $('#lgDrop').onclick=()=>modalConfirm('控えを削除しますか？',
+    'この端末に残してある<b>前のアカウントの記録の控え</b>を消します。もとに戻せません。'+
+    '<br>ごきょうだいぶんの引き継ぎがまだなら、消さないでください。',
+    ()=>{ lsDel(K_LEGACY); LEGACY=[]; closeModal(); renderHome(); toast('控えを削除しました'); },'削除する');
+  $$('#modalRoot [data-lg]').forEach(b=>b.onclick=()=>{
+    const a=LEGACY.filter(x=>x.id===b.dataset.lg)[0]; if(!a) return;
+    modalConfirm('「'+esc(a.name)+'」から引き継ぎますか？',
+      '尊敬語 <b>'+a.safe+'語</b>ぶんの習得状況を <b>'+esc(AUTH.label||AUTH.id)+'</b> に取り込み、クラウドにも保存します。'+
+      '<br>いまの記録は消えません（多いほうの回数が残ります）。',
+      ()=>doLegacy(a),'引き継ぐ');
+  });
+}
+function markLegacyDone(){ UI.legacyDone=UI.legacyDone||{}; UI.legacyDone[AUTH.id]=nowISO(); saveUI(); }
+function doLegacy(a){
+  const p=prog(); if(!p) return;
+  let n=0;
+  LEGACY_SAFE_IDS.forEach(k=>{
+    const src=(a.src.items||{})[k];
+    if(!src||((src.totalCorrect||0)+(src.totalWrong||0))===0) return;
+    p.items[k]=mergeItem(p.items[k],src); n++;
+  });
+  markLegacyDone();
+  FRESH=!hasRecords(p);
+  saveDB(false); autoPush(); closeModal(); renderHome();
+  modalInfo('引き継ぎました','「'+esc(a.name)+'」から尊敬語 <b>'+n+'語</b>ぶんの記録を引き継ぎ、クラウドにも保存しました。'+
+    '<br>ほかの分野は、いまの'+DATA.length+'語版として学習していってください。');
+}
+
+/* ================= 診断 ================= */
+function shortURL(u){ if(!u) return '（未設定）'; const m=String(u).match(/^https?:\/\/([^\/]+)/); return (m?m[1]:'')+'/…/exec'; }
+function openDiag(){
+  const p0=prog()||{items:{},sessions:[]};
+  const L=LASTRES;
+  let h='<h3>🩺 同期をしらべる</h3>';
+  h+='<div class="li"><div class="g">ログイン中のID<div class="muted">ポータルで決めた5けたの番号</div></div><b>'+esc(AUTH?AUTH.id:'—')+'</b></div>';
+  h+='<div class="li"><div class="g">表示名</div><b>'+esc(AUTH?(AUTH.label||'—'):'—')+'</b></div>';
+  h+='<div class="li"><div class="g">ツール識別子（app）</div><b>'+esc(APP)+'</b></div>';
+  h+='<div class="li"><div class="g">送信先</div><b>'+esc(shortURL(SYNC&&SYNC.url))+'</b></div>';
+  h+='<div class="li"><div class="g">この端末の記録</div><b>'+esc(statOf(p0))+'</b></div>';
+  if(!L) h+='<div class="warnbar">まだ一度も通信していません。「🔄 今すぐ同期」を押してから、もう一度ひらいてください。</div>';
+  else{
+    h+='<div class="li"><div class="g">最後の通信</div><b>'+esc(L.action)+'／'+(L.ok?'成功':'失敗')+'</b></div>';
+    if(!L.ok) h+='<div class="warnbar">エラー内容：'+esc(L.error||'（不明）')+'</div>';
+    else{
+      const mine=(L.progKeys||[]).indexOf(AUTH?AUTH.id:'')>=0;
+      h+='<div class="li"><div class="g">クラウドにあるID</div><b>'+esc((L.progKeys||[]).join('、')||'（0件）')+'</b></div>';
+      h+=mine
+        ? '<div class="status ok">✓ クラウドにこのIDの記録があります。取り込めていない場合は「🔄 今すぐ同期」をもう一度お試しください。</div>'
+        : ((L.progKeys||[]).length
+            ? '<div class="warnbar">クラウドに<b>このIDの記録がありません</b>。上の一覧が <code>acc_…</code> のような古い形式なら、GAS側の「旧名→ID」引き継ぎがまだ済んでいません。一覧が別の5けた番号なら、ポータルでログインしているIDが違います。</div>'
+            : '<div class="warnbar">クラウドにこのツール（'+esc(APP)+'）の記録が<b>1件もありません</b>。GAS側の保存先（app名）がちがうか、まだ一度も保存されていない可能性があります。</div>');
+      h+='<div class="muted" style="margin-top:8px;font-size:12px">応答に入っていた項目：'+esc(L.topKeys||'—')+' ／ data の項目：'+esc(L.dataKeys||'—')+'</div>';
+    }
+    h+='<div class="muted" style="font-size:12px">通信した時刻：'+fmtDT(L.at)+'</div>';
+  }
+  h+='<div class="row" style="margin-top:12px"><button class="btn sm" id="dgCopy">📋 この内容をコピー</button>'+
+     '<span style="margin-left:auto"><button class="btn pri" id="dgCls">とじる</button></span></div>';
+  openModal(h);
+  $('#dgCls').onclick=closeModal;
+  $('#dgCopy').onclick=()=>{
+    const t=JSON.stringify({id:AUTH?AUTH.id:null,app:APP,url:shortURL(SYNC&&SYNC.url),local:statOf(p0),last:LASTRES},null,2);
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('コピーしました')).catch(()=>{
+      openModal('<h3>この内容を控えてください</h3><textarea style="width:100%;height:220px">'+esc(t)+'</textarea>'+
+        '<div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn pri" id="tCls">とじる</button></div>');
+      $('#tCls').onclick=closeModal;
+    });
+  };
+}
+
 /* ================= ゲート画面（未設定・未ログイン） ================= */
 function renderGate(){
   const btn=$('#accBtn'); if(btn) btn.textContent='👤 —';
@@ -1451,6 +1614,8 @@ function wire(){
   $('#btnExport').onclick=exportJSON;
   $('#btnImport').onclick=importJSON;
   $('#btnReset').onclick=resetRecords;
+  $('#btnDiag').onclick=openDiag;
+  $('#btnLegacy').onclick=openLegacy;
   $('#btnPortal').href=portalURL();
 
   $('#btnNext').onclick=()=>{ S.pos++; nextQuestion(); };
