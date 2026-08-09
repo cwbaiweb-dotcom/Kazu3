@@ -627,7 +627,7 @@ function loadAll(){
 }
 
 /* v2.1までの「名前で分けたアカウント」が端末に残っていれば拾い出す（読むだけ・消さない） */
-function legacyAccounts(raw){
+function legacyAccounts(raw,from){
   const out=[];
   if(!AUTH||!raw||!Array.isArray(raw.accounts)) return out;
   const prg=raw.progress||{};
@@ -640,9 +640,14 @@ function legacyAccounts(raw){
       const it=p.items[k]||{};
       if(((it.totalCorrect||0)+(it.totalWrong||0))>0){ tot++; if(LEGACY_SAFE_IDS.indexOf(k)>=0) safe++; }
     });
-    if(tot>0) out.push({id:String(a.id),name:String(a.name||a.id),total:tot,safe:safe,src:p});
+    if(tot>0) out.push({id:String(a.id),name:String(a.name||a.label||a.id),total:tot,safe:safe,src:p,from:from||'この端末'});
   });
   return out;
+}
+
+/* 同じ旧アカウントが端末とクラウドの両方にあるときは端末側を優先してまとめる */
+function addLegacy(list){
+  (list||[]).forEach(a=>{ if(!LEGACY.some(x=>x.id===a.id)) LEGACY.push(a); });
 }
 
 function saveDB(fromCloud){
@@ -1334,6 +1339,7 @@ async function pullCloud(silent){
     if(j&&j.error==='auth'){ setSyncMsg('☁⚠ '+apiError(j),'err'); onAuthLost(); return; }
     setSyncMsg('☁⚠ '+apiError(j||{}),'err'); return;
   }
+  addLegacy(legacyAccounts(j.data,'クラウド'));   /* クラウドに残る旧アカウントも引き継ぎ候補にする */
   const cloudP=pickCloudProgress(j,AUTH.id);
   const localP=prog();
   const localHad=hasRecords(localP), cloudHas=hasRecords(cloudP);
@@ -1349,6 +1355,9 @@ async function pullCloud(silent){
   FRESH=!hasRecords(merged);
   const others=(LASTRES.progKeys||[]).filter(k=>k!==AUTH.id);
   if(firstTime&&cloudHas) setSyncMsg('☁✓ この端末にクラウドの記録を取り込みました（'+statOf(merged)+'）','ok');
+  else if(!cloudHas&&!localHad&&legacyPending())
+    setSyncMsg('☁ このIDの記録はまだありませんが、前のアカウント（'+LEGACY.map(a=>a.name).join('・')+
+               '）の記録が見つかりました。下の「📦 引き継ぎの画面をひらく」からお進みください','err');
   else if(!cloudHas&&!localHad&&others.length)
     setSyncMsg('☁⚠ クラウドにID '+AUTH.id+' の記録が見つかりません（クラウドにあるのは '+others.slice(0,3).join('・')+
                (others.length>3?' ほか'+(others.length-3)+'件':'')+'）。「🩺 同期をしらべる」をご確認ください','err');
@@ -1480,8 +1489,8 @@ function renderLegacyBox(){
   const box=$('#legacyBox'); if(!box) return;
   const btn=$('#btnLegacy'); if(btn) btn.classList.toggle('hide',!LEGACY.length);
   if(!legacyPending()){ box.innerHTML=''; return; }
-  box.innerHTML='<div class="warnbar" style="margin:8px 0">📦 この端末に、前のアカウント（'+
-    LEGACY.map(a=>esc(a.name)).join('・')+'）の学習記録が残っています。'+
+  box.innerHTML='<div class="warnbar" style="margin:8px 0">📦 前のアカウント（'+
+    LEGACY.map(a=>esc(a.name)).join('・')+'）の学習記録が見つかりました。'+
     '<b>'+esc(AUTH.label||AUTH.id)+'</b> に引き継げます。'+
     ' <button class="btn sm pri" id="lgOpen" style="margin-top:6px">引き継ぎの画面をひらく</button></div>';
   const b=$('#lgOpen'); if(b) b.onclick=openLegacy;
@@ -1496,6 +1505,7 @@ function openLegacy(){
      '「別のことばが習得済み」になってしまわないよう、その部分は引き継ぎません。<br>'+
      'セッション履歴も引き継ぎません（スプレッドシートには前の履歴が残っています）。</div>';
   h+=LEGACY.map(a=>'<div class="li"><div class="g"><b>'+esc(a.name)+'</b>'+
+      ' <span class="tag" style="background:#e5e7eb;color:#6b7280">'+esc(a.from||'')+'</span>'+
       '<div class="muted">記録のあることば '+a.total+'語 ／ 引き継げる尊敬語 <b>'+a.safe+'語</b></div></div>'+
       '<button class="btn sm pri" data-lg="'+esc(a.id)+'">引き継ぐ</button></div>').join('');
   h+='<div class="muted" style="font-size:12px;margin-top:8px">前の記録はこの端末に控えとして残してあります。'+
