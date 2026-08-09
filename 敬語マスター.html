@@ -1323,11 +1323,43 @@ function autoPush(){ if(ready()&&AUTH) pushCloud(true); }
 async function pushList(){
   if(!ready()||!AUTH) return;
   setSyncMsg('☁… 一覧を書き出し中','');
+
+  /* この端末にまだ記録が無いときは、あきらめる前に必ずクラウドを見に行く
+     （初めて使う端末・機種変更の直後でも、そのまま書き出せるようにするため） */
   if(!hasRecords(prog())){
-    modalInfo('書き出しを中止しました','記録がまだ1件もありません。空の一覧でスプレッドシートを上書きしてしまうため、書き出しを中止しました。<br>まず1回学習して結果画面まで進んでください。');
-    setSyncMsg('☁ 記録が無いため一覧の書き出しを中止しました','');
+    setSyncMsg('☁… この端末に記録がありません。先にクラウドを確認します','');
+    let f;
+    try{ f=await api({action:'fetch',app:APP,id:AUTH.id,pw:AUTH.pw}); }
+    catch(e){
+      netFail(e);
+      modalInfo('いま書き出せません','クラウドにつながらないため、記録を確認できませんでした。<br>通信のよい場所で、もう一度お試しください。');
+      return;
+    }
+    if(!f||!f.ok){
+      if(f&&f.error==='auth'){ setSyncMsg('☁⚠ '+apiError(f),'err'); onAuthLost(); return; }
+      setSyncMsg('☁⚠ '+apiError(f||{}),'err');
+      modalInfo('いま書き出せません',esc(apiError(f||{}))+'<br>ポータルで設定を確認してから、もう一度お試しください。');
+      return;
+    }
+    const cloudP=normProgress(((f.data||{}).progress||{})[AUTH.id]);
+    if(hasRecords(cloudP)){
+      db.progress[AUTH.id]=mergeProgress(prog(),cloudP);
+      if(f.label){ AUTH.label=f.label; lsSet(K_AUTH,JSON.stringify(AUTH)); if(db.accounts[0]) db.accounts[0].label=f.label; }
+      saveDB(true); touchLastSync(); FRESH=false; renderHome();
+      setSyncMsg('☁✓ クラウドの記録を取り込みました。一覧を書き出します','ok');
+    }
+  }
+
+  if(!hasRecords(prog())){
+    modalInfo('書き出しを中止しました',
+      'この端末にも<b>クラウドにも</b>、ID '+esc(AUTH.id)+'（'+esc(AUTH.label||AUTH.id)+'）の学習記録がまだありません。'+
+      '<br>空の一覧でスプレッドシートを上書きしてしまうため、書き出しを中止しました。'+
+      '<br><br>・まず1回学習して<b>結果画面まで</b>進んでください。'+
+      '<br>・ほかの端末で学習ずみのときは、ポータルで<b>同じID</b>にログインしているかご確認ください。');
+    setSyncMsg('☁ この端末にもクラウドにも記録が無いため、書き出しを中止しました','');
     return;
   }
+
   let j;
   try{ j=await api({app:APP,id:AUTH.id,list:{header:LIST_HEADER,rows:rowsFor([AUTH.id]).map(r=>r.slice(0,14))}}); }
   catch(e){ netFail(e); return; }
