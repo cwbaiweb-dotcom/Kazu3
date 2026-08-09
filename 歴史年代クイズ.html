@@ -681,7 +681,17 @@ function blankStore(){
 }
 function normalizeProgress(p){
   if(!p) return blankAccountProgress();
-  return { items: p.items || {}, sessions: Array.isArray(p.sessions) ? p.sessions : [] };
+  const rawItems = (p.items && typeof p.items === "object") ? p.items : {};
+  const items = {};
+  Object.keys(rawItems).forEach(idx=>{
+    const it = rawItems[idx];
+    // Defensively drop anything that isn't a real item-stat object (e.g.
+    // corrupted Drive JSON, a stray null/string) rather than letting it
+    // crash rendering later -- losing one KP's stats is far better than
+    // the whole home screen refusing to render.
+    if(it && typeof it === "object" && !Array.isArray(it)) items[idx] = it;
+  });
+  return { items, sessions: Array.isArray(p.sessions) ? p.sessions.filter(s => s && typeof s === "object") : [] };
 }
 
 // Whether this browser can actually persist to localStorage (some private-
@@ -1220,6 +1230,7 @@ function setSyncStatus(kind, message){
 
 function classifySyncError(e){
   if(e && e.kind) return e;
+  if(e instanceof Error) return { kind: "exception", message: e.message };
   return { kind: "network" };
 }
 function syncErrorMessage(e){
@@ -1228,6 +1239,7 @@ function syncErrorMessage(e){
     case "auth": return "ログインが無効になりました。ポータルでログインし直してください";
     case "badkey": return "合言葉が違います";
     case "badresponse": return "GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
+    case "exception": return "予期しないエラーが発生しました：" + (e.message || "詳細不明") + "（この画面のスクリーンショットを送っていただけると調査できます）";
     default: return e.message || "同期エラーが発生しました";
   }
 }
@@ -1333,41 +1345,42 @@ function syncSummaryMessage(prefix){
 async function pullCloud(silent){
   if(!ready() || !AUTH) return;
   if(!silent) setSyncStatus("pending", "☁… クラウドと同期しています");
-  let j;
-  try{ j = await api({ action: "fetch", app: APP_ID, id: AUTH.id, pw: AUTH.pw }); }
-  catch(e){ handleSyncError(e); return; }
+  try{
+    const j = await api({ action: "fetch", app: APP_ID, id: AUTH.id, pw: AUTH.pw });
 
-  const cloudProgress = normalizeProgress(((j.data||{}).progress||{})[AUTH.id]);
-  const localProgress = getCommittedStats(AUTH.id);
-  const before = JSON.stringify(localProgress);
-  const merged = mergeAccountProgress(localProgress, cloudProgress);
-  STORE.progress[AUTH.id] = merged;
+    const cloudProgress = normalizeProgress(((j.data||{}).progress||{})[AUTH.id]);
+    const localProgress = getCommittedStats(AUTH.id);
+    const before = JSON.stringify(localProgress);
+    const merged = mergeAccountProgress(localProgress, cloudProgress);
+    STORE.progress[AUTH.id] = merged;
 
-  if(j.label){ saveAuthLabel(j.label); STORE.accounts[0].label = j.label; }
-  const cloudAcc = (j.data||{}).accounts && j.data.accounts[0];
-  if(cloudAcc && cloudAcc.createdAt) STORE.accounts[0].createdAt = cloudAcc.createdAt;
+    if(!STORE.accounts[0]) STORE.accounts[0] = { id: AUTH.id, name: AUTH.id, label: AUTH.label || AUTH.id, createdAt: nowIso() };
+    if(j.label){ saveAuthLabel(j.label); STORE.accounts[0].label = j.label; }
+    const cloudAcc = (j.data||{}).accounts && j.data.accounts[0];
+    if(cloudAcc && cloudAcc.createdAt) STORE.accounts[0].createdAt = cloudAcc.createdAt;
 
-  saveStore({ fromCloud: true });
-  SYNC.lastSync = nowIso(); saveSyncConfig();
-  setSyncStatus("success", syncSummaryMessage("☁✓ クラウドと合流しました"));
+    saveStore({ fromCloud: true });
+    SYNC.lastSync = nowIso(); saveSyncConfig();
+    setSyncStatus("success", syncSummaryMessage("☁✓ クラウドと合流しました"));
 
-  if(before !== JSON.stringify(merged)) await pushCloud(true, state.syncStatus.message);
+    if(before !== JSON.stringify(merged)) await pushCloud(true, state.syncStatus.message);
+  }catch(e){ handleSyncError(e); }
 }
 
 async function pushCloud(silent, okMsg){
   if(!ready() || !AUTH) return false;
   if(!silent) setSyncStatus("pending", "☁… 送信しています");
-  let j;
   try{
-    j = await api({
+    if(!STORE.accounts[0]) STORE.accounts[0] = { id: AUTH.id, name: AUTH.id, label: AUTH.label || AUTH.id, createdAt: nowIso() };
+    await api({
       action: "save", app: APP_ID, id: AUTH.id, pw: AUTH.pw,
       account: STORE.accounts[0],
       progress: getCommittedStats(AUTH.id),
     });
+    SYNC.lastSync = nowIso(); saveSyncConfig();
+    setSyncStatus("success", okMsg || "☁✓ クラウドに保存しました");
+    return true;
   }catch(e){ handleSyncError(e); return false; }
-  SYNC.lastSync = nowIso(); saveSyncConfig();
-  setSyncStatus("success", okMsg || "☁✓ クラウドに保存しました");
-  return true;
 }
 
 // Push-only: used for the deterministic "local just changed" triggers
@@ -1506,8 +1519,29 @@ async function exportListToDrive(){
 // rendering
 // ---------------------------------------------------------------------
 function render(){
-  renderScreen();
-  renderModalOverlay();
+  try{
+    renderScreen();
+    renderModalOverlay();
+  }catch(e){
+    // Last line of defense: a rendering bug (bad data, our own mistake,
+    // anything) should never leave the child staring at a blank/frozen
+    // screen. Show something actionable instead of nothing.
+    const app = document.getElementById('app');
+    if(app){
+      app.innerHTML = `
+        <div class="card center-card">
+          <div class="qtype-tag" style="background:var(--shuiro);">⚠ 表示エラー</div>
+          <div class="question-text">画面の表示中に問題が起きました</div>
+          <p style="font-size:12.5px; color:var(--sumi-soft);">${(e && e.message) || "詳細不明"}</p>
+          <div class="btn-row">
+            <button class="big-btn" id="fatalReloadBtn">読み込み直す</button>
+          </div>
+        </div>
+      `;
+      const btn = document.getElementById('fatalReloadBtn');
+      if(btn) btn.onclick = ()=> window.location.reload();
+    }
+  }
 }
 
 function renderModalOverlay(){
@@ -1557,8 +1591,13 @@ function renderModalOverlay(){
     overlay.innerHTML = `
       <div class="modal-box">
         <h3>書き出しを中止しました</h3>
-        <p>クラウド・この端末のどちらにも記録データが見つからなかったため、一覧の書き出しを中止しました。既存のスプレッドシートが空データで上書きされるのを防ぐための安全装置です。クイズに挑戦して記録を作ってから、もう一度お試しください。</p>
-        <div class="modal-btn-row"><button class="ghost-btn" id="modalCancelBtn">閉じる</button></div>
+        <p>この端末にもクラウドにも、ID ${AUTH ? AUTH.id : ""}（${accountName()}）の学習記録がまだありません。<br>
+        空の一覧でスプレッドシートを上書きしてしまうため、書き出しを中止しました。</p>
+        <ul style="text-align:left; font-size:12.5px; color:var(--sumi-soft); line-height:2; padding-left:1.2em; margin:0 0 14px;">
+          <li>まず1回学習して結果画面まで進んでください。</li>
+          <li>ほかの端末で学習ずみのときは、ポータルで同じIDにログインしているかご確認ください。</li>
+        </ul>
+        <div class="modal-btn-row"><button class="sync-btn" id="modalCancelBtn">OK</button></div>
       </div>
     `;
     document.getElementById('modalCancelBtn').onclick = ()=>{ state.modal = null; render(); };
@@ -2283,15 +2322,21 @@ function sessionAnsweredYears(){
 async function initialLoad(){
   render();
   if(!ready() || !loggedIn()) return;
-  if(!dbHasRecords(STORE)){
-    state.screen = "loading";
-    render();
-    await pullCloud(true);
-    state.screen = "home";
-    render();
-  } else {
-    setSyncStatus("pending", "☁… クラウドと同期しています");
-    pullCloud(true);
+  try{
+    if(!dbHasRecords(STORE)){
+      state.screen = "loading";
+      render();
+      await pullCloud(true);
+    } else {
+      setSyncStatus("pending", "☁… クラウドと同期しています");
+      pullCloud(true);
+    }
+  }catch(e){
+    // belt-and-suspenders: pullCloud already catches its own errors, but
+    // this guarantees the loading screen can never get stuck no matter what.
+    handleSyncError(e);
+  }finally{
+    if(state.screen === "loading"){ state.screen = "home"; render(); }
   }
 }
 initialLoad();
