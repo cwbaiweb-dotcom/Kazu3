@@ -143,8 +143,12 @@ svg.jp text{font-size:13px;fill:#2b2b2b;font-weight:700;paint-order:stroke;strok
 =================================================================== */
 const APP  = "kj-quiz-shakai-kyukokumei";
 const TOOL = "旧国名";
-const SYNC_KEY = APP + ":sync";
+const VER  = 'v3.0';
 const SCHEMA_VERSION = 2;
+/* localStorage キーはこの4本だけ（sync と auth は全ツール共通の前置き） */
+var K_DB=APP, K_UI=APP+":ui", K_SYNC='kj-quiz:sync', K_AUTH='kj-quiz:auth';
+/* v2.1 のツール別同期設定キー（初回起動時の引き継ぎにのみ使う） */
+var K_SYNC_LEGACY=[APP,"sync"].join(":");
 /* ============ §データ：旧国名73 ＋ 複合語8 ＝ 81KP ============ */
 /* [旧国名, よみ, 都道府県(「*」は斜字＝一部の地域), 地方, 地理の例, 歴史の例] */
 const KUNI_RAW = [
@@ -337,7 +341,7 @@ const SETS = [
   note:"丹波は京都府南部と兵庫県、丹後は京都府北部（丹後半島・丹後ちりめん）。都に近い方が丹波です。"}
 ];
 
-/* =============== §10 保存・§12 同期・§13 合流 =============== */
+/* =============== 保存・ログイン・同期（v3.0） =============== */
 let MEMORY_ONLY = false;      // localStorageが使えない環境
 let MEM = {};                 // その場合の代替
 function lsGet(k){
@@ -350,9 +354,13 @@ function lsSet(k,v){
     localStorage.setItem(k,v);
   }catch(e){ MEMORY_ONLY=true; MEM[k]=v; }
 }
+function lsDel(k){
+  try{ if(MEMORY_ONLY){ delete MEM[k]; return; } localStorage.removeItem(k); }
+  catch(e){ delete MEM[k]; }
+}
+function jparse(s){ try{ return JSON.parse(s||"null"); }catch(e){ return null; } }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function nowISO(){ return new Date().toISOString(); }
-function newId(){ return "acc_"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
 function blankItem(){
   return {streak:0,mastered:false,masteredAt:null,postMasterWrong:0,lastFormat:null,
@@ -360,251 +368,207 @@ function blankItem(){
     byFormat:{A:{correct:0,wrong:0},B:{correct:0,wrong:0}},
     wrongLog:[],lastSeenAt:null};
 }
-function emptyDB(){
+function blankDB(){
   return {app:APP,version:SCHEMA_VERSION,updatedAt:nowISO(),activeAccountId:null,accounts:[],progress:{}};
 }
-
-/* --- §10 旧スキーマからの移行 --- */
-function migrate(raw){
-  if(!raw || typeof raw!=="object") return emptyDB();
-  let db;
-  if(raw.accounts && raw.progress){
-    db = raw;
-  }else if(raw.users){                       // 旧 {users:{名前:{st:{}}}}
-    db = emptyDB(); db.updatedAt = raw.updatedAt || nowISO();
-    Object.keys(raw.users).forEach(function(nm){
-      const id=newId();
-      db.accounts.push({id:id,name:nm,createdAt:nowISO()});
-      const items={}; const src=raw.users[nm].st||raw.users[nm].items||{};
-      Object.keys(src).forEach(function(k){ items[k]=Object.assign(blankItem(),src[k]); });
-      db.progress[id]={items:items,sessions:raw.users[nm].sessions||[]};
-    });
-    if(db.accounts[0]) db.activeAccountId=db.accounts[0].id;
-  }else{
-    db = emptyDB();
-  }
-  db.app=APP; db.version=SCHEMA_VERSION;
-  if(!db.updatedAt) db.updatedAt=nowISO();
-  if(!Array.isArray(db.accounts)) db.accounts=[];
-  if(!db.progress) db.progress={};
-  db.accounts.forEach(function(a){
-    if(!a.id) a.id=newId();
-    if(!a.createdAt) a.createdAt=nowISO();
-    const p = db.progress[a.id] = db.progress[a.id]||{items:{},sessions:[]};
-    if(!p.items) p.items={};
-    if(!Array.isArray(p.sessions)) p.sessions=[];
-    Object.keys(p.items).forEach(function(k){
-      const it = p.items[k] = Object.assign(blankItem(),p.items[k]);
-      if(typeof it.postMasterWrong!=="number") it.postMasterWrong=0;   // v1系の補完
-      if(!it.byFormat) it.byFormat={A:{correct:0,wrong:0},B:{correct:0,wrong:0}};
-      ["A","B"].forEach(function(f){
-        it.byFormat[f]=Object.assign({correct:0,wrong:0},it.byFormat[f]||{});
-      });
-      if(!Array.isArray(it.wrongLog)) it.wrongLog=[];
-      it.wrongLog = it.wrongLog.slice(0,5);                            // §9-1 最新5件
-      if(it.mastered && !it.masteredAt) it.masteredAt = it.lastSeenAt || nowISO();
-    });
-    p.sessions = p.sessions.slice(0,100);
-    p.sessions.forEach(function(s){                                    // §10 modeは日本語表記
-      if(s.mode==="20q") s.mode="20問";
-      if(s.mode==="10q") s.mode="10問";
-      if(s.mode==="all") s.mode="全問";
-    });
+function normItem(raw){
+  const it = Object.assign(blankItem(), raw||{});
+  if(typeof it.postMasterWrong!=="number") it.postMasterWrong=0;      // v1系の補完
+  if(!it.byFormat) it.byFormat={A:{correct:0,wrong:0},B:{correct:0,wrong:0}};
+  ["A","B"].forEach(function(f){
+    it.byFormat[f]=Object.assign({correct:0,wrong:0},it.byFormat[f]||{});
   });
-  if(db.activeAccountId && !db.progress[db.activeAccountId]) db.activeAccountId=null;
-  if(!db.activeAccountId && db.accounts[0]) db.activeAccountId=db.accounts[0].id;
+  if(!Array.isArray(it.wrongLog)) it.wrongLog=[];
+  it.wrongLog = it.wrongLog.slice(0,5);                                // §9-1 最新5件
+  if(it.mastered && !it.masteredAt) it.masteredAt = it.lastSeenAt || nowISO();
+  return it;
+}
+function normProgress(raw){
+  const p = {items:{},sessions:[]};
+  const src = raw||{};
+  Object.keys(src.items||{}).forEach(function(k){ p.items[k]=normItem(src.items[k]); });
+  p.sessions = (Array.isArray(src.sessions)? src.sessions : []).slice(0,100);
+  p.sessions.forEach(function(s){                                      // modeは日本語表記に統一
+    if(s.mode==="20q") s.mode="20問";
+    if(s.mode==="10q") s.mode="10問";
+    if(s.mode==="all") s.mode="全問";
+  });
+  return p;
+}
+
+let DB=null, UI=null, SYNC=null, AUTH=null;
+
+/* 端末に持つのは常に「ログイン中のID 1件だけ」。他のIDは読み捨てる */
+function buildDB(raw){
+  const db=blankDB();
+  if(!AUTH) return db;
+  db.activeAccountId=AUTH.id;
+  const a={id:AUTH.id, name:AUTH.id, label:AUTH.label||AUTH.id, createdAt:nowISO()};
+  const src = raw && raw.accounts ? raw.accounts.filter(function(x){return String(x.id)===AUTH.id;})[0] : null;
+  if(src && src.createdAt) a.createdAt=src.createdAt;
+  db.accounts=[a];
+  db.progress[AUTH.id]=normProgress(raw&&raw.progress?raw.progress[AUTH.id]:null);
+  db.updatedAt=(raw&&raw.updatedAt)||nowISO();
   return db;
 }
+function loadAll(){
+  /* 同期設定：共通キー。無ければ v2.1 のツール別キーから引き継ぐ */
+  SYNC = jparse(lsGet(K_SYNC));
+  if(!SYNC || !SYNC.url){
+    const old = jparse(lsGet(K_SYNC_LEGACY));
+    if(old && old.url){ SYNC={url:old.url, key:old.key||"", lastSync:old.lastSync||null}; lsSet(K_SYNC,JSON.stringify(SYNC)); }
+  }
+  if(!SYNC || typeof SYNC!=="object") SYNC={url:"",key:"",lastSync:null};
+  AUTH = jparse(lsGet(K_AUTH));
+  if(!AUTH || !AUTH.id || !AUTH.pw) AUTH=null;
+  if(AUTH) AUTH.id=String(AUTH.id);
 
-let DB = emptyDB();
-function loadDB(){
-  let raw=null;
-  try{ raw = JSON.parse(lsGet(APP)||"null"); }catch(e){ raw=null; }
-  DB = migrate(raw);
+  DB = buildDB(jparse(lsGet(K_DB)));
+
+  UI = jparse(lsGet(K_UI)) || {};
+  if(UI.filter) FILTER = Object.assign(FILTER, UI.filter);
 }
-/* §10 saveDB：保存のたびに updatedAt を更新（クラウド取り込み時のみ据え置き） */
-function saveDB(keepUpdatedAt){
-  if(!keepUpdatedAt) DB.updatedAt = nowISO();
-  DB.app = APP; DB.version = SCHEMA_VERSION;
-  lsSet(APP, JSON.stringify(DB));
+function saveDB(opt){
+  opt=opt||{};
+  if(!AUTH) return;
+  if(!opt.fromCloud) DB.updatedAt=nowISO();
+  DB.app=APP; DB.version=SCHEMA_VERSION;
+  lsSet(K_DB, JSON.stringify(DB));
 }
-function acc(){ return DB.progress[DB.activeAccountId] || null; }
-function accName(){
-  const a = DB.accounts.filter(function(x){return x.id===DB.activeAccountId;})[0];
-  return a? a.name : "";
+function saveUI(){ UI.filter=FILTER; lsSet(K_UI, JSON.stringify(UI)); }
+function saveSync(){ lsSet(K_SYNC, JSON.stringify(SYNC)); }
+
+function acc(){ return DB.accounts[0]||null; }
+function prog(){
+  if(!AUTH) return null;
+  if(!DB.progress[AUTH.id]) DB.progress[AUTH.id]={items:{},sessions:[]};
+  const p=DB.progress[AUTH.id]; if(!p.items)p.items={}; if(!p.sessions)p.sessions=[]; return p;
 }
-function item(id, store){
-  const p = store || acc(); if(!p) return blankItem();
-  if(!p.items[id]) p.items[id]=blankItem();
+function itemRO(id, store){
+  const p = store || prog();
+  if(!p || !p.items[id]) return blankItem();
   return p.items[id];
 }
+function ready(){ return !!(SYNC && SYNC.url && SYNC.key); }
+function loggedIn(){ return !!AUTH; }
+function portalURL(){ return './index.html'; }
 
-/* --- §12 同期設定（同期対象に含めない） --- */
-function syncCfg(){
-  try{ return JSON.parse(lsGet(SYNC_KEY)||"null") || {url:"",key:"",lastSync:null}; }
-  catch(e){ return {url:"",key:"",lastSync:null}; }
-}
-function setSyncCfg(c){ lsSet(SYNC_KEY, JSON.stringify(c)); }
-function syncOn(){ const c=syncCfg(); return !!(c.url && c.key); }
-
-let SYNC_MSG = {cls:"", text:"同期は未設定です"};
+let SYNC_MSG = {cls:"", text:"☁ ポータルで同期設定とログインをしてください"};
 function setSync(cls,text){ SYNC_MSG={cls:cls,text:text}; renderSyncBar(); }
 
-async function gasPull(){
-  const c=syncCfg();
-  const url = c.url + (c.url.indexOf("?")<0?"?":"&") + "key=" + encodeURIComponent(c.key) + "&app=" + encodeURIComponent(APP);
-  const res = await fetch(url);
-  const txt = await res.text();
-  let j; try{ j = JSON.parse(txt); }catch(e){ throw new Error("BADJSON"); }
-  return j;
+/* ---- 同期API（POSTのみ。GETやDB丸ごと送信はしない） ---- */
+async function api(body){
+  const r = await fetch(SYNC.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(Object.assign({key:SYNC.key},body))});
+  const txt = await r.text();
+  try{ return JSON.parse(txt); }
+  catch(e){ throw new Error('GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください'); }
 }
-async function gasPost(payload){
-  const c=syncCfg();
-  const res = await fetch(c.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body: JSON.stringify(payload)});
-  const txt = await res.text();
-  let j; try{ j = JSON.parse(txt); }catch(e){ throw new Error("BADJSON"); }
-  return j;
+function apiError(j){
+  const e=String((j&&j.error)||'');
+  if(e==='auth') return 'ログインが無効になりました。ポータルでログインし直してください';
+  if(/合言葉|key/i.test(e)) return '合言葉が違います';
+  return e||'エラー';
 }
-const BADJSON_MSG = "GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
+function onAuthLost(){ lsDel(K_AUTH); AUTH=null; view='gate'; render(); }
 
-function dbHasRecords(d){
-  if(!d || !d.progress) return false;
-  return Object.keys(d.progress).some(function(aid){
-    const p=d.progress[aid]; if(!p) return false;
-    if(Array.isArray(p.sessions) && p.sessions.length>0) return true;
-    const it=p.items||{};
-    return Object.keys(it).some(function(k){
-      return (it[k].totalCorrect||0)+(it[k].totalWrong||0) > 0;
-    });
-  });
-}
-
-/* --- §13-3 合流（マージ）--- */
-function mergeItem(a,b){                       // a=ローカル, b=クラウド
-  if(!a) return clone(b); if(!b) return clone(a);
-  const r = clone(a);
-  r.totalCorrect    = Math.max(a.totalCorrect||0, b.totalCorrect||0);
-  r.totalWrong      = Math.max(a.totalWrong||0,   b.totalWrong||0);
-  r.postMasterWrong = Math.max(a.postMasterWrong||0, b.postMasterWrong||0);
-  r.byFormat = {A:{},B:{}};
+/* ---- 合流（ログイン中のID 1件ぶんだけ） ---- */
+function mergeItem(a,b){
+  if(!a) return normItem(b); if(!b) return normItem(a);
+  a=normItem(a); b=normItem(b);
+  const o=blankItem();
+  o.totalCorrect=Math.max(a.totalCorrect,b.totalCorrect);
+  o.totalWrong  =Math.max(a.totalWrong,b.totalWrong);
+  o.postMasterWrong=Math.max(a.postMasterWrong,b.postMasterWrong);
   ["A","B"].forEach(function(f){
-    const x=(a.byFormat&&a.byFormat[f])||{}, y=(b.byFormat&&b.byFormat[f])||{};
-    r.byFormat[f]={correct:Math.max(x.correct||0,y.correct||0),
-                   wrong:  Math.max(x.wrong||0,  y.wrong||0)};
+    o.byFormat[f].correct=Math.max(a.byFormat[f].correct,b.byFormat[f].correct);
+    o.byFormat[f].wrong  =Math.max(a.byFormat[f].wrong,  b.byFormat[f].wrong);
   });
-  r.mastered = !!(a.mastered || b.mastered);                       // 片方でも真なら真
-  const ma=a.masteredAt, mb=b.masteredAt;
-  r.masteredAt = (ma&&mb) ? (ma<mb?ma:mb) : (ma||mb||null);        // 早い方
+  o.mastered = a.mastered||b.mastered;
+  if(a.masteredAt&&b.masteredAt) o.masteredAt = (new Date(a.masteredAt)<=new Date(b.masteredAt))?a.masteredAt:b.masteredAt;
+  else o.masteredAt = a.masteredAt||b.masteredAt||null;
+  if(o.mastered&&!o.masteredAt) o.masteredAt=nowISO();
   const seen={}, log=[];
-  (a.wrongLog||[]).concat(b.wrongLog||[]).forEach(function(w){
-    if(!w||!w.at||seen[w.at]) return; seen[w.at]=1; log.push(w);
-  });
-  log.sort(function(x,y){ return x.at<y.at?1:-1; });
-  r.wrongLog = log.slice(0,5);
-  const la=a.lastSeenAt||"", lb=b.lastSeenAt||"";
-  r.lastSeenAt = la>lb?la:lb;                                      // 新しい方
-  const newer = (lb>la) ? b : a;                                   // streakは最後に学習した端末
-  r.streak = newer.streak||0;
-  r.lastFormat = newer.lastFormat||null;
-  return r;
+  a.wrongLog.concat(b.wrongLog).forEach(function(w){ const k=w.at+'|'+w.format; if(!seen[k]){ seen[k]=1; log.push(w); } });
+  log.sort(function(x,y){ return new Date(y.at)-new Date(x.at); });
+  o.wrongLog = log.slice(0,5);
+  const at=a.lastSeenAt?new Date(a.lastSeenAt).getTime():0, bt=b.lastSeenAt?new Date(b.lastSeenAt).getTime():0;
+  const newer = (at>=bt)?a:b;
+  o.lastSeenAt = newer.lastSeenAt||a.lastSeenAt||b.lastSeenAt||null;
+  o.streak     = newer.streak;          // 最後に学習した端末の値を正とする
+  o.lastFormat = newer.lastFormat;
+  return o;
 }
-function mergeDB(local, cloud){
-  const out = clone(local);
-  out.app=APP; out.version=SCHEMA_VERSION;
-  const activeName = (local.accounts.filter(function(a){return a.id===local.activeAccountId;})[0]||{}).name;
-  const byName={}; out.accounts.forEach(function(a){ byName[a.name]=a; });
-  (cloud.accounts||[]).forEach(function(ca){
-    let la = byName[ca.name];
-    if(!la){                                                       // クラウドにしかいない子は追加
-      la = {id:ca.id||newId(), name:ca.name, createdAt:ca.createdAt||nowISO()};
-      out.accounts.push(la); byName[ca.name]=la;
-      out.progress[la.id]={items:{},sessions:[]};
-    }
-    const lp = out.progress[la.id] = out.progress[la.id]||{items:{},sessions:[]};
-    const cp = (cloud.progress||{})[ca.id] || {items:{},sessions:[]};
-    Object.keys(cp.items||{}).forEach(function(k){
-      lp.items[k] = mergeItem(lp.items[k], cp.items[k]);
-    });
-    const seen={}, ss=[];
-    (lp.sessions||[]).concat(cp.sessions||[]).forEach(function(s){
-      const key=s.finishedAt||JSON.stringify(s);
-      if(seen[key]) return; seen[key]=1; ss.push(s);
-    });
-    ss.sort(function(x,y){ return (x.finishedAt||"")<(y.finishedAt||"")?1:-1; });
-    lp.sessions = ss.slice(0,100);
-    if(la.createdAt && ca.createdAt && ca.createdAt<la.createdAt) la.createdAt=ca.createdAt;
-  });
-  const keep = out.accounts.filter(function(a){return a.name===activeName;})[0];
-  out.activeAccountId = keep ? keep.id : (out.accounts[0]? out.accounts[0].id : null);
-  return out;
+function mergeProgress(L,C){
+  L=normProgress(L); C=normProgress(C);
+  const M={items:{},sessions:[]}, ids={};
+  Object.keys(L.items).forEach(function(k){ids[k]=1;});
+  Object.keys(C.items).forEach(function(k){ids[k]=1;});
+  Object.keys(ids).forEach(function(k){ M.items[k]=mergeItem(L.items[k],C.items[k]); });
+  const seen={}, ss=[];
+  L.sessions.concat(C.sessions).forEach(function(s){ if(!seen[s.finishedAt]){ seen[s.finishedAt]=1; ss.push(s); } });
+  ss.sort(function(x,y){ return new Date(y.finishedAt)-new Date(x.finishedAt); });
+  M.sessions = ss.slice(0,100);
+  return M;
 }
-function dbSummary(d){
-  let people=(d.accounts||[]).length, seen=0, mast=0;
-  Object.keys(d.progress||{}).forEach(function(aid){
-    const it=(d.progress[aid]||{}).items||{};
-    Object.keys(it).forEach(function(k){
-      if((it[k].totalCorrect||0)+(it[k].totalWrong||0)>0) seen++;
-      if(it[k].mastered) mast++;
-    });
+function progHasRecords(p){
+  if(!p) return false;
+  if((p.sessions||[]).length>0) return true;
+  const it=p.items||{};
+  return Object.keys(it).some(function(k){
+    return (it[k].totalCorrect||0)+(it[k].totalWrong||0) > 0;
   });
-  return {people:people,seen:seen,mast:mast};
 }
 
-/* --- §13-1 同期の入口 --- */
-let syncing=false;
-async function doSync(reason){
-  if(!syncOn()){ setSync("","同期は未設定です"); return; }
-  if(syncing) return; syncing=true;
-  setSync("","☁… 同期しています");
-  try{
-    const res = await gasPull();
-    if(res && res.ok===false){
-      setSync("err", /key|合言葉|unauthor/i.test(res.error||"") ? "☁⚠ 合言葉が違います" : ("☁⚠ "+(res.error||"エラー")));
-      syncing=false; return;
-    }
-    const cloud = res && res.data ? migrate(res.data) : null;
-    const localHas = dbHasRecords(DB), cloudHas = dbHasRecords(cloud);
-
-    if(!cloud || !cloudHas){                          // ②クラウドが空 → push
-      await pushNow();
-      setSync("ok","☁ クラウドに進捗が無かったので送りました");
-    }else if(!localHas){                              // ①ローカル空 → 無条件でクラウド採用
-      DB = cloud; saveDB(true);
-      const s=dbSummary(DB);
-      setSync("ok","☁✓ クラウドの記録を取り込みました（"+s.people+"人・出題済み"+s.seen+"・習得"+s.mast+"）");
-    }else{                                            // ③両方に記録 → 必ず合流
-      const before = JSON.stringify(DB.progress)+JSON.stringify(DB.accounts);
-      const merged = mergeDB(DB, cloud);
-      const changed = (JSON.stringify(merged.progress)+JSON.stringify(merged.accounts)) !== before;
-      merged.updatedAt = changed ? nowISO() : (cloud.updatedAt||DB.updatedAt);
-      DB = merged; saveDB(true);
-      if(changed) await pushNow(true);
-      const s=dbSummary(DB);
-      setSync("ok","☁✓ クラウドと合流しました（"+s.people+"人・出題済み"+s.seen+"・習得"+s.mast+"）");
-    }
-    const c=syncCfg(); c.lastSync=nowISO(); setSyncCfg(c);
-  }catch(e){
-    setSync("err", e && e.message==="BADJSON" ? "☁⚠ "+BADJSON_MSG : "☁ オフライン（ローカルには保存済み）");
+/* ---- pull / push ---- */
+async function pullCloud(silent){
+  if(!ready()||!AUTH) return;
+  if(!silent) setSync('','☁… クラウドと同期しています');
+  let j;
+  try{ j = await api({action:'fetch', app:APP, id:AUTH.id, pw:AUTH.pw}); }
+  catch(e){
+    if(/GASの応答/.test(e.message)) setSync('err','☁⚠ '+e.message);
+    else setSync('','☁ オフライン（ローカルには保存済み）');
+    return;
   }
-  syncing=false;
-  if(CURRENT==="home") render();
+  if(!j.ok){
+    if(j.error==='auth'){ setSync('err','☁⚠ '+apiError(j)); onAuthLost(); return; }
+    setSync('err','☁⚠ '+apiError(j)); return;
+  }
+  const cloudP = normProgress(((j.data||{}).progress||{})[AUTH.id]);
+  const localP = prog();
+  const before = JSON.stringify(localP);
+  const merged = mergeProgress(localP, cloudP);
+  DB.progress[AUTH.id]=merged;
+  if(j.label){ AUTH.label=j.label; lsSet(K_AUTH,JSON.stringify(AUTH)); DB.accounts[0].label=j.label; }
+  const cd=(j.data||{}).accounts&&j.data.accounts[0];
+  if(cd&&cd.createdAt) DB.accounts[0].createdAt=cd.createdAt;
+  saveDB({fromCloud:true});
+  SYNC.lastSync=nowISO(); saveSync();
+  const n=Object.keys(merged.items).length;
+  setSync('ok','☁✓ クラウドと合流しました（'+n+'語・習得'+
+    Object.keys(merged.items).filter(function(k){return merged.items[k].mastered;}).length+'）');
+  render();
+  if(before!==JSON.stringify(merged)) await pushCloud(true, SYNC_MSG.text);
 }
-async function pushNow(silent){
-  if(!syncOn()) return false;
-  try{
-    const c=syncCfg();
-    const j = await gasPost({key:c.key, data:DB});
-    if(j && j.ok){
-      c.lastSync=nowISO(); setSyncCfg(c);
-      if(!silent) setSync("ok","☁✓ クラウドに保存しました");
-      return true;
-    }
-    setSync("err", /key|合言葉|unauthor/i.test((j&&j.error)||"") ? "☁⚠ 合言葉が違います" : ("☁⚠ "+((j&&j.error)||"エラー")));
-  }catch(e){
-    setSync("err", e && e.message==="BADJSON" ? "☁⚠ "+BADJSON_MSG : "☁ オフライン（ローカルには保存済み）");
+async function pushCloud(silent,okMsg){
+  if(!ready()||!AUTH) return false;
+  if(!silent) setSync('','☁… 送信しています');
+  let j;
+  try{ j = await api({action:'save', app:APP, id:AUTH.id, pw:AUTH.pw,
+        account:DB.accounts[0], progress:prog()}); }
+  catch(e){
+    if(/GASの応答/.test(e.message)) setSync('err','☁⚠ '+e.message);
+    else setSync('','☁ オフライン（ローカルには保存済み。次につながったときに送ります）');
+    return false;
   }
-  return false;
+  if(!j.ok){
+    if(j.error==='auth'){ setSync('err','☁⚠ '+apiError(j)); onAuthLost(); return false; }
+    setSync('err','☁⚠ '+apiError(j)); return false;
+  }
+  SYNC.lastSync=nowISO(); saveSync();
+  setSync('ok', okMsg||'☁✓ クラウドに保存しました');
+  return true;
 }
 
 /* =============== §3〜§6 出題エンジン =============== */
@@ -710,10 +674,10 @@ function buildHints(kp, fmt){
 
 /* ---- §3-1 出題対象の選定 ---- */
 function pickKPs(n){
-  const p=acc();
-  const cands = KPS.filter(function(k){ return !item(k.id,p).mastered; });
+  const p=prog()||{items:{}};
+  const cands = KPS.filter(function(k){ return !itemRO(k.id,p).mastered; });
   cands.sort(function(a,b){
-    const ia=item(a.id,p), ib=item(b.id,p);
+    const ia=itemRO(a.id,p), ib=itemRO(b.id,p);
     if((ib.totalWrong||0)!==(ia.totalWrong||0)) return (ib.totalWrong||0)-(ia.totalWrong||0);
     const ua=ia.lastSeenAt?1:0, ub=ib.lastSeenAt?1:0;
     if(ua!==ub) return ua-ub;
@@ -722,12 +686,12 @@ function pickKPs(n){
   return cands.slice(0,n).map(function(k){return k.id;});
 }
 function attentionKPs(){
-  const p=acc();
-  return KPS.filter(function(k){ return (item(k.id,p).postMasterWrong||0)>=1; }).map(function(k){return k.id;});
+  const p=prog()||{items:{}};
+  return KPS.filter(function(k){ return (itemRO(k.id,p).postMasterWrong||0)>=1; }).map(function(k){return k.id;});
 }
 function unseenKPs(){
-  const p=acc();
-  return KPS.filter(function(k){ const it=item(k.id,p);
+  const p=prog()||{items:{}};
+  return KPS.filter(function(k){ const it=itemRO(k.id,p);
     return !it.mastered && (it.totalCorrect||0)+(it.totalWrong||0)===0; }).map(function(k){return k.id;});
 }
 /* おぼえるモード：まだ見たことのないKPを優先して選ぶ */
@@ -742,7 +706,8 @@ function pickLearnKPs(n){
 let S = null;
 function startSession(mode, kpIdsOverride, opts){
   opts = opts || {};
-  const p = acc(); if(!p) return;
+  if(!loggedIn()){ view='gate'; render(); return; }
+  const p = prog(); if(!p) return;
   let kpIds;
   if(kpIdsOverride) kpIds = kpIdsOverride.slice();
   else if(mode==="全問") kpIds = KPS.map(function(k){return k.id;});
@@ -757,7 +722,7 @@ function startSession(mode, kpIdsOverride, opts){
        work:{}, masteredStart:{}, rq:{}, needReview:{}, short:short, wanted:want, got:kpIds.length,
        teach:!!opts.teach, title:opts.title||"", hintCount:0, guessCount:0};
   kpIds.forEach(function(id){
-    S.work[id] = clone(item(id,p));
+    S.work[id] = clone(itemRO(id,p));
     if(S.work[id].mastered) S.masteredStart[id]=1;
     S.rq[id]=0;
   });
@@ -919,7 +884,7 @@ function fwdQ(){ if(S.view<S.idx){ S.view++; render(); } }
 /* §6-2 結果画面に到達した時点でのみ確定 */
 let LAST_RESULT = null;
 function finishSession(){
-  const p = acc();
+  const p = prog(); if(!p) return;
   let correct=0, wrong=0; const wrongKpIds=[], newly=[];
   S.answers.forEach(function(a,i){
     if(!a) return;
@@ -943,7 +908,7 @@ function finishSession(){
                  taught:S.queue.filter(function(e){return e.teach;}).length};
   S = null;
   go("result");
-  pushNow(true);                                                  // §13-1 終了直後に自動push
+  pushCloud(true);                                                // 終了直後に自動push（自分のID1件だけ）
 }
 function abortSession(){
   showModal("<h3>とちゅうでやめますか？</h3><p class='muted'>ここまでの成績は<b>記録されません</b>。</p>",
@@ -953,8 +918,8 @@ function abortSession(){
 
 /* =============== 画面 =============== */
 const $ = function(id){ return document.getElementById(id); };
-let CURRENT = "home";
-function go(n){ CURRENT=n; window.scrollTo(0,0); render(); }
+let view = "home";
+function go(n){ view=n; window.scrollTo(0,0); render(); }
 
 function fmtDate(iso){ if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return "";
   return d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate(); }
@@ -1017,7 +982,7 @@ function mapBlock(kp){
 }
 
 /* =============== ホーム =============== */
-function statOf(id){ return kpState(item(id)); }
+function statOf(id){ return kpState(itemRO(id)); }
 function chipCls(it){
   if(it.mastered && it.postMasterWrong>0) return "w";
   if(it.mastered) return "m";
@@ -1026,20 +991,19 @@ function chipCls(it){
   return "";
 }
 function homeHTML(){
-  const p=acc(); if(!p) return "";
   let mastered=0;
-  KPS.forEach(function(k){ if(item(k.id).mastered) mastered++; });
+  KPS.forEach(function(k){ if(itemRO(k.id).mastered) mastered++; });
   const att = attentionKPs();
   const pct = Math.round(mastered/KPS.length*100);
 
   let h = "";
   if(MEMORY_ONLY){
-    h += "<div class='warnbar'>"+(syncOn()
+    h += "<div class='warnbar'>"+(ready()
       ? "☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます"
-      : "⚠ この端末には記録を残せない環境です。画面を閉じると記録が消えます（クラウド同期の設定をおすすめします）")+"</div>";
+      : "⚠ この端末には記録を残せない環境です。画面を閉じると記録が消えます")+"</div>";
   }
   h += "<div class='row'><h1 style='margin:0'>むかしの国名（旧国名）</h1><div class='spacer'></div>"+
-       "<button class='btn gray sm' data-a='accounts'>👤 "+esc(accName())+" ▾</button></div>";
+       "<button class='btn gray sm' id='accBtn' data-a='portal'>👤 "+esc(AUTH.label||AUTH.id)+"（"+esc(AUTH.id)+"）</button></div>";
 
   h += "<div class='card'><div class='row'><b>ぜんたいの習得</b><div class='spacer'></div>"+
        "<span class='muted'>習得済み "+mastered+" / 全 "+KPS.length+"（"+pct+"%）</span></div>"+
@@ -1069,16 +1033,16 @@ function homeHTML(){
   CATS.forEach(function(c){
     const ks = KPS.filter(function(k){return k.cat===c;});
     if(!ks.length) return;
-    let m=0; ks.forEach(function(k){ if(item(k.id).mastered) m++; });
+    let m=0; ks.forEach(function(k){ if(itemRO(k.id).mastered) m++; });
     const pc = Math.round(m/ks.length*100);
     h += "<div class='catline'><div class='t'><b>"+esc(c)+"</b><span class='muted'>"+m+" / "+ks.length+"（"+pc+"%）</span></div>"+
          "<div class='chips'>"+ks.map(function(k){
-           return "<span class='chip "+chipCls(item(k.id))+"' title='"+esc(k.name)+"'></span>"; }).join("")+"</div></div>";
+           return "<span class='chip "+chipCls(itemRO(k.id))+"' title='"+esc(k.name)+"'></span>"; }).join("")+"</div></div>";
   });
   h += "<div class='muted tiny' style='margin-top:8px'>■濃い緑＝習得済み／■枠つき＝要注意習得／■うすい緑＝1回以上正解／■赤＝誤答あり／■灰＝未着手</div></div>";
 
   /* 間違いランキング */
-  const rank = KPS.map(function(k){ return {k:k,it:item(k.id)}; })
+  const rank = KPS.map(function(k){ return {k:k,it:itemRO(k.id)}; })
     .filter(function(x){ return (x.it.totalWrong||0)>0; })
     .sort(function(a,b){ return (b.it.totalWrong||0)-(a.it.totalWrong||0); }).slice(0,12);
   if(rank.length){
@@ -1090,20 +1054,20 @@ function homeHTML(){
       "</table><div class='muted tiny' style='margin-top:6px'>タップすると、そのことばを中心に10問モードで復習します。</div></div>";
   }
 
-  /* §14 記録データの管理 */
-  const c = syncCfg();
+  /* 記録データの管理 */
   h += "<div class='card'><h2 style='margin-top:0'>記録データの管理</h2>"+
     "<div id='syncbar'></div>"+
-    "<div class='muted tiny' style='margin:6px 0 10px'>最終同期 "+fmtDT(c.lastSync)+"</div>"+
+    "<div class='muted tiny' style='margin:6px 0 10px'>最終同期 "+fmtDT(SYNC.lastSync)+"</div>"+
     "<div class='row'>"+
+      "<button class='btn gray sm' data-a='syncnow'>🔄 今すぐ同期</button>"+
+      "<button class='btn gray sm' data-a='drive'>📋 全問一覧をDriveへ</button>"+
+      "<button class='btn gray sm' data-a='csv'>📄 CSVをダウンロード</button>"+
       "<button class='btn gray sm' data-a='exp'>📤 記録を書き出す</button>"+
       "<button class='btn gray sm' data-a='imp'>📥 記録を読み込む</button>"+
-      "<button class='btn gray sm' data-a='syncset'>☁ クラウド同期設定</button>"+
-      (syncOn()? "<button class='btn gray sm' data-a='syncnow'>🔄 今すぐ同期</button>":"")+
-      (syncOn()? "<button class='btn gray sm' data-a='drive'>📋 全問一覧をDriveへ</button>":"")+
-      "<button class='btn gray sm' data-a='csv'>⬇ 結果CSV</button>"+
+      "<button class='btn gray sm' data-a='reset'>🗑 このツールの記録を消す</button>"+
     "</div>"+
-    "<div class='muted tiny' style='margin-top:8px'>ツール識別子：<code>"+APP+"</code></div></div>";
+    "<a class='btn sec wide' style='margin-top:10px;text-decoration:none' href='"+portalURL()+"'>⚙ 同期設定・ログアウトはポータルへ</a>"+
+    "<div class='muted tiny' style='margin-top:8px'>ID "+esc(AUTH.id)+"　／　ツール識別子 "+APP+"　／　共通仕様 "+VER+"　／　全"+KPS.length+"知識ポイント</div></div>";
 
   h += "<div class='card'><h2 style='margin-top:0'>ぜんぶの一覧</h2>"+listHTML("home")+"</div>";
   return h;
@@ -1127,7 +1091,7 @@ function setsHTML(){
   h += "<div class='card'><div class='rulebox'>"+SET_RULE+"</div></div>";
   SETS.forEach(function(s,i){
     const ks = setKPs(s);
-    let m=0; ks.forEach(function(k){ if(item(k.id).mastered) m++; });
+    let m=0; ks.forEach(function(k){ if(itemRO(k.id).mastered) m++; });
     h += "<div class='setcard'><div class='row'><b style='font-size:1.05rem'>"+esc(s.t)+"</b>"+
       "<div class='spacer'></div><span class='muted tiny'>習得 "+m+"/"+ks.length+"</span></div>"+
       "<ol>"+ks.map(function(k){
@@ -1161,18 +1125,18 @@ function listHTML(ns){
   let rows = KPS.slice();
   if(FILTER.cat) rows = rows.filter(function(k){return k.cat===FILTER.cat;});
   if(FILTER.st) rows = rows.filter(function(k){
-    const it=item(k.id), s=kpState(it);
+    const it=itemRO(k.id), s=kpState(it);
     if(FILTER.st==="正解あり") return /回正解/.test(s);
     return s===FILTER.st;
   });
-  if(FILTER.sort==="wrong") rows.sort(function(a,b){ return (item(b.id).totalWrong||0)-(item(a.id).totalWrong||0) || a.no-b.no; });
+  if(FILTER.sort==="wrong") rows.sort(function(a,b){ return (itemRO(b.id).totalWrong||0)-(itemRO(a.id).totalWrong||0) || a.no-b.no; });
   else if(FILTER.sort==="name") rows.sort(function(a,b){ return a.name.localeCompare(b.name,"ja"); });
   else rows.sort(function(a,b){ return (a.type===b.type? a.no-b.no : (a.type==="kuni"?-1:1)); });
 
   h += "<div style='overflow:auto;max-height:70vh'><table><thead><tr>"+
     "<th>旧国名</th><th>今の都道府県</th><th>状態</th><th>誤答</th></tr></thead><tbody>";
   rows.forEach(function(k){
-    const it=item(k.id), s=kpState(it);
+    const it=itemRO(k.id), s=kpState(it);
     const cls = s==="習得済み"?"m":(s==="要注意習得"?"c":(/回正解/.test(s)?"c":(s==="誤答"?"n":"u")));
     h += "<tr class='krow' data-kp='"+k.id+"'>"+
       "<td><b>"+esc(k.name)+"</b><br><span class='muted tiny'>"+esc(k.yomi)+"</span></td>"+
@@ -1351,7 +1315,7 @@ function resultHTML(){
         "<td class='tiny'>"+(w.e.fmt==="A"?"旧国名→都道府県":"都道府県→旧国名")+"</td>"+
         "<td class='tiny' style='color:var(--ng)'>"+esc(w.a.chosen)+"</td>"+
         "<td class='tiny' style='color:var(--ok)'>"+esc(w.e.q.answer)+"</td></tr>"+
-        "<tr class='detail hidden' data-det='"+k.id+"'><td colspan='4'>"+detailHTML(k,item(k.id))+"</td></tr>"; }).join("")+
+        "<tr class='detail hidden' data-det='"+k.id+"'><td colspan='4'>"+detailHTML(k,itemRO(k.id))+"</td></tr>"; }).join("")+
     "</tbody></table>";
   h += "</div>";
 
@@ -1361,21 +1325,21 @@ function resultHTML(){
   return h;
 }
 
-/* =============== アカウント =============== */
-function accountsHTML(){
-  let h = "<h1>だれが学習する？</h1>";
-  h += "<div class='card'>";
-  if(!DB.accounts.length) h += "<div class='muted'>まだ名前が登録されていません。下から追加してください。</div>";
-  DB.accounts.forEach(function(a){
-    h += "<div class='acc'><span class='nm'>"+esc(a.name)+(a.id===DB.activeAccountId?" <span class='badge g'>いま選択中</span>":"")+"</span>"+
-      "<button class='btn sm' data-sel='"+a.id+"'>これで学習</button>"+
-      "<button class='btn gray sm' data-ren='"+a.id+"'>改名</button>"+
-      "<button class='btn gray sm' data-del='"+a.id+"'>削除</button></div>";
-  });
-  h += "<div style='margin-top:10px'><label class='f'>あたらしい名前</label>"+
-       "<input type='text' id='newacc' placeholder='例：長男'>"+
-       "<button class='btn' style='margin-top:8px' data-a='addacc'>＋ 追加する</button></div></div>";
-  if(DB.accounts.length) h += "<button class='btn gray' data-a='home'>← もどる</button>";
+/* =============== 未設定・未ログイン時のゲート =============== */
+function renderGate(){
+  const why = !ready() ? "クラウド同期がまだ設定されていません。" : "まだログインしていません。";
+  let h = "<h1>むかしの国名（旧国名）</h1>";
+  h += "<div class='card'><h2 style='margin-top:0'>🔑 ポータルで準備してください</h2>"+
+    "<p class='muted'>"+esc(why)+"<br>ポータル（トップページ）で<b>同期設定とログイン</b>を1回だけ行うと、"+
+    "すべての学習ツールがそのまま使えるようになります。</p>"+
+    "<ul class='tiny' style='padding-left:1.2em;line-height:2'>"+
+    "<li>GASのURLと合言葉 … ポータルで入力</li>"+
+    "<li>ID（5桁）とパスワード … ポータルでログイン</li>"+
+    "<li>この画面に戻ってくれば、すぐ学習を始められます</li></ul>"+
+    "<a class='btn wide' style='text-decoration:none' href='"+portalURL()+"'>ポータルをひらく</a>"+
+    "<button class='btn gray wide' style='margin-top:8px' data-a='reload'>ログイン済みなら、ここを押して読み込み直す</button>"+
+    "</div>";
+  h += "<div class='card'><div class='muted tiny'>ツール識別子 "+APP+"　／　共通仕様 "+VER+"　／　全"+KPS.length+"知識ポイント</div></div>";
   return h;
 }
 
@@ -1386,13 +1350,17 @@ function renderSyncBar(){
   el.textContent = SYNC_MSG.text;
 }
 function render(){
-  if(!DB.accounts.length) CURRENT="accounts";
+  if(!ready()||!loggedIn()){
+    view="gate";
+    $("app").innerHTML=renderGate();
+    bind();
+    return;
+  }
   let h="";
-  if(CURRENT==="accounts") h=accountsHTML();
-  else if(CURRENT==="quiz" && S) h=quizHTML();
-  else if(CURRENT==="sets") h=setsHTML();
-  else if(CURRENT==="result") h=resultHTML();
-  else { CURRENT="home"; h=homeHTML(); }
+  if(view==="quiz" && S) h=quizHTML();
+  else if(view==="sets") h=setsHTML();
+  else if(view==="result") h=resultHTML();
+  else { view="home"; h=homeHTML(); }
   $("app").innerHTML=h;
   renderSyncBar();
   bind();
@@ -1401,28 +1369,25 @@ function bind(){
   const app=$("app");
   app.querySelectorAll("[data-a]").forEach(function(b){ b.onclick=function(){ action(b.getAttribute("data-a")); }; });
   app.querySelectorAll("[data-c]").forEach(function(b){ b.onclick=function(){ onChoice(b.getAttribute("data-c")); }; });
-  app.querySelectorAll("[data-sel]").forEach(function(b){ b.onclick=function(){
-    DB.activeAccountId=b.getAttribute("data-sel"); saveDB(); go("home"); }; });
-  app.querySelectorAll("[data-ren]").forEach(function(b){ b.onclick=function(){ renameAcc(b.getAttribute("data-ren")); }; });
-  app.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ deleteAcc(b.getAttribute("data-del")); }; });
   app.querySelectorAll("[data-kp]").forEach(function(r){ r.onclick=function(){
     const d=app.querySelector("[data-det='"+r.getAttribute("data-kp")+"']");
     if(d) d.classList.toggle("hidden"); }; });
   app.querySelectorAll("[data-rank]").forEach(function(r){ r.onclick=function(){
     const id=r.getAttribute("data-rank");
-    const p=acc();
-    const others=KPS.filter(function(k){return k.id!==id && !item(k.id,p).mastered;})
-      .sort(function(a,b){ return (item(b.id,p).totalWrong||0)-(item(a.id,p).totalWrong||0); })
+    const p=prog()||{items:{}};
+    const others=KPS.filter(function(k){return k.id!==id && !itemRO(k.id,p).mastered;})
+      .sort(function(a,b){ return (itemRO(b.id,p).totalWrong||0)-(itemRO(a.id,p).totalWrong||0); })
       .slice(0,9).map(function(k){return k.id;});
     startSession("10問",[id].concat(others)); }; });
   app.querySelectorAll("[data-set]").forEach(function(b){ b.onclick=function(){
     const s=SETS[+b.getAttribute("data-set")];
     startSession("10問", setKPs(s).map(function(k){return k.id;}), {teach:true, title:s.t}); }; });
   app.querySelectorAll("[data-f]").forEach(function(s){ s.onchange=function(){
-    FILTER[s.getAttribute("data-f")]=s.value; render(); }; });
+    FILTER[s.getAttribute("data-f")]=s.value; saveUI(); render(); }; });
 }
 function action(a){
-  if(a==="accounts") return go("accounts");
+  if(a==="portal"){ location.href=portalURL(); return; }
+  if(a==="reload"){ loadAll(); view=(loggedIn()&&ready())?"home":"gate"; render(); if(ready()&&AUTH) pullCloud(true); return; }
   if(a==="home") return go("home");
   if(a==="sets") return go("sets");
   if(a==="learn"){
@@ -1441,69 +1406,38 @@ function action(a){
   if(a==="fwd") return fwdQ();
   if(a==="next") return nextQ();
   if(a==="abort") return abortSession();
-  if(a==="addacc") return addAcc();
   if(a==="exp") return exportJSON();
   if(a==="imp") return importJSON();
-  if(a==="syncset") return syncSettings();
-  if(a==="syncnow") return doSync("manual");
+  if(a==="reset") return resetRecords();
+  if(a==="syncnow") return pullCloud();
   if(a==="drive") return exportDrive();
   if(a==="csv") return downloadCSV();
 }
 
-/* =============== アカウント操作（§1 直後にpush） =============== */
-function addAcc(){
-  const el=$("newacc"); const nm=(el.value||"").trim();
-  if(!nm) return alert("名前を入力してください。");
-  if(DB.accounts.some(function(a){return a.name===nm;})) return alert("同じ名前があります。");
-  const id=newId();
-  DB.accounts.push({id:id,name:nm,createdAt:nowISO()});
-  DB.progress[id]={items:{},sessions:[]};
-  DB.activeAccountId=id; saveDB(); pushNow(true); go("home");
-}
-function renameAcc(id){
-  const a=DB.accounts.filter(function(x){return x.id===id;})[0]; if(!a) return;
-  showModal("<h3>名前をかえる</h3><input type='text' id='rn' value='"+esc(a.name)+"'>",
-    [{t:"保存",cls:"btn",fn:function(){
-        const v=($("rn").value||"").trim(); if(!v) return;
-        a.name=v; saveDB(); pushNow(true); closeModal(); render(); }},
-     {t:"やめる",cls:"btn sec",fn:closeModal}]);
-}
-function deleteAcc(id){
-  const a=DB.accounts.filter(function(x){return x.id===id;})[0]; if(!a) return;
-  showModal("<h3>「"+esc(a.name)+"」を削除しますか？</h3><p class='muted'>この子の記録がすべて消えます。もとに戻せません。</p>",
-    [{t:"削除する",cls:"btn",fn:function(){
-        DB.accounts=DB.accounts.filter(function(x){return x.id!==id;});
-        delete DB.progress[id];
-        if(DB.activeAccountId===id) DB.activeAccountId = DB.accounts[0]? DB.accounts[0].id : null;
-        saveDB(); pushNow(true); closeModal(); render(); }},
-     {t:"やめる",cls:"btn sec",fn:closeModal}]);
-}
-
-/* =============== §9-2 / §15 書き出し（14列で統一） =============== */
+/* =============== 書き出し（14列で統一） =============== */
 const EXPORT_HEADER = ["名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
   "累計正解数","累計誤答数","形式A誤答数","形式B誤答数","過去の誤答内容","最終誤答日","習得日"];
-function buildRows(accountIds){
-  const rows=[];
-  accountIds.forEach(function(aid){
-    const a=DB.accounts.filter(function(x){return x.id===aid;})[0]; if(!a) return;
-    const p=DB.progress[aid]||{items:{}};
-    KPS.forEach(function(k){
-      const it=p.items[k.id]||blankItem();
-      const last=(it.wrongLog&&it.wrongLog[0])? fmtDate(it.wrongLog[0].at):"";
-      rows.push([a.name, k.cat, (k.type==="kuni"?"旧":"複")+k.no, k.name, k.yomi, k.imp, kpState(it),
-        it.totalCorrect||0, it.totalWrong||0, it.byFormat.A.wrong||0, it.byFormat.B.wrong||0,
-        (it.wrongLog||[]).map(function(w){return w.answered;}).join(";"), last, fmtDate(it.masteredAt)]);
-    });
-  });
+function rowFor(k,it){
+  it = it || blankItem();
+  const last=(it.wrongLog&&it.wrongLog[0])? fmtDate(it.wrongLog[0].at):"";
+  return [ AUTH?AUTH.id:"", k.cat, (k.type==="kuni"?"旧":"複")+k.no, k.name, k.yomi, k.imp, kpState(it),
+    it.totalCorrect||0, it.totalWrong||0, it.byFormat.A.wrong||0, it.byFormat.B.wrong||0,
+    (it.wrongLog||[]).map(function(w){return w.answered;}).join(";"), last, fmtDate(it.masteredAt)];
+}
+function buildListRows(){
+  const p=prog()||{items:{}};
+  const rows=KPS.map(function(k){ return rowFor(k, p.items[k.id]); });
   rows.sort(function(x,y){ return (y[8]||0)-(x[8]||0); });   // 既定は誤答数の多い順
   return rows;
 }
 function downloadCSV(){
-  const rows=buildRows([DB.activeAccountId]);
-  const csv=[EXPORT_HEADER].concat(rows).map(function(r){
-    return r.map(function(v){ const s=String(v==null?"":v);
-      return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }).join(","); }).join("\r\n");
-  dl(new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"}), TOOL+"結果_"+accName()+"_"+stamp()+".csv");
+  const p=prog()||{items:{}};
+  let rows=KPS.map(function(k){ return rowFor(k,p.items[k.id]).concat([AUTH.label||""]); });
+  rows.sort(function(x,y){ return (y[8]||0)-(x[8]||0); });
+  const csv=[EXPORT_HEADER.concat(["表示名"])].concat(rows).map(function(r){
+    return r.map(function(v){ const t=String(v==null?"":v);
+      return /[",\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t; }).join(","); }).join("\r\n");
+  dl(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}), TOOL+"結果_"+AUTH.id+"_"+stamp()+".csv");
 }
 function dl(blob,name){
   const u=URL.createObjectURL(blob), a=document.createElement("a");
@@ -1511,33 +1445,28 @@ function dl(blob,name){
   setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); },300);
 }
 async function exportDrive(){
-  if(!syncOn()) return alert("さきにクラウド同期を設定してください。");
+  if(!ready()||!AUTH) return;
   setSync("","☁… 書き出し前にクラウドを確認しています");
-  try{
-    const res=await gasPull();
-    const cloud = res && res.data ? migrate(res.data) : null;
-    if(!dbHasRecords(DB) && !dbHasRecords(cloud)){        // §15 空上書き防止
-      setSync("err","☁⚠ 記録が空のため書き出しを中止しました");
-      return showModal("<h3>書き出しを中止しました</h3><p>この端末にもクラウドにも学習の記録がありません。空のデータで上書きしてしまうのを防ぐため、書き出しを行いませんでした。</p>");
-    }
-    if(dbHasRecords(cloud)){
-      DB = dbHasRecords(DB) ? mergeDB(DB, cloud) : cloud;
-      saveDB(true);
-    }
-    const rows=buildRows(DB.accounts.map(function(a){return a.id;}));
-    const c=syncCfg();
-    const j=await gasPost({key:c.key, app:APP, list:{header:EXPORT_HEADER, rows:rows}});
-    if(j && j.ok) setSync("ok","☁✓ 全問一覧をスプレッドシートに書き出しました");
-    else setSync("err", /key|合言葉/i.test((j&&j.error)||"") ? "☁⚠ 合言葉が違います" : "☁⚠ "+((j&&j.error)||"エラー"));
-  }catch(e){
-    setSync("err", e && e.message==="BADJSON" ? "☁⚠ "+BADJSON_MSG : "☁ オフライン（ローカルには保存済み）");
+  await pullCloud(true);                                     // 空上書き防止：先に合流してから
+  if(!progHasRecords(prog())){
+    setSync("err","☁⚠ 記録が空のため書き出しを中止しました");
+    return showModal("<h3>書き出しを中止しました</h3><p>この端末にもクラウドにも学習の記録がありません。空のデータで上書きしてしまうのを防ぐため、書き出しを行いませんでした。</p>");
   }
-  render();
+  let j;
+  try{ j = await api({app:APP, id:AUTH.id, list:{header:EXPORT_HEADER, rows:buildListRows()}}); }
+  catch(e){
+    if(/GASの応答/.test(e.message)) setSync("err","☁⚠ "+e.message);
+    else setSync("","☁ オフライン（ローカルには保存済み）");
+    return;
+  }
+  if(j && j.ok) setSync("ok","☁✓ 全問一覧をスプレッドシートに書き出しました");
+  else { if(j && j.error==="auth"){ setSync("err","☁⚠ "+apiError(j)); onAuthLost(); return; }
+         setSync("err","☁⚠ "+apiError(j)); }
 }
 
-/* =============== §14 JSON 書き出し／読み込み・同期設定 =============== */
+/* =============== JSON 書き出し／読み込み／記録の消去 =============== */
 function exportJSON(){
-  dl(new Blob([JSON.stringify(DB,null,1)],{type:"application/json"}), TOOL+"記録_"+stamp()+".json");
+  dl(new Blob([JSON.stringify(DB,null,1)],{type:"application/json"}), TOOL+"記録_"+AUTH.id+"_"+stamp()+".json");
 }
 function importJSON(){
   const inp=document.createElement("input"); inp.type="file"; inp.accept=".json,application/json";
@@ -1545,47 +1474,47 @@ function importJSON(){
     const f=inp.files[0]; if(!f) return;
     const rd=new FileReader();
     rd.onload=function(){
-      let d; try{ d=JSON.parse(rd.result); }catch(e){ return alert("読み込めませんでした（JSONではありません）。"); }
-      if(d.app && d.app!==APP) return alert("このファイルは別のツールの記録です（"+d.app+"）。");
-      const nd=migrate(d);
+      const raw=jparse(rd.result);
+      if(!raw) return alert("読み込めませんでした（JSONではありません）。");
+      if(raw.app && raw.app!==APP) return alert("このファイルは別のツールの記録です（"+raw.app+"）。");
+      const p=(raw.progress||{})[AUTH.id];
+      if(!p) return showModal("<h3>このIDの記録がありません</h3><p>このファイルには ID "+esc(AUTH.id)+
+        " の記録が入っていません（別のお子さんの記録の可能性があります）。</p>");
+      const np=normProgress(p);
       showModal("<h3>この記録に置きかえますか？</h3>"+
-        "<p>アカウント：<b>"+esc(nd.accounts.map(function(a){return a.name;}).join("、")||"（なし）")+"</b><br>"+
-        "保存日時：<b>"+fmtDT(nd.updatedAt)+"</b></p>"+
+        "<p>ID：<b>"+esc(AUTH.id)+"</b><br>保存日時：<b>"+fmtDT(raw.updatedAt)+"</b><br>"+
+        "ことば数：<b>"+Object.keys(np.items).length+"</b></p>"+
         "<p class='muted tiny'>いまこの端末にある記録は消えます。</p>",
         [{t:"置きかえる",cls:"btn",fn:function(){
-            DB=nd; saveDB(); pushNow(true); closeModal(); go("home"); }},
+            DB.progress[AUTH.id]=np; saveDB(); pushCloud(true); closeModal(); go("home"); }},
          {t:"やめる",cls:"btn sec",fn:closeModal}]);
     };
     rd.readAsText(f);
   };
   inp.click();
 }
-function syncSettings(){
-  const c=syncCfg();
-  showModal("<h3>クラウド同期設定</h3>"+
-    "<p class='muted tiny'>おうちの方が、GASのウェブアプリURL（末尾が <code>/exec</code>）と合言葉を入力してください。ここに入れた内容はこの端末だけに保存されます。</p>"+
-    "<label class='f'>GASのURL</label><input type='url' id='su' placeholder='https://script.google.com/macros/s/.../exec' value='"+esc(c.url)+"'>"+
-    "<label class='f'>合言葉</label><input type='text' id='sk' value='"+esc(c.key)+"'>",
-    [{t:"保存して同期",cls:"btn",fn:function(){
-        const u=($("su").value||"").trim(), k=($("sk").value||"").trim();
-        if(!/^https:\/\/.+\/exec$/.test(u)) return alert("URLの末尾が /exec になっているか確認してください。");
-        setSyncCfg({url:u,key:k,lastSync:c.lastSync||null});
-        closeModal(); render(); doSync("save"); }},
-     {t:"同期を解除",cls:"btn gray",fn:function(){
-        setSyncCfg({url:"",key:"",lastSync:null});
-        SYNC_MSG={cls:"",text:"同期は未設定です"}; closeModal(); render(); }},
+function resetRecords(){
+  showModal("<h3>このツールの記録を消しますか？</h3><p class='muted'>ID "+esc(AUTH.id)+
+    " の「"+esc(TOOL)+"」の学習記録がすべて消えます。もとに戻せません。</p>",
+    [{t:"消す",cls:"btn",fn:function(){
+        DB.progress[AUTH.id]={items:{},sessions:[]}; saveDB(); pushCloud(true); closeModal(); go("home"); }},
      {t:"やめる",cls:"btn sec",fn:closeModal}]);
 }
 
 /* =============== 起動 =============== */
-loadDB();
-if(!DB.accounts.length) CURRENT="accounts";
+loadAll();
+if(ready()&&loggedIn()) setSync("","☁… クラウドと同期しています");
 render();
-if(syncOn()) doSync("boot"); else setSync("","同期は未設定です");
+if(ready()&&loggedIn()) pullCloud(true);
+/* 他のツール／ポータルでログイン状態が変わったら追従する */
+window.addEventListener("storage",function(ev){
+  if(ev.key!=='kj-quiz:auth'&&ev.key!=='kj-quiz:sync') return;
+  if(view==="quiz"&&S&&S.answers.some(function(a){return !!a;})) return;
+  loadAll(); render();
+});
 window.addEventListener("beforeunload",function(ev){
   if(S && S.answers.some(function(a){return !!a;})){ ev.preventDefault(); ev.returnValue=""; }
 });
-
 </script>
 </body>
 </html>
