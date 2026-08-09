@@ -51,8 +51,12 @@ h1.title{font-size:30px;font-weight:800;letter-spacing:.02em}
   border-left:5px solid #d9a72c;border-radius:9px;padding:12px 14px;margin-top:18px;font-size:13.5px;font-weight:700}
 .notice .go{margin-left:auto;background:var(--pri);color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:800;white-space:nowrap}
 .notice.ok{border-color:#b6e0cd;border-left-color:var(--ok);font-weight:600}
-.parent{margin-top:38px;border-top:1px solid var(--line);padding-top:20px}
-.parent > h2{font-size:14px;font-weight:800;color:var(--sub);display:flex;align-items:center;gap:8px}
+.parent{margin-top:38px;border-top:1px solid var(--line);padding-top:14px}
+.parent > summary{font-size:14px;font-weight:800;color:var(--sub);cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:8px;padding:6px 2px}
+.parent > summary::-webkit-details-marker{display:none}
+.parent > summary::after{content:'\25be ひらく';margin-left:auto;font-size:12px;font-weight:700;color:#aeb6be}
+.parent[open] > summary::after{content:'\25b4 とじる'}
 .panel{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh);padding:15px;margin-top:11px}
 .panel h3{font-size:13.5px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:7px}
 .panel .muted{font-size:12.5px;color:var(--sub);line-height:1.75}
@@ -107,25 +111,25 @@ const SUBJECTS = [
    --------------------------------------------------------- */
 const TOOLS = [
   { sub:'国語', name:'外来語ドリル',   desc:'入試によく出る外来語をチェック',       file:'外来語ドリル.html',   app:'kj-quiz-kokugo-gairaigo' },
-  { sub:'国語', name:'和語ドリル',     desc:'和語・漢語・外来語の見分けかたを確認', file:'和語.html',           app:'kj-quiz-kokugo-wago' },
+  { sub:'国語', name:'和語ドリル',     desc:'和語・漢語・外来語の見分けかたを確認', file:'和語ドリル.html',     app:'kj-quiz-kokugo-wago' },
   { sub:'国語', name:'故事成語',       desc:'むかしの話がもとになった言葉の意味',   file:'故事成語.html',       app:'kj-quiz-kokugo-kojiseigo' },
-  { sub:'国語', name:'慣用句',         desc:'体の部分などを使った言い回しをおぼえる', file:'慣用句.html',         app:'kj-quiz-kokugo-kanyoku' },
+  { sub:'国語', name:'慣用句',         desc:'体の部分などを使った言い回しをおぼえる', file:'慣用句.html',       app:'kj-quiz-kokugo-kanyoku' },
   { sub:'国語', name:'ことわざ',       desc:'昔からの言いならわしと、その意味',     file:'ことわざ.html',       app:'kj-quiz-kokugo-kotowaza' },
   { sub:'国語', name:'熟語対義語類義語', desc:'熟語の組み立てと、反対語・似た意味の言葉', file:'熟語対義語類義語.html', app:'kj-quiz-kokugo-jukugo' },
-  { sub:'国語', name:'同訓異字・同音異義語・同音異字', desc:'まぎらわしい同じ音・同じ訓の漢字', file:'同訓異字・同音異義語・同音異字.html', app:'kj-quiz-kokugo-doukun' },
-  { sub:'国語', name:'敬語マスター',   desc:'尊敬語・謙譲語・丁寧語の使い分けを練習', file:'敬語マスター.html',   app:'kj-quiz-kokugo-keigo' },
+  { sub:'国語', name:'同訓異字・同音異義語・同音異字', desc:'同訓異字・同音異義語・同音異字', file:'同訓異字.html', app:'kj-quiz-kokugo-doukun' },
+  { sub:'国語', name:'敬語マスター',   desc:'尊敬語・謙譲語・丁寧語の使い分けを練習', file:'敬語マスター.html', app:'kj-quiz-kokugo-keigo' },
 
-  { sub:'理科', name:'植物カード',     desc:'イラストで見わけるポイントを確認',     file:'植物.html',           app:'kj-quiz-rika-shokubutsu' },
-  { sub:'理科', name:'動物カード',     desc:'なかま分けや体のつくりを確認',         file:'動物.html',           app:'kj-quiz-rika-doubutsu' },
+  { sub:'理科', name:'植物カード',     desc:'イラストで見わけるポイントを確認',     file:'植物カード.html',     app:'kj-quiz-rika-shokubutsu' },
+  { sub:'理科', name:'動物カード',     desc:'なかま分けや体のつくりを確認',         file:'動物カード.html',     app:'kj-quiz-rika-doubutsu' },
   { sub:'理科', name:'計算分野 インタラクティブまとめ', desc:'力・電気・水よう液などの計算を対話で確認', file:'rika_interactive.html', app:'kj-quiz-rika-keisan-interactive' },
   { sub:'理科', name:'計算分野パック（標準）', desc:'標準レベルの計算問題をまとめて演習', file:'rika_keisan_set.html', app:'kj-quiz-rika-keisan-set' },
 
-  { sub:'社会', name:'歴史年号クイズ', desc:'できごとと年号をむすびつける',         file:'歴史年代クイズ.html', app:'kj-quiz-shakai-rekishi' },
+  { sub:'社会', name:'日本国憲法の条文', desc:'前文と重要条文の穴うめ・条文さがし', file:'日本国憲法の条文.html', app:'kj-quiz-shakai-kenpou', total:171 },
+  { sub:'社会', name:'地理（地形）',   desc:'山地・平野・川などの地形をおぼえる',   file:'地理(地形).html',     app:'kj-quiz-shakai-chikei' },
+  { sub:'社会', name:'都市・交通',     desc:'おもな都市と新幹線・高速道路',         file:'都市・交通.html',     app:'kj-quiz-shakai-toshi' },
+  { sub:'社会', name:'歴史年号',       desc:'できごとと年号をむすびつける',         file:'歴史年号.html',       app:'kj-quiz-shakai-rekishi' },
   { sub:'社会', name:'夏季講習 歴史年表クイズ', desc:'夏期講習の範囲を年表で総ざらい', file:'夏季講習歴史年表クイズ.html', app:'kj-quiz-shakai-rekishi-natsu' },
-  { sub:'社会', name:'地理用語',       desc:'地形・気候・産業などの用語を確認',     file:'地理用語.html',       app:'kj-quiz-shakai-chikei' },
-  { sub:'社会', name:'都市・交通',     desc:'おもな都市と新幹線・高速道路',         file:'都市交通.html',       app:'kj-quiz-shakai-toshi' },
-  { sub:'社会', name:'旧国名',         desc:'武蔵・相模など、むかしの国名と今の県', file:'旧国名.html',         app:'kj-quiz-shakai-kyukokumei' },
-  { sub:'社会', name:'日本国憲法の条文', desc:'前文と重要条文の穴うめ・条文さがし', file:'日本国憲法の条文.html', app:'kj-quiz-shakai-kenpou', total:171 }
+  { sub:'社会', name:'旧国名',         desc:'武蔵・相模など、むかしの国名と今の県', file:'旧国名.html',         app:'kj-quiz-shakai-kyukokumei' }
 ];
 
 function $(s){ return document.querySelector(s); }
@@ -270,9 +274,9 @@ function render(){
     app.appendChild(sec);
   });
 
-  var par=el('section','parent'); par.id='parent';
-  par.appendChild(el('h2','','&#9881; おうちのかたへ（せってい）'));
-  par.lastChild.innerHTML='&#9881;&#65039; おうちのかたへ（せってい）';
+  var par=el('details','parent'); par.id='parent';
+  if(!(AUTH && ready())) par.open=true;   // 設定・ログインが未完了のときだけ最初から開く
+  var sm=el('summary'); sm.innerHTML='&#9881;&#65039; おうちのかたへ（せってい）'; par.appendChild(sm);
 
   var p1=el('div','panel');
   if(!AUTH){
