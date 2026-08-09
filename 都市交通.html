@@ -196,6 +196,8 @@
     background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 12px;margin-bottom:12px;
     box-shadow:0 3px 10px rgba(37,99,235,.06);font-size:.85rem;}
   .acctbar .who{font-weight:700;color:var(--ink);}
+  .acctbar .wholink{border:none;background:none;font-weight:700;color:var(--ink);cursor:pointer;padding:0;font-size:.85rem;}
+  .acctbar .wholink b{color:var(--blue);}
   .acctbar .who b{color:var(--blue);}
   .acctbar .note{font-weight:400;color:var(--sub);font-size:.78rem;}
   .acctbar .fire{font-weight:700;color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;
@@ -303,6 +305,19 @@
   <!-- ACCOUNT BAR -->
   <div class="acctbar" id="acctbar"></div>
 
+  <!-- GATE（未設定・未ログイン時） -->
+  <section id="gate" class="card hidden">
+    <h2 class="stitle">🔑 ポータルで準備してください</h2>
+    <p class="lead" id="gateWhy"></p>
+    <ul class="tiny" style="padding-left:1.2em;line-height:2;color:var(--sub);font-size:.86rem">
+      <li>GASのURLと合言葉 … ポータルで入力</li>
+      <li>ID（5桁）とパスワード … ポータルでログイン</li>
+      <li>この画面に戻れば、すぐ学習を始められます</li>
+    </ul>
+    <a class="bigbtn" id="gatePortal" style="display:block;text-decoration:none;text-align:center">ポータルをひらく</a>
+    <button class="quitbtn wide" onclick="recheckGate()" style="margin-top:8px">ログイン済みなら、ここを押して読み込み直す</button>
+  </section>
+
   <!-- START -->
   <section id="start" class="card">
     <div class="storeNotice" id="storeNotice" style="display:none;">
@@ -331,12 +346,14 @@
       <summary>💾 記録データの管理・クラウド同期</summary>
       <div class="syncStatus" id="syncStatus">同期は未設定です</div>
       <div class="dpbtns">
+        <button class="mini" id="btnSyncNow" onclick="pullCloud(true)">🔄 今すぐ同期</button>
+        <button class="mini" id="btnListDrive" onclick="exportListToDrive()">📋 全問一覧をDriveへ</button>
+        <button class="mini" onclick="downloadList()">📄 CSVをダウンロード</button>
         <button class="mini" onclick="exportJSON()">📤 記録を書き出す(JSON)</button>
         <button class="mini" onclick="document.getElementById('importFile').click()">📥 記録を読み込む</button>
-        <button class="mini prime" onclick="openSyncModal()">☁ クラウド同期設定</button>
-        <button class="mini" id="btnSyncNow" style="display:none" onclick="pullCloud(true)">🔄 今すぐ同期</button>
-        <button class="mini" id="btnListDrive" style="display:none" onclick="exportListToDrive()">📋 全問一覧をDriveへ</button>
+        <button class="mini danger" onclick="resetRecords()">🗑 このツールの記録を消す</button>
       </div>
+      <a class="mini" id="portalLink" style="display:block;text-align:center;text-decoration:none;margin-top:4px">⚙ 同期設定・ログアウトはポータルへ</a>
       <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importJSON(this)">
     </details>
   </section>
@@ -819,6 +836,7 @@ let VIEW=null, viewingHistory=false, histIdx=0;  // 「前の問題を見る」�
 
 /* ============ アカウント（プロフィール）機能 ============ */
 const APP='kj-quiz-shakai-toshikoutsu';   // ツール識別子（変更不可）
+const VER='v3.0';
 const TOOL_NAME='日本の都市と交通クイズ';
 const DBKEY_OLD='koutsuQuiz_profiles_v1'; // 旧localStorageキー（移行元）
 let STORE_OK=true;
@@ -832,7 +850,7 @@ function toSchema9(D){
   const out={app:APP, version:1, updatedAt:D.updatedAt||new Date().toISOString(),
     activeAccountId:D.activeId||null, accounts:[], progress:{}};
   Object.values(D.users||{}).forEach(u=>{
-    out.accounts.push({id:u.id, name:u.name, createdAt:u.createdAt||'', pin:u.pin||'',
+    out.accounts.push({id:u.id, name:u.name, label:(u.label||u.name||''), createdAt:u.createdAt||'', pin:u.pin||'',
       bestStreak:(u.stats&&u.stats.bestStreak)||0, login:u.login||{last:'',streak:0}});
     const items={};
     const kset=new Set([].concat(Object.keys(u.prog||{}),Object.keys(u.masteredKP||{}),Object.keys(u.miss||{}),Object.keys(u.seen||{})));
@@ -852,7 +870,7 @@ function fromSchema9(s){
   const D={app:APP, updatedAt:s.updatedAt||'', activeId:s.activeAccountId||null, users:{}};
   (s.accounts||[]).forEach(a=>{
     const pg=(s.progress&&s.progress[a.id])||{items:{},sessions:[],fav:{}};
-    const u={ id:a.id, name:a.name, pin:a.pin||'', createdAt:a.createdAt||'',
+    const u={ id:a.id, name:a.name, label:a.label||'', pin:a.pin||'', createdAt:a.createdAt||'',
       stats:{answered:0,correct:0,bestStreak:a.bestStreak||0}, cats:{},
       masteredKP:{}, miss:{}, seen:{}, fav:pg.fav||{}, prog:{}, sessions:(pg.sessions||[]).slice(),
       login:a.login||{last:'',streak:0} };
@@ -875,19 +893,35 @@ function fromSchema9(s){
   });
   return D;
 }
-function loadDB(){
-  if(!STORE_OK){ DB=freshDB(); return; }
-  let raw=null; try{ raw=localStorage.getItem(APP); }catch(e){}
-  if(raw){ try{ DB=fromSchema9(JSON.parse(raw)); }catch(e){ DB=freshDB(); } }
-  else {
-    let old=null; try{ old=localStorage.getItem(DBKEY_OLD); }catch(e){}
-    if(old){ try{ const o=JSON.parse(old); DB={app:APP, updatedAt:o.updatedAt||'', activeId:o.activeId||null, users:o.users||{}}; }catch(e){ DB=freshDB(); } }
-    else DB=freshDB();
+// ログイン中のID 1件だけに束ねる（他IDは持たない・§v3.0）
+function bindActiveToAuth(s9){
+  if(!loggedIn()){ DB=freshDB(); return; }
+  const id=authCfg.id;
+  let pg=null, createdAt=null;
+  if(s9 && s9.progress){
+    if(s9.progress[id]) pg=s9.progress[id];
+    else if(s9.activeAccountId && s9.progress[s9.activeAccountId]) pg=s9.progress[s9.activeAccountId];
+    else { const ks=Object.keys(s9.progress); if(ks.length===1) pg=s9.progress[ks[0]]; }  // 旧ローカル1件を引き継ぎ
+    const acc=(s9.accounts||[]).find(a=>String(a.id)===id) || (s9.accounts||[])[0];
+    if(acc) createdAt=acc.createdAt;
   }
+  const single={app:APP, version:2, updatedAt:(s9&&s9.updatedAt)||'', activeAccountId:id,
+    accounts:[{id, name:id, label:authCfg.label||id, createdAt:createdAt||new Date().toISOString()}],
+    progress:{[id]: pg || {items:{},sessions:[],fav:{}}}};
+  DB=fromSchema9(single); DB.activeId=id;
+}
+function loadDB(){
+  let s9=null;
+  if(STORE_OK){
+    try{ const r=localStorage.getItem(APP); if(r) s9=JSON.parse(r); }catch(e){}
+    if(!s9){ try{ const o=JSON.parse(localStorage.getItem(DBKEY_OLD)||'null'); if(o&&o.users) s9=toSchema9({app:APP,updatedAt:o.updatedAt||'',activeId:o.activeId||null,users:o.users}); }catch(e){} }
+  }
+  bindActiveToAuth(s9);
   DB.app=APP; DB.users=DB.users||{}; normalizeUsers();
 }
 // skipStamp=true のときは updatedAt を上書きしない（クラウドから取り込んだデータの保存時）
 function saveDB(skipStamp){
+  if(!loggedIn()) return;              // 未ログインでは保存しない
   DB.app=APP;
   if(!skipStamp) DB.updatedAt=new Date().toISOString();
   if(STORE_OK){ try{ localStorage.setItem(APP, JSON.stringify(toSchema9(DB))); }catch(e){} }
@@ -918,6 +952,7 @@ function normalizeUsers(){
     u.cats=u.cats||{};
     u.masteredKP=u.masteredKP||{}; u.miss=u.miss||{}; u.seen=u.seen||{}; u.fav=u.fav||{};
     u.prog=u.prog||{}; u.sessions=u.sessions||[];
+    if(u.label==null) u.label='';
     u.login=u.login||{last:'',streak:0};
     // prog エントリの新フィールドを補完（旧 log[] → wrongLog[] へ移行）
     Object.keys(u.prog).forEach(kid=>{
@@ -937,15 +972,29 @@ function progOf(u,kpId){
   return (u.prog[kpId] = u.prog[kpId] || {c:0,w:0,cA:0,wA:0,cB:0,wB:0,wrongLog:[],mday:'',mAt:'',lwrong:'',lastSeenAt:''});
 }
 
-/* ============ クラウド同期（Google Drive / GAS）============ */
-const SYNCKEY = APP+':sync';
+/* ============ クラウド同期（GAS v4.2・§12 API / ID+パスワードlog-in）============ */
+const SYNCKEY = 'kj-quiz:sync';       // 全ツール共通（URL・合言葉）
+const AUTHKEY = 'kj-quiz:auth';       // 全ツール共通（管理ID・パスワード・表示名）
+const OLD_SYNCKEY = APP+':sync';      // 旧キー（移行元）
 const BACKUPKEY = APP+':backup';
 const GAS_BAD = 'GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください。';
 let syncCfg = {url:'', key:'', lastSync:''};
+let authCfg = {id:'', pw:'', label:'', loggedInAt:''};
 let pushTimer = null;
-function loadSync(){ try{ const s=localStorage.getItem(SYNCKEY); if(s) syncCfg=Object.assign(syncCfg, JSON.parse(s)); }catch(e){} }
+function loadSync(){
+  try{ const s=localStorage.getItem(SYNCKEY); if(s) syncCfg=Object.assign(syncCfg, JSON.parse(s)); }catch(e){}
+  // 旧 <app>:sync があり kj-quiz:sync が空なら移行
+  if(!syncCfg.url){ try{ const o=localStorage.getItem(OLD_SYNCKEY); if(o){ const oo=JSON.parse(o); if(oo&&oo.url){ syncCfg.url=oo.url; syncCfg.key=oo.key||''; saveSync(); } } }catch(e){} }
+  try{ const a=localStorage.getItem(AUTHKEY); if(a) authCfg=Object.assign(authCfg, JSON.parse(a)); }catch(e){}
+}
 function saveSync(){ try{ localStorage.setItem(SYNCKEY, JSON.stringify(syncCfg)); }catch(e){} }
-function syncOn(){ return !!(syncCfg && syncCfg.url); }
+function saveAuth(){ try{ localStorage.setItem(AUTHKEY, JSON.stringify(authCfg)); }catch(e){} }
+function clearAuth(){ try{ localStorage.removeItem(AUTHKEY); }catch(e){} authCfg={id:'',pw:'',label:'',loggedInAt:''}; }
+function syncOn(){ return !!(syncCfg && syncCfg.url && authCfg && authCfg.id && authCfg.pw); }
+function ready(){ return !!(syncCfg && syncCfg.url && syncCfg.key); }   // 同期設定済み
+function loggedIn(){ return !!(authCfg && authCfg.id && authCfg.pw); }  // ログイン済み
+function gateNeeded(){ return !ready() || !loggedIn(); }
+function portalURL(){ return './index.html'; }
 
 // §9(progress) でも内部(users)でも判定可（sessions≥1 または item に正誤>0）
 function dbHasRecords(x){
@@ -984,16 +1033,33 @@ function schedulePush(){
   if(pushTimer) clearTimeout(pushTimer);
   pushTimer=setTimeout(()=>{ pushTimer=null; pushCloud(); }, 900);
 }
+// §12 送信ヘルパー（ログイン中IDぶんだけ・アクティブプロフィールを紐づけ）
+function account9(){ const u=activeUser();
+  return {id:authCfg.id, name:authCfg.id, label:authCfg.label||'', createdAt:(u&&u.createdAt)||new Date().toISOString()}; }
+function activeProgress9(){
+  const u=activeUser(); if(!u) return {items:{}, sessions:[], fav:{}};
+  const full=toSchema9(DB); const pg=full.progress[u.id]||{items:{},sessions:[],fav:{}};
+  return {items:pg.items, sessions:pg.sessions, fav:pg.fav||{}};
+}
+function ensureActiveProfile(){
+  if(activeUser()) return activeUser();
+  const u=newUser(authCfg.label||'わたし',''); DB.users[u.id]=u; DB.activeId=u.id; normalizeUsers(); return u;
+}
+function handleAuthError(){
+  clearAuth(); loadDB();          // 学習記録(localStorage)は消さない。表示だけゲートへ
+  renderGate();
+}
 async function pushCloud(){
   if(!syncOn()) return false;
   setSyncStatus('☁… 保存中', 'proc');
   let res;
   try{
     res=await fetch(syncCfg.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({key:syncCfg.key, data:toSchema9(DB)})});   // §9スキーマで送る（sessions[]含む）
+      body:JSON.stringify({key:syncCfg.key, action:'save', app:APP, id:authCfg.id, pw:authCfg.pw,
+        account:account9(), progress:activeProgress9()})});   // §12-C：そのIDぶんだけ
   }catch(e){ setSyncStatus('☁ オフライン（ローカルには保存済み）','err'); return false; }
   let j; try{ j=JSON.parse(await res.text()); }catch(e){ setSyncStatus(GAS_BAD,'err'); return false; }
-  if(!j.ok){ setSyncStatus(mapSyncError(j.error),'err'); return false; }
+  if(!j.ok){ if(j.error==='auth'){ handleAuthError(); } else setSyncStatus(mapSyncError(j.error),'err'); return false; }
   syncCfg.lastSync=new Date().toISOString(); saveSync();
   setSyncStatus(`☁✓ クラウド保存ずみ｜最終同期 ${fmtStamp(syncCfg.lastSync)}`,'ok');
   return true;
@@ -1012,7 +1078,7 @@ function mergeItemProg(a,b){
   const seen=new Set(), uniq=[];
   logs.forEach(l=>{ const k=(l.at||'')+'|'+(l.answered||''); if(!seen.has(k)){ seen.add(k); uniq.push(l);} });
   uniq.sort((x,y)=>((x.at||'')<(y.at||'')?-1:1));
-  a.wrongLog=uniq.slice(-20);
+  a.wrongLog=uniq.slice(-5);
   a.lwrong = a.wrongLog.length?slashFromISO(a.wrongLog[a.wrongLog.length-1].at):a.lwrong;
 }
 // クラウドユーザー(cu)をローカルユーザー(lu)へ統合
@@ -1083,25 +1149,37 @@ function mergeSummary(){
   return `${accs.length}人・出題済み${seen}・習得${mastered}`;
 }
 
+// クラウド(§10・そのIDぶん)をアクティブプロフィールへ合流。変わればtrue
+function mergeFetchIntoActive(data){
+  backupLocal();
+  const cloud=fromSchema9(data); const cu=Object.values(cloud.users)[0];
+  if(!cu) return false;
+  const u=ensureActiveProfile();
+  const before=JSON.stringify(activeProgress9());
+  mergeUserInto(u, cu);
+  recomputeUser(u);
+  saveDB(true);      // 取り込み保存（updatedAtは据え置き）
+  return JSON.stringify(activeProgress9())!==before;
+}
 async function pullCloud(manual){
-  if(!syncOn()){ if(manual) setSyncStatus('同期は未設定です','err'); return; }
+  if(!syncOn()){ if(manual) setSyncStatus('同期は未設定です（「同期設定」でURL・合言葉・ID・パスワードを入れてください）','err'); return; }
   setSyncStatus('☁… 同期中', 'proc');
   let res;
-  try{ res=await fetch(syncCfg.url+'?key='+encodeURIComponent(syncCfg.key)+'&app='+encodeURIComponent(APP)); }
+  try{ res=await fetch(syncCfg.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({key:syncCfg.key, action:'fetch', app:APP, id:authCfg.id, pw:authCfg.pw})}); }
   catch(e){ setSyncStatus('☁ オフライン（ローカルには保存済み）','err'); return; }
   let j; try{ j=JSON.parse(await res.text()); }catch(e){ setSyncStatus(GAS_BAD,'err'); return; }
-  if(!j.ok){ setSyncStatus(mapSyncError(j.error),'err'); return; }
-  const cloud=j.data;
-  const localHas=dbHasRecords(DB), cloudHas=dbHasRecords(cloud);
+  if(!j.ok){ if(j.error==='auth'){ handleAuthError(); } else setSyncStatus(mapSyncError(j.error),'err'); return; }
+  if(j.label){ authCfg.label=j.label; saveAuth(); const au=activeUser(); if(au) au.label=j.label; }
+  const data=j.data;                             // §10（そのIDぶん）または null
   let msg;
-  if(!cloud){                                    // クラウド空 → push
-    await pushCloud(); msg='☁ クラウドに進捗が無かったので送りました';
-  } else if(localHas && !cloudHas){              // ローカル有・クラウド空 → push
-    await pushCloud(); msg='☁ クラウドに進捗が無かったので送りました';
-  } else {                                        // それ以外は必ず「合流」（§5-3）
-    const changed=mergeCloud(cloud);
+  if(!data || !dbHasRecords(data)){
+    if(dbHasRecords(DB)){ await pushCloud(); msg='☁ クラウドに記録が無かったので送りました'; }
+    else msg='☁✓ 同期しました（まだ記録なし）';
+  } else {
+    const changed=mergeFetchIntoActive(data);
     if(changed) await pushCloud();
-    msg=`☁✓ クラウドと合流しました（${mergeSummary()}）`;
+    msg='☁✓ クラウドと同期しました';
   }
   syncCfg.lastSync=new Date().toISOString(); saveSync();
   setSyncStatus(`${msg}｜最終同期 ${fmtStamp(syncCfg.lastSync)}`,'ok');
@@ -1123,42 +1201,21 @@ function closeModal(){ document.getElementById('modalWrap').style.display='none'
 
 /* ---- データ管理パネル ---- */
 function renderSyncPanel(){
-  const now=document.getElementById('btnSyncNow'); const drv=document.getElementById('btnListDrive');
-  if(now) now.style.display = syncOn()?'block':'none';
-  if(drv) drv.style.display = syncOn()?'block':'none';
+  const pl=document.getElementById('portalLink'); if(pl) pl.href=portalURL();
   const el=document.getElementById('syncStatus');
   if(el && el.className.trim()==='syncStatus'){   // 中立表示のときだけ既定文言を出す（ok/err/procは保持）
-    if(syncOn()) setSyncStatus(`☁ 同期設定ずみ｜最終同期 ${fmtStamp(syncCfg.lastSync)}`,'ok');
-    else el.textContent='同期は未設定です';
+    if(syncOn()) setSyncStatus(`☁ ログイン中：${authCfg.label||authCfg.id}（${authCfg.id}）｜最終同期 ${fmtStamp(syncCfg.lastSync)}`,'ok');
+    else el.textContent='ポータルで同期設定・ログインしてください';
   }
 }
-function openSyncModal(){
-  openModal(`
-   <h3>☁ クラウド同期設定</h3>
-   <p>あなたのGoogleスクリプト(GAS)のURLと合言葉を入力します。端末ごとに入力が必要です。<br>※URL・合言葉はこの端末にだけ保存され、ファイルには含まれません。</p>
-   <label>GASのURL（/exec で終わるもの）</label>
-   <input type="text" id="mUrl" placeholder="https://script.google.com/macros/s/…/exec" value="${(syncCfg.url||'').replace(/"/g,'&quot;')}">
-   <label>合言葉</label>
-   <input type="password" id="mKey" placeholder="合言葉" value="${(syncCfg.key||'').replace(/"/g,'&quot;')}">
-   <div class="mrow">
-     <button class="bigbtn" onclick="saveSyncSettings()">保存して同期</button>
-     ${syncOn()?'<button class="quitbtn" onclick="clearSync()">同期を解除</button>':''}
-   </div>
-   <div class="mrow"><button class="quitbtn" style="flex:1" onclick="closeModal()">閉じる</button></div>`);
+function resetRecords(){
+  const u=activeUser(); if(!u) return;
+  if(!confirm('このツールの記録（ID '+authCfg.id+' ぶん）をすべて消します。\nクラウドには残るので、同じIDで同期すれば戻せます。よろしいですか？')) return;
+  u.prog={}; u.masteredKP={}; u.miss={}; u.seen={}; u.fav={}; u.sessions=[];
+  u.stats={answered:0,correct:0,bestStreak:0}; u.cats={};
+  saveDB(); renderAll(); setSyncStatus('🗑 このツールの記録を消しました','ok');
 }
-function saveSyncSettings(){
-  const url=(document.getElementById('mUrl').value||'').trim();
-  const key=(document.getElementById('mKey').value||'').trim();
-  if(!/^https:\/\/.+\/exec$/.test(url)){ alert('URLは https://… /exec の形式で入力してください。'); return; }
-  syncCfg.url=url; syncCfg.key=key; saveSync();
-  closeModal(); renderAccountBar();
-  pullCloud(true);   // 保存直後にpull（§5）
-}
-function clearSync(){
-  if(!confirm('クラウド同期を解除しますか？（この端末の記録はそのまま残ります）')) return;
-  syncCfg={url:'',key:'',lastSync:''}; saveSync();
-  closeModal(); renderAccountBar(); setSyncStatus('同期は未設定です','');
-}
+/* 同期設定・ログイン・ログアウトはポータル（index.html）で行う。ツールには持たない（§v3.0） */
 
 /* ---- 書き出し / 読み込み ---- */
 function exportJSON(){
@@ -1196,11 +1253,17 @@ function importJSON(input){
 }
 function doImport(){
   if(!_importData){ closeModal(); return; }
+  // ログイン中IDの記録が入っているか検証（他の子のファイルは弾く）
+  const s9 = _importData.accounts ? _importData
+    : toSchema9({app:APP, updatedAt:_importData.updatedAt||'', activeId:_importData.activeId||null, users:_importData.users||{}});
+  const has = s9.progress && (s9.progress[authCfg.id] || (Object.keys(s9.progress).length===1));
+  if(!has){
+    closeModal();
+    openModal(`<h3>📥 読み込めません</h3><div class="warnbox">このファイルには ID ${authCfg.id} の記録が入っていません（別のお子さんの記録の可能性があります）。</div><div class="mrow"><button class="quitbtn" style="flex:1" onclick="closeModal()">閉じる</button></div>`);
+    _importData=null; return;
+  }
   backupLocal();
-  DB = _importData.accounts ? fromSchema9(_importData)       // §9
-        : {app:APP, updatedAt:_importData.updatedAt||'', activeId:_importData.activeId||null, users:_importData.users||{}}; // 旧内部
-  DB.app=APP; DB.users=DB.users||{};
-  if(!DB.activeId || !DB.users[DB.activeId]){ const ids=Object.keys(DB.users); DB.activeId=ids[0]||null; }
+  bindActiveToAuth(s9);     // ログイン中IDに束ねて取り込み
   normalizeUsers();
   saveDB();                 // 置換 → updatedAt更新 ＋ push
   _importData=null; closeModal(); renderAll();
@@ -1220,21 +1283,21 @@ function buildListPayload(){
   const header=['名前','カテゴリー','記号','知識ポイント','よみがな','重要度','状態',
     '累計正解数','累計誤答数','形式A誤答数','形式B誤答数','過去の誤答内容','最終誤答日','習得日'];
   const rows=[];
-  Object.values(DB.users).forEach(u=>{
-    CATS.forEach(c=>{
-      KPS_BY_CAT[c.id].forEach(id=>{
-        const kp=KP[id]; const pr=u.prog[id]||{c:0,w:0,wA:0,wB:0,wrongLog:[],mday:'',lwrong:''};
-        const wrongTxt=(pr.wrongLog||[]).map(w=>w.answered).filter(Boolean).join(';');
-        rows.push([ u.name, kp.cat, '', kp.term, kp.reading||'', '',
-          statusOf(u,id), pr.c||0, pr.w||0, pr.wA||0, pr.wB||0,
-          wrongTxt, pr.lwrong||'', pr.mday||'' ]);
-      });
+  const u=activeUser(); if(!u) return {header, rows};   // ログイン中IDのぶんだけ
+  const idName=authCfg.id||u.name;                       // 1列目は管理ID
+  CATS.forEach(c=>{
+    KPS_BY_CAT[c.id].forEach(id=>{
+      const kp=KP[id]; const pr=u.prog[id]||{c:0,w:0,wA:0,wB:0,wrongLog:[],mday:'',lwrong:''};
+      const wrongTxt=(pr.wrongLog||[]).map(w=>w.answered).filter(Boolean).join(';');
+      rows.push([ idName, kp.cat, '', kp.term, kp.reading||'', '',
+        statusOf(u,id), pr.c||0, pr.w||0, pr.wA||0, pr.wB||0,
+        wrongTxt, pr.lwrong||'', pr.mday||'' ]);
     });
   });
   return {header, rows};
 }
 async function exportListToDrive(){
-  if(!syncOn()){ alert('先に「☁ クラウド同期設定」をしてください。'); return; }
+  if(!syncOn()){ alert('ポータルで同期設定・ログインをしてください。'); return; }
   setSyncStatus('☁… 最新の記録を取り込み中','proc');
   await pullCloud(false);                 // 事前pull（空上書き防止）
   if(!dbHasRecords(DB)){
@@ -1246,10 +1309,10 @@ async function exportListToDrive(){
   const list=buildListPayload();
   setSyncStatus('☁… 一覧を書き出し中','proc');
   let res; try{ res=await fetch(syncCfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:JSON.stringify({key:syncCfg.key, app:APP, list})}); }
+    body:JSON.stringify({key:syncCfg.key, app:APP, id:authCfg.id, list})}); }   // §12-D：idを添える
   catch(e){ setSyncStatus('☁ オフライン（あとで再試行してください）','err'); return; }
   let j; try{ j=JSON.parse(await res.text()); }catch(e){ setSyncStatus(GAS_BAD,'err'); return; }
-  if(!j.ok){ setSyncStatus(mapSyncError(j.error),'err'); return; }
+  if(!j.ok){ if(j.error==='auth'){ handleAuthError(); } else setSyncStatus(mapSyncError(j.error),'err'); return; }
   setSyncStatus('☁✓ 全問一覧をスプレッドシートに書き出しました','ok');
 }
 function createProfile(name,pin){
@@ -1279,24 +1342,34 @@ function recordAnswer(q,correct){
 function isMasteredKP(u,kpId){ return u && !!u.masteredKP[kpId]; }
 
 /* ---- 画面切り替え ---- */
-function hideAll(){ ['start','quiz','result','profile','stats','list','memorize'].forEach(id=>{const e=document.getElementById(id); if(e) e.classList.add('hidden');}); }
+function hideAll(){ ['start','quiz','result','profile','stats','list','memorize','gate'].forEach(id=>{const e=document.getElementById(id); if(e) e.classList.add('hidden');}); }
+function renderGate(){
+  const why=document.getElementById('gateWhy');
+  if(why) why.innerHTML = (!ready()?'クラウド同期がまだ設定されていません。':'まだログインしていません。')
+    +'<br>ポータル（トップページ）で<b>同期設定とログイン</b>を1回だけ行うと、すべての学習ツールがそのまま使えます。';
+  const pl=document.getElementById('gatePortal'); if(pl) pl.href=portalURL();
+  showScreen('gate');
+}
+function recheckGate(){
+  loadSync(); loadDB(); renderAccountBar();
+  if(gateNeeded()){ renderGate(); }
+  else { showScreen('start'); if(syncOn()) pullCloud(true); }
+}
 function showScreen(id){ hideAll(); document.getElementById(id).classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
 
-/* ---- アカウントバー ---- */
+/* ---- アカウントバー（ログイン中の 表示名（ID）。タップでポータルへ） ---- */
 function renderAccountBar(){
-  const bar=document.getElementById('acctbar'); const u=activeUser();
-  if(u){
-    bar.innerHTML=`<span class="who">👤 <b>${u.name}</b></span>
-      <span class="fire">🔥 ${u.login.streak||1}日連続</span>
+  const bar=document.getElementById('acctbar');
+  if(loggedIn()){
+    const label=(authCfg.label||authCfg.id);
+    bar.innerHTML=`<button class="who wholink" onclick="location.href=portalURL()" title="ポータルへ">👤 <b>${label}</b>（${authCfg.id}）</button>
       <span class="sp"></span>
       <button class="mini" onclick="openStats()">📊 成績</button>
-      <button class="mini" onclick="openList()">📋 一覧</button>
-      <button class="mini" onclick="openProfile()">切替</button>`;
+      <button class="mini" onclick="openList()">📋 一覧</button>`;
   } else {
-    bar.innerHTML=`<span class="who">👤 ゲスト <span class="note">（記録は保存されません）</span></span>
+    bar.innerHTML=`<span class="who">👤 —</span>
       <span class="sp"></span>
-      <button class="mini" onclick="openList()">📋 一覧</button>
-      <button class="mini prime" onclick="openProfile()">プロフィール</button>`;
+      <a class="mini prime" href="${portalURL()}" style="text-decoration:none">ポータルへ</a>`;
   }
   // スタート画面の「復習」ボタンと保存状態の更新
   updateReviewBtn(); updateStoreNotice(); updateCatCounts(); renderSyncPanel();
@@ -1380,6 +1453,7 @@ function kpSummary(kpId){
   return {tag:kp.cat, cid:kp.cid, term:t, reading:r, info, pins:kp.pins||[]};
 }
 function startMemorize(){
+  if(gateNeeded()){ renderGate(); return; }
   const cids=selectedCids();
   if(cids.length===0){ alert('分野を1つ以上えらんでね。'); return; }
   let ids=[]; cids.forEach(cid=>{ ids=ids.concat(KPS_BY_CAT[cid]); });   // 分野順・全語（習得済みも含む）
@@ -1577,23 +1651,15 @@ function renderList(){
   box.innerHTML=html;
 }
 function downloadList(){
-  const u=activeUser();
-  const rows=[['カテゴリー','用語','よみ','状態','まちがえた回数','2回以上','お気に入り']];
-  CATS.forEach(c=>{
-    KPS_BY_CAT[c.id].forEach(id=>{
-      const kp=KP[id]; const st=kpStatus(u,id);
-      const stJ = st==='mm'?'習得':(st==='ll'?'学習中':'未');
-      const miss=u?(u.miss[id]||0):0;
-      const fav=(u&&u.fav[id])?'⭐':'';
-      rows.push([c.name, kp.term, kp.reading||'', stJ, String(miss), miss>=2?'★':'', fav]);
-    });
-  });
-  const csv='﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  if(!loggedIn()){ alert('ポータルでログインしてください。'); return; }
+  const pay=buildListPayload();                       // 14列・1列目＝ID
+  const header=pay.header.concat(['表示名']);          // 15列目＝表示名（ローカルCSVのみ）
+  const rows=pay.rows.map(r=>r.concat([authCfg.label||'']));
+  const csv='﻿'+[header].concat(rows).map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  const who=u?u.name:'guest';
-  a.href=url; a.download=`交通クイズ_一覧_${who}.csv`;
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  const d=new Date(); const ymd=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  a.href=url; a.download=`${TOOL_NAME}結果_${authCfg.id}_${ymd}.csv`;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -1655,6 +1721,7 @@ function startQuiz(){
 
 /* ---- セッション・エンジン ---- */
 function beginSession(kpIds, review, test, modeLabel){
+  if(gateNeeded()){ renderGate(); return; }
   const u=activeUser();
   const startMastered = new Set(u ? Object.keys(u.masteredKP) : []);
   SESS={ kpIds:kpIds.slice(), items:{}, queue:shuffle(kpIds.slice()), qi:0,
@@ -1883,7 +1950,7 @@ function commitSession(){
     else {
       pr.w++; if(ev.form==='A') pr.wA++; else pr.wB++;
       pr.wrongLog.push({at:nowISO, format:ev.form, answered:ev.chosen||''});
-      if(pr.wrongLog.length>20) pr.wrongLog=pr.wrongLog.slice(-20);
+      if(pr.wrongLog.length>5) pr.wrongLog=pr.wrongLog.slice(-5);   // §9：最新5件
       pr.lwrong=ds;
     }
   });
@@ -1960,19 +2027,32 @@ function finishQuiz(){
 function backToStart(){
   SESS=null;
   renderAccountBar();       // 復習ボタン数・語カウント・保存状態を更新
-  showScreen('start');
+  if(gateNeeded()) renderGate(); else showScreen('start');
 }
 
 /* ---- 初期化 ---- */
-loadDB();
-loadSync();
+loadSync();     // 先に kj-quiz:sync / kj-quiz:auth を読む
+loadDB();       // ログイン中IDに束ねてDBを作る
 renderAccountBar();
-(async ()=>{
-  if(syncOn()) await pullCloud(false);      // 起動直後にpull（§5）。完了までpushは送らない
-  const u=activeUser(); if(u) touchLogin(u);
+if(gateNeeded()){
+  renderGate();                              // 未設定・未ログインはポータルへ誘導
   bootDone=true;
-  renderAccountBar();
-})();
+} else {
+  showScreen('start');
+  (async ()=>{
+    if(syncOn()) await pullCloud(false);      // 起動直後に fetch（§13）
+    const u=activeUser(); if(u) touchLogin(u);
+    bootDone=true;
+    renderAccountBar();
+  })();
+}
+/* 他のツール／ポータルでログイン状態が変わったら追従（出題中は割り込まない） */
+window.addEventListener('storage', function(ev){
+  if(ev.key!=='kj-quiz:auth' && ev.key!=='kj-quiz:sync') return;
+  if(SESS) return;
+  loadSync(); loadDB(); renderAccountBar();
+  if(gateNeeded()) renderGate(); else showScreen('start');
+});
 </script>
 </body>
 </html>
