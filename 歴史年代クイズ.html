@@ -1590,6 +1590,19 @@ function renderScreen(){
   const app = document.getElementById('app');
   const accountBar = document.getElementById('accountBar');
 
+  if(state.screen === "loading"){
+    accountBar.style.display = "none";
+    renderTimelineMap(null);
+    app.innerHTML = `
+      <div class="card center-card">
+        <div class="qtype-tag">☁ 読み込み中…</div>
+        <div class="question-text">この端末に前回の記録を持ってきています</div>
+        <p style="font-size:13px; color:var(--sumi-soft);">はじめてこの端末でログインした時だけ表示されます。数秒お待ちください。</p>
+      </div>
+    `;
+    return;
+  }
+
   if(!ready() || !loggedIn()){
     accountBar.style.display = "none";
     renderTimelineMap(null);
@@ -1616,8 +1629,7 @@ function renderScreen(){
       loadAll();
       state.accountId = AUTH ? AUTH.id : null;
       state.screen = (ready() && loggedIn()) ? "home" : "gate";
-      render();
-      if(ready() && AUTH) pullCloud(true);
+      initialLoad();
     };
     return;
   }
@@ -2262,9 +2274,27 @@ function sessionAnsweredYears(){
   return sess.log.map(l => DATA[l.dataIdx][1]);
 }
 
-render();
-if(ready() && loggedIn()) setSyncStatus("pending", "☁… クラウドと同期しています");
-if(ready() && loggedIn()) pullCloud(true);
+// On a brand-new device (this ID has never synced here before), the local
+// store is empty even though the child may already have real progress on
+// the server. Rather than silently pulling in the background -- which
+// would flash an empty "0 progress" home screen for a moment -- block on
+// one initial download first, so the very first thing the child sees
+// already reflects their real history.
+async function initialLoad(){
+  render();
+  if(!ready() || !loggedIn()) return;
+  if(!dbHasRecords(STORE)){
+    state.screen = "loading";
+    render();
+    await pullCloud(true);
+    state.screen = "home";
+    render();
+  } else {
+    setSyncStatus("pending", "☁… クラウドと同期しています");
+    pullCloud(true);
+  }
+}
+initialLoad();
 
 // Follow login/sync changes made elsewhere (the portal, or another tool's
 // tab) -- but never yank the rug out from under an in-progress quiz.
@@ -2273,8 +2303,8 @@ window.addEventListener('storage', (ev)=>{
   if(state.screen === "quiz" && state.session && state.session.log.length) return;
   loadAll();
   state.accountId = AUTH ? AUTH.id : null;
-  render();
-  if(ready() && loggedIn()) pullCloud(true);
+  state.screen = (ready() && loggedIn()) ? "home" : "gate";
+  initialLoad();
 });
 </script>
 </body>
