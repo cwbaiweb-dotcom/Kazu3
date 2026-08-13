@@ -187,6 +187,30 @@
   .search-btn .lbl{ font-size:12px; }
   .review-item .search-btn{ position:absolute; top:8px; right:44px; padding: 5px 8px; font-size:14px; }
 
+  .speak-btn{
+    border: 1.5px solid var(--line);
+    background: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 15px;
+    line-height:1;
+    padding: 9px 10px;
+    color: var(--moss);
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-family: "Noto Sans JP", sans-serif;
+    transition: all .12s ease;
+  }
+  .speak-btn:hover{ border-color: var(--moss); background: rgba(95,111,78,0.08); }
+  .speak-btn .lbl{ font-size:12px; }
+  .speak-btn.active{ background: rgba(95,111,78,0.16); border-color: var(--moss); }
+
+  .autoread-toggle{
+    display:flex; align-items:center; gap:6px; justify-content:center;
+    font-size:12.5px; color: var(--sumi-soft); margin: 6px 0 12px;
+  }
+
   .top-actions{ display:flex; justify-content:flex-end; margin-bottom: 6px; }
 
   .review-item{ position:relative; }
@@ -859,6 +883,84 @@ function pctPos(year){ return ((year - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100;
 function openGoogleSearch(query){
   window.open("https://www.google.com/search?q=" + encodeURIComponent(query), "_blank", "noopener");
 }
+// Reads Japanese text aloud via the browser's built-in speech synthesis
+// (no external service, works offline). Cancels any speech already in
+// progress so taps never queue up and read out of order.
+function speechAvailable(){ return typeof window.speechSynthesis !== "undefined"; }
+
+// Voice lists load asynchronously in most browsers (empty on first call,
+// populated once 'voiceschanged' fires) -- cache and refresh so we always
+// have the best pick available once the browser's done loading them.
+let CACHED_VOICES = [];
+function refreshVoiceCache(){
+  if(!speechAvailable()) return;
+  try{ CACHED_VOICES = window.speechSynthesis.getVoices() || []; }catch(e){}
+}
+if(speechAvailable()){
+  refreshVoiceCache();
+  try{ window.speechSynthesis.onvoiceschanged = refreshVoiceCache; }catch(e){}
+}
+function pickJapaneseVoice(){
+  if(!CACHED_VOICES.length) refreshVoiceCache();
+  const ja = CACHED_VOICES.filter(v => v.lang && v.lang.toLowerCase().startsWith("ja"));
+  if(!ja.length) return null;
+  // Prefer the natural-sounding cloud/premium voices browsers typically
+  // ship (Google's Japanese voice on Chrome/Android, Kyoko/O-Ren on
+  // Apple platforms) over the default robotic local one.
+  return ja.find(v => /Google/i.test(v.name))
+      || ja.find(v => /Kyoko|O-Ren|Otoya|Siri/i.test(v.name))
+      || ja.find(v => v.localService === false)
+      || ja[0];
+}
+let SPEECH_GEN = 0; // bumped on every cancel/new speak() so a stale chunk queue never resumes after being superseded
+function speak(text){
+  if(!speechAvailable() || !text) return;
+  try{
+    window.speechSynthesis.cancel();
+    const myGen = ++SPEECH_GEN;
+    const voice = pickJapaneseVoice();
+    // Split into short chunks at sentence-ish boundaries so no single
+    // utterance runs long enough to trigger browsers' "stops mid-speech
+    // after ~15s" bug. Chunks are queued ONE AT A TIME via onend, rather
+    // than firing several speak() calls back-to-back synchronously --
+    // the latter is a known trigger for browsers cutting the very first
+    // chunk short after only a few characters.
+    let chunks = text.split(/(?<=[。、！？])/).map(s=>s.trim()).filter(Boolean);
+    if(!chunks.length) chunks = [text];
+    let i = 0;
+    function speakNext(){
+      if(myGen !== SPEECH_GEN) return; // superseded by a newer speak()/cancel
+      if(i >= chunks.length) return;
+      const u = new SpeechSynthesisUtterance(chunks[i]);
+      u.lang = "ja-JP";
+      if(voice) u.voice = voice;
+      u.rate = 1.2;
+      u.pitch = 1.0;
+      u.onend = ()=>{ i++; speakNext(); };
+      u.onerror = ()=>{ i++; speakNext(); }; // don't get stuck if one chunk errors out
+      window.speechSynthesis.speak(u);
+    }
+    speakNext();
+  }catch(e){ /* speech synthesis is best-effort; never let it break the quiz */ }
+}
+function stopSpeaking(){
+  SPEECH_GEN++; // invalidate any in-flight chunk queue
+  if(speechAvailable()){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+}
+// Chrome (and some other browsers) have a long-standing bug where speech
+// synthesis silently stops partway through longer utterances -- calling
+// pause()+resume() periodically while actively speaking keeps it alive.
+// Harmless no-op when nothing is speaking.
+if(speechAvailable()){
+  setInterval(()=>{
+    try{
+      if(window.speechSynthesis.speaking && !window.speechSynthesis.paused){
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      }
+    }catch(e){}
+  }, 4000);
+}
 function otherFormat(f){ return f === "A" ? "B" : "A"; }
 function nowIso(){ return new Date().toISOString(); }
 function todayStamp(){
@@ -986,6 +1088,7 @@ let state = {
   screen: "gate", // gate | home | quiz | result | favorites | study
   accountId: AUTH ? AUTH.id : null,
   quizMode: "choice", // choice | input  (answer style for format-A questions)
+  autoRead: true, // when true, questions/answers are read aloud automatically (on by default)
   session: null,
   study: null, // {indices:[...], pos, filterUnmastered}
   syncStatus: { kind: "idle", message: "" }, // idle | pending | success | error
@@ -1628,6 +1731,7 @@ function renderModalOverlay(){
 function renderScreen(){
   const app = document.getElementById('app');
   const accountBar = document.getElementById('accountBar');
+  if(state.screen !== "quiz" && state.screen !== "study") stopSpeaking();
 
   if(state.screen === "loading"){
     accountBar.style.display = "none";
@@ -1767,6 +1871,10 @@ function renderHome(app){
         <button class="mode-btn ${state.quizMode==='choice' ? 'active' : ''}" id="modeChoiceBtn">選択形式（4択）</button>
         <button class="mode-btn ${state.quizMode==='input' ? 'active' : ''}" id="modeInputBtn">年代入力形式（数字で回答）</button>
       </div>
+      <label class="autoread-toggle">
+        <input type="checkbox" id="autoReadCheck" ${state.autoRead ? 'checked' : ''}>
+        🔊 問題・答えを自動で読み上げる
+      </label>
 
       <button class="study-mode-btn" id="studyModeBtn">📖 覚えるモード（クイズなしで読んで覚える）</button>
 
@@ -1834,6 +1942,7 @@ function renderHome(app){
   `;
   document.getElementById('modeChoiceBtn').onclick = ()=>{ state.quizMode = "choice"; render(); };
   document.getElementById('modeInputBtn').onclick = ()=>{ state.quizMode = "input"; render(); };
+  document.getElementById('autoReadCheck').onchange = (e)=>{ state.autoRead = e.target.checked; };
   document.getElementById('lenBtn10').onclick = ()=>{ startSession("10q"); render(); };
   document.getElementById('lenBtn20').onclick = ()=>{ startSession("20q"); render(); };
   document.getElementById('lenBtnAll').onclick = ()=>{ startSession("all"); render(); };
@@ -1939,7 +2048,8 @@ function renderQuiz(app){
         </div>
         <button class="star-btn ${isFavorite(progress, q.dataIdx) ? 'active' : ''}" id="favToggleBtn">★ <span class="lbl">あとで見る</span></button>
       </div>
-      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button class="speak-btn" id="speakQBtn">🔊 <span class="lbl">読み上げ</span></button>
         <button class="search-btn" id="searchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
       </div>
       <div class="question-text" style="margin-top:14px;">
@@ -1989,6 +2099,9 @@ function renderQuiz(app){
     document.getElementById('favToggleBtn').classList.toggle('active', nowFav);
   };
   document.getElementById('searchBtn').onclick = ()=> openGoogleSearch(materialized.item);
+  const questionSpeechText = isEventQ ? materialized.item : `${materialized.year}年に起こったことは？`;
+  document.getElementById('speakQBtn').onclick = ()=> speak(questionSpeechText);
+  if(!viewingReview && state.autoRead) speak(questionSpeechText);
 
   if(!viewingReview){
     document.getElementById('nextBtn').onclick = nextQuestion;
@@ -2058,7 +2171,11 @@ function submitAnswer(kind, materialized, choiceIdx, isRedo){
   }
   const fb = document.getElementById('feedback');
   fb.classList.add('show');
-  fb.innerHTML = `${correct ? "○ 正解！" : "× 残念、正解は " + materialized.year + "年"}<br><span class="mnemonic">${materialized.mnemonic}</span>`;
+  const answerSpeechText = `${correct ? "正解です。" : "残念、正解は" + materialized.year + "年です。"}${materialized.item}。ゴロ合わせ、${materialized.mnemonic}`;
+  fb.innerHTML = `${correct ? "○ 正解！" : "× 残念、正解は " + materialized.year + "年"}<br><span class="mnemonic">${materialized.mnemonic}</span>
+    <button class="speak-btn" id="speakABtn" style="margin-top:8px;">🔊 <span class="lbl">読み上げ</span></button>`;
+  document.getElementById('speakABtn').onclick = ()=> speak(answerSpeechText);
+  if(state.autoRead) speak(answerSpeechText);
   document.getElementById('nextBtn').classList.add('show');
 }
 
@@ -2257,6 +2374,7 @@ function renderStudy(app){
         <div class="study-why-box"><b>なぜ起きた？</b><br>${why}</div>
         <div class="study-icons-row">
           <button class="star-btn ${isFavorite(progress, idx) ? 'active' : ''}" id="studyFavBtn">★ <span class="lbl">あとで見る</span></button>
+          <button class="speak-btn" id="studySpeakBtn">🔊 <span class="lbl">読み上げ</span></button>
           <button class="search-btn" id="studySearchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
         </div>
       </div>
@@ -2282,6 +2400,9 @@ function renderStudy(app){
     document.getElementById('studyFavBtn').classList.toggle('active', nowFav);
   };
   document.getElementById('studySearchBtn').onclick = ()=> openGoogleSearch(item);
+  const studySpeechText = `${year}年。${item}。ゴロ合わせ、${mnemonic}。なぜ起きた？　${why}`;
+  document.getElementById('studySpeakBtn').onclick = ()=> speak(studySpeechText);
+  if(state.autoRead) speak(studySpeechText);
   document.getElementById('studyPrevBtn').onclick = ()=>{ if(st.pos>0){ st.pos--; render(); } };
   document.getElementById('studyNextBtn').onclick = ()=>{ if(st.pos<st.indices.length-1){ st.pos++; render(); } };
   document.getElementById('studyBackBtn').onclick = ()=>{ state.study = null; state.screen = "home"; render(); };
@@ -2345,7 +2466,9 @@ initialLoad();
 // tab) -- but never yank the rug out from under an in-progress quiz.
 window.addEventListener('storage', (ev)=>{
   if(ev.key !== AUTH_KEY && ev.key !== SYNC_KEY) return;
-  if(state.screen === "quiz" && state.session && state.session.log.length) return;
+  // never interrupt an active quiz or study session, even on the very first card/question
+  if(state.screen === "quiz" && state.session) return;
+  if(state.screen === "study" && state.study) return;
   loadAll();
   state.accountId = AUTH ? AUTH.id : null;
   state.screen = (ready() && loggedIn()) ? "home" : "gate";
