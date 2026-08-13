@@ -546,8 +546,6 @@
   </header>
 
   <div id="app"></div>
-
-  <footer>早稲田アカデミー「歴史年代表100」より作成 ／ 成績はこの端末のブラウザに保存されます</footer>
 </div>
 
 <script>
@@ -913,31 +911,46 @@ function pickJapaneseVoice(){
       || ja[0];
 }
 let SPEECH_GEN = 0; // bumped on every cancel/new speak() so a stale chunk queue never resumes after being superseded
+const SPEECH_CHUNK_THRESHOLD = 60; // texts shorter than this play as one utterance -- no need to split, and fewer moving parts to fail
 function speak(text){
   if(!speechAvailable() || !text) return;
   try{
     window.speechSynthesis.cancel();
     const myGen = ++SPEECH_GEN;
     const voice = pickJapaneseVoice();
-    // Split into short chunks at sentence-ish boundaries so no single
-    // utterance runs long enough to trigger browsers' "stops mid-speech
-    // after ~15s" bug. Chunks are queued ONE AT A TIME via onend, rather
-    // than firing several speak() calls back-to-back synchronously --
-    // the latter is a known trigger for browsers cutting the very first
-    // chunk short after only a few characters.
-    let chunks = text.split(/(?<=[。、！？])/).map(s=>s.trim()).filter(Boolean);
+    // Only split long text (study-mode readouts, answer+mnemonic combos)
+    // into sentence-sized chunks -- short question prompts play as a
+    // single utterance, which is simpler and has fewer ways to fail.
+    let chunks = text.length > SPEECH_CHUNK_THRESHOLD
+      ? text.split(/(?<=[。、！？])/).map(s=>s.trim()).filter(Boolean)
+      : [text];
     if(!chunks.length) chunks = [text];
     let i = 0;
     function speakNext(){
       if(myGen !== SPEECH_GEN) return; // superseded by a newer speak()/cancel
       if(i >= chunks.length) return;
-      const u = new SpeechSynthesisUtterance(chunks[i]);
+      const chunk = chunks[i];
+      const u = new SpeechSynthesisUtterance(chunk);
       u.lang = "ja-JP";
       if(voice) u.voice = voice;
       u.rate = 1.2;
       u.pitch = 1.0;
-      u.onend = ()=>{ i++; speakNext(); };
-      u.onerror = ()=>{ i++; speakNext(); }; // don't get stuck if one chunk errors out
+      let advanced = false;
+      const advance = ()=>{
+        if(advanced || myGen !== SPEECH_GEN) return;
+        advanced = true;
+        i++;
+        speakNext();
+      };
+      u.onend = advance;
+      u.onerror = advance; // don't get stuck if one chunk errors out
+      // Safety net: the 'end' event is unreliable on some browsers/mobile
+      // webviews and can simply never fire -- without this, a missed
+      // event would silently halt playback after just the first chunk,
+      // which looks exactly like "stops after a few characters". Force
+      // the sequence forward after a generous estimated read time if the
+      // real event doesn't show up.
+      setTimeout(advance, Math.max(700, chunk.length * 220));
       window.speechSynthesis.speak(u);
     }
     speakNext();
@@ -977,7 +990,14 @@ function materializeQuestion(dataIdx, format, answerMode){
   const useInput = format === "A" && answerMode === "input";
   let choices = null, correctIdx = null;
   if(format === "A" && !useInput){
-    const distractYears = shuffle(DATA.filter((d,i)=>i!==dataIdx).map(d=>d[1]));
+    // Distractor years are drawn from the years CLOSEST to the correct
+    // one (not the full 239-2011 spread) -- otherwise a wildly distant
+    // wrong option (e.g. 1868 next to 604) can be eliminated on sight
+    // without actually knowing the date, defeating the point of the quiz.
+    const others = DATA.filter((d,i)=>i!==dataIdx).map(d=>d[1]);
+    const byCloseness = others.slice().sort((a,b)=> Math.abs(a-year) - Math.abs(b-year));
+    const NEAR_POOL_SIZE = 12; // close-but-still-shuffled pool so distractors stay plausible yet vary between attempts
+    const distractYears = [...shuffle(byCloseness.slice(0, NEAR_POOL_SIZE)), ...shuffle(byCloseness.slice(NEAR_POOL_SIZE))];
     const yrSet = new Set([year]);
     const opts = [year];
     for(const y of distractYears){
