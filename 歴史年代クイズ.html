@@ -960,11 +960,24 @@ function stopSpeaking(){
   SPEECH_GEN++; // invalidate any in-flight chunk queue
   if(speechAvailable()){ try{ window.speechSynthesis.cancel(); }catch(e){} }
 }
-// Chrome (and some other browsers) have a long-standing bug where speech
-// synthesis silently stops partway through longer utterances -- calling
-// pause()+resume() periodically while actively speaking keeps it alive.
-// Harmless no-op when nothing is speaking.
-if(speechAvailable()){
+// iPad/Android tablets and phones handle speechSynthesis.pause()/resume()
+// very differently from desktop Chrome: pause() there often kills the
+// utterance outright rather than pausing it, and resume() doesn't
+// reliably bring it back -- so a workaround built for a DESKTOP Chrome
+// bug ends up actively causing "stops partway through" on tablets/phones.
+// Only run the keep-alive trick on non-mobile devices.
+function isMobileLikeDevice(){
+  try{
+    const ua = navigator.userAgent || "";
+    const isTouchMac = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1; // iPadOS reports as Mac but is touch-based
+    return /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(ua) || isTouchMac;
+  }catch(e){ return false; }
+}
+// Chrome desktop has a long-standing bug where speech synthesis silently
+// stops partway through longer utterances -- calling pause()+resume()
+// periodically while actively speaking keeps it alive there. Harmless
+// no-op when nothing is speaking; skipped entirely on mobile/tablets.
+if(speechAvailable() && !isMobileLikeDevice()){
   setInterval(()=>{
     try{
       if(window.speechSynthesis.speaking && !window.speechSynthesis.paused){
