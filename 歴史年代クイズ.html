@@ -219,10 +219,10 @@
   .fav-empty{ font-size:13px; color: var(--sumi-soft); padding: 20px 0; }
 
   .mode-toggle{
-    display:flex; gap:8px; margin: 4px 0 16px; justify-content:center;
+    display:flex; gap:8px; margin: 4px 0 16px; justify-content:center; flex-wrap:wrap;
   }
   .mode-btn{
-    flex:1; max-width: 220px;
+    flex:1; min-width: 140px; max-width: 220px;
     font-family: "Shippori Mincho", serif; font-size: 13.5px; font-weight:700;
     padding: 10px 8px; border-radius: 3px; border: 1.5px solid var(--line);
     background: #fff; color: var(--sumi-soft); cursor:pointer; transition: all .12s ease;
@@ -259,6 +259,43 @@
   .year-submit-btn:hover:not(:disabled){ background: var(--aizome-deep); }
   .year-submit-btn:disabled{ opacity:0.5; cursor:default; }
   .year-input-hint{ font-size:11.5px; color: var(--sumi-soft); margin-top:6px; }
+
+  .kanji-input-row{ margin-top:8px; }
+  .kanji-input{
+    width:100%; box-sizing:border-box;
+    font-family:"Shippori Mincho", serif; font-size:18px;
+    padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 3px;
+    color: var(--sumi);
+  }
+  .kanji-input:focus{ outline:none; border-color: var(--aizome); }
+  .kanji-reveal-btn{
+    width:100%; margin-top:10px;
+    font-family:"Shippori Mincho", serif; font-size:15px; font-weight:700;
+    padding:13px 10px; border-radius:3px; border:none;
+    background: var(--kincha); color:#fff; cursor:pointer;
+  }
+  .kanji-reveal-btn:hover{ background: var(--shuiro); }
+  .kanji-reveal-box{
+    margin-top:10px; padding:14px 16px; border:1.5px solid var(--kincha);
+    border-radius:3px; background: rgba(169,120,31,0.06);
+  }
+  .kanji-reveal-box .kanji-your-answer{ font-size:12px; color: var(--sumi-soft); margin-bottom:8px; }
+  .kanji-reveal-box .kanji-answer{
+    font-family:"Shippori Mincho", serif; font-size:18px; font-weight:700;
+    color: var(--sumi); line-height:1.6; margin-bottom:8px;
+  }
+  .kanji-selfgrade-row{ display:flex; gap:10px; margin-top:12px; }
+  .kanji-grade-btn{
+    flex:1; font-family:"Shippori Mincho", serif; font-size:15px; font-weight:700;
+    padding:13px 10px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; cursor:pointer; transition: all .12s ease;
+  }
+  .kanji-grade-btn.correct{ color: var(--moss); border-color: var(--moss); }
+  .kanji-grade-btn.correct:hover, .kanji-grade-btn.correct.active{ background: rgba(95,111,78,0.15); }
+  .kanji-grade-btn.wrong{ color: var(--shuiro); border-color: var(--shuiro); }
+  .kanji-grade-btn.wrong:hover, .kanji-grade-btn.wrong.active{ background: rgba(181,69,28,0.12); }
+  .kanji-grade-btn:disabled{ opacity:0.55; cursor:default; }
+  .kanji-grade-note{ font-size:11.5px; color: var(--sumi-soft); margin-top:4px; text-align:center; }
 
   .big-btn{
     font-family: "Shippori Mincho", serif; font-size: 18px; font-weight: 800; letter-spacing: 0.1em;
@@ -1187,6 +1224,7 @@ function startSession(mode, opts){
     log: [],
     appearanceCount,
     newlyMastered: new Set(),
+    kanjiRevealedAt: {}, // {questionIndex: true} -- tracks which kanji-mode questions have had their answer revealed
   };
   state.screen = "quiz";
 }
@@ -1903,6 +1941,7 @@ function renderHome(app){
       <div class="mode-toggle">
         <button class="mode-btn ${state.quizMode==='choice' ? 'active' : ''}" id="modeChoiceBtn">選択形式（4択）</button>
         <button class="mode-btn ${state.quizMode==='input' ? 'active' : ''}" id="modeInputBtn">年代入力形式（数字で回答）</button>
+        <button class="mode-btn ${state.quizMode==='kanji' ? 'active' : ''}" id="modeKanjiBtn">漢字書きモード（年代→人物・出来事）</button>
       </div>
       <label class="autoread-toggle">
         <input type="checkbox" id="autoReadCheck" ${state.autoRead ? 'checked' : ''}>
@@ -1975,6 +2014,7 @@ function renderHome(app){
   `;
   document.getElementById('modeChoiceBtn').onclick = ()=>{ state.quizMode = "choice"; render(); };
   document.getElementById('modeInputBtn').onclick = ()=>{ state.quizMode = "input"; render(); };
+  document.getElementById('modeKanjiBtn').onclick = ()=>{ state.quizMode = "kanji"; render(); };
   document.getElementById('autoReadCheck').onchange = (e)=>{ state.autoRead = e.target.checked; };
   document.getElementById('lenBtn10').onclick = ()=>{ startSession("10q"); render(); };
   document.getElementById('lenBtn20').onclick = ()=>{ startSession("20q"); render(); };
@@ -2048,6 +2088,9 @@ function renderQuiz(app){
   const progress = sess.pendingProgress;
   const isEventQ = q.format === "A";
   const useInput = q.format === "A" && sess.answerMode === "input";
+  const useKanji = q.format === "B" && sess.answerMode === "kanji";
+  const kanjiRevealedText = sess.kanjiRevealedAt[viewIdx]; // undefined = not revealed yet; string = the typed answer at reveal time
+  const kanjiRevealed = kanjiRevealedText !== undefined;
   const freqWrong = isFrequentlyWrong(progress, q.dataIdx, HOME_WRONG_THRESHOLD);
   const itemStat = progress.items[q.dataIdx];
   const streakForGauge = viewingReview && !canRedo ? null : (itemStat ? itemStat.streak : 0);
@@ -2077,6 +2120,7 @@ function renderQuiz(app){
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
           <div class="qtype-tag ${isEventQ ? '' : 'era-to-event'}" style="margin-bottom:0;">${isEventQ ? "出来事 → 年代" : "年代 → 出来事"}</div>
           ${useInput ? `<div class="qtype-tag" style="background:var(--kincha); margin-bottom:0;">✎ 入力形式</div>` : ''}
+          ${useKanji ? `<div class="qtype-tag" style="background:var(--kincha); margin-bottom:0;">✏️ 漢字書きモード</div>` : ''}
           ${freqWrong ? `<div class="qtype-tag" style="background:var(--shuiro); margin-bottom:0;">⚠️ よく間違える</div>` : ''}
         </div>
         <button class="star-btn ${isFavorite(progress, q.dataIdx) ? 'active' : ''}" id="favToggleBtn">★ <span class="lbl">あとで見る</span></button>
@@ -2096,7 +2140,32 @@ function renderQuiz(app){
             <button class="year-submit-btn" id="yearSubmitBtn">こたえる</button>
           </div>
           <div class="year-input-hint">3桁・4桁どちらの年代でも、数字だけ入力してください</div>
+        ` : useKanji ? `
+          ${!kanjiRevealed ? `
+            <div class="kanji-input-row">
+              <input type="text" class="kanji-input" id="kanjiInput" placeholder="人物・出来事を書いてみよう（紙に書いてもOK）" autocomplete="off">
+            </div>
+            <button class="kanji-reveal-btn" id="kanjiRevealBtn">こたえを見る</button>
+          ` : `
+            <div class="kanji-reveal-box">
+              <div class="kanji-your-answer">あなたの解答：${kanjiRevealedText || "（未入力）"}</div>
+              <div class="kanji-answer">${materialized.item}</div>
+              <span class="mnemonic">${materialized.mnemonic}</span>
+              <div style="margin-top:8px;"><button class="speak-btn" id="kanjiSpeakBtn">🔊 <span class="lbl">読み上げ</span></button></div>
+            </div>
+            <div class="kanji-selfgrade-row">
+              <button class="kanji-grade-btn correct" id="kanjiCorrectBtn">○ できた（正解）</button>
+              <button class="kanji-grade-btn wrong" id="kanjiWrongBtn">× できなかった（不正解）</button>
+            </div>
+            <div class="kanji-grade-note">見比べて、自分で○か×を選んでください</div>
+          `}
         ` : `<div class="choices" id="choices"></div>`}
+      ` : useKanji ? `
+        <div class="kanji-reveal-box">
+          <div class="kanji-your-answer">あなたの解答：${(logEntry && logEntry.answeredText) || "（未入力）"}</div>
+          <div class="kanji-answer">${materialized.item}</div>
+          <span class="mnemonic">${materialized.mnemonic}</span>
+        </div>
       ` : `
         <div class="choices" id="choicesReadonly">
           ${materialized.choices.map((c,i)=>{
@@ -2120,6 +2189,7 @@ function renderQuiz(app){
 
   document.getElementById('prevBtn').onclick = ()=>{
     sess.reviewIndex = viewingReview ? Math.max(0, sess.reviewIndex-1) : sess.qIndex-1;
+    if(sess.reviewIndex === sess.qIndex - 1) delete sess.kanjiRevealedAt[sess.reviewIndex]; // redo starts fresh
     render();
   };
   document.getElementById('fwdBtn').onclick = ()=>{
@@ -2144,6 +2214,8 @@ function renderQuiz(app){
       submitBtn.onclick = ()=>submitAnswer('input', materialized);
       inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') submitAnswer('input', materialized); });
       inputEl.focus();
+    } else if(useKanji){
+      wireKanjiUI(viewIdx, materialized, false);
     } else {
       const choicesEl = document.getElementById('choices');
       materialized.choices.forEach((c,i)=>{
@@ -2161,6 +2233,8 @@ function renderQuiz(app){
       const submitBtn = document.getElementById('yearSubmitBtn');
       submitBtn.onclick = ()=>submitAnswer('input', materialized, null, true);
       inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') submitAnswer('input', materialized, null, true); });
+    } else if(useKanji){
+      wireKanjiUI(viewIdx, materialized, true);
     } else {
       const choicesEl = document.getElementById('choices');
       materialized.choices.forEach((c,i)=>{
@@ -2171,6 +2245,43 @@ function renderQuiz(app){
         choicesEl.appendChild(btn);
       });
     }
+  }
+}
+
+// Handles both the "not yet revealed" (input + reveal button) and
+// "revealed" (answer shown + self-grade buttons) states of kanji-writing
+// mode. The child's typed guess is stored at reveal time so re-renders
+// don't need to read back stale DOM state.
+function wireKanjiUI(viewIdx, materialized, isRedo){
+  const sess = state.session;
+  const revealSpeechText = `${materialized.item}。ゴロ合わせ、${materialized.mnemonic}`;
+  if(sess.kanjiRevealedAt[viewIdx] === undefined){
+    const inputEl = document.getElementById('kanjiInput');
+    const revealBtn = document.getElementById('kanjiRevealBtn');
+    const doReveal = ()=>{
+      sess.kanjiRevealedAt[viewIdx] = (inputEl.value || "").trim();
+      render();
+    };
+    revealBtn.onclick = doReveal;
+    inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') doReveal(); });
+    inputEl.focus();
+  } else {
+    if(state.autoRead) speak(revealSpeechText);
+    const speakBtn = document.getElementById('kanjiSpeakBtn');
+    if(speakBtn) speakBtn.onclick = ()=> speak(revealSpeechText);
+    const correctBtn = document.getElementById('kanjiCorrectBtn');
+    const wrongBtn = document.getElementById('kanjiWrongBtn');
+    const grade = (correct)=>{
+      const answeredText = sess.kanjiRevealedAt[viewIdx] || "";
+      if(isRedo){ redoAnswer(correct, answeredText); render(); return; }
+      commitLiveAnswer(correct, answeredText);
+      correctBtn.disabled = true;
+      wrongBtn.disabled = true;
+      (correct ? correctBtn : wrongBtn).classList.add('active');
+      document.getElementById('nextBtn').classList.add('show');
+    };
+    correctBtn.onclick = ()=> grade(true);
+    wrongBtn.onclick = ()=> grade(false);
   }
 }
 
