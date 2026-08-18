@@ -5018,22 +5018,32 @@ function rowFor(kp,it){
     it.wrongLog.map(function(x){return x.answered;}).join('；'), lastWrong, it.masteredAt?jdate(it.masteredAt):''];
 }
 function buildListRows(){ return KPS.map(function(kp){ return rowFor(kp,prog().items[kp.id]); }); }
+var LIST_CHUNK=500;   /* 1回に送る行数。3000語超を一度に送るとGASで失敗するため小分けする */
 async function exportListToDrive(){
   if(!ready()||!AUTH) return;
   setSync('','☁… 送信の前に最新の記録を確認しています');
   await pullCloud(true);
-  var p=prog();
+  var p=prog()||{items:{}};
   if(!Object.keys(p.items).length){
     setSync('ng','☁⚠ 記録がまだ無いため、一覧の書き出しを中止しました');
     toastModal('書き出しを中止しました','まだ学習記録がありません。1回学習してから書き出してください。');
     return;
   }
-  setSync('','☁… 全問一覧を送信しています');
-  var j;
-  try{ j=await api({app:APP,id:AUTH.id,list:{header:LIST_HEADER,rows:buildListRows()}}); }
-  catch(e){ setSync('ng','☁⚠ 送信できませんでした（オフライン？）'); return; }
-  if(!j.ok){ setSync('ng','☁⚠ '+apiError(j)); return; }
-  setSync('ok','☁✓ 全問一覧をDriveへ書き出しました');
+  var rows=buildListRows();
+  var total=Math.max(1,Math.ceil(rows.length/LIST_CHUNK));
+  for(var i=0;i<total;i++){
+    setSync('','☁… 全問一覧を送信しています（'+(i+1)+'/'+total+'）');
+    var chunk=rows.slice(i*LIST_CHUNK,(i+1)*LIST_CHUNK);
+    var j;
+    try{
+      j=await api({app:APP,id:AUTH.id,list:{header:LIST_HEADER,rows:chunk},listSeq:{i:i,n:total}});
+    }catch(e){
+      setSync('ng','☁⚠ 送信できませんでした（'+(i+1)+'/'+total+'）。もう一度お試しください');
+      return;
+    }
+    if(!j.ok){ setSync('ng','☁⚠ '+apiError(j)); return; }
+  }
+  setSync('ok','☁✓ 全問一覧をDriveへ書き出しました（'+rows.length+'語）');
 }
 function dl(blob,name){
   var a=document.createElement('a');
