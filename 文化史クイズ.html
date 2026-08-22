@@ -1,0 +1,2854 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文化史 クイズ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --washi: #efe8d8;
+    --sumi: #2b2b2b;
+    --sumi-soft: #4a4a45;
+    --aizome: #2c4a6e;
+    --aizome-deep: #1c324c;
+    --shuiro: #b5451c;
+    --kincha: #a9781f;
+    --moss: #5f6f4e;
+    --line: rgba(43,43,43,0.16);
+    --card-shadow: 0 18px 40px rgba(43,30,10,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top left, rgba(169,120,31,0.10), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(44,74,110,0.10), transparent 55%),
+      var(--washi);
+    font-family: "Noto Sans JP", sans-serif;
+    color: var(--sumi);
+    min-height:100vh;
+    padding: 28px 16px 60px;
+  }
+  .wrap{ max-width: 720px; margin: 0 auto; }
+
+  header{ text-align:center; margin-bottom: 22px; }
+  .eyebrow{ font-size: 12px; letter-spacing: 0.35em; color: var(--kincha); font-weight:700; }
+  h1{
+    font-family: "Shippori Mincho", serif;
+    font-weight: 800;
+    font-size: clamp(24px, 6vw, 34px);
+    margin: 6px 0 4px;
+    letter-spacing: 0.04em;
+  }
+  .sub{ font-size: 13px; color: var(--sumi-soft); }
+
+  .account-bar{
+    display:flex; justify-content:center; align-items:center; gap:10px;
+    margin-top: 10px; font-size: 13px; color: var(--sumi-soft);
+  }
+  .account-bar .name-pill{
+    font-family: "Shippori Mincho", serif;
+    font-weight:700;
+    color: var(--aizome-deep);
+    background: rgba(44,74,110,0.08);
+    padding: 3px 12px;
+    border-radius: 20px;
+  }
+  .switch-link{
+    font-size:12px; color: var(--shuiro); background:none; border:none;
+    text-decoration:underline; cursor:pointer; font-family:inherit;
+  }
+
+  /* culture rail: the cultural-history analogue of the year timeline */
+  .culture-rail{ margin: 18px auto 0; max-width: 660px; position: relative; height: 30px; }
+  .culture-rail .rail{
+    position:absolute; left:0; right:0; top:15px; height:2px;
+    background: linear-gradient(90deg, var(--aizome), var(--kincha) 50%, var(--shuiro));
+    opacity:0.35;
+  }
+  .culture-rail .dot{
+    position:absolute; top:10px; width:7px; height:7px; border-radius:50%;
+    background: var(--sumi); opacity:0.18; transform: translateX(-50%); transition: all .25s ease;
+  }
+  .culture-rail .dot.current{
+    width:13px; height:13px; top:7px; background: var(--shuiro); opacity:1;
+    box-shadow: 0 0 0 4px rgba(181,69,28,0.18);
+  }
+  .culture-rail .era-label{ position:absolute; top:-3px; font-size:10px; color: var(--sumi-soft); transform: translateX(-50%); white-space:nowrap; }
+
+  .card{
+    background: #faf6ec; border: 1px solid var(--line); border-radius: 4px;
+    box-shadow: var(--card-shadow); padding: 30px 26px 26px; margin-top: 26px; position: relative;
+  }
+  .card::before{
+    content:""; position:absolute; left:14px; right:14px; top:8px; bottom:8px;
+    border: 1px solid rgba(169,120,31,0.28); border-radius: 2px; pointer-events:none;
+  }
+  .center-card{ text-align:center; }
+
+  /* ---- Home / dashboard ---- */
+  .stat-grid{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(76px,1fr)); gap:10px; margin: 18px 0 22px;
+  }
+  .stat-box{
+    background:#fff; border:1px solid var(--line); border-radius:3px; padding: 14px 8px;
+  }
+  .stat-box .num{ font-family:"Shippori Mincho", serif; font-size:26px; font-weight:800; color: var(--aizome-deep); }
+  .stat-box .label{ font-size:11px; color: var(--sumi-soft); margin-top:2px; }
+
+  .weak-list{ text-align:left; margin-top: 10px; }
+  .weak-list h3{
+    font-family:"Shippori Mincho", serif; font-size:15px; color: var(--sumi);
+    border-bottom: 1px solid var(--line); padding-bottom:6px; margin-bottom:10px;
+  }
+  .weak-row{
+    display:flex; justify-content:space-between; gap:10px; align-items:center;
+    font-size:13px; padding: 7px 0; border-bottom: 1px dashed var(--line);
+  }
+  .weak-row.clickable{ cursor:pointer; }
+  .weak-row.clickable:hover{ background: rgba(44,74,110,0.05); }
+  .weak-row .wi{ flex:1; }
+  .weak-row .wy{ color: var(--aizome-deep); font-weight:700; white-space:nowrap; font-size:12px; }
+  .weak-row .wp{ width:76px; text-align:right; font-weight:700; white-space:nowrap; }
+  .weak-row .wp.low{ color: var(--shuiro); }
+  .weak-row .wp.mid{ color: var(--kincha); }
+  .weak-row .wp.high{ color: var(--moss); }
+
+  .btn-row{ display:flex; flex-direction:column; gap:10px; margin-top: 8px; }
+
+  .star-btn{
+    border: 1.5px solid var(--line); background: #fff; border-radius: 3px; cursor: pointer;
+    font-size: 18px; line-height:1; padding: 9px 12px; color: var(--kincha);
+    display:inline-flex; align-items:center; gap:6px;
+    font-family: "Noto Sans JP", sans-serif; transition: all .12s ease;
+  }
+  .star-btn:hover{ border-color: var(--kincha); background: rgba(169,120,31,0.08); }
+  .star-btn.active{ background: rgba(169,120,31,0.14); border-color: var(--kincha); color: var(--kincha); font-weight:700; }
+  .star-btn .lbl{ font-size:12px; }
+
+  .search-btn{
+    border: 1.5px solid var(--line); background: #fff; border-radius: 3px; cursor: pointer;
+    font-size: 15px; line-height:1; padding: 9px 10px; color: var(--aizome-deep);
+    display:inline-flex; align-items:center; gap:5px;
+    font-family: "Noto Sans JP", sans-serif; transition: all .12s ease;
+  }
+  .search-btn:hover{ border-color: var(--aizome); background: rgba(44,74,110,0.08); }
+  .search-btn .lbl{ font-size:12px; }
+  .review-item .search-btn{ position:absolute; top:8px; right:44px; padding: 5px 8px; font-size:14px; }
+
+  .speak-btn{
+    border: 1.5px solid var(--line); background: #fff; border-radius: 3px; cursor: pointer;
+    font-size: 15px; line-height:1; padding: 9px 10px; color: var(--moss);
+    display:inline-flex; align-items:center; gap:5px;
+    font-family: "Noto Sans JP", sans-serif; transition: all .12s ease;
+  }
+  .speak-btn:hover{ border-color: var(--moss); background: rgba(95,111,78,0.08); }
+  .speak-btn .lbl{ font-size:12px; }
+  .speak-btn.active{ background: rgba(95,111,78,0.16); border-color: var(--moss); }
+
+  .autoread-toggle{
+    display:flex; align-items:center; gap:6px; justify-content:center;
+    font-size:12.5px; color: var(--sumi-soft); margin: 6px 0 12px;
+  }
+
+  .review-item{ position:relative; }
+  .review-item .star-btn{ position:absolute; top:8px; right:8px; padding: 5px 8px; font-size:15px; }
+
+  .fav-empty{ font-size:13px; color: var(--sumi-soft); padding: 20px 0; }
+
+  .mode-toggle{ display:flex; gap:8px; margin: 4px 0 10px; justify-content:center; flex-wrap:wrap; }
+  .mode-btn{
+    flex:1; min-width: 150px; max-width: 260px;
+    font-family: "Shippori Mincho", serif; font-size: 13.5px; font-weight:700;
+    padding: 10px 8px; border-radius: 3px; border: 1.5px solid var(--line);
+    background: #fff; color: var(--sumi-soft); cursor:pointer; transition: all .12s ease;
+  }
+  .mode-btn:hover{ border-color: var(--aizome); }
+  .mode-btn.active{ background: var(--aizome); border-color: var(--aizome); color: #faf6ec; }
+
+  .kanji-input-row{ margin-top:8px; }
+  .kanji-input{
+    width:100%; box-sizing:border-box;
+    font-family:"Shippori Mincho", serif; font-size:18px;
+    padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 3px;
+    color: var(--sumi);
+  }
+  .kanji-input:focus{ outline:none; border-color: var(--aizome); }
+  .kanji-reveal-btn{
+    width:100%; margin-top:10px;
+    font-family:"Shippori Mincho", serif; font-size:15px; font-weight:700;
+    padding:13px 10px; border-radius:3px; border:none;
+    background: var(--kincha); color:#fff; cursor:pointer;
+  }
+  .kanji-reveal-btn:hover{ background: var(--shuiro); }
+  .kanji-reveal-box{
+    margin-top:10px; padding:14px 16px; border:1.5px solid var(--kincha);
+    border-radius:3px; background: rgba(169,120,31,0.06);
+  }
+  .kanji-reveal-box .kanji-your-answer{ font-size:12px; color: var(--sumi-soft); margin-bottom:8px; }
+  .kanji-reveal-box .kanji-answer{
+    font-family:"Shippori Mincho", serif; font-size:18px; font-weight:700;
+    color: var(--sumi); line-height:1.6; margin-bottom:8px;
+  }
+  .kanji-selfgrade-row{ display:flex; gap:10px; margin-top:12px; }
+  .kanji-grade-btn{
+    flex:1; font-family:"Shippori Mincho", serif; font-size:15px; font-weight:700;
+    padding:13px 10px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; cursor:pointer; transition: all .12s ease;
+  }
+  .kanji-grade-btn.correct{ color: var(--moss); border-color: var(--moss); }
+  .kanji-grade-btn.correct:hover, .kanji-grade-btn.correct.active{ background: rgba(95,111,78,0.15); }
+  .kanji-grade-btn.wrong{ color: var(--shuiro); border-color: var(--shuiro); }
+  .kanji-grade-btn.wrong:hover, .kanji-grade-btn.wrong.active{ background: rgba(181,69,28,0.12); }
+  .kanji-grade-btn:disabled{ opacity:0.55; cursor:default; }
+  .kanji-grade-note{ font-size:11.5px; color: var(--sumi-soft); margin-top:4px; text-align:center; }
+
+  .big-btn{
+    font-family: "Shippori Mincho", serif; font-size: 18px; font-weight: 800; letter-spacing: 0.1em;
+    padding: 16px 40px; border-radius: 3px; border: none; color: #faf6ec;
+    background: var(--shuiro); cursor: pointer; box-shadow: 0 8px 18px rgba(181,69,28,0.28);
+  }
+  .big-btn:hover{ background: var(--aizome-deep); box-shadow: 0 8px 18px rgba(44,74,110,0.28); }
+  .ghost-btn{
+    font-family: "Shippori Mincho", serif; font-size: 14px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 12px 20px; border-radius: 3px; border: 1.5px solid var(--aizome); color: var(--aizome-deep);
+    background: transparent; cursor:pointer;
+  }
+  .ghost-btn:hover{ background: rgba(44,74,110,0.08); }
+
+  /* ---- Quiz ---- */
+  .qtype-tag{ display:inline-block; font-size: 11px; letter-spacing: 0.12em; color: #fff; background: var(--aizome); padding: 3px 10px; border-radius: 2px; margin-bottom: 14px; }
+  .qtype-tag.fmt-b{ background: var(--shuiro); }
+
+  .question-lead{ font-size:12.5px; color: var(--sumi-soft); margin-bottom:6px; }
+  .question-text{
+    font-family: "Shippori Mincho", serif; font-size: clamp(17px, 4.4vw, 22px); font-weight: 600;
+    line-height: 1.7; color: var(--sumi); margin-bottom: 22px;
+  }
+  .question-text .term-big{ font-size: 1.18em; color: var(--aizome-deep); font-weight:800; }
+
+  .choices{ display:grid; gap: 10px; }
+  .choice-btn{
+    text-align:left; font-family: inherit; font-size: 15.5px; padding: 14px 16px; border-radius: 3px;
+    border: 1.5px solid var(--line); background: #fff; cursor:pointer; color: var(--sumi);
+    transition: all .12s ease; line-height:1.5;
+  }
+  .choice-btn:hover:not(:disabled){ border-color: var(--aizome); background: #f2f1ea; }
+  .choice-btn:disabled{ cursor:default; }
+  .choice-btn.correct{ border-color: var(--moss); background: rgba(95,111,78,0.14); font-weight:700; }
+  .choice-btn.wrong{ border-color: var(--shuiro); background: rgba(181,69,28,0.10); text-decoration: line-through; opacity:0.75; }
+
+  .feedback-box{ margin-top: 18px; padding: 14px 16px; border-left: 3px solid var(--kincha); background: rgba(169,120,31,0.08); font-size: 14px; line-height:1.8; display:none; text-align:left; }
+  .feedback-box.show{ display:block; }
+  .feedback-box .fb-term{ font-family:"Shippori Mincho", serif; font-weight:700; color: var(--aizome-deep); font-size:16px; }
+  .feedback-box .fb-note{ font-size:13px; color: var(--sumi-soft); display:block; margin-top:6px; }
+
+  .next-btn{
+    margin-top: 20px; display:none; width:100%; padding: 14px; font-family: "Shippori Mincho", serif;
+    font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: #faf6ec; background: var(--sumi);
+    border: none; border-radius: 3px; cursor:pointer;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ background: var(--aizome-deep); }
+
+  .result-score{ font-family:"Shippori Mincho", serif; font-size: 52px; font-weight: 800; color: var(--aizome-deep); margin: 8px 0 2px; }
+  .result-score span{ font-size: 22px; color: var(--sumi-soft); font-weight:500;}
+  .result-comment{ font-size:14px; color: var(--kincha); font-weight:600; margin-bottom: 22px;}
+
+  .review-list{ text-align:left; margin-top: 10px; display:grid; gap: 10px; }
+  .review-item{
+    border: 1px solid var(--line); border-left: 4px solid var(--shuiro); background:#fff;
+    padding: 10px 84px 10px 14px; border-radius: 2px; font-size: 13px; line-height:1.7;
+  }
+  .review-item.ok{ border-left-color: var(--moss); }
+  .review-item .ritem{ font-weight:700; }
+  .review-item .ryear{ color: var(--aizome-deep); font-weight:700; }
+
+  footer{ text-align:center; margin-top: 30px; font-size:11px; color: var(--sumi-soft); opacity:0.6; }
+
+  .len-toggle{ display:flex; gap:8px; margin: 4px 0 6px; flex-wrap:wrap; }
+  .len-btn{
+    flex:1; min-width:92px; font-family:"Shippori Mincho", serif; font-size:13px; font-weight:700;
+    padding: 10px 6px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; color: var(--sumi-soft); cursor:pointer; transition: all .12s ease;
+  }
+  .len-btn:hover{ border-color: var(--kincha); }
+  .len-btn.warn{ border-color: var(--shuiro); color: var(--shuiro); }
+  .len-btn.warn:hover{ background: rgba(181,69,28,0.07); }
+  .len-btn:disabled{ opacity:0.4; cursor:default; }
+  .study-mode-btn{
+    width:100%; margin: 8px 0 14px;
+    font-family:"Shippori Mincho", serif; font-size:14.5px; font-weight:700;
+    padding: 11px 10px; border-radius:3px; border:1.5px solid var(--moss);
+    background: rgba(95,111,78,0.06); color: var(--moss); cursor:pointer; transition: all .12s ease;
+  }
+  .study-mode-btn:hover{ background: rgba(95,111,78,0.14); }
+  .shortage-note{ font-size:11.5px; color: var(--shuiro); margin: 4px 0 10px; text-align:center; line-height:1.7; }
+  .hint-note{ font-size:11.5px; color: var(--sumi-soft); margin: 4px 0 10px; text-align:center; line-height:1.7; }
+
+  /* ---- range selector (imp + category) ---- */
+  .range-panel{ border: 1.5px dashed var(--line); border-radius:4px; padding:14px; margin: 4px 0 14px; text-align:left; }
+  .range-panel-title{ font-family:"Shippori Mincho", serif; font-size:13.5px; font-weight:700; color: var(--sumi); margin-bottom:8px; }
+  .imp-seg{ display:flex; gap:0; margin-bottom:10px; border:1.5px solid var(--line); border-radius:3px; overflow:hidden; }
+  .imp-seg button{
+    flex:1; font-family:"Noto Sans JP",sans-serif; font-size:12.5px; font-weight:700;
+    padding:9px 4px; border:none; background:#fff; color: var(--sumi-soft); cursor:pointer;
+    border-right:1px solid var(--line);
+  }
+  .imp-seg button:last-child{ border-right:none; }
+  .imp-seg button.active{ background: var(--kincha); color:#faf6ec; }
+  .cat-chips{ display:flex; flex-wrap:wrap; gap:7px; }
+  .cat-chip{
+    font-family:"Noto Sans JP",sans-serif; font-size:12px; padding:7px 11px;
+    border-radius:16px; border:1.5px solid var(--line); background:#fff;
+    color: var(--sumi-soft); cursor:pointer; transition: all .12s ease;
+  }
+  .cat-chip:hover{ border-color: var(--aizome); }
+  .cat-chip.active{ background: var(--aizome); border-color: var(--aizome); color:#faf6ec; }
+  .cat-chip .cnt{ font-size:11px; opacity:0.8; margin-left:3px; }
+  .range-summary{ font-size:12px; color: var(--sumi-soft); margin-top:10px; }
+  .range-summary b{ color: var(--aizome-deep); font-size:14px; }
+
+  /* ---- mastery bars ---- */
+  .era-bars{ text-align:left; margin-top:14px; }
+  .era-bars h3{
+    font-family:"Shippori Mincho", serif; font-size:15px; color: var(--sumi);
+    border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:10px;
+  }
+  .era-bars .scope-note{ font-size:11px; color: var(--sumi-soft); font-weight:400; }
+  .era-bar-row{ margin-bottom:9px; }
+  .era-bar-row .ebr-label{ display:flex; justify-content:space-between; font-size:12px; color: var(--sumi-soft); margin-bottom:3px; }
+  .era-bar-track{ display:flex; height:10px; border-radius:5px; overflow:hidden; background:#e9e3d2; }
+  .era-bar-seg.mastered{ background: var(--aizome); }
+  .era-bar-seg.flagged{ background: var(--shuiro); }
+  .era-bar-seg.partial{ background: var(--kincha); }
+  .era-bar-seg.none{ background: transparent; }
+  .bar-legend{ font-size:11px; color: var(--sumi-soft); margin-top:6px; display:flex; gap:12px; flex-wrap:wrap; }
+  .bar-legend i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:-1px; }
+
+  /* ---- in-quiz progress bar & KP gauge ---- */
+  .progress-track{ height:7px; border-radius:4px; background:#e9e3d2; overflow:hidden; margin-bottom:10px; }
+  .progress-fill{ height:100%; background: var(--aizome); }
+  .stat-strip{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px 14px;
+    font-size:12px; color: var(--sumi-soft); margin-bottom:10px;
+  }
+  .stat-strip b{ color: var(--aizome-deep); }
+  .kp-gauge{ letter-spacing:3px; font-size:14px; color: var(--kincha); }
+  .hurdle-note{ font-size:11.5px; color: var(--shuiro); margin:-4px 0 10px; }
+
+  /* ---- back/forward nav ---- */
+  .nav-row{ display:flex; justify-content:space-between; gap:10px; margin-top:14px; }
+  .nav-btn{
+    font-family:"Shippori Mincho", serif; font-size:13px; font-weight:700;
+    padding:9px 14px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; color: var(--sumi-soft); cursor:pointer;
+  }
+  .nav-btn:hover:not(:disabled){ border-color: var(--aizome); color: var(--aizome-deep); }
+  .nav-btn:disabled{ opacity:0.35; cursor:default; }
+  .review-banner{
+    font-size:12px; color: var(--shuiro); background: rgba(181,69,28,0.08);
+    border:1px solid var(--shuiro); border-radius:3px; padding:6px 10px; margin-bottom:10px; text-align:center;
+  }
+
+  /* ---- results category table ---- */
+  .filter-row{ display:flex; gap:8px; margin: 10px 0; flex-wrap:wrap; }
+  .filter-row select{
+    font-family:"Noto Sans JP", sans-serif; font-size:12.5px; padding:6px 8px;
+    border:1.5px solid var(--line); border-radius:3px; background:#fff; color: var(--sumi);
+  }
+  .kp-table-wrap{ overflow-x:auto; }
+  .kp-table{ width:100%; border-collapse:collapse; font-size:12px; text-align:left; }
+  .kp-table th{
+    font-family:"Shippori Mincho", serif; font-weight:700; color: var(--sumi-soft);
+    border-bottom:1.5px solid var(--line); padding:6px 6px; white-space:nowrap;
+  }
+  .kp-table td{ border-bottom:1px solid var(--line); padding:6px 6px; vertical-align:top; }
+  .kp-table tr.flagged td{ background: rgba(181,69,28,0.06); }
+  .kp-table tr.kp-main{ cursor:pointer; }
+  .kp-table tr.kp-main:hover td{ background: rgba(44,74,110,0.05); }
+  .kp-table tr.kp-detail td{ background: rgba(169,120,31,0.06); font-size:11.5px; line-height:1.9; color: var(--sumi-soft); }
+  .kp-badge{
+    display:inline-block; font-size:10.5px; font-weight:700; padding:2px 6px; border-radius:10px;
+    background: rgba(181,69,28,0.14); color: var(--shuiro); margin-left:4px;
+  }
+  .kp-badge.warn2{ background: rgba(181,69,28,0.26); }
+  .kp-badge.imp{ background: rgba(169,120,31,0.16); color: var(--kincha); }
+  .kp-badge.postm{ background: rgba(181,69,28,0.14); color: var(--shuiro); }
+  .csv-btn{
+    font-family:"Shippori Mincho", serif; font-size:14px; font-weight:700;
+    padding:12px 18px; border-radius:3px; border:1.5px solid var(--moss); color: var(--moss);
+    background:#fff; cursor:pointer;
+  }
+  .csv-btn:hover{ background: rgba(95,111,78,0.08); }
+
+  .attn-badge{
+    display:inline-block; font-family:"Shippori Mincho",serif; font-size:13px; font-weight:700;
+    padding:8px 14px; border-radius:20px; border:1.5px solid var(--shuiro);
+    color: var(--shuiro); background: rgba(181,69,28,0.07); cursor:pointer; margin-bottom:10px;
+  }
+  .attn-badge:hover{ background: rgba(181,69,28,0.15); }
+  .attn-badge:disabled{ opacity:0.45; cursor:default; }
+
+  /* ---- study mode ---- */
+  .study-tabs{ display:flex; gap:8px; margin-bottom:12px; }
+  .study-tab{
+    flex:1; font-family:"Shippori Mincho", serif; font-size:13.5px; font-weight:700;
+    padding:10px 6px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; color: var(--sumi-soft); cursor:pointer;
+  }
+  .study-tab.active{ background: var(--moss); border-color: var(--moss); color:#faf6ec; }
+  .study-toolbar{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .study-filter-label{ font-size:12.5px; color: var(--sumi-soft); display:flex; align-items:center; gap:6px; }
+  .study-era-select{
+    font-family:"Noto Sans JP", sans-serif; font-size:12.5px; padding:6px 8px;
+    border:1.5px solid var(--line); border-radius:3px; background:#fff; color: var(--sumi);
+  }
+  .study-card{ text-align:center; padding: 22px 6px 10px; }
+  .study-era-tag{
+    display:inline-block; font-size:11.5px; letter-spacing:0.1em; color:#fff;
+    background: var(--aizome); padding:3px 12px; border-radius:2px; margin-bottom:12px;
+  }
+  .study-term{
+    font-family:"Shippori Mincho", serif; font-size:26px; font-weight:800; color: var(--aizome-deep); line-height:1.4;
+  }
+  .study-yomi{ font-size:12.5px; color: var(--sumi-soft); margin-top:4px; }
+  .study-desc{
+    font-family:"Shippori Mincho", serif; font-size:16px; font-weight:600; color: var(--sumi);
+    margin: 14px 0 14px; line-height:1.8;
+  }
+  .study-note-box{
+    background: rgba(169,120,31,0.08); border:1px solid var(--kincha); border-radius:3px;
+    padding:10px 14px; margin-bottom:12px; font-size:13px; color: var(--sumi); text-align:left; line-height:1.8;
+  }
+  .study-note-box .lbl{ font-size:11px; color: var(--kincha); font-weight:700; display:block; margin-bottom:4px; }
+  .study-icons-row{ display:flex; justify-content:center; gap:10px; margin: 4px 0 16px; flex-wrap:wrap; }
+  .study-progress-track{ height:6px; border-radius:3px; background:#e9e3d2; overflow:hidden; margin-bottom:14px; }
+  .study-progress-fill{ height:100%; background: var(--moss); }
+  .study-nav-row{ display:flex; gap:10px; margin-top:6px; }
+  .study-nav-btn{
+    flex:1; font-family:"Shippori Mincho", serif; font-size:15px; font-weight:700;
+    padding:13px 10px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; color: var(--aizome-deep); cursor:pointer;
+  }
+  .study-nav-btn:hover:not(:disabled){ border-color: var(--aizome); background: #f2f1ea; }
+  .study-nav-btn:disabled{ opacity:0.35; cursor:default; }
+  .study-mastered-badge{
+    display:inline-block; font-size:11px; font-weight:700; color: var(--moss);
+    background: rgba(95,111,78,0.12); padding:2px 8px; border-radius:10px; margin-left:6px;
+  }
+  .study-mastered-badge.attn{ color: var(--shuiro); background: rgba(181,69,28,0.12); }
+  .study-list{ text-align:left; max-height:none; }
+  .study-list-cat{ font-family:"Shippori Mincho",serif; font-size:13.5px; font-weight:700; color:var(--kincha);
+    border-bottom:1px solid var(--line); padding:8px 0 5px; margin-top:8px; }
+  .study-list-row{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    font-size:13.5px; padding:9px 4px; border-bottom:1px dashed var(--line); cursor:pointer;
+  }
+  .study-list-row:hover{ background: rgba(44,74,110,0.05); }
+  .study-list-row .sl-t{ flex:1; font-family:"Shippori Mincho",serif; font-weight:600; }
+  .study-list-row .sl-a{ font-size:11.5px; color: var(--sumi-soft); white-space:nowrap; }
+  .study-list-row .sl-s{ font-size:11px; white-space:nowrap; }
+  .study-list-row .sl-s.m{ color: var(--moss); font-weight:700; }
+  .study-list-row .sl-s.w{ color: var(--shuiro); font-weight:700; }
+  .flip-card{
+    border:1.5px solid var(--kincha); border-radius:4px; background:#fff;
+    min-height:190px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:24px 18px; cursor:pointer; text-align:center;
+  }
+  .flip-card .fc-side{ font-size:11px; letter-spacing:0.14em; color:var(--kincha); font-weight:700; margin-bottom:10px; }
+  .flip-card .fc-main{ font-family:"Shippori Mincho",serif; font-size:20px; font-weight:700; line-height:1.7; color:var(--sumi); }
+  .flip-card .fc-sub{ font-size:13px; color:var(--sumi-soft); margin-top:10px; line-height:1.8; }
+  .flip-card .fc-hint{ font-size:11.5px; color:var(--sumi-soft); margin-top:14px; opacity:0.8; }
+  .deck-row{ display:flex; gap:10px; margin-top:12px; }
+  .deck-btn{
+    flex:1; font-family:"Shippori Mincho", serif; font-size:15px; font-weight:700;
+    padding:13px 10px; border-radius:3px; border:1.5px solid var(--line); background:#fff; cursor:pointer;
+  }
+  .deck-btn.got{ color: var(--moss); border-color: var(--moss); }
+  .deck-btn.got:hover{ background: rgba(95,111,78,0.14); }
+  .deck-btn.notyet{ color: var(--shuiro); border-color: var(--shuiro); }
+  .deck-btn.notyet:hover{ background: rgba(181,69,28,0.10); }
+  .dir-toggle{ display:flex; gap:8px; margin-bottom:10px; }
+  .dir-btn{
+    flex:1; font-family:"Noto Sans JP",sans-serif; font-size:12px; font-weight:700;
+    padding:8px 6px; border-radius:3px; border:1.5px solid var(--line);
+    background:#fff; color:var(--sumi-soft); cursor:pointer;
+  }
+  .dir-btn.active{ background: var(--kincha); border-color: var(--kincha); color:#faf6ec; }
+
+  /* ---- cloud sync panel ---- */
+  .sync-panel{ text-align:left; margin-top:16px; }
+  .sync-panel h3{
+    font-family:"Shippori Mincho", serif; font-size:15px; color: var(--sumi);
+    border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:10px;
+  }
+  .sync-status{
+    display:inline-block; font-size:12.5px; font-weight:700; padding:6px 12px;
+    border-radius:20px; margin-bottom:12px;
+  }
+  .sync-status.success{ background: rgba(95,111,78,0.15); color: var(--moss); }
+  .sync-status.error{ background: rgba(181,69,28,0.12); color: var(--shuiro); }
+  .sync-status.pending{ background: rgba(169,120,31,0.14); color: var(--kincha); }
+  .sync-status.idle{ background: rgba(43,43,43,0.08); color: var(--sumi-soft); }
+  .sync-btn-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+  .sync-btn{
+    font-family:"Shippori Mincho", serif; font-size:13px; font-weight:700;
+    padding:9px 14px; border-radius:3px; border:1.5px solid var(--aizome);
+    background:#fff; color: var(--aizome-deep); cursor:pointer;
+  }
+  .sync-btn:hover{ background: rgba(44,74,110,0.08); }
+  .sync-btn.warn{ border-color: var(--shuiro); color: var(--shuiro); }
+  .sync-btn.warn:hover{ background: rgba(181,69,28,0.06); }
+
+  /* ---- modal overlay ---- */
+  .modal-overlay{
+    position:fixed; inset:0; background: rgba(43,43,43,0.55);
+    display:flex; align-items:center; justify-content:center; padding:20px; z-index:1000;
+  }
+  .modal-box{
+    background:#faf6ec; border:1px solid var(--line); border-radius:4px;
+    box-shadow: var(--card-shadow); max-width:480px; width:100%;
+    padding:24px 22px; max-height:86vh; overflow-y:auto;
+  }
+  .modal-box h3{ font-family:"Shippori Mincho", serif; font-size:17px; color: var(--aizome-deep); margin:0 0 12px; }
+  .modal-box p{ font-size:13px; line-height:1.8; color: var(--sumi); margin:0 0 14px; }
+  .modal-btn-row{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+
+  .storage-warning{
+    font-size:12.5px; line-height:1.7; padding:10px 14px; border-radius:3px;
+    margin-bottom:14px; text-align:left;
+    background: rgba(181,69,28,0.08); border:1px solid var(--shuiro); color: var(--shuiro);
+  }
+  .storage-warning.ok-with-cloud{
+    background: rgba(44,74,110,0.08); border-color: var(--aizome); color: var(--aizome-deep);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">難関中学入試むけ</div>
+    <h1>文化史 クイズ</h1>
+    <div class="sub" id="headerSub">飛鳥〜大正・仏教史／建築美術／文学学問／芸能生活／文化の特色</div>
+    <div class="account-bar" id="accountBar" style="display:none;">
+      <span>ログイン中：</span><span class="name-pill" id="accountNamePill"></span>
+      <button class="switch-link" id="switchAccountBtn">ポータルへ</button>
+    </div>
+    <div class="culture-rail" id="cultureRail"></div>
+  </header>
+
+  <div id="app"></div>
+</div>
+
+<script>
+// =====================================================================
+// 文化史 知識ポイント（KP）データ
+//   i : 安定した知識ポイントID（進捗DBのキー。絶対に変更しない）
+//   c : カテゴリー番号（CATS の添字）
+//   t : 用語＝形式Aの正解
+//   y : よみがな（全問一覧・CSVの「よみがな」列に出す）
+//   d : 説明＝形式Aの問題文
+//   k : 形式Bで問う属性の種類（culture=文化区分 / sect=宗派 / period=時代）
+//   a : 形式Bの正解
+//   p : 重要度 imp （2=◎最重要 / 1=○重要 / 0=標準）
+//   n : 解説（入試のねらいどころ。省略可）
+//   x : まぎらわしい相手の用語（4択の誤答に必ず1つ混ぜる。省略可）
+// 重要度は元データに無いため、難関中学の出題頻度から3段階を設定した。
+// =====================================================================
+const CATS = ["仏教・宗教", "建築・美術", "文学・学問", "芸能・生活文化", "文化の特色", "作品名・まぎらわしい語"];
+
+// 形式Bの選択肢プール。誤答は必ずこの中から取り、正解と同じ意味になる語は入れない。
+const POOL = {
+  culture: ["飛鳥文化","白鳳文化","天平文化","弘仁・貞観文化","国風文化","鎌倉文化","南北朝期の文化","北山文化","東山文化","桃山文化","寛永期の文化","元禄文化","宝暦・天明期の文化","化政文化","明治の文化","大正の文化"],
+  sect: ["天台宗","真言宗","浄土宗","浄土真宗","時宗","日蓮宗","臨済宗","曹洞宗","律宗","華厳宗","法相宗"],
+  period: ["飛鳥時代","奈良時代","平安時代（前期）","平安時代（中期〜後期）","鎌倉時代","南北朝時代","室町時代（3代義満のころ）","室町時代（8代義政のころ）","安土桃山時代","江戸時代（前期・元禄のころ）","江戸時代（後期・化政のころ）","明治時代","大正時代"]
+};
+const KIND_Q = { culture: "文化", sect: "宗派", period: "時代" };
+
+const DATA = [
+// ---------------------------------------------------------------- 仏教・宗教
+{i:"b01",c:0,t:"法隆寺",y:"ほうりゅうじ",d:"聖徳太子が建てたと伝わり、金堂・五重塔からなる現存する世界最古の木造建築群",k:"culture",a:"飛鳥文化",p:2,n:"斑鳩寺ともいう。同じ聖徳太子ゆかりでも四天王寺（大阪）とは別の寺。",x:["四天王寺","薬師寺"]},
+{i:"b02",c:0,t:"釈迦三尊像",y:"しゃかさんぞんぞう",d:"鞍作止利がつくった法隆寺金堂の本尊。角ばった顔と杏仁形（アーモンド形）の目をもつ北魏様式の仏像",k:"culture",a:"飛鳥文化",p:1,n:"北魏様式＝きりっと角ばった顔。ふくよかな童顔の白鳳仏との様式差が頻出。",x:["薬師三尊像"]},
+{i:"b03",c:0,t:"玉虫厨子",y:"たまむしのずし",d:"タマムシの羽で飾られた、法隆寺に伝わる仏具（厨子）",k:"culture",a:"飛鳥文化",p:1},
+{i:"b04",c:0,t:"四天王寺",y:"してんのうじ",d:"聖徳太子が現在の大阪に建立したと伝えられる寺院",k:"culture",a:"飛鳥文化",p:1,x:["法隆寺"]},
+{i:"b05",c:0,t:"蘇我馬子",y:"そがのうまこ",d:"排仏派の物部氏をたおし、仏教の受け入れを進めた崇仏派の豪族",k:"culture",a:"飛鳥文化",p:1,n:"仏教は「信じる／信じない」の争いを経て、王権を強める柱として受け入れられた。"},
+{i:"b06",c:0,t:"薬師寺",y:"やくしじ",d:"天武天皇が皇后（のちの持統天皇）の病気が治るよう祈って発願した寺。東塔が当時の建築様式を伝える",k:"culture",a:"白鳳文化",p:2,x:["法隆寺","唐招提寺"]},
+{i:"b07",c:0,t:"薬師三尊像",y:"やくしさんぞんぞう",d:"薬師寺金堂の本尊。ふくよかな童顔が特徴の、唐の初期様式を伝える金銅仏",k:"culture",a:"白鳳文化",p:1,x:["釈迦三尊像"]},
+{i:"b08",c:0,t:"鎮護国家",y:"ちんごこっか",d:"仏教の力で国家の安泰をはかろうとする、奈良時代の政治の考え方",k:"culture",a:"天平文化",p:1,n:"天然痘の流行・飢饉・藤原広嗣の乱（740年）といった社会不安が背景にある。"},
+{i:"b09",c:0,t:"東大寺大仏（盧舎那仏）",y:"とうだいじだいぶつ（るしゃなぶつ）",d:"聖武天皇が国の安泰を願って造立させた、全国の国分寺の総本山の本尊",k:"culture",a:"天平文化",p:2,n:"同じ東大寺でも、南大門と金剛力士像は鎌倉時代の再建。時代を取りちがえないこと。",x:["金剛力士像","東大寺南大門"]},
+{i:"b10",c:0,t:"国分寺・国分尼寺",y:"こくぶんじ・こくぶんにじ",d:"聖武天皇が令制国ごとに建てさせた国家の寺。尼寺の正式名は法華滅罪之寺",k:"culture",a:"天平文化",p:2},
+{i:"b11",c:0,t:"正倉院",y:"しょうそういん",d:"東大寺にある校倉造の宝庫。螺鈿紫檀五絃琵琶や漆胡瓶など、シルクロードを通じて伝わった宝物をおさめる",k:"culture",a:"天平文化",p:2,n:"唐・西アジアとつながる交易ルートの証拠として問われる。"},
+{i:"b12",c:0,t:"行基",y:"ぎょうき",d:"橋づくりや治水をしながら民衆に布教し、はじめは朝廷に弾圧されたが、のちに大僧正となって大仏造立に協力した僧",k:"culture",a:"天平文化",p:2,n:"弾圧→抜擢の逆転が頻出。民衆をまとめる力と資金調達力が評価された。",x:["鑑真"]},
+{i:"b13",c:0,t:"鑑真",y:"がんじん",d:"何度も渡航に失敗し失明しながら来日し、日本に正式な戒律を伝えた唐の僧",k:"culture",a:"天平文化",p:2,x:["行基"]},
+{i:"b14",c:0,t:"唐招提寺",y:"とうしょうだいじ",d:"鑑真が戒律を教えるために建てた寺。金堂と鑑真和上坐像で知られる",k:"culture",a:"天平文化",p:2,x:["薬師寺"]},
+{i:"b15",c:0,t:"南都六宗",y:"なんとろくしゅう",d:"三論・成実・法相・倶舎・華厳・律からなる、民衆救済よりも国家の平安のための研究を中心とした奈良の学問仏教",k:"culture",a:"天平文化",p:1},
+{i:"b16",c:0,t:"最澄",y:"さいちょう",d:"比叡山に延暦寺を開き、法華経を中心とする教えを伝えた僧。伝教大師と呼ばれる",k:"sect",a:"天台宗",p:2,n:"『顕戒論』『山家学生式』。のちに鎌倉新仏教の開祖を多く輩出する母体となった。",x:["空海"]},
+{i:"b17",c:0,t:"空海",y:"くうかい",d:"高野山に金剛峯寺を開き、加持祈祷による現世利益を説く密教を伝えた僧。弘法大師と呼ばれる",k:"sect",a:"真言宗",p:2,n:"『十住心論』『三教指帰』。嵯峨天皇の厚い信任を受けた。",x:["最澄"]},
+{i:"b18",c:0,t:"延暦寺",y:"えんりゃくじ",d:"最澄が比叡山に開いた寺。のちに鎌倉新仏教の開祖たちを多く輩出した",k:"culture",a:"弘仁・貞観文化",p:1},
+{i:"b19",c:0,t:"金剛峯寺",y:"こんごうぶじ",d:"空海が高野山に開いた、密教の中心となる寺",k:"culture",a:"弘仁・貞観文化",p:1},
+{i:"b20",c:0,t:"教王護国寺（東寺）",y:"きょうおうごこくじ（とうじ）",d:"嵯峨天皇から空海に与えられ、密教の根本道場とされた京都の寺",k:"culture",a:"弘仁・貞観文化",p:1},
+{i:"b21",c:0,t:"室生寺",y:"むろうじ",d:"女人高野とも呼ばれ、五重塔と金堂で知られる山岳寺院",k:"culture",a:"弘仁・貞観文化",p:1},
+{i:"b22",c:0,t:"大乗戒壇",y:"だいじょうかいだん",d:"最澄が比叡山に設けようとして南都の寺院と激しく対立し、その死後にようやく認められた戒律の授与機関",k:"culture",a:"弘仁・貞観文化",p:1,n:"桓武天皇の遷都の目的の一つが「奈良旧仏教の政治介入を断つ」ことで、新仏教はその文脈で保護された。"},
+{i:"b23",c:0,t:"末法思想",y:"まっぽうしそう",d:"1052年から仏の教えが衰えた世に入るという考え。浄土信仰が広まる背景となった",k:"culture",a:"国風文化",p:2,n:"治安の悪化と武士の台頭で「現世への絶望と来世での極楽往生」を願う信仰が広まった。"},
+{i:"b24",c:0,t:"源信",y:"げんしん",d:"『往生要集』を著して極楽と地獄のようすをくわしく説き、浄土信仰のよりどころをつくった僧。恵心僧都とも呼ばれる",k:"culture",a:"国風文化",p:2,x:["空也"]},
+{i:"b25",c:0,t:"空也",y:"くうや",d:"京都の市街で民衆に念仏をすすめ、「市聖」と呼ばれた僧",k:"culture",a:"国風文化",p:2,x:["源信"]},
+{i:"b26",c:0,t:"平等院鳳凰堂",y:"びょうどういんほうおうどう",d:"1053年、藤原頼通が父・道長の別荘を寺に改めて建てた阿弥陀堂",k:"culture",a:"国風文化",p:2,n:"本尊は定朝作の阿弥陀如来坐像。壁扉画は九品来迎図。",x:["中尊寺金色堂"]},
+{i:"b27",c:0,t:"中尊寺金色堂",y:"ちゅうそんじこんじきどう",d:"奥州藤原氏の清衡が平泉に建てた、金でおおわれた阿弥陀堂",k:"culture",a:"国風文化",p:2,n:"北方貿易と砂金による奥州藤原氏の富が背景にある。",x:["平等院鳳凰堂"]},
+{i:"b28",c:0,t:"法然",y:"ほうねん",d:"ひたすら「南無阿弥陀仏」と唱えれば誰でも救われる専修念仏を説いた僧",k:"sect",a:"浄土宗",p:2,n:"著書は『選択本願念仏集』、本山は知恩院。旧仏教に弾圧され流罪になった。",x:["親鸞"]},
+{i:"b29",c:0,t:"親鸞",y:"しんらん",d:"法然の弟子で、悪人正機説を説き、肉食妻帯を認めた僧",k:"sect",a:"浄土真宗",p:2,n:"著書は『教行信証』、本山は本願寺。浄土真宗は一向宗とも呼ばれた。",x:["法然","一遍"]},
+{i:"b30",c:0,t:"悪人正機説",y:"あくにんしょうきせつ",d:"自力で善をなせない悪人こそ、阿弥陀仏が救おうとした相手だ、という教え",k:"sect",a:"浄土真宗",p:2},
+{i:"b31",c:0,t:"『歎異抄』",y:"たんにしょう",d:"親鸞の教えを、弟子の唯円がまとめたとされる書物",k:"sect",a:"浄土真宗",p:1},
+{i:"b32",c:0,t:"一遍",y:"いっぺん",d:"踊り念仏を広め、全国を行脚して札を配りながら念仏をすすめた僧",k:"sect",a:"時宗",p:2,n:"本山は清浄光寺（遊行寺）。『一遍上人絵伝』が伝記。",x:["親鸞"]},
+{i:"b33",c:0,t:"日蓮",y:"にちれん",d:"「南無妙法蓮華経」の題目を唱えることを説き、他宗を激しく批判して佐渡に流された僧",k:"sect",a:"日蓮宗",p:2,n:"法華宗ともいう。東国の武士や都市の商工業者（町衆）に広まった。"},
+{i:"b34",c:0,t:"栄西",y:"えいさい",d:"宋から禅を伝え、『興禅護国論』を著し、茶の効能を説いて喫茶を広めた僧",k:"sect",a:"臨済宗",p:2,n:"座禅と公案による悟り。北条氏の保護を受けた。",x:["道元"]},
+{i:"b35",c:0,t:"道元",y:"どうげん",d:"ひたすら無心に座禅を組む只管打坐を説き、権力に近づかず地方で修行した僧",k:"sect",a:"曹洞宗",p:2,x:["栄西"]},
+{i:"b36",c:0,t:"『正法眼蔵』",y:"しょうぼうげんぞう",d:"道元が著した、只管打坐の教えを説く書物",k:"sect",a:"曹洞宗",p:1},
+{i:"b37",c:0,t:"知恩院",y:"ちおんいん",d:"法然を開祖とする宗派の中心寺院",k:"sect",a:"浄土宗",p:1},
+{i:"b38",c:0,t:"本願寺",y:"ほんがんじ",d:"親鸞を開祖とする宗派の中心寺院。この宗派は一向宗とも呼ばれた",k:"sect",a:"浄土真宗",p:1},
+{i:"b39",c:0,t:"久遠寺",y:"くおんじ",d:"日蓮を開祖とする宗派の中心寺院。身延山にある",k:"sect",a:"日蓮宗",p:1},
+{i:"b40",c:0,t:"永平寺",y:"えいへいじ",d:"道元が越前に開いた、只管打坐を修行する寺",k:"sect",a:"曹洞宗",p:1},
+{i:"b41",c:0,t:"建長寺・円覚寺",y:"けんちょうじ・えんがくじ",d:"北条氏の保護を受けて鎌倉に建てられた、鎌倉五山の中心となる禅の修行道場",k:"sect",a:"臨済宗",p:1,n:"幕府が保護したのは、規律正しい禅の精神が武士の気風に合い、宋との貿易・文化受容の窓口にもなったから。"},
+{i:"b42",c:0,t:"叡尊・忍性",y:"えいそん・にんしょう",d:"西大寺を拠点に戒律の復興につとめ、ハンセン病者の救済や土木事業を行った僧",k:"sect",a:"律宗",p:1,n:"鎌倉新仏教だけでなく、旧仏教の側にも革新運動があった点が難関校で問われる。"},
+{i:"b43",c:0,t:"明恵",y:"みょうえ",d:"高山寺を拠点に、旧仏教の立場から戒律の復興を進めた僧",k:"sect",a:"華厳宗",p:1},
+{i:"b44",c:0,t:"貞慶",y:"じょうけい",d:"鎌倉時代に興福寺で学び、旧仏教の側から戒律の復興運動を進めた僧",k:"sect",a:"法相宗",p:0},
+{i:"b45",c:0,t:"『選択本願念仏集』",y:"せんちゃくほんがんねんぶつしゅう",d:"法然が専修念仏の教えを説いた書物",k:"sect",a:"浄土宗",p:1},
+{i:"b46",c:0,t:"『教行信証』",y:"きょうぎょうしんしょう",d:"親鸞が自らの信仰の道すじを著した書物",k:"sect",a:"浄土真宗",p:1},
+{i:"b47",c:0,t:"『立正安国論』",y:"りっしょうあんこくろん",d:"日蓮が北条時頼に提出し、他宗を批判して国難（元寇）を予言した書物",k:"sect",a:"日蓮宗",p:1},
+// ---------------------------------------------------------------- 建築・美術
+{i:"a01",c:1,t:"寝殿造",y:"しんでんづくり",d:"白木と檜皮葺で開放的につくられ、遣水や池のある庭園をもつ平安貴族の住宅様式",k:"culture",a:"国風文化",p:2,x:["書院造"]},
+{i:"a02",c:1,t:"大和絵",y:"やまとえ",d:"唐絵に対して、日本の自然や風俗を題材に描いた絵画。巨勢金岡らが知られる",k:"culture",a:"国風文化",p:1},
+{i:"a03",c:1,t:"『源氏物語絵巻』",y:"げんじものがたりえまき",d:"吹抜屋台・引目鉤鼻の技法で、貴族の物語の場面を描いた絵巻物",k:"culture",a:"国風文化",p:2},
+{i:"a04",c:1,t:"吹抜屋台",y:"ふきぬきやたい",d:"屋根や天井を取りはらい、室内を斜め上から見おろすように描く絵巻物の技法",k:"culture",a:"国風文化",p:1},
+{i:"a05",c:1,t:"引目鉤鼻",y:"ひきめかぎばな",d:"細い線の目と「く」の字の鼻で、貴族の顔を型どおりに描く技法",k:"culture",a:"国風文化",p:1},
+{i:"a06",c:1,t:"『鳥獣人物戯画』",y:"ちょうじゅうじんぶつぎが",d:"カエルやウサギを擬人化して、当時の世相を風刺した絵巻物",k:"culture",a:"国風文化",p:1},
+{i:"a07",c:1,t:"『信貴山縁起絵巻』",y:"しぎさんえんぎえまき",d:"空を飛ぶ米倉の話などを通して、庶民の姿を生き生きと描いた絵巻物",k:"culture",a:"国風文化",p:1},
+{i:"a08",c:1,t:"『伴大納言絵詞』",y:"ばんだいなごんえことば",d:"応天門の変を題材に、群衆のようすをいきいきと描いた絵巻物",k:"culture",a:"国風文化",p:1},
+{i:"a09",c:1,t:"三跡",y:"さんせき",d:"小野道風・藤原佐理・藤原行成という、日本風（和様）の優美な書の名手3人",k:"culture",a:"国風文化",p:2,n:"三筆（唐風・平安初期）との取りちがえが最頻出のひっかけ。",x:["三筆"]},
+{i:"a10",c:1,t:"三筆",y:"さんぴつ",d:"嵯峨天皇・空海・橘逸勢という、唐風の力強い書の名手3人",k:"culture",a:"弘仁・貞観文化",p:2,n:"三跡（和様・国風文化）との取りちがえが最頻出のひっかけ。",x:["三跡"]},
+{i:"a11",c:1,t:"蒔絵",y:"まきえ",d:"漆で描いた文様の上に、金銀の粉をまきつける工芸の技法",k:"culture",a:"国風文化",p:1},
+{i:"a12",c:1,t:"螺鈿",y:"らでん",d:"貝殻の光る部分を切り出して、漆器などにはめこむ工芸の技法",k:"culture",a:"国風文化",p:1},
+{i:"a13",c:1,t:"両界曼荼羅図",y:"りょうかいまんだらず",d:"密教の世界観を、仏の配置によってあらわした絵画",k:"culture",a:"弘仁・貞観文化",p:1,n:"不動明王像とならぶ密教美術の代表。"},
+{i:"a14",c:1,t:"一木造",y:"いちぼくづくり",d:"1本の木材から像の主要部を彫り出す、重厚な感じの仏像のつくり方",k:"culture",a:"弘仁・貞観文化",p:2,x:["寄木造"]},
+{i:"a15",c:1,t:"寄木造",y:"よせぎづくり",d:"複数の木材を組み合わせて仏像をつくる方法。分業と量産ができ、大型の像もつくりやすい",k:"culture",a:"国風文化",p:2,x:["一木造"]},
+{i:"a16",c:1,t:"定朝",y:"じょうちょう",d:"寄木造を完成させ、優美な和様の仏像様式（定朝様）を確立した仏師",k:"culture",a:"国風文化",p:2},
+{i:"a17",c:1,t:"東大寺南大門",y:"とうだいじなんだいもん",d:"重源が宋の建築様式を取り入れて再建した、挿肘木と貫を多用した力強い門",k:"culture",a:"鎌倉文化",p:2,n:"東大寺の中でも、これと金剛力士像は鎌倉時代。大仏・正倉院は天平。",x:["円覚寺舎利殿"]},
+{i:"a18",c:1,t:"大仏様（天竺様）",y:"だいぶつよう（てんじくよう）",d:"太い柱に貫を通し、挿肘木を多用する、力強く豪快な宋伝来の建築様式",k:"culture",a:"鎌倉文化",p:2,x:["禅宗様（唐様）"]},
+{i:"a19",c:1,t:"禅宗様（唐様）",y:"ぜんしゅうよう（からよう）",d:"細い部材と詰組を特徴とする、宋から伝わった引きしまった建築様式",k:"culture",a:"鎌倉文化",p:2,x:["大仏様（天竺様）"]},
+{i:"a20",c:1,t:"重源",y:"ちょうげん",d:"宋人技術者の陳和卿の協力を得て、焼けた東大寺の再建を進めた僧",k:"culture",a:"鎌倉文化",p:1},
+{i:"a21",c:1,t:"金剛力士像",y:"こんごうりきしぞう",d:"運慶・快慶らがつくった、筋肉隆々で躍動的な東大寺南大門の仁王像（阿形・吽形）",k:"culture",a:"鎌倉文化",p:2,x:["東大寺大仏（盧舎那仏）"]},
+{i:"a22",c:1,t:"運慶・快慶",y:"うんけい・かいけい",d:"写実的で力強い作風の慶派の仏師で、東大寺の仁王像をつくった",k:"culture",a:"鎌倉文化",p:2},
+{i:"a23",c:1,t:"円覚寺舎利殿",y:"えんがくじしゃりでん",d:"細い部材と詰組が特徴で、禅宗様建築を代表する鎌倉の建物",k:"culture",a:"鎌倉文化",p:1,x:["東大寺南大門"]},
+{i:"a24",c:1,t:"似絵",y:"にせえ",d:"対象の顔をありのままに写しとる、武士の台頭とともに流行した肖像画",k:"culture",a:"鎌倉文化",p:1,x:["頂相"]},
+{i:"a25",c:1,t:"頂相",y:"ちんそう",d:"禅僧の姿をありのままに写しとった肖像彫刻・肖像画",k:"culture",a:"鎌倉文化",p:1,x:["似絵"]},
+{i:"a26",c:1,t:"鹿苑寺金閣",y:"ろくおんじきんかく",d:"1層が寝殿造風、2層が武家造風、3層が金箔をはった禅宗様仏堂という、三層折衷の建物",k:"culture",a:"北山文化",p:2,n:"建てたのは3代将軍・足利義満。日明貿易の富が背景。",x:["慈照寺銀閣"]},
+{i:"a27",c:1,t:"慈照寺銀閣",y:"じしょうじぎんかく",d:"1層が書院造、2層が禅宗様仏堂で、派手さのない簡素な美しさをもつ二層の建物",k:"culture",a:"東山文化",p:2,n:"建てたのは8代将軍・足利義政。応仁の乱の動乱期。",x:["鹿苑寺金閣"]},
+{i:"a28",c:1,t:"東求堂同仁斎",y:"とうぐどうどうじんさい",d:"畳敷き・明かり障子・違い棚・付書院を備えた、書院造の原型とされる部屋",k:"culture",a:"東山文化",p:1},
+{i:"a29",c:1,t:"書院造",y:"しょいんづくり",d:"畳・床の間・違い棚・明かり障子を備えた、現代の和風住宅のもとになった住宅様式",k:"culture",a:"東山文化",p:2,x:["寝殿造"]},
+{i:"a30",c:1,t:"枯山水",y:"かれさんすい",d:"水を用いず、白砂と岩石だけで山や水の流れを表現する庭園",k:"culture",a:"東山文化",p:2},
+{i:"a31",c:1,t:"龍安寺石庭",y:"りょうあんじせきてい",d:"白砂に15個の石を配した、枯山水を代表する京都の庭",k:"culture",a:"東山文化",p:1},
+{i:"a32",c:1,t:"水墨画",y:"すいぼくが",d:"墨の濃淡だけで対象を描く絵画。禅宗とともに中国から伝わった",k:"culture",a:"東山文化",p:2},
+{i:"a33",c:1,t:"雪舟",y:"せっしゅう",d:"明に渡って本場の画法を学び、日本の水墨画を大成した画僧",k:"culture",a:"東山文化",p:2},
+{i:"a34",c:1,t:"城郭建築",y:"じょうかくけんちく",d:"天守閣・石垣・堀・書院を備えた、防衛と権威の象徴となる建築",k:"culture",a:"桃山文化",p:1},
+{i:"a35",c:1,t:"姫路城",y:"ひめじじょう",d:"白鷺城とも呼ばれ、世界遺産に登録されている城",k:"culture",a:"桃山文化",p:2},
+{i:"a36",c:1,t:"障壁画（濃絵）",y:"しょうへきが（だみえ）",d:"城や寺のふすま・屏風に、金箔地へ極彩色で描いた絵",k:"culture",a:"桃山文化",p:2},
+{i:"a37",c:1,t:"狩野永徳",y:"かのうえいとく",d:"金箔地に力強い筆致で『唐獅子図屏風』『洛中洛外図屏風』を描いた画家",k:"culture",a:"桃山文化",p:2,n:"狩野派はこののち幕府・権力の御用絵師となっていく。",x:["長谷川等伯"]},
+{i:"a38",c:1,t:"長谷川等伯",y:"はせがわとうはく",d:"霧の中の松林を墨だけで描いた『松林図屏風』で知られる画家",k:"culture",a:"桃山文化",p:2,x:["狩野永徳"]},
+{i:"a39",c:1,t:"待庵",y:"たいあん",d:"千利休が設計したと伝わる、草庵風の小さな茶室",k:"culture",a:"桃山文化",p:1},
+{i:"a40",c:1,t:"俵屋宗達",y:"たわらやそうたつ",d:"金地に風の神と雷の神を描いた屏風で知られる、装飾的な画風の画家",k:"culture",a:"寛永期の文化",p:2,n:"元禄の尾形光琳はこの人の画風を受けついだ。時代が一つ前である点に注意。",x:["尾形光琳"]},
+{i:"a41",c:1,t:"尾形光琳",y:"おがたこうりん",d:"『紅白梅図屏風』『燕子花図屏風』を描き、俵屋宗達の画風を継いで琳派を大成した画家",k:"culture",a:"元禄文化",p:2,n:"蒔絵『八橋蒔絵螺鈿硯箱』も代表作。",x:["俵屋宗達"]},
+{i:"a42",c:1,t:"琳派",y:"りんぱ",d:"俵屋宗達に始まり尾形光琳が大成した、装飾性の高い絵画の流派",k:"culture",a:"元禄文化",p:1},
+{i:"a43",c:1,t:"尾形乾山",y:"おがたけんざん",d:"光琳の弟で、絵付けの陶器をつくった陶芸家",k:"culture",a:"元禄文化",p:0},
+{i:"a44",c:1,t:"野々村仁清",y:"ののむらにんせい",d:"『色絵雉香炉』などをつくった、京焼の色絵陶器の名工",k:"culture",a:"元禄文化",p:1},
+{i:"a45",c:1,t:"宮崎友禅",y:"みやざきゆうぜん",d:"京都で、模様を鮮やかに染め出す染織の技法を始めた人物",k:"culture",a:"元禄文化",p:1},
+{i:"a46",c:1,t:"菱川師宣",y:"ひしかわもろのぶ",d:"振り向く女性を肉筆で描いた作品で知られ、浮世絵の祖とされる画家",k:"culture",a:"元禄文化",p:2,n:"この段階はまだ肉筆画・単色摺り。多色摺りの錦絵は次の鈴木春信から。",x:["鈴木春信","喜多川歌麿"]},
+{i:"a47",c:1,t:"鈴木春信",y:"すずきはるのぶ",d:"多色摺りの版画（錦絵）を始めた画家",k:"culture",a:"宝暦・天明期の文化",p:2,n:"元禄の菱川師宣と化政の歌麿・写楽・北斎・広重のちょうど中間に位置する。",x:["菱川師宣"]},
+{i:"a48",c:1,t:"錦絵",y:"にしきえ",d:"版木を色ごとに分けて摺り重ねる、多色摺りの浮世絵版画",k:"culture",a:"宝暦・天明期の文化",p:1},
+{i:"a49",c:1,t:"喜多川歌麿",y:"きたがわうたまろ",d:"大首絵の技法で女性の表情や心理を描いた、美人画の名手",k:"culture",a:"化政文化",p:2,x:["東洲斎写楽"]},
+{i:"a50",c:1,t:"東洲斎写楽",y:"とうしゅうさいしゃらく",d:"歌舞伎役者の個性を誇張して描き、わずか10か月で姿を消した画家",k:"culture",a:"化政文化",p:2,x:["喜多川歌麿"]},
+{i:"a51",c:1,t:"葛飾北斎",y:"かつしかほくさい",d:"ベロ藍と洋風の遠近法を用い、富士山を主題にした風景版画を描いた画家",k:"culture",a:"化政文化",p:2,x:["歌川広重"]},
+{i:"a52",c:1,t:"歌川広重",y:"うたがわひろしげ",d:"街道の宿場町を叙情ゆたかに描いた風景版画で知られる画家。安藤広重ともいう",k:"culture",a:"化政文化",p:2,x:["葛飾北斎"]},
+{i:"a53",c:1,t:"渡辺崋山",y:"わたなべかざん",d:"『鷹見泉石像』を描き、蛮社の獄で処罰された文人画家",k:"culture",a:"化政文化",p:1},
+{i:"a54",c:1,t:"司馬江漢",y:"しばこうかん",d:"銅版画（エッチング）の技術を日本に伝えた洋風画家",k:"culture",a:"化政文化",p:1},
+{i:"a55",c:1,t:"岡倉天心",y:"おかくらてんしん",d:"フェノロサとともに日本美術を再評価し、東京美術学校の設立に力をつくした人物",k:"culture",a:"明治の文化",p:1},
+{i:"a56",c:1,t:"横山大観",y:"よこやまたいかん",d:"岡倉天心のもとで、新しい日本画を切りひらいた画家",k:"culture",a:"明治の文化",p:1},
+{i:"a57",c:1,t:"黒田清輝",y:"くろだせいき",d:"明るい外光のもとで描く画風を持ちこみ、白馬会をおこした洋画家",k:"culture",a:"明治の文化",p:2},
+{i:"a58",c:1,t:"狩野芳崖",y:"かのうほうがい",d:"フェノロサに認められ、伝統を生かした近代日本画を描いた画家",k:"culture",a:"明治の文化",p:0},
+// ---------------------------------------------------------------- 文学・学問
+{i:"c01",c:2,t:"かな文字",y:"かなもじ",d:"万葉仮名（漢字の音訓）を簡略化してできた文字。女性による宮廷文学が栄えるもとになった",k:"culture",a:"国風文化",p:1},
+{i:"c02",c:2,t:"紫式部",y:"むらさきしきぶ",d:"光源氏を主人公とする長編物語を書いた女流作家",k:"culture",a:"国風文化",p:2,x:["清少納言"]},
+{i:"c03",c:2,t:"清少納言",y:"せいしょうなごん",d:"「春はあけぼの」で始まる随筆を書いた女流作家",k:"culture",a:"国風文化",p:2,x:["紫式部"]},
+{i:"c04",c:2,t:"『源氏物語』",y:"げんじものがたり",d:"紫式部が書いた、光源氏を主人公とする長編物語",k:"culture",a:"国風文化",p:2,x:["『枕草子』"]},
+{i:"c05",c:2,t:"『枕草子』",y:"まくらのそうし",d:"清少納言が書いた、「春はあけぼの」で始まる随筆",k:"culture",a:"国風文化",p:2,x:["『源氏物語』"]},
+{i:"c06",c:2,t:"『竹取物語』",y:"たけとりものがたり",d:"かぐや姫の物語として知られる、作者不詳の物語",k:"culture",a:"国風文化",p:1},
+{i:"c07",c:2,t:"『伊勢物語』",y:"いせものがたり",d:"在原業平と思われる男の恋を、和歌を中心に描いた歌物語",k:"culture",a:"国風文化",p:1},
+{i:"c08",c:2,t:"『土佐日記』",y:"とさにっき",d:"紀貫之が、男性でありながら仮名で書いた日記",k:"culture",a:"国風文化",p:2},
+{i:"c09",c:2,t:"『蜻蛉日記』",y:"かげろうにっき",d:"藤原道綱母が、夫との関係の苦しみをつづった日記",k:"culture",a:"国風文化",p:1},
+{i:"c10",c:2,t:"『更級日記』",y:"さらしなにっき",d:"菅原孝標女が、少女時代からの生涯をふり返ってつづった日記",k:"culture",a:"国風文化",p:1},
+{i:"c11",c:2,t:"『古今和歌集』",y:"こきんわかしゅう",d:"905年に醍醐天皇の命で紀貫之らが編んだ、最初の勅撰和歌集",k:"culture",a:"国風文化",p:2,x:["『新古今和歌集』"]},
+{i:"c12",c:2,t:"『万葉集』",y:"まんようしゅう",d:"天皇から民衆まで幅広い階層の歌を万葉仮名で記した、現存最古の歌集",k:"culture",a:"天平文化",p:2,x:["『古今和歌集』"]},
+{i:"c13",c:2,t:"『古事記』",y:"こじき",d:"稗田阿礼が誦習し、太安万侶が筆録した現存最古の歴史書",k:"culture",a:"天平文化",p:2,x:["『日本書紀』"]},
+{i:"c14",c:2,t:"『日本書紀』",y:"にほんしょき",d:"舎人親王らが漢文・編年体で編んだ、六国史の最初となる正史",k:"culture",a:"天平文化",p:2,x:["『古事記』"]},
+{i:"c15",c:2,t:"『風土記』",y:"ふどき",d:"国ごとに、地名の由来・産物・伝承を報告させた地誌",k:"culture",a:"天平文化",p:1},
+{i:"c16",c:2,t:"『平家物語』",y:"へいけものがたり",d:"盲目の琵琶法師が平曲として語り広めた、平氏の興亡と無常観を描く軍記物語",k:"culture",a:"鎌倉文化",p:2,x:["『太平記』"]},
+{i:"c17",c:2,t:"鴨長明",y:"かものちょうめい",d:"安元の大火や飢饉を通して乱世の無常を書いた『方丈記』の作者",k:"culture",a:"鎌倉文化",p:1,x:["兼好法師"]},
+{i:"c18",c:2,t:"『方丈記』",y:"ほうじょうき",d:"「ゆく河の流れは絶えずして」で始まる、無常観をつづった随筆",k:"culture",a:"鎌倉文化",p:2,x:["『徒然草』"]},
+{i:"c19",c:2,t:"兼好法師",y:"けんこうほうし",d:"『徒然草』を書いた隠者。吉田兼好とも呼ばれる",k:"culture",a:"鎌倉文化",p:1,x:["鴨長明"]},
+{i:"c20",c:2,t:"『徒然草』",y:"つれづれぐさ",d:"「つれづれなるままに」で始まる随筆",k:"culture",a:"鎌倉文化",p:2,x:["『方丈記』"]},
+{i:"c21",c:2,t:"『新古今和歌集』",y:"しんこきんわかしゅう",d:"1205年に後鳥羽上皇の命で藤原定家・藤原家隆らが編み、幽玄・余情の美をたたえた勅撰和歌集",k:"culture",a:"鎌倉文化",p:2,x:["『古今和歌集』"]},
+{i:"c22",c:2,t:"慈円",y:"じえん",d:"「道理」の移り変わりから歴史を考えて『愚管抄』を著した天台座主",k:"culture",a:"鎌倉文化",p:1},
+{i:"c23",c:2,t:"『愚管抄』",y:"ぐかんしょう",d:"「道理」の観点から武士の台頭を説明した歴史書",k:"culture",a:"鎌倉文化",p:2,x:["『神皇正統記』"]},
+{i:"c24",c:2,t:"『御成敗式目』",y:"ごせいばいしきもく",d:"北条泰時が定めた、武家社会で最初の法典。貞永式目ともいう",k:"culture",a:"鎌倉文化",p:1},
+{i:"c25",c:2,t:"『神皇正統記』",y:"じんのうしょうとうき",d:"北畠親房が、南朝の正統性を主張して著した歴史書",k:"culture",a:"南北朝期の文化",p:2,x:["『愚管抄』"]},
+{i:"c26",c:2,t:"『太平記』",y:"たいへいき",d:"南北朝の内乱のありさまを描いた軍記物語",k:"culture",a:"南北朝期の文化",p:1,x:["『平家物語』"]},
+{i:"c27",c:2,t:"連歌",y:"れんが",d:"何人かで上の句と下の句を交互によみつないでいく文芸。宗祇が大成した",k:"culture",a:"東山文化",p:1},
+{i:"c28",c:2,t:"『御伽草子』",y:"おとぎぞうし",d:"一寸法師や物くさ太郎などをおさめた、絵入りの短編小説集",k:"culture",a:"東山文化",p:2},
+{i:"c29",c:2,t:"近松門左衛門",y:"ちかまつもんざえもん",d:"町人の心中を描いた世話物や、歴史劇の時代物を書いた人形浄瑠璃・歌舞伎の脚本家",k:"culture",a:"元禄文化",p:2,x:["井原西鶴"]},
+{i:"c30",c:2,t:"『曽根崎心中』",y:"そねざきしんじゅう",d:"町人の義理と人情、そして心中を描いた世話物の代表作",k:"culture",a:"元禄文化",p:1},
+{i:"c31",c:2,t:"井原西鶴",y:"いはらさいかく",d:"『日本永代蔵』『好色一代男』などを書いた浮世草子の作家",k:"culture",a:"元禄文化",p:2,x:["近松門左衛門"]},
+{i:"c32",c:2,t:"『日本永代蔵』",y:"にっぽんえいたいぐら",d:"町人の蓄財と経済生活をいきいきと描いた町人物",k:"culture",a:"元禄文化",p:1},
+{i:"c33",c:2,t:"松尾芭蕉",y:"まつおばしょう",d:"わび・さび・かるみの精神を追い求め、東北・北陸をめぐる紀行文を残した俳人",k:"culture",a:"元禄文化",p:2,x:["与謝蕪村","小林一茶"]},
+{i:"c34",c:2,t:"『おくのほそ道』",y:"おくのほそみち",d:"松尾芭蕉が東北・北陸をめぐった旅を記した紀行文",k:"culture",a:"元禄文化",p:1},
+{i:"c35",c:2,t:"関孝和",y:"せきたかかず",d:"円周率の計算や筆算による代数で、和算を大成した数学者",k:"culture",a:"元禄文化",p:1},
+{i:"c36",c:2,t:"渋川春海",y:"しぶかわしゅんかい",d:"貞享暦をつくり、日本独自の太陰太陽暦を定めた天文学者",k:"culture",a:"元禄文化",p:1},
+{i:"c37",c:2,t:"宮崎安貞",y:"みやざきやすさだ",d:"『農業全書』を著した、日本最古の体系的な農学者",k:"culture",a:"元禄文化",p:1},
+{i:"c38",c:2,t:"貝原益軒",y:"かいばらえきけん",d:"『大和本草』『養生訓』を著した本草学者",k:"culture",a:"元禄文化",p:1},
+{i:"c39",c:2,t:"新井白石",y:"あらいはくせき",d:"正徳の治を行い、武家政権の移り変わりを体系的に整理した儒学者",k:"culture",a:"元禄文化",p:2},
+{i:"c40",c:2,t:"中江藤樹",y:"なかえとうじゅ",d:"日本の陽明学の祖とされる儒学者",k:"culture",a:"元禄文化",p:1},
+{i:"c41",c:2,t:"荻生徂徠",y:"おぎゅうそらい",d:"蘐園塾で多くの門人を育て、古文辞学を唱えた古学派の儒学者",k:"culture",a:"元禄文化",p:1,x:["伊藤仁斎"]},
+{i:"c42",c:2,t:"伊藤仁斎",y:"いとうじんさい",d:"京都で古義学を唱えた古学派の儒学者",k:"culture",a:"元禄文化",p:1,x:["荻生徂徠"]},
+{i:"c43",c:2,t:"十返舎一九",y:"じっぺんしゃいっく",d:"弥次郎兵衛と喜多八の珍道中を描いた滑稽本の作者",k:"culture",a:"化政文化",p:2,x:["式亭三馬"]},
+{i:"c44",c:2,t:"式亭三馬",y:"しきていさんば",d:"銭湯や床屋に集まる庶民の会話を写した『浮世風呂』『浮世床』の作者",k:"culture",a:"化政文化",p:1,x:["十返舎一九"]},
+{i:"c45",c:2,t:"滝沢馬琴",y:"たきざわばきん",d:"勧善懲悪の長編読本『南総里見八犬伝』を書いた作者。曲亭馬琴ともいう",k:"culture",a:"化政文化",p:2},
+{i:"c46",c:2,t:"上田秋成",y:"うえだあきなり",d:"怪異を題材とした読本『雨月物語』の作者",k:"culture",a:"化政文化",p:1},
+{i:"c47",c:2,t:"為永春水",y:"ためながしゅんすい",d:"人情本『春色梅児誉美』を書き、天保の改革で処罰された作者",k:"culture",a:"化政文化",p:0},
+{i:"c48",c:2,t:"山東京伝",y:"さんとうきょうでん",d:"遊里を題材とした洒落本で人気を得たが、寛政の改革で処罰された作者",k:"culture",a:"化政文化",p:1},
+{i:"c49",c:2,t:"小林一茶",y:"こばやしいっさ",d:"『おらが春』で、農民の生活や小さな生き物への愛情をよんだ俳人",k:"culture",a:"化政文化",p:2,x:["松尾芭蕉","与謝蕪村"]},
+{i:"c50",c:2,t:"与謝蕪村",y:"よさぶそん",d:"絵画的で情景の浮かぶ句をよんだ俳人",k:"culture",a:"化政文化",p:2,x:["小林一茶","松尾芭蕉"]},
+{i:"c51",c:2,t:"川柳・狂歌",y:"せんりゅう・きょうか",d:"世の中を皮肉ったり笑いのめしたりする、五七五や短歌の形の文芸。柄井川柳・太田蜀山人らが有名",k:"culture",a:"化政文化",p:1},
+{i:"c52",c:2,t:"杉田玄白・前野良沢",y:"すぎたげんぱく・まえのりょうたく",d:"オランダ語の解剖書『ターヘル・アナトミア』を訳した蘭学者",k:"culture",a:"化政文化",p:2},
+{i:"c53",c:2,t:"『解体新書』",y:"かいたいしんしょ",d:"1774年に出版された、西洋の解剖書の翻訳",k:"culture",a:"化政文化",p:2},
+{i:"c54",c:2,t:"シーボルト",y:"しーぼると",d:"長崎で鳴滝塾を開き、西洋医学を教えた外国人医師",k:"culture",a:"化政文化",p:1},
+{i:"c55",c:2,t:"伊能忠敬",y:"いのうただたか",d:"高橋至時の指導のもと全国を実測して歩き、正確な日本地図のもとをつくった人物",k:"culture",a:"化政文化",p:2},
+{i:"c56",c:2,t:"本居宣長",y:"もとおりのりなが",d:"『古事記伝』を著し、古代日本人の「もののあはれ」の精神を明らかにした学者",k:"culture",a:"化政文化",p:2},
+{i:"c57",c:2,t:"国学",y:"こくがく",d:"儒教や仏教が伝わる前の、日本古来の精神を明らかにしようとする学問",k:"culture",a:"化政文化",p:1,n:"荷田春満・賀茂真淵・本居宣長・平田篤胤を四大人という。尊王思想につながった。"},
+{i:"c58",c:2,t:"二宮尊徳",y:"にのみやそんとく",d:"報徳思想にもとづいて、荒れた農村の復興を指導した人物",k:"culture",a:"化政文化",p:1},
+{i:"c59",c:2,t:"石田梅岩",y:"いしだばいがん",d:"心学を説き、商人の営みにも道徳的な意味があると主張した思想家",k:"culture",a:"化政文化",p:1},
+{i:"c60",c:2,t:"寛政異学の禁",y:"かんせいいがくのきん",d:"1790年、松平定信が幕府の学問所で朱子学以外の講義を禁じた政策",k:"culture",a:"化政文化",p:1},
+{i:"c61",c:2,t:"寺子屋",y:"てらこや",d:"庶民の子どもに読み書きそろばんを教え、識字率を大きく高めた教育の場",k:"culture",a:"化政文化",p:1,n:"識字率の向上と出版資本の成長が、大衆文学の大量生産をささえた。"},
+{i:"c62",c:2,t:"蔦屋重三郎",y:"つたやじゅうざぶろう",d:"歌麿や写楽の作品を世に送り出した江戸の出版元",k:"culture",a:"化政文化",p:1},
+{i:"c63",c:2,t:"福沢諭吉",y:"ふくざわゆきち",d:"『学問のすすめ』『西洋事情』を著し、慶應義塾を創設した啓蒙思想家",k:"culture",a:"明治の文化",p:2},
+{i:"c64",c:2,t:"中江兆民",y:"なかえちょうみん",d:"ルソーの思想を『民約訳解』で紹介し、「東洋のルソー」と呼ばれた思想家",k:"culture",a:"明治の文化",p:1},
+{i:"c65",c:2,t:"森有礼",y:"もりありのり",d:"明六社をつくり、近代的な教育制度の整備に力をつくした人物",k:"culture",a:"明治の文化",p:1},
+{i:"c66",c:2,t:"坪内逍遥",y:"つぼうちしょうよう",d:"『小説神髄』で写実主義を唱えた文学者",k:"culture",a:"明治の文化",p:1},
+{i:"c67",c:2,t:"二葉亭四迷",y:"ふたばていしめい",d:"『浮雲』を言文一致体で書いた小説家",k:"culture",a:"明治の文化",p:2,n:"言文一致体の確立と義務教育の普及（1907年に尋常小学校6年制）が相乗効果を生んだ。"},
+{i:"c68",c:2,t:"森鷗外",y:"もりおうがい",d:"ドイツ留学の体験をもとに『舞姫』を書いた、ロマン主義の小説家",k:"culture",a:"明治の文化",p:2},
+{i:"c69",c:2,t:"夏目漱石",y:"なつめそうせき",d:"『吾輩は猫である』『こころ』で、近代の個人の苦悩を描いた小説家",k:"culture",a:"明治の文化",p:2},
+{i:"c70",c:2,t:"島崎藤村",y:"しまざきとうそん",d:"『破戒』を書いた自然主義の小説家",k:"culture",a:"明治の文化",p:1},
+{i:"c71",c:2,t:"北里柴三郎",y:"きたざとしばさぶろう",d:"破傷風菌の純粋培養に成功し、血清療法を確立した細菌学者",k:"culture",a:"明治の文化",p:2,x:["志賀潔"]},
+{i:"c72",c:2,t:"志賀潔",y:"しがきよし",d:"赤痢菌を発見した細菌学者",k:"culture",a:"明治の文化",p:1,x:["北里柴三郎"]},
+{i:"c73",c:2,t:"野口英世",y:"のぐちひでよ",d:"黄熱病の研究に取り組み、アフリカで命を落とした細菌学者",k:"culture",a:"明治の文化",p:1},
+{i:"c74",c:2,t:"高峰譲吉",y:"たかみねじょうきち",d:"タカジアスターゼをつくり、アドレナリンの抽出に成功した化学者",k:"culture",a:"明治の文化",p:1},
+{i:"c75",c:2,t:"長岡半太郎",y:"ながおかはんたろう",d:"原子模型の理論を発表した物理学者",k:"culture",a:"明治の文化",p:1},
+{i:"c76",c:2,t:"滝廉太郎",y:"たきれんたろう",d:"『荒城の月』『花』を作曲した音楽家",k:"culture",a:"明治の文化",p:1},
+{i:"c77",c:2,t:"徳富蘇峰",y:"とくとみそほう",d:"『国民之友』を発刊し、平民主義を唱えた言論人",k:"culture",a:"明治の文化",p:1},
+{i:"c78",c:2,t:"三宅雪嶺",y:"みやけせつれい",d:"雑誌『日本人』で国粋主義を唱えた思想家",k:"culture",a:"明治の文化",p:0},
+{i:"c79",c:2,t:"吉野作造",y:"よしのさくぞう",d:"民本主義を唱え、大正デモクラシーを理論でささえた学者",k:"culture",a:"大正の文化",p:2,x:["美濃部達吉"]},
+{i:"c80",c:2,t:"美濃部達吉",y:"みのべたつきち",d:"天皇機関説を唱えた憲法学者",k:"culture",a:"大正の文化",p:2,x:["吉野作造"]},
+{i:"c81",c:2,t:"武者小路実篤・志賀直哉",y:"むしゃのこうじさねあつ・しがなおや",d:"人道主義・個人主義をかかげた白樺派の作家",k:"culture",a:"大正の文化",p:1},
+{i:"c82",c:2,t:"芥川龍之介",y:"あくたがわりゅうのすけ",d:"『羅生門』『鼻』を書いた新思潮派の小説家",k:"culture",a:"大正の文化",p:1},
+{i:"c83",c:2,t:"菊池寛",y:"きくちかん",d:"雑誌『文藝春秋』を創刊した小説家",k:"culture",a:"大正の文化",p:0},
+// ------------------------------------------------------------ 芸能・生活文化
+{i:"d01",c:3,t:"能（猿楽能）",y:"のう（さるがくのう）",d:"民衆の芸能だった田楽・猿楽から発展し、足利義満の保護のもとで幽玄な舞台芸術になった芸能",k:"culture",a:"北山文化",p:2},
+{i:"d02",c:3,t:"観阿弥・世阿弥",y:"かんあみ・ぜあみ",d:"足利義満の庇護を受けて能を大成した父子",k:"culture",a:"北山文化",p:2},
+{i:"d03",c:3,t:"『風姿花伝』",y:"ふうしかでん",d:"世阿弥が能の心得を書き残した書物",k:"culture",a:"北山文化",p:1},
+{i:"d04",c:3,t:"狂言",y:"きょうげん",d:"能の合間に演じられた、庶民の日常を題材にした笑劇",k:"culture",a:"東山文化",p:2},
+{i:"d05",c:3,t:"茶の湯（わび茶）",y:"ちゃのゆ（わびちゃ）",d:"村田珠光が始めた、簡素なしつらえの中に深みを求める茶の作法",k:"culture",a:"東山文化",p:2},
+{i:"d06",c:3,t:"生け花",y:"いけばな",d:"池坊専慶らによって立花の形が整えられた、花をいける芸道",k:"culture",a:"東山文化",p:1},
+{i:"d07",c:3,t:"同朋衆",y:"どうぼうしゅう",d:"能阿弥・芸阿弥・相阿弥ら、足利義政の側近として文化の創造をリードした芸術の専門家",k:"culture",a:"東山文化",p:1,n:"被差別階層の出身者が文化の中心を担った点が難関校で問われる。"},
+{i:"d08",c:3,t:"千利休",y:"せんのりきゅう",d:"秀吉に仕えてわび茶を完成させ、のちに秀吉と対立して切腹した茶人",k:"culture",a:"桃山文化",p:2,n:"信長・秀吉は茶器（名物）を家臣への恩賞に使い、茶の湯を政治的な統制に活用した。"},
+{i:"d09",c:3,t:"かぶき踊り",y:"かぶきおどり",d:"出雲阿国が京都の北野天満宮や河原で始めた、のちの歌舞伎のもとになった踊り",k:"culture",a:"桃山文化",p:2},
+{i:"d10",c:3,t:"三味線",y:"しゃみせん",d:"琉球から伝わった三線が改良され、浄瑠璃や語り物の伴奏に使われるようになった楽器",k:"culture",a:"桃山文化",p:1},
+{i:"d11",c:3,t:"南蛮文化",y:"なんばんぶんか",d:"ポルトガル・スペインとの貿易を通じて、鉄砲・時計・地球儀・カステラなどがもたらされた文化",k:"culture",a:"桃山文化",p:2},
+{i:"d12",c:3,t:"コレジオ・セミナリオ",y:"これじお・せみなりお",d:"宣教師を養成するためにつくられた学校",k:"culture",a:"桃山文化",p:1},
+{i:"d13",c:3,t:"キリシタン版",y:"きりしたんばん",d:"宣教師が伝えた活版印刷術によって刷られた書物",k:"culture",a:"桃山文化",p:1},
+{i:"d14",c:3,t:"人形浄瑠璃",y:"にんぎょうじょうるり",d:"竹本義太夫の語りと三味線に合わせて人形を操る芸能。竹本座で人気を集めた",k:"culture",a:"元禄文化",p:1},
+{i:"d15",c:3,t:"文明開化",y:"ぶんめいかいか",d:"洋服・ガス灯・太陽暦など、西洋風の生活様式が急速に広まった風潮",k:"culture",a:"明治の文化",p:2},
+{i:"d16",c:3,t:"鹿鳴館",y:"ろくめいかん",d:"条約改正のため、欧化政策の象徴として建てられ、舞踏会が開かれた洋館",k:"culture",a:"明治の文化",p:1},
+{i:"d17",c:3,t:"ラジオ放送",y:"らじおほうそう",d:"1925年に始まった、家庭に音声を届ける新しい大衆メディア",k:"culture",a:"大正の文化",p:1},
+{i:"d18",c:3,t:"活動写真",y:"かつどうしゃしん",d:"大正期に大衆の娯楽として広まった映画",k:"culture",a:"大正の文化",p:1},
+{i:"d19",c:3,t:"円本",y:"えんぽん",d:"1冊1円で売り出され、文学を大衆のものにした全集",k:"culture",a:"大正の文化",p:1},
+{i:"d20",c:3,t:"総合雑誌",y:"そうごうざっし",d:"『中央公論』『改造』など、政治や文芸を幅広く論じた雑誌",k:"culture",a:"大正の文化",p:1},
+
+// ---------------------------------------------------------------- 文化の特色
+{i:"e01",c:4,t:"飛鳥文化",y:"あすかぶんか",d:"日本で最初の仏教文化。北魏の影響を受けた角ばった顔の仏像や、渡来人の伝えた技術が特徴",k:"period",a:"飛鳥時代",p:2,n:"百済・高句麗などの渡来系氏族が、土木・建築・仏像鋳造の技術をもたらした。",x:["白鳳文化"]},
+{i:"e02",c:4,t:"白鳳文化",y:"はくほうぶんか",d:"天武・持統天皇のころ、唐の初期の影響を受けた、若々しくふくよかな作風を特徴とする文化",k:"period",a:"飛鳥時代",p:2,x:["飛鳥文化"]},
+{i:"e03",c:4,t:"天平文化",y:"てんぴょうぶんか",d:"聖武天皇のころ、遣唐使がもたらした唐の文化とシルクロードの影響を受けた、国際色ゆたかな仏教文化",k:"period",a:"奈良時代",p:2},
+{i:"e04",c:4,t:"弘仁・貞観文化",y:"こうにん・じょうがんぶんか",d:"平安遷都のころ、最澄・空海の密教と、唐風の書・重厚な彫刻を中心に発達した文化",k:"period",a:"平安時代（前期）",p:2},
+{i:"e05",c:4,t:"国風文化",y:"こくふうぶんか",d:"遣唐使の停止をきっかけに、日本の風土や生活に合わせて育った、優雅な貴族の文化",k:"period",a:"平安時代（中期〜後期）",p:2},
+{i:"e06",c:4,t:"鎌倉文化",y:"かまくらぶんか",d:"質実剛健で写実的。日宋貿易による宋文化と、伝統的な貴族文化が合わさった文化",k:"period",a:"鎌倉時代",p:2},
+{i:"e07",c:4,t:"北山文化",y:"きたやまぶんか",d:"日明貿易（勘合貿易）の富を背景に、公家文化と武家文化が融合した華やかな文化",k:"period",a:"室町時代（3代義満のころ）",p:2,n:"北山＝義満・金閣・能、東山＝義政・銀閣・書院造・水墨画・枯山水。この対比は超頻出。",x:["東山文化"]},
+{i:"e08",c:4,t:"東山文化",y:"ひがしやまぶんか",d:"応仁の乱の動乱のなかで、禅の精神にささえられた「わび・さび」を基調とする、簡素で深みのある文化",k:"period",a:"室町時代（8代義政のころ）",p:2,n:"現代日本の生活文化（畳・床の間・茶・生け花）の原型がここにある。",x:["北山文化"]},
+{i:"e09",c:4,t:"桃山文化",y:"ももやまぶんか",d:"天下統一の富と権力を誇示する豪華絢爛な文化。南蛮貿易の影響も受けた",k:"period",a:"安土桃山時代",p:2,n:"担い手は信長・秀吉ら戦国大名と、堺・博多などの豪商。"},
+{i:"e10",c:4,t:"元禄文化",y:"げんろくぶんか",d:"上方（大坂・京都）の裕福な町人が担い手となった、現実的で人間味ゆたかな文化",k:"period",a:"江戸時代（前期・元禄のころ）",p:2,n:"5代将軍・徳川綱吉のころ。江戸中心・庶民大衆の化政文化との対比表を完全に覚えること。",x:["化政文化"]},
+{i:"e11",c:4,t:"化政文化",y:"かせいぶんか",d:"江戸の庶民が担い手となった、皮肉や風刺をきかせた大衆的な文化",k:"period",a:"江戸時代（後期・化政のころ）",p:2,n:"11代将軍・徳川家斉のころ〜天保期。上方中心・豪商の元禄文化との対比が頻出。",x:["元禄文化"]},
+{i:"e12",c:4,t:"遣唐使の停止",y:"けんとうしのていし",d:"894年、菅原道真の建議によって取りやめとなり、国風文化が生まれるきっかけになったできごと",k:"period",a:"平安時代（中期〜後期）",p:1},
+{i:"e13",c:4,t:"遣唐使停止後の私貿易",y:"けんとうしていしごのしぼうえき",d:"遣唐使が止まったあとも、宋や高麗の民間商人との交易は続いていたという事実",k:"period",a:"平安時代（中期〜後期）",p:2,n:"「遣唐使停止＝対外交流の完全な途絶」ではない。難関校が突いてくるポイント。"},
+{i:"e14",c:4,t:"女房文学",y:"にょうぼうぶんがく",d:"男性貴族の公文書が漢文のままだったのに対し、私的な場や後宮のサロンを中心に、女性が仮名で書いた文学",k:"period",a:"平安時代（中期〜後期）",p:1},
+{i:"e15",c:4,t:"天下の台所",y:"てんかのだいどころ",d:"全国の物資が集まり、元禄文化の経済的な土台となった大坂の呼び名",k:"period",a:"江戸時代（前期・元禄のころ）",p:1,n:"新田開発・参勤交代・五街道の整備で全国市場が形成されたことが背景。"},
+{i:"e16",c:4,t:"大正デモクラシー",y:"たいしょうでもくらしー",d:"政党政治や普通選挙を求める民主主義的な風潮が高まった動き",k:"period",a:"大正時代",p:2},
+{i:"e17",c:4,t:"鎌倉新仏教",y:"かまくらしんぶっきょう",d:"戦乱や飢饉のなか、実践がやさしく個人の救いを約束したことで広まった、6つの宗派の総称",k:"period",a:"鎌倉時代",p:1,n:"旧仏教（顕密体制）の形式化・貴族化への反発として生まれた。"},
+{i:"e18",c:4,t:"旧仏教の革新運動",y:"きゅうぶっきょうのかくしんうんどう",d:"新仏教に対抗して、南都や比叡山の側が戒律の復興によって立て直しをはかった動き",k:"period",a:"鎌倉時代",p:1},
+{i:"e19",c:4,t:"欧化主義",y:"おうかしゅぎ",d:"条約改正のため、生活や外交を西洋風に改めようとした明治初期の風潮",k:"period",a:"明治時代",p:1,x:["国粋主義"]},
+{i:"e20",c:4,t:"国粋主義",y:"こくすいしゅぎ",d:"行きすぎた欧化政策への反発から、日本の伝統や独自性を重んじようとした主張",k:"period",a:"明治時代",p:1,x:["欧化主義"]},
+// ------------------------------------------------------ 作品名・まぎらわしい語
+{i:"f01",c:5,t:"法華堂（三月堂）不空羂索観音像",y:"ほっけどう（さんがつどう）ふくうけんさくかんのんぞう",d:"東大寺のうち、聖武天皇の時代につくられた不空羂索観音像をまつる建物と、その本尊",k:"culture",a:"天平文化",p:1,n:"東大寺は建物・仏像ごとに時代がちがう。ここは天平。",x:["東大寺南大門"]},
+{i:"f02",c:5,t:"戒壇堂四天王像",y:"かいだんどうしてんのうぞう",d:"東大寺にある、奈良時代につくられた写実的な四天王像",k:"culture",a:"天平文化",p:1,x:["金剛力士像"]},
+{i:"f03",c:5,t:"東大寺大仏殿（現在の建物）",y:"とうだいじだいぶつでん",d:"現存する世界最大級の木造建築だが、創建時より幅が約3分の2に縮んでいる、公慶が再建した建物",k:"culture",a:"元禄文化",p:2,n:"「東大寺＝奈良時代」で片づけると失点する。大仏殿の現在の建物は江戸・元禄期の再建。",x:["東大寺南大門","東大寺大仏（盧舎那仏）"]},
+{i:"f04",c:5,t:"校倉造",y:"あぜくらづくり",d:"三角形の木材を井桁に組み上げた壁でつくる、正倉院に用いられた建築の方法",k:"culture",a:"天平文化",p:1},
+{i:"f05",c:5,t:"六国史",y:"りっこくし",d:"『日本書紀』を最初とする、朝廷が漢文・編年体で編んだ6つの正史",k:"culture",a:"天平文化",p:1},
+{i:"f06",c:5,t:"平曲",y:"へいきょく",d:"琵琶法師が『平家物語』を弾き語りで民衆に伝えた語り物",k:"culture",a:"鎌倉文化",p:1},
+{i:"f07",c:5,t:"『喫茶養生記』",y:"きっさようじょうき",d:"栄西が茶の効能を説き、日本に喫茶の習慣を広めるもとになった書物",k:"culture",a:"鎌倉文化",p:1},
+{i:"f08",c:5,t:"『新撰菟玖波集』",y:"しんせんつくばしゅう",d:"宗祇がまとめた連歌集",k:"culture",a:"東山文化",p:1},
+{i:"f09",c:5,t:"『四季山水図巻』",y:"しきさんすいずかん",d:"雪舟が四季の移り変わりを一巻に描いた水墨画",k:"culture",a:"東山文化",p:1},
+{i:"f10",c:5,t:"『唐獅子図屏風』",y:"からじしずびょうぶ",d:"狩野永徳が金箔地に極彩色で獅子を描いた屏風",k:"culture",a:"桃山文化",p:1,x:["『松林図屏風』"]},
+{i:"f11",c:5,t:"『松林図屏風』",y:"しょうりんずびょうぶ",d:"長谷川等伯が霧の中の松林を墨だけで描いた屏風",k:"culture",a:"桃山文化",p:1,x:["『唐獅子図屏風』"]},
+{i:"f12",c:5,t:"『風神雷神図屏風』",y:"ふうじんらいじんずびょうぶ",d:"俵屋宗達が金地に風の神と雷の神を描いた屏風",k:"culture",a:"寛永期の文化",p:2,n:"作者は宗達（寛永期）。光琳（元禄）の作と取りちがえないこと。",x:["『唐獅子図屏風』"]},
+{i:"f13",c:5,t:"『紅白梅図屏風』",y:"こうはくばいずびょうぶ",d:"尾形光琳が、流水をはさんで紅白の梅を描いた屏風",k:"culture",a:"元禄文化",p:1,x:["『風神雷神図屏風』"]},
+{i:"f14",c:5,t:"『見返り美人図』",y:"みかえりびじんず",d:"菱川師宣が肉筆で描いた、振り向く女性の姿",k:"culture",a:"元禄文化",p:2,x:["『富嶽三十六景』"]},
+{i:"f15",c:5,t:"『富嶽三十六景』",y:"ふがくさんじゅうろっけい",d:"葛飾北斎が富士山をさまざまな場所から描いた風景版画集。『凱風快晴』『神奈川沖浪裏』を含む",k:"culture",a:"化政文化",p:2,x:["『東海道五十三次』"]},
+{i:"f16",c:5,t:"『東海道五十三次』",y:"とうかいどうごじゅうさんつぎ",d:"歌川広重が街道の宿場を叙情ゆたかに描いた風景版画集",k:"culture",a:"化政文化",p:2,x:["『富嶽三十六景』"]},
+{i:"f17",c:5,t:"大首絵",y:"おおくびえ",d:"人物の上半身や顔を大きく描き、表情や心理をきわだたせる浮世絵の技法",k:"culture",a:"化政文化",p:1},
+{i:"f18",c:5,t:"『南総里見八犬伝』",y:"なんそうさとみはっけんでん",d:"8つの玉をもつ武士たちが活躍する、勧善懲悪の長編読本",k:"culture",a:"化政文化",p:1,x:["『東海道中膝栗毛』"]},
+{i:"f19",c:5,t:"『東海道中膝栗毛』",y:"とうかいどうちゅうひざくりげ",d:"弥次さん喜多さんの旅の失敗を、おもしろおかしく描いた滑稽本",k:"culture",a:"化政文化",p:1,x:["『南総里見八犬伝』"]},
+{i:"f20",c:5,t:"『大日本史』",y:"だいにほんし",d:"徳川光圀が水戸藩で編纂を始め、尊王論の源流となった歴史書",k:"culture",a:"元禄文化",p:2,x:["『読史余論』","『神皇正統記』"]},
+{i:"f21",c:5,t:"『読史余論』",y:"とくしよろん",d:"新井白石が、武家政権の移り変わりを段階に分けて説明した歴史書",k:"culture",a:"元禄文化",p:1,x:["『大日本史』","『愚管抄』"]},
+{i:"f22",c:5,t:"水戸学",y:"みとがく",d:"尊王攘夷論を生み出し、幕末の討幕運動の思想的な支柱となった学問",k:"culture",a:"化政文化",p:1},
+{i:"f23",c:5,t:"『雨月物語』",y:"うげつものがたり",d:"上田秋成が、怪異と幻想を題材にして書いた読本",k:"culture",a:"化政文化",p:1},
+{i:"f24",c:5,t:"『湖畔』",y:"こはん",d:"黒田清輝が、明るい外光のもとでうちわを持つ女性を描いた洋画",k:"culture",a:"明治の文化",p:1},
+{i:"f25",c:5,t:"『小説神髄』",y:"しょうせつしんずい",d:"坪内逍遥が、ありのままを描く写実主義を唱えた評論",k:"culture",a:"明治の文化",p:1},
+{i:"f26",c:5,t:"『学問のすすめ』",y:"がくもんのすすめ",d:"「天は人の上に人を造らず」で知られる、福沢諭吉の啓蒙書",k:"culture",a:"明治の文化",p:1},
+{i:"f27",c:5,t:"『古事記伝』",y:"こじきでん",d:"本居宣長が35年かけて『古事記』を注釈した、国学の代表作",k:"culture",a:"化政文化",p:2,x:["『古事記』"]},
+{i:"f28",c:5,t:"『往生要集』",y:"おうじょうようしゅう",d:"源信が極楽と地獄のようすをくわしく説き、浄土信仰のバイブルとなった書物",k:"culture",a:"国風文化",p:1},
+{i:"f29",c:5,t:"『大日本沿海輿地全図』",y:"だいにほんえんかいよちぜんず",d:"伊能忠敬らの実測にもとづいてつくられた、正確な日本全図",k:"culture",a:"化政文化",p:1},
+{i:"f30",c:5,t:"螺鈿紫檀五絃琵琶",y:"らでんしたんのごげんびわ",d:"正倉院に伝わる、西アジアとの交流を示す五本弦の琵琶",k:"culture",a:"天平文化",p:1}
+];
+
+// =====================================================================
+// 定数
+// =====================================================================
+const APP_ID = "kj-quiz-shakai-bunkashi"; // 保護者が確定した値。絶対に変更しない
+const TOOL_NAME = "文化史";
+const STORAGE_KEY = APP_ID;
+const UI_KEY = APP_ID + ":ui";      // 出題範囲などの画面設定。同期しない（§10）
+const AUTH_KEY = "kj-quiz:auth";    // 全ツール共通。ポータルが書く。読むだけ
+const SYNC_KEY = "kj-quiz:sync";    // 全ツール共通。ポータルが書く。読むだけ
+const OLD_SYNC_KEY = APP_ID + ":sync"; // 旧キーからの1回だけの移行用
+const VER = "v3.0";
+
+const WRONG_REQUEUE_GAP = 3;   // 誤答 → 3問後に再投入（§5）
+const PARTIAL_REQUEUE_GAP = 6; // 正解したが未習得 → 6問後に再投入（§5）
+const MAX_APPEARANCES = 4;     // 1セッション内の同一KPの再出題上限（§5）
+const WRONG_LOG_MAX = 5;       // wrongLog はKPあたり最新5件（§9-1）
+const SESSIONS_MAX = 100;      // sessions[] は最新100件（§10）
+const HOME_WRONG_THRESHOLD = 2;     // ホームの「間違いランキング」に載せる誤答数
+const RESULT_WRONG_BADGE_THRESHOLD = 2; // 全問一覧で強調表示する誤答数（§8）
+
+const IMP_MARK = ["", "○", "◎"];      // imp 0/1/2 の表示
+const IMP_LABEL = ["標準", "○重要", "◎最重要"];
+
+// §4-1 適応ハードル：累計誤答が多いKPほど、習得に必要な連続正解数が増える
+function requiredStreak(item){
+  const w = (item && item.totalWrong) || 0;
+  if (w >= 6) return 4;
+  if (w >= 3) return 3;
+  return 2;
+}
+
+// KP の索引（idで引く）
+const BY_ID = {};
+DATA.forEach((kp, idx)=>{ BY_ID[kp.i] = kp; kp._idx = idx; });
+
+// 形式Bの正解として実際に使われている値を、種類ごとに集めておく（誤答選択肢の母集団）
+const USED_ATTR = {};
+Object.keys(POOL).forEach(k=>{ USED_ATTR[k] = new Set(); });
+DATA.forEach(kp=>{ if(USED_ATTR[kp.k]) USED_ATTR[kp.k].add(kp.a); });
+
+// 文化区分を時代順に並べたもの（ヘッダーの帯に使う）
+const RAIL = POOL.culture;
+
+// =====================================================================
+// 保存（§10）
+// =====================================================================
+function blankItemStat(){
+  return {
+    streak: 0, mastered: false, masteredAt: null, postMasterWrong: 0, lastFormat: null,
+    totalCorrect: 0, totalWrong: 0,
+    byFormat: { A: {correct:0, wrong:0}, B: {correct:0, wrong:0} },
+    wrongLog: [], lastSeenAt: null, favorite: false,
+  };
+}
+function blankAccountProgress(){ return { items: {}, sessions: [] }; }
+function blankStore(){ return { app: APP_ID, version: 2, updatedAt: null, accounts: [], progress: {} }; }
+
+function normalizeItemStat(it){
+  const b = blankItemStat();
+  if(!it || typeof it !== "object" || Array.isArray(it)) return b;
+  b.streak = Number(it.streak) || 0;
+  b.mastered = !!it.mastered;
+  b.masteredAt = it.masteredAt || null;
+  b.postMasterWrong = Number(it.postMasterWrong) || 0;
+  b.lastFormat = (it.lastFormat === "A" || it.lastFormat === "B") ? it.lastFormat : null;
+  b.totalCorrect = Number(it.totalCorrect) || 0;
+  b.totalWrong = Number(it.totalWrong) || 0;
+  const bf = it.byFormat || {};
+  ["A","B"].forEach(f=>{
+    const s = bf[f] || {};
+    b.byFormat[f] = { correct: Number(s.correct)||0, wrong: Number(s.wrong)||0 };
+  });
+  b.wrongLog = Array.isArray(it.wrongLog) ? it.wrongLog.filter(w=>w && typeof w === "object").slice(-WRONG_LOG_MAX) : [];
+  b.lastSeenAt = it.lastSeenAt || null;
+  b.favorite = !!it.favorite;
+  return b;
+}
+function normalizeProgress(p){
+  if(!p) return blankAccountProgress();
+  const rawItems = (p.items && typeof p.items === "object") ? p.items : {};
+  const items = {};
+  Object.keys(rawItems).forEach(id=>{
+    // 壊れたクラウドJSONや旧データで画面が真っ白になるより、そのKPだけ捨てるほうがよい
+    if(rawItems[id] && typeof rawItems[id] === "object" && !Array.isArray(rawItems[id])){
+      items[id] = normalizeItemStat(rawItems[id]);
+    }
+  });
+  return { items, sessions: Array.isArray(p.sessions) ? p.sessions.filter(s=>s && typeof s === "object") : [] };
+}
+
+// プライベートブラウジング等、localStorage が例外を投げる環境でも動かす（§10）
+let LOCAL_STORAGE_OK = true;
+function probeLocalStorage(){
+  try{ localStorage.setItem("__probe__","1"); localStorage.removeItem("__probe__"); return true; }
+  catch(e){ return false; }
+}
+
+let AUTH = null; // {id, pw, label} ポータルが書く。ツールは読むだけ（§1-1）
+let SYNC = null; // {url, key, lastSync}
+let STORE;
+
+function readAuth(){
+  try{
+    const raw = localStorage.getItem(AUTH_KEY);
+    const a = raw ? JSON.parse(raw) : null;
+    if(a && a.id && a.pw) return a;
+  }catch(e){}
+  return null;
+}
+function saveAuthLabel(label){
+  if(!AUTH) return;
+  AUTH.label = label;
+  try{ localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); }catch(e){}
+}
+function clearAuth(){
+  try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
+  AUTH = null;
+}
+function readSyncConfig(){
+  try{
+    const raw = localStorage.getItem(SYNC_KEY);
+    const s = raw ? JSON.parse(raw) : null;
+    if(s && s.url) return s;
+  }catch(e){}
+  // 旧 <app>:sync からの1回だけの移行（§10）
+  try{
+    const oldRaw = localStorage.getItem(OLD_SYNC_KEY);
+    if(oldRaw){
+      const old = JSON.parse(oldRaw);
+      if(old && old.url){
+        const migrated = { url: old.url, key: old.key || "", lastSync: old.lastSync || null };
+        try{ localStorage.setItem(SYNC_KEY, JSON.stringify(migrated)); }catch(e){}
+        return migrated;
+      }
+    }
+  }catch(e){}
+  return null;
+}
+function saveSyncConfig(){ try{ localStorage.setItem(SYNC_KEY, JSON.stringify(SYNC)); }catch(e){} }
+
+function ready(){ return !!(SYNC && SYNC.url && SYNC.key); }
+function loggedIn(){ return !!AUTH; }
+function portalURL(){ return "./index.html"; }
+
+// ---- <app>:ui （出題範囲・画面設定。クラウドには送らない §3-5④）----
+let UI = { category: "すべて", impFilter: "all", autoRead: true, quizMode: "choice" };
+function loadUi(){
+  try{
+    const raw = localStorage.getItem(UI_KEY);
+    const u = raw ? JSON.parse(raw) : null;
+    if(u && typeof u === "object"){
+      if(typeof u.category === "string") UI.category = u.category;
+      if(u.impFilter === "all" || u.impFilter === "21" || u.impFilter === "2") UI.impFilter = u.impFilter;
+      if(typeof u.autoRead === "boolean") UI.autoRead = u.autoRead;
+      if(u.quizMode === "choice" || u.quizMode === "kanji") UI.quizMode = u.quizMode;
+    }
+  }catch(e){}
+  if(UI.category !== "すべて" && CATS.indexOf(UI.category) === -1) UI.category = "すべて";
+}
+function saveUi(){ try{ localStorage.setItem(UI_KEY, JSON.stringify(UI)); }catch(e){} }
+
+// ログイン中のIDのぶんだけを保持する（§1-1「1端末＝1人」）
+function buildStoreFromRaw(raw){
+  const store = blankStore();
+  if(!AUTH) return store;
+  store.accounts = [{ id: AUTH.id, name: AUTH.id, label: AUTH.label || AUTH.id, createdAt: nowIso() }];
+  let srcProgress = null, srcCreatedAt = null;
+  if(raw && raw.progress && raw.progress[AUTH.id]) srcProgress = raw.progress[AUTH.id];
+  if(raw && Array.isArray(raw.accounts)){
+    const match = raw.accounts.find(a => String(a.id) === String(AUTH.id));
+    if(match && match.createdAt) srcCreatedAt = match.createdAt;
+  }
+  if(srcCreatedAt) store.accounts[0].createdAt = srcCreatedAt;
+  store.progress[AUTH.id] = normalizeProgress(srcProgress);
+  store.updatedAt = (raw && raw.updatedAt) || null;
+  return store;
+}
+function loadAll(){
+  LOCAL_STORAGE_OK = probeLocalStorage();
+  AUTH = LOCAL_STORAGE_OK ? readAuth() : null;
+  SYNC = LOCAL_STORAGE_OK ? readSyncConfig() : null;
+  if(LOCAL_STORAGE_OK) loadUi();
+  if(!LOCAL_STORAGE_OK){ STORE = blankStore(); return; }
+  let raw = null;
+  try{
+    const rawText = localStorage.getItem(STORAGE_KEY);
+    if(rawText) raw = JSON.parse(rawText);
+  }catch(e){}
+  STORE = buildStoreFromRaw(raw);
+}
+// fromCloud=true のときは、取り込んだ updatedAt を「今」で上書きしない（§10）
+function saveStore(opts){
+  opts = opts || {};
+  if(!AUTH) return;
+  if(!opts.fromCloud) STORE.updatedAt = nowIso();
+  STORE.app = APP_ID;
+  STORE.version = 2;
+  if(!LOCAL_STORAGE_OK) return;
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STORE)); }
+  catch(e){ LOCAL_STORAGE_OK = false; }
+}
+
+function accountName(){ return AUTH ? (AUTH.label || AUTH.id) : ""; }
+function getCommittedStats(accountId){
+  if(!AUTH) return blankAccountProgress();
+  if(!STORE.progress[accountId]) STORE.progress[accountId] = blankAccountProgress();
+  return STORE.progress[accountId];
+}
+function getItemStat(progress, id){
+  if(!progress.items[id]) progress.items[id] = blankItemStat();
+  return progress.items[id];
+}
+// セッション中は一時領域（pendingProgress）に書き、結果画面到達で初めて永続化する（§6-2）
+function currentProgress(){
+  if(state.session) return state.session.pendingProgress;
+  return getCommittedStats(state.accountId);
+}
+function isMastered(progress, id){ const s = progress.items[id]; return !!s && s.mastered; }
+function isAttention(progress, id){ const s = progress.items[id]; return !!s && s.mastered && (s.postMasterWrong||0) >= 1; } // 要注意習得
+function isFavorite(progress, id){ const s = progress.items[id]; return !!s && s.favorite; }
+function toggleFavorite(id){
+  const progress = currentProgress();
+  const s = getItemStat(progress, id);
+  s.favorite = !s.favorite;
+  if(!state.session) saveStore();
+  return s.favorite;
+}
+function masteredCount(progress){ return DATA.reduce((n,kp)=> n + (isMastered(progress, kp.i)?1:0), 0); }
+function attentionIds(progress, withinScope){
+  const pool = withinScope ? scopedKPs() : DATA;
+  return pool.filter(kp=>isAttention(progress, kp.i)).map(kp=>kp.i);
+}
+
+// =====================================================================
+// 汎用ヘルパー
+// =====================================================================
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function otherFormat(f){ return f === "A" ? "B" : "A"; }
+function nowIso(){ return new Date().toISOString(); }
+function todayStamp(){
+  const d = new Date();
+  return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+}
+function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function openGoogleSearch(query){ window.open("https://www.google.com/search?q=" + encodeURIComponent(query), "_blank", "noopener"); }
+function formatDateJP(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+}
+
+// =====================================================================
+// 音声読み上げ（追加仕様書 v1.0 の実装をそのまま移植）
+// =====================================================================
+function speechAvailable(){ return typeof window.speechSynthesis !== "undefined"; }
+let CACHED_VOICES = [];
+function refreshVoiceCache(){
+  if(!speechAvailable()) return;
+  try{ CACHED_VOICES = window.speechSynthesis.getVoices() || []; }catch(e){}
+}
+if(speechAvailable()){
+  refreshVoiceCache();
+  try{ window.speechSynthesis.onvoiceschanged = refreshVoiceCache; }catch(e){}
+}
+function pickJapaneseVoice(){
+  if(!CACHED_VOICES.length) refreshVoiceCache();
+  const ja = CACHED_VOICES.filter(v => v.lang && v.lang.toLowerCase().startsWith("ja"));
+  if(!ja.length) return null;
+  return ja.find(v => /Google/i.test(v.name))
+      || ja.find(v => /Kyoko|O-Ren|Otoya|Siri/i.test(v.name))
+      || ja.find(v => v.localService === false)
+      || ja[0];
+}
+let SPEECH_GEN = 0;
+const SPEECH_CHUNK_THRESHOLD = 60;
+function speak(text){
+  if(!speechAvailable() || !text) return;
+  try{
+    window.speechSynthesis.cancel();
+    const myGen = ++SPEECH_GEN;
+    const voice = pickJapaneseVoice();
+    let chunks = text.length > SPEECH_CHUNK_THRESHOLD
+      ? text.split(/(?<=[。、！？])/).map(s=>s.trim()).filter(Boolean)
+      : [text];
+    if(!chunks.length) chunks = [text];
+    let i = 0;
+    function speakNext(){
+      if(myGen !== SPEECH_GEN) return; // 新しい speak()/cancel に追い越された
+      if(i >= chunks.length) return;
+      const chunk = chunks[i];
+      const u = new SpeechSynthesisUtterance(chunk);
+      u.lang = "ja-JP";
+      if(voice) u.voice = voice;
+      u.rate = 1.2;
+      u.pitch = 1.0;
+      let advanced = false;
+      const advance = ()=>{
+        if(advanced || myGen !== SPEECH_GEN) return;
+        advanced = true; i++; speakNext();
+      };
+      u.onend = advance;
+      u.onerror = advance;
+      // onend が発火しない端末があるため、文字数から見積もった時間で強制的に次へ進める保険
+      setTimeout(advance, Math.max(700, chunk.length * 220));
+      window.speechSynthesis.speak(u);
+    }
+    speakNext();
+  }catch(e){ /* 読み上げは best-effort。クイズを壊さない */ }
+}
+function stopSpeaking(){
+  SPEECH_GEN++;
+  if(speechAvailable()){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+}
+// タブレット/スマホでは pause() が発話を殺してしまうため、キープアライブはデスクトップのみ
+function isMobileLikeDevice(){
+  try{
+    const ua = navigator.userAgent || "";
+    const isTouchMac = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+    return /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(ua) || isTouchMac;
+  }catch(e){ return false; }
+}
+if(speechAvailable() && !isMobileLikeDevice()){
+  setInterval(()=>{
+    try{
+      if(window.speechSynthesis.speaking && !window.speechSynthesis.paused){
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      }
+    }catch(e){}
+  }, 4000);
+}
+
+// =====================================================================
+// 出題範囲（§3-5）
+// =====================================================================
+function impPass(kp){
+  if(UI.impFilter === "2") return kp.p === 2;
+  if(UI.impFilter === "21") return kp.p >= 1;
+  return true;
+}
+function catPass(kp){ return UI.category === "すべて" || CATS[kp.c] === UI.category; }
+function scopedKPs(){ return DATA.filter(kp => impPass(kp) && catPass(kp)); }
+function countForCategory(catName){
+  return DATA.filter(kp => impPass(kp) && (catName === "すべて" || CATS[kp.c] === catName)).length;
+}
+
+// =====================================================================
+// 問題の組み立て
+// =====================================================================
+// 形式A：説明 → 名称。誤答は「まぎらわしい相手（x）」を優先し、残りは同カテゴリーから。
+// 形式B：名称 → 文化区分・宗派・時代。誤答は同じ種類のプールから。
+// どちらも正解と同じ意味になる選択肢は混ぜない（§19-30）。
+function materializeQuestion(id, format){
+  const kp = BY_ID[id];
+  let choices, correctIdx;
+  if(format === "A"){
+    const opts = [kp.t];
+    const seen = new Set([kp.t]);
+    (kp.x || []).forEach(tt=>{ if(opts.length<4 && BY_ID_BY_TERM[tt] && !seen.has(tt)){ seen.add(tt); opts.push(tt); } });
+    const sameCat = shuffle(DATA.filter(o=>o.c===kp.c && o.i!==kp.i).map(o=>o.t));
+    const anyOther = shuffle(DATA.filter(o=>o.i!==kp.i).map(o=>o.t));
+    [...sameCat, ...anyOther].forEach(tt=>{ if(opts.length<4 && !seen.has(tt)){ seen.add(tt); opts.push(tt); } });
+    const arranged = shuffle(opts.map(o=>({text:o, isCorrect:o===kp.t})));
+    choices = arranged.map(o=>o.text);
+    correctIdx = arranged.findIndex(o=>o.isCorrect);
+  } else {
+    const opts = [kp.a];
+    const seen = new Set([kp.a]);
+    // まず「実際にこのツールで使われている値」から、次にプール全体から補う
+    const used = shuffle(Array.from(USED_ATTR[kp.k] || []));
+    const all = shuffle((POOL[kp.k] || []).slice());
+    [...used, ...all].forEach(v=>{ if(opts.length<4 && !seen.has(v)){ seen.add(v); opts.push(v); } });
+    const arranged = shuffle(opts.map(o=>({text:o, isCorrect:o===kp.a})));
+    choices = arranged.map(o=>o.text);
+    correctIdx = arranged.findIndex(o=>o.isCorrect);
+  }
+  return { id, format, kp, choices, correctIdx, answerText: format === "A" ? kp.t : kp.a };
+}
+const BY_ID_BY_TERM = {};
+DATA.forEach(kp=>{ BY_ID_BY_TERM[kp.t] = kp; });
+
+function questionPrompt(m){
+  if(m.format === "A") return m.kp.d;
+  return `${m.kp.t} は、どの${KIND_Q[m.kp.k]}か。`;
+}
+function questionSpeech(m){
+  if(m.format === "A") return `次の説明にあてはまる語は。${m.kp.d}`;
+  return `${m.kp.t} は、どの${KIND_Q[m.kp.k]}ですか。`;
+}
+function answerSpeech(m, correct){
+  const kp = m.kp;
+  const head = correct ? "正解です。" : `残念、正解は${m.answerText}です。`;
+  const body = m.format === "A" ? `${kp.t}。${kp.d}。` : `${kp.t}は${kp.a}。${kp.d}。`;
+  return head + body + (kp.n ? kp.n : "");
+}
+function studySpeech(kp){ return `${kp.t}。${kp.d}。${kp.a}。${kp.n ? kp.n : ""}`; }
+// このツールで「漢字書き（自由記述）」の対象になるのは、答えが名称になる形式Aだけ。
+// 形式Bは答えが閉じた語（文化区分・宗派）なので4択のままにする。
+function isKanjiTarget(format){ return format === "A"; }
+
+// =====================================================================
+// セッションの組み立て（§3-1〜§3-3）
+// =====================================================================
+function selectSessionKPs(mode, progress){
+  const scope = scopedKPs();
+  if(mode === "all") return scope.map(kp=>kp.i);
+  if(mode === "review") return scope.filter(kp=>isAttention(progress, kp.i)).map(kp=>kp.i);
+  const n = mode === "10q" ? 10 : 20;
+  const candidates = scope.filter(kp=>!isMastered(progress, kp.i)).map(kp=>kp.i);
+  candidates.sort((a,b)=>{
+    const sa = progress.items[a], sb = progress.items[b];
+    const wa = sa ? sa.totalWrong : 0, wb = sb ? sb.totalWrong : 0;
+    if(wb !== wa) return wb - wa;                       // ① 誤答が多い順
+    const seenA = sa && sa.lastSeenAt, seenB = sb && sb.lastSeenAt;
+    if(!seenA && seenB) return -1;                      // ② 未出題を先に
+    if(seenA && !seenB) return 1;
+    if(!seenA && !seenB) return BY_ID[a]._idx - BY_ID[b]._idx;
+    return new Date(seenA) - new Date(seenB);           // ③ 最終出題が古い順
+  });
+  return candidates.slice(0, n);
+}
+function buildInitialProblems(mode, ids, progress){
+  if(mode === "all"){
+    // 全問モードは 1KP=1問。形式は lastFormat と異なる方を優先（§3-2）
+    return shuffle(ids.map(id=>{
+      const s = progress.items[id];
+      const fmt = (s && s.lastFormat) ? otherFormat(s.lastFormat) : (Math.random()<0.5?"A":"B");
+      return { id, format: fmt };
+    }));
+  }
+  // 10問／20問／再確認は形式A・Bの両方を出す
+  let problems = [];
+  ids.forEach(id=>{ problems.push({id, format:"A"}); problems.push({id, format:"B"}); });
+  problems = shuffle(problems);
+  for(let i=1;i<problems.length;i++){
+    if(problems[i].id === problems[i-1].id){
+      for(let j=i+1;j<problems.length;j++){
+        if(problems[j].id !== problems[i-1].id && problems[j].id !== problems[i].id){
+          [problems[i], problems[j]] = [problems[j], problems[i]];
+          break;
+        }
+      }
+    }
+  }
+  return problems;
+}
+
+// =====================================================================
+// 採点（§4・§9）
+// =====================================================================
+// isReviewMode=true（再確認モード）では、誤答時に postMasterWrong を増やす以外の
+// 状態変更を行わない（§3-3）。習得判定・streak・totalWrong を汚さないため。
+function applyAnswer(progress, id, format, correct, answeredText, isReviewMode){
+  const s = getItemStat(progress, id);
+  const wasMastered = s.mastered;
+
+  if(isReviewMode){
+    if(correct){
+      s.byFormat[format].correct++;
+      s.totalCorrect++;
+      s.lastFormat = format;
+      s.lastSeenAt = nowIso();
+    } else {
+      s.postMasterWrong++; // これ以外は一切変えない
+    }
+    return { newlyMastered: false };
+  }
+
+  s.byFormat[format][correct ? "correct" : "wrong"]++;
+  if(correct){
+    s.totalCorrect++;
+    // 連続正解は必ず異なる出題形式でなければ進めない（§4-1）
+    if(s.lastFormat !== format) s.streak++;
+    if(!s.mastered && s.streak >= requiredStreak(s)){
+      s.mastered = true;
+      s.masteredAt = nowIso();
+    }
+  } else {
+    s.totalWrong++;
+    s.streak = 0;
+    // 習得は降格しない。習得後の誤答は postMasterWrong で「要注意習得」にする（§4-2）
+    if(s.mastered) s.postMasterWrong++;
+    s.wrongLog.push({at: nowIso(), format, answered: answeredText});
+    if(s.wrongLog.length > WRONG_LOG_MAX) s.wrongLog.shift();
+  }
+  s.lastFormat = format;
+  s.lastSeenAt = nowIso();
+  return { newlyMastered: !wasMastered && s.mastered };
+}
+
+// =====================================================================
+// セッション操作
+// =====================================================================
+function modeLabel(mode){
+  if(mode === "10q") return "10問";
+  if(mode === "20q") return "20問";
+  if(mode === "review") return "再確認";
+  return "全問";
+}
+function startSession(mode){
+  if(!loggedIn()){ state.screen = "gate"; return; }
+  const committed = getCommittedStats(state.accountId);
+  const pendingProgress = deepClone(committed);
+  const ids = selectSessionKPs(mode, committed);
+  if(!ids.length){
+    state.modal = { type: "noTarget", mode };
+    return;
+  }
+  const requested = (mode === "10q") ? 10 : (mode === "20q") ? 20 : ids.length;
+  const shortage = (mode === "10q" || mode === "20q") && ids.length < requested;
+  const problems = buildInitialProblems(mode, ids, pendingProgress);
+  const appearanceCount = {};
+  ids.forEach(id=>{ appearanceCount[id] = (mode === "all") ? 1 : 2; });
+
+  state.session = {
+    mode, answerMode: UI.quizMode,
+    isReviewMode: mode === "review",
+    startedAt: nowIso(),
+    pendingProgress,
+    kpTotal: ids.length,
+    shortage, requested,
+    scopeLabel: rangeLabelText(),
+    questions: problems,
+    qIndex: 0,
+    reviewIndex: null,
+    score: 0,
+    wrongCount: 0,
+    log: [],
+    appearanceCount,
+    overCap: new Set(),          // 再出題上限を超えてスキップしたKP（結果画面で「要復習」）
+    newlyMastered: new Set(),
+    kanjiRevealedAt: {},         // {設問インデックス: 開示した瞬間の入力文字列}
+  };
+  state.screen = "quiz";
+}
+function scheduleRequeue(sess, fromLogIdx, id, lastUsedFormat, gap){
+  if(sess.mode === "all") return null;                 // 全問モードは1周のみ（§3-2）
+  const count = sess.appearanceCount[id] || 0;
+  if(count >= MAX_APPEARANCES){ sess.overCap.add(id); return null; } // §5 上限4回
+  // 再投入の基準位置は「答えた問題自体のキュー位置」であって、現在位置ではない（§5）。
+  // やり直し（§6-1）のときは qIndex が1つ先に進んでいるので、基準を取りちがえないこと。
+  const targetIdx = Math.min(Math.max(fromLogIdx + 1 + gap, sess.qIndex), sess.questions.length);
+  sess.questions.splice(targetIdx, 0, { id, format: otherFormat(lastUsedFormat), fromLog: fromLogIdx });
+  sess.appearanceCount[id] = count + 1;
+  return targetIdx;
+}
+function removeScheduledRequeue(sess, logIdx){
+  const i = sess.questions.findIndex(q => q.fromLog === logIdx);
+  if(i !== -1 && i > sess.qIndex - 1){
+    const removed = sess.questions.splice(i, 1)[0];
+    sess.appearanceCount[removed.id] = Math.max(0, (sess.appearanceCount[removed.id]||1) - 1);
+  }
+}
+function commitLiveAnswer(correct, answeredText){
+  const sess = state.session;
+  const q = sess.questions[sess.qIndex];
+  const snapshotBefore = deepClone(getItemStat(sess.pendingProgress, q.id));
+  const { newlyMastered } = applyAnswer(sess.pendingProgress, q.id, q.format, correct, answeredText, sess.isReviewMode);
+  if(newlyMastered) sess.newlyMastered.add(q.id);
+  if(correct) sess.score++; else sess.wrongCount++;
+
+  let requeueIdx = null;
+  if(!correct){
+    requeueIdx = scheduleRequeue(sess, sess.qIndex, q.id, q.format, WRONG_REQUEUE_GAP);
+  } else if(!newlyMastered && !isMastered(sess.pendingProgress, q.id)){
+    requeueIdx = scheduleRequeue(sess, sess.qIndex, q.id, q.format, PARTIAL_REQUEUE_GAP);
+  }
+  sess.log.push({ id: q.id, format: q.format, correct, answeredText, snapshotBefore, requeueIdx });
+  sess.qIndex++;
+}
+// 直前の1問だけ答え直せる（§6-1）。スナップショットから巻き戻して再計算する。
+function redoAnswer(correct, answeredText){
+  const sess = state.session;
+  const j = sess.qIndex - 1;
+  const old = sess.log[j];
+  const q = sess.questions[j];
+
+  sess.pendingProgress.items[q.id] = deepClone(old.snapshotBefore);
+  if(old.correct) sess.score--; else sess.wrongCount--;
+  if(old.requeueIdx !== null) removeScheduledRequeue(sess, j);
+
+  const { newlyMastered } = applyAnswer(sess.pendingProgress, q.id, q.format, correct, answeredText, sess.isReviewMode);
+  if(newlyMastered) sess.newlyMastered.add(q.id); else sess.newlyMastered.delete(q.id);
+  if(correct) sess.score++; else sess.wrongCount++;
+
+  let requeueIdx = null;
+  if(!correct){
+    requeueIdx = scheduleRequeue(sess, j, q.id, q.format, WRONG_REQUEUE_GAP);
+  } else if(!newlyMastered && !isMastered(sess.pendingProgress, q.id)){
+    requeueIdx = scheduleRequeue(sess, j, q.id, q.format, PARTIAL_REQUEUE_GAP);
+  }
+  sess.log[j] = { id: q.id, format: q.format, correct, answeredText, snapshotBefore: old.snapshotBefore, requeueIdx };
+  sess.reviewIndex = null;
+}
+// 結果画面に到達したときだけ確定・記録し、直後に push する（§6-2・§11・§13-1）
+function finishSession(){
+  const sess = state.session;
+  STORE.progress[state.accountId] = sess.pendingProgress;
+  const acc = STORE.progress[state.accountId];
+  acc.sessions = acc.sessions || [];
+  const wrongKpIds = Array.from(new Set(sess.log.filter(l=>!l.correct).map(l=>l.id)));
+  acc.sessions.push({
+    startedAt: sess.startedAt,
+    finishedAt: nowIso(),
+    mode: modeLabel(sess.mode),
+    correct: sess.score,
+    wrong: sess.wrongCount,
+    newlyMastered: Array.from(sess.newlyMastered),
+    wrongKpIds,
+    totalMastered: masteredCount(acc),
+  });
+  if(acc.sessions.length > SESSIONS_MAX) acc.sessions = acc.sessions.slice(-SESSIONS_MAX);
+  saveStore();
+  state.screen = "result";
+  pushOnly();
+}
+function confirmLeaveSession(){
+  if(state.screen === "quiz" && state.session && state.session.log.length){
+    return window.confirm("ここで終了すると、今回の記録は保存されません。よろしいですか？");
+  }
+  return true;
+}
+window.addEventListener('beforeunload', (e)=>{
+  if(state.screen === "quiz" && state.session && state.session.log.length){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+// =====================================================================
+// 状態ラベル
+// =====================================================================
+function statusLabel(s){
+  if(!s || (s.totalCorrect||0)+(s.totalWrong||0)+(s.postMasterWrong||0) === 0) return "未出題";
+  if(s.mastered) return (s.postMasterWrong||0) >= 1 ? "要注意習得" : "習得済み";
+  if(s.totalCorrect > 0) return `${s.streak}回正解`;
+  return "誤答";
+}
+function rangeLabelText(){
+  const imp = UI.impFilter === "2" ? "◎のみ" : UI.impFilter === "21" ? "◎○のみ" : "すべて";
+  return `${UI.category}／${imp}`;
+}
+
+// =====================================================================
+// CSV（§9-2）と全問一覧（§15）
+// =====================================================================
+// 先頭14列は §15 と共通。CSVだけ15列目に表示名を足す。
+const LIST_HEADER = [
+  "名前","カテゴリー","記号","知識ポイント","よみがな","重要度","状態",
+  "累計正解数","累計誤答数","形式A誤答数","形式B誤答数",
+  "過去の誤答内容","最終誤答日","習得日",
+];
+function baseRowFor(kp, s){
+  const wrongHistory = s ? s.wrongLog.map(w=>w.answered).join(";") : "";
+  const lastWrongDate = s && s.wrongLog.length ? formatDateJP(s.wrongLog[s.wrongLog.length-1].at) : "";
+  return [
+    AUTH ? AUTH.id : "",          // 1列目「名前」の中身は管理ID（§15）
+    CATS[kp.c],
+    kp.a,                          // 記号列：この単元では文化区分・宗派・時代を入れている
+    kp.t,
+    kp.y || "",
+    IMP_LABEL[kp.p],
+    statusLabel(s),
+    s ? s.totalCorrect : 0,
+    s ? s.totalWrong : 0,
+    s ? s.byFormat.A.wrong : 0,
+    s ? s.byFormat.B.wrong : 0,
+    wrongHistory,
+    lastWrongDate,
+    formatDateJP(s && s.masteredAt),
+  ];
+}
+function buildFullKpList(){
+  // 出題範囲の選択に関係なく、常に全KPで書き出す（§3-5③）
+  const acc = getCommittedStats(AUTH.id);
+  const rows = DATA.map(kp => baseRowFor(kp, acc.items[kp.i]));
+  return { header: LIST_HEADER.slice(), rows };
+}
+function exportCsv(){
+  const progress = getCommittedStats(state.accountId);
+  const sorted = DATA.slice().sort((a,b)=>{
+    const sa = progress.items[a.i], sb = progress.items[b.i];
+    return ((sb?sb.totalWrong:0) - (sa?sa.totalWrong:0));
+  });
+  const rows = [LIST_HEADER.concat(["表示名"])];
+  sorted.forEach(kp=>{ rows.push(baseRowFor(kp, progress.items[kp.i]).concat([accountName()])); });
+  const csv = rows.map(r => r.map(cell=>{
+    const v = String(cell == null ? "" : cell);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v;
+  }).join(",")).join("\r\n");
+  const blob = new Blob(["﻿" + csv], {type: "text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${TOOL_NAME}結果_${AUTH ? AUTH.id : "未ログイン"}_${todayStamp()}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+
+// =====================================================================
+// クラウド同期（§12・§13）GASは変更しない
+// =====================================================================
+function dbHasRecords(db){
+  if(!db || !db.progress) return false;
+  return Object.values(db.progress).some(acc=>{
+    if(acc && acc.sessions && acc.sessions.length > 0) return true;
+    if(!acc || !acc.items) return false;
+    return Object.values(acc.items).some(it => (it.totalCorrect||0) + (it.totalWrong||0) > 0);
+  });
+}
+function setSyncStatus(kind, message){
+  state.syncStatus = { kind, message };
+  if(state.screen === "home") render();
+}
+function classifySyncError(e){
+  if(e && e.kind) return e;
+  if(e instanceof Error) return { kind: "exception", message: e.message };
+  return { kind: "network" };
+}
+function syncErrorMessage(e){
+  switch(e.kind){
+    case "network": return "オフライン（ローカルには保存済み）";
+    case "auth": return "ログインが無効になりました。ポータルでログインし直してください";
+    case "badkey": return "合言葉が違います";
+    case "badresponse": return "GASの応答が不正です。GASのコードを最新版に貼り替え、「デプロイを管理→新バージョン」で更新してください";
+    case "exception": return "予期しないエラーが発生しました：" + (e.message || "詳細不明");
+    default: return e.message || "同期エラーが発生しました";
+  }
+}
+function handleSyncError(e){
+  const c = classifySyncError(e);
+  setSyncStatus("error", "☁⚠ " + syncErrorMessage(c));
+  if(c.kind === "auth") onAuthLost();
+}
+// サーバーが auth を返したらログインだけ消す。学習記録は消さない（§12エラーの扱い）
+function onAuthLost(){
+  clearAuth();
+  state.accountId = null;
+  render();
+}
+async function api(body){
+  let res;
+  try{
+    res = await fetch(SYNC.url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // プリフライト回避（§12）
+      body: JSON.stringify(Object.assign({ key: SYNC.key }, body)),
+    });
+  }catch(e){ throw { kind: "network" }; }
+  let text;
+  try{ text = await res.text(); }catch(e){ throw { kind: "network" }; }
+  let json;
+  try{ json = JSON.parse(text); }catch(e){ throw { kind: "badresponse" }; }
+  if(!json.ok){
+    const msg = String(json.error || "");
+    const kind = msg === "auth" ? "auth" : /合言葉|key/i.test(msg) ? "badkey" : "servererror";
+    throw { kind, message: msg };
+  }
+  return json;
+}
+// §13-2 合流ルール
+function mergeItemStat(a, b){
+  if(!a) return deepClone(b);
+  if(!b) return deepClone(a);
+  const mx = (x,y)=>Math.max(x||0, y||0);
+  const fA = { correct: mx(a.byFormat&&a.byFormat.A.correct, b.byFormat&&b.byFormat.A.correct),
+               wrong:   mx(a.byFormat&&a.byFormat.A.wrong,   b.byFormat&&b.byFormat.A.wrong) };
+  const fB = { correct: mx(a.byFormat&&a.byFormat.B.correct, b.byFormat&&b.byFormat.B.correct),
+               wrong:   mx(a.byFormat&&a.byFormat.B.wrong,   b.byFormat&&b.byFormat.B.wrong) };
+  const mastered = !!(a.mastered || b.mastered);
+  let masteredAt;
+  if(a.masteredAt && b.masteredAt) masteredAt = (new Date(a.masteredAt) <= new Date(b.masteredAt)) ? a.masteredAt : b.masteredAt;
+  else masteredAt = a.masteredAt || b.masteredAt || null;
+  if(mastered && !masteredAt) masteredAt = nowIso();
+
+  const seen = new Set();
+  const wrongLog = [];
+  [...(a.wrongLog||[]), ...(b.wrongLog||[])].forEach(w=>{
+    const key = w.at + "|" + w.format;
+    if(!seen.has(key)){ seen.add(key); wrongLog.push(w); }
+  });
+  wrongLog.sort((x,y)=> new Date(y.at) - new Date(x.at));
+  const trimmedWrongLog = wrongLog.slice(0, WRONG_LOG_MAX).reverse();
+
+  // ⚠ streak は「大きい方」ではなく、lastSeenAt が新しい側の値を採る（§13-2）。
+  // max() にすると、端末Aで誤答して0になった streak が端末Bの古い2で復活してしまう。
+  const aSeen = a.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
+  const bSeen = b.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
+  const newer = aSeen >= bSeen ? a : b;
+
+  return {
+    streak: newer.streak || 0,
+    mastered, masteredAt,
+    postMasterWrong: mx(a.postMasterWrong, b.postMasterWrong),
+    lastFormat: newer.lastFormat || a.lastFormat || b.lastFormat || null,
+    totalCorrect: mx(a.totalCorrect, b.totalCorrect),
+    totalWrong: mx(a.totalWrong, b.totalWrong),
+    byFormat: { A: fA, B: fB },
+    wrongLog: trimmedWrongLog,
+    lastSeenAt: newer.lastSeenAt || a.lastSeenAt || b.lastSeenAt || null,
+    favorite: !!(a.favorite || b.favorite),
+  };
+}
+function mergeAccountProgress(a, b){
+  if(!a) return deepClone(b || blankAccountProgress());
+  if(!b) return deepClone(a);
+  const items = {};
+  const allIds = new Set([...Object.keys(a.items||{}), ...Object.keys(b.items||{})]);
+  allIds.forEach(id=>{ items[id] = mergeItemStat((a.items||{})[id], (b.items||{})[id]); });
+  const seen = new Set();
+  const sessions = [];
+  [...(a.sessions||[]), ...(b.sessions||[])].forEach(s=>{
+    if(!seen.has(s.finishedAt)){ seen.add(s.finishedAt); sessions.push(s); }
+  });
+  sessions.sort((x,y)=> new Date(y.finishedAt) - new Date(x.finishedAt));
+  return { items, sessions: sessions.slice(0, SESSIONS_MAX).reverse() };
+}
+function syncSummaryMessage(prefix){
+  const p = getCommittedStats(AUTH ? AUTH.id : null);
+  return `${prefix}（習得 ${masteredCount(p)} / ${DATA.length}）`;
+}
+async function pullCloud(silent){
+  if(!ready() || !AUTH) return;
+  if(!silent) setSyncStatus("pending", "☁… クラウドと同期しています");
+  try{
+    const j = await api({ action: "fetch", app: APP_ID, id: AUTH.id, pw: AUTH.pw });
+    const cloudProgress = normalizeProgress(((j.data||{}).progress||{})[AUTH.id]);
+    const localProgress = getCommittedStats(AUTH.id);
+    const before = JSON.stringify(localProgress);
+    const merged = mergeAccountProgress(localProgress, cloudProgress);
+    STORE.progress[AUTH.id] = merged;
+
+    if(!STORE.accounts[0]) STORE.accounts[0] = { id: AUTH.id, name: AUTH.id, label: AUTH.label || AUTH.id, createdAt: nowIso() };
+    if(j.label){ saveAuthLabel(j.label); STORE.accounts[0].label = j.label; } // label はクラウドが正（§13-2）
+    const cloudAcc = (j.data||{}).accounts && j.data.accounts[0];
+    if(cloudAcc && cloudAcc.createdAt) STORE.accounts[0].createdAt = cloudAcc.createdAt;
+
+    saveStore({ fromCloud: true });
+    SYNC.lastSync = nowIso(); saveSyncConfig();
+    setSyncStatus("success", syncSummaryMessage("☁✓ クラウドと合流しました"));
+    if(before !== JSON.stringify(merged)) await pushCloud(true, state.syncStatus.message); // 合流で変わったら直後にpush
+  }catch(e){ handleSyncError(e); }
+}
+async function pushCloud(silent, okMsg){
+  if(!ready() || !AUTH) return false;
+  if(!silent) setSyncStatus("pending", "☁… 送信しています");
+  try{
+    if(!STORE.accounts[0]) STORE.accounts[0] = { id: AUTH.id, name: AUTH.id, label: AUTH.label || AUTH.id, createdAt: nowIso() };
+    await api({
+      action: "save", app: APP_ID, id: AUTH.id, pw: AUTH.pw,
+      account: STORE.accounts[0],
+      progress: getCommittedStats(AUTH.id),
+    });
+    SYNC.lastSync = nowIso(); saveSyncConfig();
+    setSyncStatus("success", okMsg || "☁✓ クラウドに保存しました");
+    return true;
+  }catch(e){ handleSyncError(e); return false; }
+}
+async function pushOnly(){ await pushCloud(true, "☁✓ クラウド保存ずみ"); }
+async function doSync(){ await pullCloud(false); }
+
+// ---- JSON 書き出し／読み込み（§14）----
+function exportJsonDb(){
+  const json = JSON.stringify(STORE, null, 2);
+  const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${TOOL_NAME}記録_${AUTH ? AUTH.id : "未ログイン"}_${todayStamp()}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+function handleImportFile(file){
+  if(!AUTH) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let parsed;
+    try{ parsed = JSON.parse(reader.result); }
+    catch(e){
+      state.modal = { type: "importMismatch", reason: "このファイルは読み込めませんでした（JSON形式が壊れています）。" };
+      render(); return;
+    }
+    if(!parsed || parsed.app !== APP_ID){
+      state.modal = { type: "importMismatch", reason: "このファイルは別のツール（または別バージョン）の記録データのようです。" };
+      render(); return;
+    }
+    const myProgress = parsed.progress && parsed.progress[AUTH.id];
+    if(!myProgress){
+      state.modal = { type: "importMismatch", reason: `このファイルには ID ${AUTH.id} の記録が入っていません（別のお子さんの記録の可能性があります）。` };
+      render(); return;
+    }
+    const has = dbHasRecords({ progress: { [AUTH.id]: myProgress } });
+    state.modal = {
+      type: "importConfirm",
+      pendingProgress: normalizeProgress(myProgress),
+      summary: `ID ${AUTH.id}：${has ? "記録あり" : "記録なし"}`,
+      savedAt: parsed.updatedAt || "（不明）",
+    };
+    render();
+  };
+  reader.readAsText(file);
+}
+function confirmImportReplace(){
+  const progress = state.modal && state.modal.pendingProgress;
+  if(!progress || !AUTH) return;
+  STORE.progress[AUTH.id] = progress;
+  saveStore();
+  state.modal = null;
+  render();
+  pushOnly();
+}
+function resetMyRecords(){
+  if(!AUTH) return;
+  STORE.progress[AUTH.id] = blankAccountProgress();
+  saveStore();
+  state.modal = null;
+  render();
+  pushOnly();
+}
+// ---- 全問一覧を Drive へ（§15）----
+async function exportListToDrive(){
+  if(!ready() || !AUTH) return;
+  setSyncStatus("pending", "☁… 一覧を書き出し中");
+  await pullCloud(true); // 空上書き防止：必ず先に fetch する（§15）
+  if(!dbHasRecords(STORE)){
+    state.modal = { type: "listBlocked" };
+    setSyncStatus("idle", "");
+    render();
+    return;
+  }
+  const list = buildFullKpList();
+  try{
+    await api({ app: APP_ID, id: AUTH.id, list }); // 一覧書き出しには action を付けず id を添える（§12-D）
+    SYNC.lastSync = nowIso(); saveSyncConfig();
+    setSyncStatus("success", "☁✓ 全問一覧をスプレッドシートに書き出しました");
+  }catch(e){ handleSyncError(e); }
+}
+
+// =====================================================================
+// 画面の状態
+// =====================================================================
+let state = {
+  screen: "gate", // gate | loading | home | quiz | result | favorites | study
+  accountId: null,
+  session: null,
+  study: null,
+  syncStatus: { kind: "idle", message: "" },
+  modal: null,
+  expandedKp: null, // 結果画面の全問一覧で開いている行
+};
+
+// =====================================================================
+// 覚えるモード（§3-4）
+//   絶対条件：記録・習得判定・同期に一切影響しない。
+//   ここでは pendingProgress も saveStore も push も一切呼ばない。
+// =====================================================================
+function studyIds(){ return scopedKPs().map(kp=>kp.i); }
+function startStudyMode(){
+  if(!loggedIn()){ state.screen = "gate"; return; }
+  const ids = studyIds();
+  state.study = {
+    tab: "list",
+    ids,
+    pos: 0,
+    showDetail: false,
+    dir: "A",
+    deck: shuffle(ids),
+    flipped: false,
+    learned: 0,
+  };
+  state.screen = "study";
+}
+function studyRebuild(){
+  const st = state.study;
+  const keep = st.ids[st.pos];
+  st.ids = studyIds();
+  st.deck = shuffle(st.ids);
+  st.flipped = false;
+  st.learned = 0;
+  const p = st.ids.indexOf(keep);
+  st.pos = p !== -1 ? p : 0;
+}
+
+// =====================================================================
+// 描画
+// =====================================================================
+function render(){
+  try{
+    renderScreen();
+    renderModalOverlay();
+  }catch(e){
+    // 最後の防波堤：描画のバグで真っ白な画面を見せない
+    const app = document.getElementById('app');
+    if(app){
+      app.innerHTML = `
+        <div class="card center-card">
+          <div class="qtype-tag" style="background:var(--shuiro);">⚠ 表示エラー</div>
+          <div class="question-text">画面の表示中に問題が起きました</div>
+          <p style="font-size:12.5px; color:var(--sumi-soft);">${esc((e && e.message) || "詳細不明")}</p>
+          <div class="btn-row"><button class="big-btn" id="fatalReloadBtn">読み込み直す</button></div>
+        </div>`;
+      const btn = document.getElementById('fatalReloadBtn');
+      if(btn) btn.onclick = ()=> window.location.reload();
+    }
+  }
+}
+
+function renderCultureRail(currentCulture){
+  const map = document.getElementById('cultureRail');
+  let html = `<div class="rail"></div>`;
+  const labels = [[0,"飛鳥"],[2,"奈良"],[4,"平安"],[5,"鎌倉"],[7,"室町"],[9,"桃山"],[11,"江戸"],[14,"明治"],[15,"大正"]];
+  const pct = i => (RAIL.length <= 1 ? 0 : (i/(RAIL.length-1))*100);
+  labels.forEach(([i,label])=>{ html += `<div class="era-label" style="left:${pct(i)}%">${label}</div>`; });
+  RAIL.forEach((c,i)=>{
+    const cls = (currentCulture && c === currentCulture) ? "dot current" : "dot";
+    html += `<div class="${cls}" style="left:${pct(i)}%"></div>`;
+  });
+  map.innerHTML = html;
+}
+
+function renderScreen(){
+  const app = document.getElementById('app');
+  const accountBar = document.getElementById('accountBar');
+  // クイズ／覚えるモード以外の画面に移ったら、読み上げを必ず止める（音声仕様書 §4-6）
+  if(state.screen !== "quiz" && state.screen !== "study") stopSpeaking();
+
+  if(state.screen === "loading"){
+    accountBar.style.display = "none";
+    renderCultureRail(null);
+    app.innerHTML = `
+      <div class="card center-card">
+        <div class="qtype-tag">☁ 読み込み中…</div>
+        <div class="question-text">この端末に前回の記録を持ってきています</div>
+        <p style="font-size:13px; color:var(--sumi-soft);">はじめてこの端末でログインした時だけ表示されます。数秒お待ちください。</p>
+      </div>`;
+    return;
+  }
+
+  // §1-4 起動時の判定：sync と auth のどちらかが欠けていたら学習させない
+  if(!ready() || !loggedIn()){
+    accountBar.style.display = "none";
+    renderCultureRail(null);
+    const why = !ready() ? "クラウド同期がまだ設定されていません。" : "まだログインしていません。";
+    app.innerHTML = `
+      <div class="card center-card">
+        <div class="qtype-tag">🔑 ポータルで準備してください</div>
+        <div class="question-text">${why}</div>
+        <p style="font-size:13px; color:var(--sumi-soft); line-height:1.9; text-align:left;">
+          ポータル（トップページ）で<b>同期設定とログイン</b>を1回だけ行うと、すべての学習ツールがそのまま使えるようになります。
+        </p>
+        <ul style="text-align:left; font-size:12.5px; color:var(--sumi-soft); line-height:2; padding-left:1.3em;">
+          <li>GASのURLと合言葉 … ポータルで入力</li>
+          <li>ID（5桁）とパスワード … ポータルでログイン</li>
+          <li>この画面に戻ってくれば、すぐ学習を始められます</li>
+        </ul>
+        <div class="btn-row">
+          <a class="big-btn" style="display:block; text-decoration:none; text-align:center;" href="${portalURL()}">ポータルをひらく</a>
+          <button class="ghost-btn" id="reloadAuthBtn">ログイン済みなら、ここを押して読み込み直す</button>
+        </div>
+      </div>`;
+    document.getElementById('reloadAuthBtn').onclick = ()=>{
+      loadAll();
+      state.accountId = AUTH ? AUTH.id : null;
+      state.screen = (ready() && loggedIn()) ? "home" : "gate";
+      initialLoad();
+    };
+    return;
+  }
+
+  accountBar.style.display = "flex";
+  document.getElementById('accountNamePill').textContent = `${accountName()}（${AUTH.id}）`;
+  document.getElementById('switchAccountBtn').onclick = ()=>{
+    if(state.screen === "quiz" && state.session && state.session.log.length){
+      if(!confirmLeaveSession()) return;
+      state.session = null; state.screen = "home"; render(); return;
+    }
+    window.location.href = portalURL();
+  };
+
+  if(state.screen === "home" || state.screen === "gate"){ renderHome(app); return; }
+  if(state.screen === "quiz"){ renderQuiz(app); return; }
+  if(state.screen === "result"){ renderResult(app); return; }
+  if(state.screen === "favorites"){ renderFavorites(app); return; }
+  if(state.screen === "study"){ renderStudy(app); return; }
+}
+
+// ---------------------------------------------------------------- ホーム
+// 習得バーは出題範囲の選択に関係なく、常に全KPで集計する（§3-5③）
+function renderMasteryBars(progress){
+  function bar(label, kps){
+    if(!kps.length) return "";
+    let m = 0, attn = 0, partial = 0;
+    kps.forEach(kp=>{
+      const s = progress.items[kp.i];
+      if(s && s.mastered){ if((s.postMasterWrong||0) >= 1) attn++; else m++; }
+      else if(s && (s.streak > 0)) partial++;
+    });
+    const total = kps.length;
+    const none = total - m - attn - partial;
+    const p = n => (n/total)*100;
+    return `
+      <div class="era-bar-row">
+        <div class="ebr-label"><span>${esc(label)}</span><span>${m+attn} / ${total}（${Math.round(((m+attn)/total)*100)}%）</span></div>
+        <div class="era-bar-track">
+          <div class="era-bar-seg mastered" style="width:${p(m)}%"></div>
+          <div class="era-bar-seg flagged" style="width:${p(attn)}%"></div>
+          <div class="era-bar-seg partial" style="width:${p(partial)}%"></div>
+          <div class="era-bar-seg none" style="width:${p(none)}%"></div>
+        </div>
+      </div>`;
+  }
+  let html = CATS.map((c,i)=>bar(c, DATA.filter(kp=>kp.c===i))).join("");
+  html += `<div style="height:8px"></div>`;
+  html += [2,1,0].map(v=>bar(`重要度 ${IMP_LABEL[v]}`, DATA.filter(kp=>kp.p===v))).join("");
+  html += bar("総合", DATA);
+  html += `<div class="bar-legend">
+      <span><i style="background:var(--aizome)"></i>習得済み</span>
+      <span><i style="background:var(--shuiro)"></i>要注意習得</span>
+      <span><i style="background:var(--kincha)"></i>1回以上正解</span>
+      <span><i style="background:#e9e3d2"></i>未着手・誤答</span>
+    </div>`;
+  return html;
+}
+
+function renderHome(app){
+  renderCultureRail(null);
+  const progress = getCommittedStats(state.accountId);
+  const totalAnswered = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect+s.totalWrong,0);
+  const totalCorrect = Object.values(progress.items).reduce((n,s)=>n+s.totalCorrect,0);
+  const overallPct = totalAnswered ? Math.round((totalCorrect/totalAnswered)*100) : 0;
+  const mastered = masteredCount(progress);
+  const scope = scopedKPs();
+  const scopeUnmastered = scope.filter(kp=>!isMastered(progress, kp.i)).length;
+  const attnAll = attentionIds(progress, false);
+  const attnScoped = attentionIds(progress, true);
+
+  const wrongRows = DATA.map(kp=>({kp, w: (progress.items[kp.i]||{}).totalWrong || 0}))
+    .filter(r=>r.w >= HOME_WRONG_THRESHOLD).sort((a,b)=>b.w-a.w).slice(0, 12);
+  const wrongHtml = wrongRows.length ? wrongRows.map(r=>`
+      <div class="weak-row clickable" data-focus="${esc(r.kp.i)}">
+        <div class="wi">${IMP_MARK[r.kp.p]}${esc(r.kp.t)}</div>
+        <div class="wy">${esc(r.kp.a)}</div>
+        <div class="wp low">${r.w}回ミス</div>
+      </div>`).join("")
+    : `<div class="weak-row"><div class="wi">${HOME_WRONG_THRESHOLD}回以上まちがえた語はまだありません。</div></div>`;
+
+  const chips = ["すべて", ...CATS].map(c=>`
+    <button class="cat-chip ${UI.category===c?'active':''}" data-cat="${esc(c)}">${esc(c)}<span class="cnt">${countForCategory(c)}</span></button>`).join("");
+
+  const shortageHtml = scopeUnmastered === 0
+    ? `<div class="shortage-note">この範囲は未習得の語がありません。範囲を広げるか、全問モード・再確認モードをお使いください。</div>`
+    : (scopeUnmastered < 20
+      ? `<div class="shortage-note">この範囲の未習得は残り ${scopeUnmastered} 語です。10問・20問モードはその数だけの出題になります。</div>` : "");
+
+  app.innerHTML = `
+    <div class="card center-card">
+      ${!LOCAL_STORAGE_OK ? renderStorageWarning() : ''}
+      <div class="qtype-tag">${esc(accountName())} さんの成績</div>
+      <div class="question-text" style="margin-bottom:6px;">${esc(accountName())} さん、ようこそ</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">${(progress.sessions||[]).length}</div><div class="label">挑戦回数</div></div>
+        <div class="stat-box"><div class="num">${overallPct}%</div><div class="label">全体正解率</div></div>
+        <div class="stat-box"><div class="num">${mastered}</div><div class="label">習得済み</div></div>
+        <div class="stat-box"><div class="num">${DATA.length - mastered}</div><div class="label">未習得</div></div>
+      </div>
+
+      ${attnAll.length ? `<button class="attn-badge" id="attnBadge">⚠ 要注意 ${attnAll.length}語（この範囲では ${attnScoped.length}語）— 再確認モードを始める</button>` : ''}
+
+      <div class="mode-toggle">
+        <button class="mode-btn ${UI.quizMode==='choice'?'active':''}" id="modeChoiceBtn">選択形式（4択）</button>
+        <button class="mode-btn ${UI.quizMode==='kanji'?'active':''}" id="modeKanjiBtn">漢字書きモード（説明→語を書く）</button>
+      </div>
+      <div class="hint-note">漢字書きモードは「説明→語」の形式Aだけが対象です（形式Bは4択のまま）。</div>
+      <label class="autoread-toggle">
+        <input type="checkbox" id="autoReadCheck" ${UI.autoRead ? 'checked' : ''}>
+        🔊 問題・答えを自動で読み上げる
+      </label>
+
+      <button class="study-mode-btn" id="studyModeBtn">📖 覚えるモード（一覧学習＋単語カード・記録に影響しません）</button>
+
+      <div class="range-panel">
+        <div class="range-panel-title">🎯 出題範囲</div>
+        <div class="imp-seg">
+          <button data-imp="all" class="${UI.impFilter==='all'?'active':''}">すべて</button>
+          <button data-imp="21" class="${UI.impFilter==='21'?'active':''}">◎○のみ</button>
+          <button data-imp="2" class="${UI.impFilter==='2'?'active':''}">◎のみ</button>
+        </div>
+        <div class="cat-chips">${chips}</div>
+        <div class="range-summary">いま出題対象：<b>${scope.length}</b> 語（うち未習得 ${scopeUnmastered} 語）／${esc(rangeLabelText())}</div>
+      </div>
+
+      <div class="len-toggle">
+        <button class="len-btn" id="lenBtn10">10問モード</button>
+        <button class="len-btn" id="lenBtn20">20問モード</button>
+        <button class="len-btn" id="lenBtnAll">全問モード</button>
+        <button class="len-btn warn" id="lenBtnReview" ${attnScoped.length?'':'disabled'}>再確認モード</button>
+      </div>
+      ${shortageHtml}
+      <div class="hint-note">※10・20問モードは「知識ポイント」の数です。1KPにつき形式A・Bの2問が出るので、10問モードの実際の出題数は20問になります。</div>
+
+      <div class="btn-row">
+        <button class="ghost-btn" id="favBtn">★ あとで見る（${Object.values(progress.items).filter(s=>s.favorite).length}件）</button>
+      </div>
+
+      <div class="era-bars">
+        <h3>習得状況 <span class="scope-note">（出題範囲に関係なく、常に全${DATA.length}語で集計）</span></h3>
+        ${renderMasteryBars(progress)}
+      </div>
+
+      <div class="weak-list">
+        <h3>間違いランキング（${HOME_WRONG_THRESHOLD}回以上ミス）</h3>
+        ${wrongHtml}
+      </div>
+
+      <div class="sync-panel">
+        <h3>記録データの管理</h3>
+        ${renderSyncStatusPill()}
+        <div class="sync-btn-grid">
+          <button class="sync-btn" id="syncNowBtn">🔄 今すぐ同期</button>
+          <button class="sync-btn" id="listExportBtn">📋 全問一覧をDriveへ</button>
+          <button class="sync-btn" id="csvBtn">📄 CSVをダウンロード</button>
+          <button class="sync-btn" id="exportJsonBtn">📤 記録を書き出す</button>
+          <button class="sync-btn" id="importJsonBtn">📥 記録を読み込む</button>
+          <input type="file" id="importJsonFile" accept="application/json" style="display:none;">
+          <button class="sync-btn warn" id="resetRecordsBtn">🗑 このツールの記録を消す</button>
+        </div>
+        <a class="ghost-btn" style="display:block; text-align:center; text-decoration:none; margin-top:10px;" href="${portalURL()}">⚙ 同期設定・ログアウトはポータルへ</a>
+        <div style="font-size:11px; color:var(--sumi-soft); margin-top:8px;">ID ${esc(AUTH.id)}　／　ツール識別子 ${APP_ID}　／　共通仕様 ${VER}　／　全${DATA.length}知識ポイント</div>
+      </div>
+    </div>`;
+
+  document.getElementById('modeChoiceBtn').onclick = ()=>{ UI.quizMode = "choice"; saveUi(); render(); };
+  document.getElementById('modeKanjiBtn').onclick = ()=>{ UI.quizMode = "kanji"; saveUi(); render(); };
+  document.getElementById('autoReadCheck').onchange = (e)=>{ UI.autoRead = e.target.checked; saveUi(); };
+  document.getElementById('studyModeBtn').onclick = ()=>{ startStudyMode(); render(); };
+  document.getElementById('lenBtn10').onclick = ()=>{ startSession("10q"); render(); };
+  document.getElementById('lenBtn20').onclick = ()=>{ startSession("20q"); render(); };
+  document.getElementById('lenBtnAll').onclick = ()=>{ startSession("all"); render(); };
+  const rv = document.getElementById('lenBtnReview');
+  if(rv && !rv.disabled) rv.onclick = ()=>{ startSession("review"); render(); };
+  const ab = document.getElementById('attnBadge');
+  if(ab) ab.onclick = ()=>{
+    if(!attnScoped.length){ state.modal = { type:"noTarget", mode:"review" }; render(); return; }
+    startSession("review"); render();
+  };
+  app.querySelectorAll('.imp-seg button').forEach(b=>{
+    b.onclick = ()=>{ UI.impFilter = b.dataset.imp; saveUi(); render(); };
+  });
+  app.querySelectorAll('.cat-chip').forEach(b=>{
+    b.onclick = ()=>{ UI.category = b.dataset.cat; saveUi(); render(); };
+  });
+  app.querySelectorAll('.weak-row.clickable').forEach(row=>{
+    row.onclick = ()=>{
+      const kp = BY_ID[row.dataset.focus];
+      if(!kp) return;
+      UI.category = CATS[kp.c]; UI.impFilter = "all"; saveUi();
+      startStudyMode();
+      const p = state.study.ids.indexOf(kp.i);
+      if(p !== -1){ state.study.pos = p; state.study.showDetail = true; }
+      render();
+    };
+  });
+  document.getElementById('favBtn').onclick = ()=>{ state.screen = "favorites"; render(); };
+  document.getElementById('csvBtn').onclick = ()=>exportCsv();
+  document.getElementById('exportJsonBtn').onclick = exportJsonDb;
+  const importInput = document.getElementById('importJsonFile');
+  document.getElementById('importJsonBtn').onclick = ()=> importInput.click();
+  importInput.onchange = (e)=>{
+    if(e.target.files && e.target.files[0]) handleImportFile(e.target.files[0]);
+    importInput.value = "";
+  };
+  document.getElementById('syncNowBtn').onclick = ()=>doSync();
+  document.getElementById('listExportBtn').onclick = ()=>exportListToDrive();
+  document.getElementById('resetRecordsBtn').onclick = ()=>{ state.modal = { type: "resetRecordsConfirm" }; render(); };
+}
+
+function renderStorageWarning(){
+  if(ready()){
+    return `<div class="storage-warning ok-with-cloud">☁ この端末には記録を残せない環境ですが、クラウド同期が有効なので記録はGoogleに保存されます</div>`;
+  }
+  return `<div class="storage-warning">⚠ この端末（ブラウザ）には記録を保存できません（プライベートブラウジング等）。記録を残すにはポータルでクラウド同期を設定してください。</div>`;
+}
+function renderSyncStatusPill(){
+  const s = state.syncStatus;
+  const lastSyncTxt = SYNC && SYNC.lastSync
+    ? `｜最終同期 ${formatDateJP(SYNC.lastSync)} ${new Date(SYNC.lastSync).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}` : '';
+  const msg = s.message || '☁ 同期設定ずみ';
+  return `<div class="sync-status ${s.kind}">${esc(msg)}${lastSyncTxt}</div>`;
+}
+
+// ---------------------------------------------------------------- クイズ
+function renderQuiz(app){
+  const sess = state.session;
+  const viewingReview = sess.reviewIndex !== null;
+  const viewIdx = viewingReview ? sess.reviewIndex : sess.qIndex;
+  const q = sess.questions[viewIdx];
+  const logEntry = viewingReview ? sess.log[viewIdx] : null;
+  const canRedo = viewingReview && viewIdx === sess.qIndex - 1;
+
+  const progress = sess.pendingProgress;
+  const m = materializeQuestion(q.id, q.format);
+  const kp = m.kp;
+  renderCultureRail(kp.k === "culture" ? kp.a : null);
+
+  const useKanji = sess.answerMode === "kanji" && isKanjiTarget(q.format);
+  const kanjiRevealedText = sess.kanjiRevealedAt[viewIdx];
+  const kanjiRevealed = kanjiRevealedText !== undefined;
+
+  const itemStat = progress.items[q.id];
+  const need = requiredStreak(itemStat);
+  const streakForGauge = (viewingReview && !canRedo) ? null : (itemStat ? itemStat.streak : 0);
+  const gauge = streakForGauge === null ? "" :
+    `<span class="kp-gauge">${"●".repeat(Math.min(streakForGauge, need))}${"○".repeat(Math.max(0, need - streakForGauge))}</span>`;
+  const hurdleNote = (!sess.isReviewMode && need > 2 && !(itemStat && itemStat.mastered))
+    ? `<div class="hurdle-note">⚠ この語は苦手なので、習得には形式をかえて ${need}回連続の正解が必要です</div>` : "";
+
+  const sessionKpSet = new Set(sess.questions.map(qq=>qq.id));
+  let stillToMaster = 0;
+  sessionKpSet.forEach(id=>{ if(!isMastered(progress, id)) stillToMaster++; });
+  const progressPct = Math.round((sess.qIndex / sess.questions.length) * 100);
+
+  const answeredView = viewingReview && logEntry;
+  const attn = isAttention(progress, q.id);
+
+  app.innerHTML = `
+    <div class="card">
+      ${viewingReview ? `<div class="review-banner">${canRedo ? "直前の問題を見直しています。答え直すと上書きされます。" : "過去の問題を閲覧中です（この問題はもう答え直せません）"}</div>` : ""}
+      <div class="progress-track"><div class="progress-fill" style="width:${progressPct}%"></div></div>
+      <div class="stat-strip">
+        <span>第 <b>${viewIdx+1}</b> / ${sess.questions.length} 問</span>
+        <span>正解 <b>${sess.score}</b> ／ 誤答 <b>${sess.wrongCount}</b></span>
+        ${sess.mode !== "all" ? `<span>あと <b>${stillToMaster}</b> 語</span>` : ""}
+        ${gauge}
+      </div>
+      ${hurdleNote}
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <div class="qtype-tag ${q.format==='A'?'':'fmt-b'}" style="margin-bottom:0;">${q.format==='A' ? "説明 → 語" : "語 → " + KIND_Q[kp.k]}</div>
+          ${useKanji ? `<div class="qtype-tag" style="background:var(--kincha); margin-bottom:0;">✏️ 漢字書き</div>` : ''}
+          <div class="qtype-tag" style="background:var(--moss); margin-bottom:0;">${esc(CATS[kp.c])}</div>
+          ${kp.p ? `<div class="qtype-tag" style="background:var(--kincha); margin-bottom:0;">${IMP_MARK[kp.p]}</div>` : ''}
+          ${attn ? `<div class="qtype-tag" style="background:var(--shuiro); margin-bottom:0;">⚠ 要注意習得</div>` : ''}
+        </div>
+        <button class="star-btn ${isFavorite(progress, q.id) ? 'active' : ''}" id="favToggleBtn">★ <span class="lbl">あとで見る</span></button>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button class="speak-btn" id="speakQBtn">🔊 <span class="lbl">読み上げ</span></button>
+        <button class="search-btn" id="searchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
+      </div>
+      <div class="question-lead" style="margin-top:12px;">${q.format==='A' ? "次の説明にあてはまる語は？" : "この語はどの" + KIND_Q[kp.k] + "？"}</div>
+      <div class="question-text">${q.format==='A' ? esc(kp.d) : `<span class="term-big">${esc(kp.t)}</span>`}</div>
+
+      ${(!viewingReview || canRedo) ? (useKanji ? (
+        !kanjiRevealed ? `
+          <div class="kanji-input-row">
+            <input type="text" class="kanji-input" id="kanjiInput" placeholder="語を書いてみよう（紙に書いてもOK）" autocomplete="off">
+          </div>
+          <button class="kanji-reveal-btn" id="kanjiRevealBtn">こたえを見る</button>
+        ` : `
+          <div class="kanji-reveal-box">
+            <div class="kanji-your-answer">あなたの解答：${esc(kanjiRevealedText || "（未入力）")}</div>
+            <div class="kanji-answer">${esc(kp.t)}${kp.y ? `<span style="font-size:12px; color:var(--sumi-soft); font-weight:400;">（${esc(kp.y)}）</span>` : ''}</div>
+            <span class="fb-term">${esc(kp.a)}</span>
+            ${kp.n ? `<span class="fb-note">${esc(kp.n)}</span>` : ''}
+            <div style="margin-top:8px;"><button class="speak-btn" id="kanjiSpeakBtn">🔊 <span class="lbl">読み上げ</span></button></div>
+          </div>
+          <div class="kanji-selfgrade-row">
+            <button class="kanji-grade-btn correct" id="kanjiCorrectBtn">○ できた（正解）</button>
+            <button class="kanji-grade-btn wrong" id="kanjiWrongBtn">× できなかった（不正解）</button>
+          </div>
+          <div class="kanji-grade-note">見比べて、自分で○か×を選んでください</div>
+        `) : `<div class="choices" id="choices"></div>`)
+      : (useKanji ? `
+        <div class="kanji-reveal-box">
+          <div class="kanji-your-answer">あなたの解答：${esc((logEntry && logEntry.answeredText) || "（未入力）")}</div>
+          <div class="kanji-answer">${esc(kp.t)}</div>
+          <span class="fb-term">${esc(kp.a)}</span>
+          ${kp.n ? `<span class="fb-note">${esc(kp.n)}</span>` : ''}
+        </div>` : `
+        <div class="choices">
+          ${m.choices.map((c,i)=>{
+            let cls = 'choice-btn';
+            if(i === m.correctIdx) cls += ' correct';
+            else if(logEntry && logEntry.answeredText === c) cls += ' wrong';
+            return `<button class="${cls}" disabled>${esc(c)}</button>`;
+          }).join("")}
+        </div>`)}
+
+      <div class="feedback-box ${answeredView && !useKanji ? 'show' : ''}" id="feedback">
+        ${answeredView && !useKanji ? feedbackHtml(m, logEntry.correct, false) : ""}
+      </div>
+      ${!viewingReview ? `<button class="next-btn" id="nextBtn">${sess.qIndex===sess.questions.length-1 ? "結果を見る" : "次の問題へ"}</button>` : ""}
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn" ${viewIdx<=0 ? "disabled" : ""}>← 前の問題</button>
+        <button class="nav-btn" id="fwdBtn" ${!viewingReview ? "disabled" : ""}>進む →</button>
+        <button class="nav-btn" id="quitBtn">やめる</button>
+      </div>
+    </div>`;
+
+  document.getElementById('prevBtn').onclick = ()=>{
+    sess.reviewIndex = viewingReview ? Math.max(0, sess.reviewIndex-1) : sess.qIndex-1;
+    if(sess.reviewIndex === sess.qIndex - 1) delete sess.kanjiRevealedAt[sess.reviewIndex]; // やり直しは真っさらから
+    render();
+  };
+  document.getElementById('fwdBtn').onclick = ()=>{
+    if(!viewingReview) return;
+    sess.reviewIndex = (sess.reviewIndex >= sess.qIndex-1) ? null : sess.reviewIndex+1;
+    render();
+  };
+  document.getElementById('quitBtn').onclick = ()=>{
+    if(!confirmLeaveSession()) return;
+    state.session = null; state.screen = "home"; render();
+  };
+  document.getElementById('favToggleBtn').onclick = ()=>{
+    const nowFav = toggleFavorite(q.id);
+    document.getElementById('favToggleBtn').classList.toggle('active', nowFav);
+  };
+  document.getElementById('searchBtn').onclick = ()=> openGoogleSearch(kp.t + " 文化史");
+  const qSpeech = questionSpeech(m);
+  document.getElementById('speakQBtn').onclick = ()=> speak(qSpeech);
+  // 自動読み上げは「新しく問題が表示された時だけ」。過去問題の閲覧中は鳴らさない
+  if(!viewingReview && !kanjiRevealed && UI.autoRead) speak(qSpeech);
+
+  if(!viewingReview){
+    document.getElementById('nextBtn').onclick = nextQuestion;
+    if(useKanji) wireKanjiUI(viewIdx, m, false);
+    else wireChoices(m, false);
+  } else if(canRedo){
+    if(useKanji) wireKanjiUI(viewIdx, m, true);
+    else wireChoices(m, true);
+  }
+}
+
+function wireChoices(m, isRedo){
+  const choicesEl = document.getElementById('choices');
+  if(!choicesEl) return;
+  m.choices.forEach((c,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c;
+    btn.onclick = ()=> submitChoice(m, i, isRedo);
+    choicesEl.appendChild(btn);
+  });
+}
+
+// 解答直後、画面を作り直さずに上部の集計だけを更新する（次の問題へ進むまで数字が古いままにならないように）
+function refreshStatStripAfterAnswer(id){
+  const sess = state.session;
+  const strip = document.querySelector('.stat-strip');
+  if(!strip) return;
+  const progress = sess.pendingProgress;
+  const s = progress.items[id];
+  const need = requiredStreak(s);
+  const streak = s ? s.streak : 0;
+  const sessionKpSet = new Set(sess.questions.map(qq=>qq.id));
+  let stillToMaster = 0;
+  sessionKpSet.forEach(x=>{ if(!isMastered(progress, x)) stillToMaster++; });
+  strip.innerHTML = `
+    <span>第 <b>${sess.qIndex}</b> / ${sess.questions.length} 問</span>
+    <span>正解 <b>${sess.score}</b> ／ 誤答 <b>${sess.wrongCount}</b></span>
+    ${sess.mode !== "all" ? `<span>あと <b>${stillToMaster}</b> 語</span>` : ""}
+    <span class="kp-gauge">${"●".repeat(Math.min(streak, need))}${"○".repeat(Math.max(0, need - streak))}</span>`;
+  const fill = document.querySelector('.progress-fill');
+  if(fill) fill.style.width = Math.round((sess.qIndex / sess.questions.length) * 100) + "%";
+}
+
+function feedbackHtml(m, correct, withSpeakBtn){
+  const kp = m.kp;
+  const head = correct ? "○ 正解！" : `× 残念、正解は「${esc(m.answerText)}」`;
+  const body = m.format === "A"
+    ? `<span class="fb-term">${esc(kp.t)}</span>${kp.y ? `（${esc(kp.y)}）` : ''} … ${esc(kp.a)}`
+    : `<span class="fb-term">${esc(kp.t)}</span> … ${esc(kp.d)}`;
+  return `${head}<br>${body}${kp.n ? `<span class="fb-note">${esc(kp.n)}</span>` : ''}
+    ${withSpeakBtn ? `<button class="speak-btn" id="speakABtn" style="margin-top:8px;">🔊 <span class="lbl">読み上げ</span></button>` : ''}`;
+}
+
+function submitChoice(m, choiceIdx, isRedo){
+  const correct = choiceIdx === m.correctIdx;
+  const answeredText = m.choices[choiceIdx];
+  if(isRedo){ redoAnswer(correct, answeredText); render(); return; }
+  commitLiveAnswer(correct, answeredText);
+  document.querySelectorAll('#choices .choice-btn').forEach((b,idx)=>{
+    b.disabled = true;
+    if(idx === m.correctIdx) b.classList.add('correct');
+    else if(b.textContent === answeredText) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show');
+  fb.innerHTML = feedbackHtml(m, correct, true);
+  const aSpeech = answerSpeech(m, correct);
+  document.getElementById('speakABtn').onclick = ()=> speak(aSpeech);
+  if(UI.autoRead) speak(aSpeech);
+  document.getElementById('nextBtn').classList.add('show');
+  refreshStatStripAfterAnswer(m.id);
+}
+
+// 漢字書きモード：未開示（入力＋開示ボタン）と開示済み（自己採点）の両方を1関数で扱う
+function wireKanjiUI(viewIdx, m, isRedo){
+  const sess = state.session;
+  const kp = m.kp;
+  const revealSpeech = `${kp.t}。${kp.d}。${kp.a}。${kp.n ? kp.n : ""}`;
+  if(sess.kanjiRevealedAt[viewIdx] === undefined){
+    const inputEl = document.getElementById('kanjiInput');
+    const revealBtn = document.getElementById('kanjiRevealBtn');
+    const doReveal = ()=>{
+      sess.kanjiRevealedAt[viewIdx] = (inputEl.value || "").trim();
+      render();
+    };
+    revealBtn.onclick = doReveal;
+    inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') doReveal(); });
+    inputEl.focus();
+  } else {
+    if(UI.autoRead) speak(revealSpeech);
+    const speakBtn = document.getElementById('kanjiSpeakBtn');
+    if(speakBtn) speakBtn.onclick = ()=> speak(revealSpeech);
+    const correctBtn = document.getElementById('kanjiCorrectBtn');
+    const wrongBtn = document.getElementById('kanjiWrongBtn');
+    const grade = (correct)=>{
+      const answeredText = sess.kanjiRevealedAt[viewIdx] || "";
+      if(isRedo){ redoAnswer(correct, answeredText); render(); return; }
+      commitLiveAnswer(correct, answeredText);
+      correctBtn.disabled = true;
+      wrongBtn.disabled = true;
+      (correct ? correctBtn : wrongBtn).classList.add('active');
+      document.getElementById('nextBtn').classList.add('show');
+      refreshStatStripAfterAnswer(m.id);
+    };
+    correctBtn.onclick = ()=> grade(true);
+    wrongBtn.onclick = ()=> grade(false);
+  }
+}
+
+function nextQuestion(){
+  const sess = state.session;
+  if(sess.qIndex >= sess.questions.length){ finishSession(); render(); return; }
+  render();
+}
+
+// ---------------------------------------------------------------- 結果
+function renderResult(app){
+  const sess = state.session;
+  renderCultureRail(null);
+  const total = sess.questions.length;
+  const pct = total ? Math.round((sess.score/total)*100) : 0;
+  let comment;
+  if(pct===100) comment = "満点！文化史マスター認定です";
+  else if(pct>=80) comment = "あと少し！よく覚えています";
+  else if(pct>=50) comment = "半分以上正解！この調子で復習を";
+  else comment = "解説を読み直して、もう一度挑戦しよう";
+
+  const progress = getCommittedStats(state.accountId);
+  const wrongEntries = sess.log.filter(l=>!l.correct);
+  const reviewHtml = wrongEntries.length ? wrongEntries.map(l=>{
+    const kp = BY_ID[l.id];
+    const m = { format: l.format, kp, answerText: l.format === "A" ? kp.t : kp.a };
+    return `<div class="review-item">
+      <button class="search-btn" data-search="${esc(kp.t)}">🔍</button>
+      <button class="star-btn ${isFavorite(progress, l.id) ? 'active':''}" data-id="${esc(l.id)}">★</button>
+      <span class="ritem">${esc(kp.t)}</span> — <span class="ryear">${esc(kp.a)}</span>
+      <span style="font-size:11.5px; color:var(--sumi-soft);">（${l.format==='A'?'説明→語':'語→'+KIND_Q[kp.k]}）</span><br>
+      ${esc(kp.d)}<br>
+      <span style="color:var(--shuiro);">あなたの答え：${esc(l.answeredText || "（未入力）")}</span>
+      ${kp.n ? `<br><span style="font-size:12px; color:var(--sumi-soft);">${esc(kp.n)}</span>` : ''}
+    </div>`;
+  }).join("") : `<div class="fav-empty">今回は間違いなし！お見事です。</div>`;
+
+  const overCap = Array.from(sess.overCap || []);
+  const overCapHtml = overCap.length ? `
+    <div class="shortage-note">⚠ 次の語は1セッションの再出題上限（${MAX_APPEARANCES}回）を超えました。<b>要復習</b>です：
+      ${overCap.map(id=>esc(BY_ID[id].t)).join("、")}</div>` : "";
+
+  app.innerHTML = `
+    <div class="card center-card">
+      <div class="qtype-tag">${esc(accountName())} さんの結果（${modeLabel(sess.mode)}モード・${esc(sess.scopeLabel)}）</div>
+      <div class="result-score">${sess.score}<span> / ${total} 問正解</span></div>
+      <div class="result-comment">${comment}（正答率 ${pct}%）</div>
+      <div class="result-comment" style="color:var(--moss);">今回新しく習得：${sess.newlyMastered.size}語</div>
+      ${overCapHtml}
+      <div class="btn-row">
+        <button class="big-btn" id="backHomeBtn">成績ページにもどる</button>
+        <button class="csv-btn" id="csvBtnResult">📄 結果をCSVでダウンロード</button>
+      </div>
+      <div class="weak-list">
+        <h3>今回間違えた問題</h3>
+        <div class="review-list">${reviewHtml}</div>
+      </div>
+      <div class="weak-list">
+        <h3>カテゴリー別 全問一覧 <span class="scope-note">（出題範囲に関係なく全${DATA.length}語）</span></h3>
+        <div class="filter-row">
+          <select id="catFilter">${["すべて",...CATS].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("")}</select>
+          <select id="statusFilter">
+            <option value="すべて">状態：すべて</option>
+            <option value="習得済み">習得済み</option>
+            <option value="要注意習得">要注意習得</option>
+            <option value="未習得">未習得（正解あり）</option>
+            <option value="未出題">未出題</option>
+          </select>
+          <select id="sortFilter">
+            <option value="wrong">誤答数が多い順</option>
+            <option value="cat">カテゴリー順</option>
+            <option value="status">状態順</option>
+            <option value="imp">重要度順</option>
+          </select>
+        </div>
+        <div class="kp-table-wrap" id="kpTableWrap"></div>
+      </div>
+    </div>`;
+
+  document.getElementById('backHomeBtn').onclick = ()=>{
+    state.session = null; state.expandedKp = null; state.screen = "home"; render();
+  };
+  document.getElementById('csvBtnResult').onclick = ()=>exportCsv();
+  app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
+    btn.onclick = ()=>{ const f = toggleFavorite(btn.dataset.id); btn.classList.toggle('active', f); };
+  });
+  app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
+    btn.onclick = ()=> openGoogleSearch(btn.dataset.search + " 文化史");
+  });
+
+  function renderKpTable(){
+    const cat = document.getElementById('catFilter').value;
+    const st = document.getElementById('statusFilter').value;
+    const sortKey = document.getElementById('sortFilter').value;
+    let rows = DATA.map(kp=>({kp, s: progress.items[kp.i]}));
+    if(cat !== 'すべて') rows = rows.filter(r=>CATS[r.kp.c]===cat);
+    if(st !== 'すべて'){
+      rows = rows.filter(r=>{
+        const label = statusLabel(r.s);
+        if(st === "未習得") return label !== "習得済み" && label !== "要注意習得" && label !== "未出題";
+        return label === st;
+      });
+    }
+    if(sortKey === 'wrong') rows.sort((a,b)=>((b.s?b.s.totalWrong:0)-(a.s?a.s.totalWrong:0)));
+    else if(sortKey === 'cat') rows.sort((a,b)=> a.kp.c - b.kp.c || a.kp._idx - b.kp._idx);
+    else if(sortKey === 'imp') rows.sort((a,b)=> b.kp.p - a.kp.p || a.kp._idx - b.kp._idx);
+    else rows.sort((a,b)=>{
+      const rank = s => { const l = statusLabel(s); return l==="習得済み"?0 : l==="要注意習得"?1 : l==="未出題"?3 : 2; };
+      return rank(a.s) - rank(b.s);
+    });
+    document.getElementById('kpTableWrap').innerHTML = `
+      <table class="kp-table">
+        <thead><tr><th>カテゴリー</th><th>知識ポイント</th><th>文化・宗派</th><th>状態</th><th>累計</th></tr></thead>
+        <tbody>
+          ${rows.map(r=>{
+            const s = r.s;
+            const flagged = s && s.totalWrong >= RESULT_WRONG_BADGE_THRESHOLD;
+            const open = state.expandedKp === r.kp.i;
+            let html = `<tr class="kp-main ${flagged?'flagged':''}" data-id="${esc(r.kp.i)}">
+              <td>${esc(CATS[r.kp.c])}</td>
+              <td>${IMP_MARK[r.kp.p] ? `<span class="kp-badge imp">${IMP_MARK[r.kp.p]}</span>` : ''}${esc(r.kp.t)}${flagged ? `<span class="kp-badge ${s.totalWrong>=RESULT_WRONG_BADGE_THRESHOLD?'warn2':''}">誤答${s.totalWrong}回</span>` : ''}</td>
+              <td>${esc(r.kp.a)}</td>
+              <td>${statusLabel(s)}${s && s.mastered && (s.postMasterWrong||0)>=1 ? `<span class="kp-badge postm">習得後×${s.postMasterWrong}</span>` : ''}</td>
+              <td>○${s?s.totalCorrect:0} ／ ×${s?s.totalWrong:0}</td>
+            </tr>`;
+            if(open){
+              const wl = (s && s.wrongLog) || [];
+              html += `<tr class="kp-detail"><td colspan="5">
+                <b>${esc(r.kp.t)}</b>${r.kp.y?`（${esc(r.kp.y)}）`:''} … ${esc(r.kp.d)}<br>
+                ${r.kp.n ? esc(r.kp.n)+"<br>" : ""}
+                形式A：○${s?s.byFormat.A.correct:0} ×${s?s.byFormat.A.wrong:0}　／　形式B：○${s?s.byFormat.B.correct:0} ×${s?s.byFormat.B.wrong:0}
+                　習得に必要な連続正解：${requiredStreak(s)}回<br>
+                過去の誤答：${wl.length ? wl.map(w=>`${esc(w.answered||"（未入力）")}（${w.format}・${formatDateJP(w.at)}）`).join("／") : "なし"}
+              </td></tr>`;
+            }
+            return html;
+          }).join("")}
+        </tbody>
+      </table>`;
+    document.querySelectorAll('.kp-table tr.kp-main').forEach(tr=>{
+      tr.onclick = ()=>{
+        state.expandedKp = (state.expandedKp === tr.dataset.id) ? null : tr.dataset.id;
+        renderKpTable();
+      };
+    });
+  }
+  document.getElementById('catFilter').onchange = renderKpTable;
+  document.getElementById('statusFilter').onchange = renderKpTable;
+  document.getElementById('sortFilter').onchange = renderKpTable;
+  renderKpTable();
+}
+
+// ---------------------------------------------------------------- あとで見る
+function renderFavorites(app){
+  renderCultureRail(null);
+  const progress = getCommittedStats(state.accountId);
+  const favs = DATA.filter(kp=>isFavorite(progress, kp.i));
+  const listHtml = favs.length ? favs.map(kp=>`
+    <div class="review-item ok">
+      <button class="search-btn" data-search="${esc(kp.t)}">🔍</button>
+      <button class="star-btn active" data-id="${esc(kp.i)}">★</button>
+      <span class="ritem">${esc(kp.t)}</span> — <span class="ryear">${esc(kp.a)}</span><br>
+      ${esc(kp.d)}${kp.n ? `<br><span style="font-size:12px;color:var(--sumi-soft);">${esc(kp.n)}</span>` : ''}
+    </div>`).join("") : `<div class="fav-empty">まだありません。クイズ中に★ボタンで登録できます。</div>`;
+  app.innerHTML = `
+    <div class="card">
+      <div class="qtype-tag">${esc(accountName())} さんの「あとで見る」</div>
+      <div class="question-text">忘れそう・気になる語</div>
+      <div class="review-list">${listHtml}</div>
+      <div class="btn-row"><button class="ghost-btn" id="backHomeBtn">成績ページにもどる</button></div>
+    </div>`;
+  app.querySelectorAll('.review-item .star-btn').forEach(btn=>{
+    btn.onclick = ()=>{ toggleFavorite(btn.dataset.id); render(); };
+  });
+  app.querySelectorAll('.review-item .search-btn').forEach(btn=>{
+    btn.onclick = ()=> openGoogleSearch(btn.dataset.search + " 文化史");
+  });
+  document.getElementById('backHomeBtn').onclick = ()=>{ state.screen = "home"; render(); };
+}
+
+// ---------------------------------------------------------------- 覚えるモード
+function renderStudy(app){
+  const st = state.study;
+  const progress = getCommittedStats(state.accountId); // 読むだけ。書き込みは一切しない
+  if(!st.ids.length){
+    renderCultureRail(null);
+    app.innerHTML = `
+      <div class="card center-card">
+        <div class="qtype-tag" style="background:var(--moss);">📖 覚えるモード</div>
+        <div class="question-text">表示できる語がありません</div>
+        <p style="font-size:13px; color:var(--sumi-soft);">出題範囲の絞り込みを広げてください。</p>
+        <div class="btn-row"><button class="big-btn" id="studyBackBtn">成績ページにもどる</button></div>
+      </div>`;
+    document.getElementById('studyBackBtn').onclick = ()=>{ state.study = null; state.screen = "home"; render(); };
+    return;
+  }
+  const header = `
+    <div class="study-tabs">
+      <button class="study-tab ${st.tab==='list'?'active':''}" id="tabList">📋 一覧学習</button>
+      <button class="study-tab ${st.tab==='card'?'active':''}" id="tabCard">🃏 単語カード</button>
+    </div>
+    <div class="study-toolbar">
+      <div class="qtype-tag" style="margin-bottom:0; background:var(--moss);">📖 覚えるモード（記録に影響しません）</div>
+      <span style="font-size:12px; color:var(--sumi-soft);">範囲：${esc(rangeLabelText())}・${st.ids.length}語</span>
+    </div>`;
+
+  if(st.tab === 'list') renderStudyList(app, st, progress, header);
+  else renderStudyCard(app, st, progress, header);
+}
+
+function studyStatusChip(progress, id){
+  const s = progress.items[id];
+  if(!s) return `<span class="sl-s">未出題</span>`;
+  if(s.mastered) return (s.postMasterWrong||0)>=1
+    ? `<span class="sl-s w">要注意習得</span>` : `<span class="sl-s m">習得済み</span>`;
+  if(s.totalWrong > 0) return `<span class="sl-s w">誤答${s.totalWrong}回</span>`;
+  if(s.totalCorrect > 0) return `<span class="sl-s">${s.streak}回正解</span>`;
+  return `<span class="sl-s">未出題</span>`;
+}
+
+function renderStudyList(app, st, progress, header){
+  if(st.showDetail){
+    const kp = BY_ID[st.ids[st.pos]];
+    renderCultureRail(kp.k === "culture" ? kp.a : null);
+    const s = progress.items[kp.i];
+    const badge = s && s.mastered
+      ? ((s.postMasterWrong||0)>=1 ? `<span class="study-mastered-badge attn">要注意習得</span>` : `<span class="study-mastered-badge">習得済み</span>`)
+      : "";
+    const pct = Math.round(((st.pos+1)/st.ids.length)*100);
+    app.innerHTML = `
+      <div class="card">
+        ${header}
+        <div class="study-progress-track"><div class="study-progress-fill" style="width:${pct}%"></div></div>
+        <div class="stat-strip"><span>${st.pos+1} / ${st.ids.length} 語</span><span>${esc(CATS[kp.c])}</span></div>
+        <div class="study-card">
+          <div class="study-era-tag">${esc(kp.a)}</div>
+          <div class="study-term">${IMP_MARK[kp.p]}${esc(kp.t)}${badge}</div>
+          ${kp.y ? `<div class="study-yomi">${esc(kp.y)}</div>` : ''}
+          <div class="study-desc">${esc(kp.d)}</div>
+          ${kp.n ? `<div class="study-note-box"><span class="lbl">入試のねらいどころ</span>${esc(kp.n)}</div>` : ''}
+          <div style="font-size:12px; color:var(--sumi-soft);">重要度：${IMP_LABEL[kp.p]}　／　状態：${statusLabel(s)}</div>
+          <div class="study-icons-row">
+            <button class="speak-btn" id="studySpeakBtn">🔊 <span class="lbl">読み上げ</span></button>
+            <button class="search-btn" id="studySearchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
+          </div>
+        </div>
+        <div class="study-nav-row">
+          <button class="study-nav-btn" id="sPrev" ${st.pos<=0?'disabled':''}>← 前へ</button>
+          <button class="study-nav-btn" id="sNext" ${st.pos>=st.ids.length-1?'disabled':''}>次へ →</button>
+        </div>
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="ghost-btn" id="sBackList">一覧にもどる</button>
+          <button class="ghost-btn" id="studyBackBtn">成績ページにもどる</button>
+        </div>
+      </div>`;
+    const sp = studySpeech(kp);
+    document.getElementById('studySpeakBtn').onclick = ()=> speak(sp);
+    if(UI.autoRead) speak(sp);
+    document.getElementById('studySearchBtn').onclick = ()=> openGoogleSearch(kp.t + " 文化史");
+    document.getElementById('sPrev').onclick = ()=>{ if(st.pos>0){ st.pos--; render(); } };
+    document.getElementById('sNext').onclick = ()=>{ if(st.pos<st.ids.length-1){ st.pos++; render(); } };
+    document.getElementById('sBackList').onclick = ()=>{ st.showDetail = false; render(); };
+    wireStudyCommon(st);
+    return;
+  }
+
+  renderCultureRail(null);
+  let body = "", lastCat = -1;
+  st.ids.forEach((id, i)=>{
+    const kp = BY_ID[id];
+    if(kp.c !== lastCat){ body += `<div class="study-list-cat">${esc(CATS[kp.c])}</div>`; lastCat = kp.c; }
+    body += `<div class="study-list-row" data-pos="${i}">
+      <span class="sl-t">${IMP_MARK[kp.p]}${esc(kp.t)}</span>
+      <span class="sl-a">${esc(kp.a)}</span>
+      ${studyStatusChip(progress, id)}
+    </div>`;
+  });
+  app.innerHTML = `
+    <div class="card">
+      ${header}
+      <div class="study-list">${body}</div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="ghost-btn" id="studyBackBtn">成績ページにもどる</button>
+      </div>
+    </div>`;
+  app.querySelectorAll('.study-list-row').forEach(row=>{
+    row.onclick = ()=>{ st.pos = Number(row.dataset.pos); st.showDetail = true; render(); };
+  });
+  wireStudyCommon(st);
+}
+
+function renderStudyCard(app, st, progress, header){
+  if(!st.deck.length){
+    renderCultureRail(null);
+    app.innerHTML = `
+      <div class="card center-card">
+        ${header}
+        <div class="question-text">🎉 このデッキは終わりです</div>
+        <p style="font-size:13px; color:var(--sumi-soft);">「覚えた」を押した語は画面上でデッキから外れただけで、記録は何も変わっていません。</p>
+        <div class="btn-row">
+          <button class="big-btn" id="deckReset">もう一度シャッフルして始める</button>
+          <button class="ghost-btn" id="studyBackBtn">成績ページにもどる</button>
+        </div>
+      </div>`;
+    document.getElementById('deckReset').onclick = ()=>{ st.deck = shuffle(st.ids); st.flipped = false; st.learned = 0; render(); };
+    wireStudyCommon(st);
+    return;
+  }
+  const kp = BY_ID[st.deck[0]];
+  renderCultureRail(kp.k === "culture" ? kp.a : null);
+  const frontIsDesc = st.dir === "A"; // A方向＝説明→語（出題形式Aと同じ向き）
+  const front = frontIsDesc ? kp.d : kp.t;
+  const backMain = frontIsDesc ? kp.t : kp.a;
+  const backSub = frontIsDesc ? `${kp.y ? kp.y + "／" : ""}${kp.a}${kp.n ? "<br>" + esc(kp.n) : ""}` : `${esc(kp.d)}${kp.n ? "<br>" + esc(kp.n) : ""}`;
+  const pct = Math.round(((st.learned)/(st.ids.length))*100);
+
+  app.innerHTML = `
+    <div class="card">
+      ${header}
+      <div class="dir-toggle">
+        <button class="dir-btn ${st.dir==='A'?'active':''}" id="dirA">説明 → 語（形式A）</button>
+        <button class="dir-btn ${st.dir==='B'?'active':''}" id="dirB">語 → 文化・宗派（形式B）</button>
+      </div>
+      <div class="study-progress-track"><div class="study-progress-fill" style="width:${pct}%"></div></div>
+      <div class="stat-strip"><span>残り <b>${st.deck.length}</b> 枚</span><span>覚えた ${st.learned}</span><span>${esc(CATS[kp.c])}</span></div>
+      <div class="flip-card" id="flipCard">
+        <div class="fc-side">${st.flipped ? "うら（こたえ）" : "おもて（といかけ）"}</div>
+        <div class="fc-main">${st.flipped ? esc(backMain) : esc(front)}</div>
+        ${st.flipped ? `<div class="fc-sub">${backSub}</div>` : ''}
+        <div class="fc-hint">${st.flipped ? "もう一度タップでおもてにもどる" : "タップしてめくる"}</div>
+      </div>
+      <div class="study-icons-row" style="margin-top:12px;">
+        <button class="speak-btn" id="cardSpeakBtn">🔊 <span class="lbl">読み上げ</span></button>
+        <button class="search-btn" id="cardSearchBtn">🔍 <span class="lbl">Googleで調べる</span></button>
+      </div>
+      <div class="deck-row">
+        <button class="deck-btn got" id="deckGot">✓ 覚えた（デッキから外す）</button>
+        <button class="deck-btn notyet" id="deckNot">↻ まだ（あとでもう一度）</button>
+      </div>
+      <div class="hint-note">「覚えた」は画面上だけの一時的な状態です。習得判定・記録・同期には一切影響しません。</div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="ghost-btn" id="studyBackBtn">成績ページにもどる</button>
+      </div>
+    </div>`;
+
+  const sp = studySpeech(kp);
+  document.getElementById('cardSpeakBtn').onclick = ()=> speak(sp);
+  if(UI.autoRead) speak(st.flipped ? sp : (frontIsDesc ? kp.d : kp.t));
+  document.getElementById('cardSearchBtn').onclick = ()=> openGoogleSearch(kp.t + " 文化史");
+  document.getElementById('flipCard').onclick = ()=>{ st.flipped = !st.flipped; render(); };
+  document.getElementById('dirA').onclick = ()=>{ st.dir = "A"; st.flipped = false; render(); };
+  document.getElementById('dirB').onclick = ()=>{ st.dir = "B"; st.flipped = false; render(); };
+  document.getElementById('deckGot').onclick = ()=>{ st.deck.shift(); st.learned++; st.flipped = false; render(); };
+  document.getElementById('deckNot').onclick = ()=>{ const c = st.deck.shift(); st.deck.push(c); st.flipped = false; render(); };
+  wireStudyCommon(st);
+}
+
+function wireStudyCommon(st){
+  const tl = document.getElementById('tabList');
+  const tc = document.getElementById('tabCard');
+  if(tl) tl.onclick = ()=>{ st.tab = "list"; st.showDetail = false; render(); };
+  if(tc) tc.onclick = ()=>{ st.tab = "card"; st.flipped = false; render(); };
+  const back = document.getElementById('studyBackBtn');
+  if(back) back.onclick = ()=>{ state.study = null; state.screen = "home"; render(); };
+}
+
+// ---------------------------------------------------------------- モーダル
+function renderModalOverlay(){
+  let overlay = document.getElementById('modalOverlay');
+  if(!state.modal){ if(overlay) overlay.remove(); return; }
+  if(!overlay){ overlay = document.createElement('div'); overlay.id = 'modalOverlay'; document.body.appendChild(overlay); }
+  overlay.className = 'modal-overlay';
+  const m = state.modal;
+  const close = ()=>{ state.modal = null; render(); };
+
+  if(m.type === 'noTarget'){
+    const msg = m.mode === "review"
+      ? "いまの出題範囲には「要注意習得」の語がありません。範囲を広げるか、通常のモードで学習してください。"
+      : "いまの出題範囲に、出題できる語がありません。カテゴリーや重要度の絞り込みを広げてください。";
+    overlay.innerHTML = `<div class="modal-box"><h3>出題できる語がありません</h3><p>${msg}</p>
+      <div class="modal-btn-row"><button class="sync-btn" id="modalCancelBtn">OK</button></div></div>`;
+    document.getElementById('modalCancelBtn').onclick = close;
+    return;
+  }
+  if(m.type === 'importConfirm'){
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>記録を置き換えますか？</h3>
+        <p>読み込んだファイルの保存日時：${esc(m.savedAt)}<br>${esc(m.summary)}</p>
+        <p style="color:var(--shuiro);">この端末にある現在の記録は、読み込んだ内容で<b>すべて置き換わります</b>。元には戻せません。</p>
+        <div class="modal-btn-row">
+          <button class="sync-btn warn" id="importConfirmBtn">置き換える</button>
+          <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
+        </div>
+      </div>`;
+    document.getElementById('importConfirmBtn').onclick = confirmImportReplace;
+    document.getElementById('modalCancelBtn').onclick = close;
+    return;
+  }
+  if(m.type === 'importMismatch'){
+    overlay.innerHTML = `<div class="modal-box"><h3>読み込めませんでした</h3><p>${esc(m.reason)}</p>
+      <div class="modal-btn-row"><button class="ghost-btn" id="modalCancelBtn">閉じる</button></div></div>`;
+    document.getElementById('modalCancelBtn').onclick = close;
+    return;
+  }
+  if(m.type === 'listBlocked'){
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>書き出しを中止しました</h3>
+        <p>この端末にもクラウドにも、ID ${esc(AUTH ? AUTH.id : "")}（${esc(accountName())}）の学習記録がまだありません。<br>
+        空の一覧でスプレッドシートを上書きしてしまうため、書き出しを中止しました。</p>
+        <ul style="text-align:left; font-size:12.5px; color:var(--sumi-soft); line-height:2; padding-left:1.2em; margin:0 0 14px;">
+          <li>まず1回学習して、結果画面まで進んでください。</li>
+          <li>ほかの端末で学習ずみのときは、ポータルで同じIDにログインしているかご確認ください。</li>
+        </ul>
+        <div class="modal-btn-row"><button class="sync-btn" id="modalCancelBtn">OK</button></div>
+      </div>`;
+    document.getElementById('modalCancelBtn').onclick = close;
+    return;
+  }
+  if(m.type === 'resetRecordsConfirm'){
+    const acc = AUTH ? getCommittedStats(AUTH.id) : blankAccountProgress();
+    const hasRecords = dbHasRecords({ progress: { x: acc } });
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>このツールの記録を消しますか？</h3>
+        <p>ID ${esc(AUTH ? AUTH.id : "")} の、このツール（${TOOL_NAME}）の記録だけを消します。ほかのツールや、ほかのお子さんの記録には影響しません。</p>
+        <p style="color:var(--shuiro);"><b>${hasRecords ? "この操作は元に戻せません。学習の記録がすべて消えます。" : "（今のところ記録はまだありません）"}</b></p>
+        <div class="modal-btn-row">
+          <button class="sync-btn warn" id="resetConfirmBtn">記録を消す</button>
+          <button class="ghost-btn" id="modalCancelBtn">キャンセル</button>
+        </div>
+      </div>`;
+    document.getElementById('resetConfirmBtn').onclick = resetMyRecords;
+    document.getElementById('modalCancelBtn').onclick = close;
+    return;
+  }
+}
+
+// =====================================================================
+// 起動
+// =====================================================================
+loadAll();
+state.accountId = AUTH ? AUTH.id : null;
+state.screen = (ready() && loggedIn()) ? "home" : "gate";
+
+async function initialLoad(){
+  render();
+  if(!ready() || !loggedIn()) return;
+  try{
+    if(!dbHasRecords(STORE)){
+      // 新しい端末では、空の「0件」ホームを一瞬見せるより、先に1回だけ取得を待つ
+      state.screen = "loading";
+      render();
+      await pullCloud(true);
+    } else {
+      setSyncStatus("pending", "☁… クラウドと同期しています");
+      pullCloud(true);
+    }
+  }catch(e){
+    handleSyncError(e);
+  }finally{
+    if(state.screen === "loading"){ state.screen = "home"; render(); }
+  }
+}
+initialLoad();
+
+// ポータルや他ツールでのログイン状態の変化に追従する。
+// ただし出題中・覚えるモード中は、1問目/1枚目から必ず割り込まない（音声仕様書 §5）
+window.addEventListener('storage', (ev)=>{
+  if(ev.key !== AUTH_KEY && ev.key !== SYNC_KEY) return;
+  if(state.screen === "quiz" && state.session) return;
+  if(state.screen === "study" && state.study) return;
+  loadAll();
+  state.accountId = AUTH ? AUTH.id : null;
+  state.screen = (ready() && loggedIn()) ? "home" : "gate";
+  initialLoad();
+});
+</script>
+</body>
+</html>
