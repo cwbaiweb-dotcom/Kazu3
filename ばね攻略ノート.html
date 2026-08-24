@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>中学受験 ばね攻略ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#EAEFF2;
+  --surface:#FFFFFF;
+  --surface-2:#F4F8FA;
+  --line:#CCD9E0;
+  --line-strong:#9FB3BF;
+  --ink:#15212A;
+  --ink-2:#516775;
+  --indigo:#1B4F79;
+  --indigo-soft:#E1EDF6;
+  --vermilion:#B93C28;
+  --vermilion-soft:#FAE8E4;
+  --moss:#1F6B5B;
+  --moss-soft:#DFEFEA;
+  --on-accent:#FFFFFF;
+  --shadow:0 1px 2px rgba(21,33,42,.05), 0 8px 24px -16px rgba(21,33,42,.35);
+
+  --font-disp:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --font-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F171D;
+    --surface:#18232C;
+    --surface-2:#1D2A34;
+    --line:#2C3D49;
+    --line-strong:#5A7385;
+    --ink:#E1EAEF;
+    --ink-2:#9CB0BD;
+    --indigo:#84B7E2;
+    --indigo-soft:#152E3F;
+    --vermilion:#EC8570;
+    --vermilion-soft:#34211D;
+    --moss:#5FC0A6;
+    --moss-soft:#14302A;
+    --on-accent:#0F171D;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F171D;
+  --surface:#18232C;
+  --surface-2:#1D2A34;
+  --line:#2C3D49;
+  --line-strong:#5A7385;
+  --ink:#E1EAEF;
+  --ink-2:#9CB0BD;
+  --indigo:#84B7E2;
+  --indigo-soft:#152E3F;
+  --vermilion:#EC8570;
+  --vermilion-soft:#34211D;
+  --moss:#5FC0A6;
+  --moss-soft:#14302A;
+  --on-accent:#0F171D;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--indigo)}
+:focus-visible{outline:2px solid var(--indigo);outline-offset:3px;border-radius:3px}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px 96px}
+
+.masthead{
+  border-bottom:1px solid var(--line);
+  background:var(--ground);
+  position:relative;
+  overflow:hidden;
+}
+.masthead::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0 39px,var(--line) 39px 40px),
+             repeating-linear-gradient(0deg,transparent 0 39px,var(--line) 39px 40px);
+  opacity:.55;
+  -webkit-mask-image:linear-gradient(to bottom right,rgba(0,0,0,.9),transparent 70%);
+  mask-image:linear-gradient(to bottom right,rgba(0,0,0,.9),transparent 70%);
+  pointer-events:none;
+}
+.masthead-inner{
+  max-width:1200px;margin:0 auto;padding:56px 24px 44px;
+  position:relative;
+  display:flex;flex-wrap:wrap;gap:40px;align-items:flex-end;justify-content:space-between;
+}
+.eyebrow{
+  font-family:var(--font-mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--indigo);margin:0 0 14px;
+}
+h1{
+  font-family:var(--font-disp);font-weight:700;
+  font-size:clamp(32px,5.2vw,52px);line-height:1.25;letter-spacing:.02em;
+  margin:0;text-wrap:balance;
+}
+.lede{margin:14px 0 0;max-width:34em;color:var(--ink-2);font-size:15.5px}
+.masthead-fig{flex:0 0 auto}
+
+.laws{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;
+  background:var(--line);border-top:1px solid var(--line);
+  position:relative;
+}
+.law{background:var(--surface);padding:22px 24px}
+.law-n{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--vermilion);display:block;margin-bottom:6px}
+.law b{font-family:var(--font-disp);font-size:17px;font-weight:700;display:block;line-height:1.6}
+.law p{margin:6px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.7}
+
+/* ---------- layout ---------- */
+.cols{display:grid;grid-template-columns:214px minmax(0,1fr);gap:56px;align-items:start;padding-top:56px}
+@media (max-width:900px){.cols{grid-template-columns:1fr;gap:28px}}
+
+nav.toc{position:sticky;top:24px;font-size:13.5px}
+@media (max-width:900px){
+  nav.toc{position:static;border:1px solid var(--line);background:var(--surface);padding:16px 18px}
+}
+.toc h2{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-2);margin:0 0 12px;font-weight:500;
+}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+@media (max-width:900px){.toc ol{flex-direction:row;flex-wrap:wrap;gap:4px 14px}}
+.toc a{
+  display:block;text-decoration:none;color:var(--ink-2);padding:4px 0 4px 12px;
+  border-left:2px solid var(--line);line-height:1.5;
+}
+@media (max-width:900px){.toc a{border-left:0;padding-left:0}}
+.toc a:hover{color:var(--indigo);border-left-color:var(--indigo)}
+.toc .toc-num{font-family:var(--font-mono);font-size:11px;color:var(--line-strong);margin-right:7px}
+
+main{min-width:0;display:flex;flex-direction:column;gap:64px}
+section{scroll-margin-top:24px}
+
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.sec-num{font-family:var(--font-mono);font-size:12px;color:var(--vermilion);letter-spacing:.1em;flex:0 0 auto}
+h2.sec-title{font-family:var(--font-disp);font-size:clamp(21px,3vw,27px);font-weight:700;margin:0;letter-spacing:.02em}
+.sec-sub{margin-left:auto;font-size:12px;color:var(--ink-2);font-family:var(--font-mono);flex:0 0 auto}
+@media (max-width:620px){.sec-sub{display:none}}
+
+h3{font-family:var(--font-disp);font-size:18px;font-weight:700;margin:0 0 10px;letter-spacing:.02em}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+
+.stack{display:flex;flex-direction:column;gap:26px}
+
+/* ---------- components ---------- */
+.card{background:var(--surface);border:1px solid var(--line);padding:24px 26px;box-shadow:var(--shadow)}
+@media (max-width:520px){.card{padding:18px 16px}}
+
+.keybox{border-left:4px solid var(--indigo);background:var(--indigo-soft);padding:16px 20px}
+.keybox .k-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;color:var(--indigo);display:block;margin-bottom:4px}
+.keybox .k-main{font-family:var(--font-disp);font-size:clamp(16px,2.6vw,20px);font-weight:700;line-height:1.6}
+
+.warn{border-left:4px solid var(--vermilion);background:var(--vermilion-soft);padding:14px 18px;font-size:14.5px}
+.warn b{color:var(--vermilion)}
+
+.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:0;padding:0}
+.term{border:1px solid var(--line);background:var(--surface-2);padding:14px 16px}
+.term dt{font-family:var(--font-disp);font-weight:700;font-size:15px;margin-bottom:4px}
+.term dd{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.7}
+
+figure{margin:0;background:var(--surface-2);border:1px solid var(--line);padding:18px 16px 12px}
+figure svg{display:block;width:100%;height:auto;max-width:520px;margin:0 auto}
+figcaption{margin-top:10px;font-size:12.5px;color:var(--ink-2);text-align:center;font-family:var(--font-mono);line-height:1.7}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:14px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{
+  background:var(--surface-2);font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;
+  font-weight:600;color:var(--ink-2);text-transform:uppercase;white-space:nowrap;
+}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+td.num,th.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody th{font-weight:700;white-space:nowrap}
+
+/* ---------- pattern cards ---------- */
+.patterns{display:flex;flex-direction:column;gap:20px}
+.pat{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+.pat-head{display:flex;align-items:center;gap:14px;padding:16px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+@media (max-width:520px){.pat-head{padding:14px 16px}}
+.pat-id{
+  font-family:var(--font-mono);font-weight:600;font-size:13px;
+  width:30px;height:30px;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--indigo);color:var(--on-accent);
+}
+.pat-name{font-family:var(--font-disp);font-size:17px;font-weight:700;margin:0;flex:1 1 auto;min-width:0;letter-spacing:.02em}
+.freq{display:flex;gap:4px;align-items:center;flex:0 0 auto}
+.freq i{width:7px;height:7px;border-radius:50%;background:var(--line-strong);display:block}
+.freq i.on{background:var(--vermilion)}
+.freq span{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-2);margin-left:5px;letter-spacing:.08em}
+
+.pat-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px}
+@media (max-width:520px){.pat-body{padding:16px}}
+.pat-body figure svg{max-width:440px}
+.ask{font-size:14.5px;color:var(--ink-2)}
+.ask b{color:var(--ink);font-weight:700}
+
+.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:8px}
+.steps li{position:relative;padding-left:32px;font-size:14.5px;line-height:1.75}
+.steps li::before{
+  counter-increment:s;content:counter(s);
+  position:absolute;left:0;top:3px;width:20px;height:20px;
+  display:grid;place-items:center;
+  font-family:var(--font-mono);font-size:11px;
+  border:1px solid var(--moss);color:var(--moss);border-radius:50%;
+}
+
+.ex{border:1px solid var(--line);background:var(--surface-2)}
+.ex-q{padding:14px 18px;font-size:14.5px}
+.ex-q .tag{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;color:var(--moss);
+  display:block;margin-bottom:5px;
+}
+details{border-top:1px dashed var(--line)}
+summary{
+  cursor:pointer;padding:10px 18px;font-family:var(--font-mono);font-size:12px;
+  letter-spacing:.1em;color:var(--indigo);list-style:none;user-select:none;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details[open] summary::before{content:"▾ "}
+.ex-a{padding:0 18px 16px;font-size:14px;line-height:1.85}
+.ex-a .calc{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:13px;background:var(--surface);border:1px solid var(--line);padding:10px 14px;margin:8px 0;overflow-x:auto;white-space:pre-wrap}
+.ex-a .ans{font-weight:700;color:var(--moss)}
+
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.checks li{background:var(--surface);padding:14px 18px 14px 46px;position:relative;font-size:14.5px;line-height:1.75}
+.checks li::before{
+  content:"×";position:absolute;left:16px;top:12px;
+  font-family:var(--font-mono);font-size:15px;color:var(--vermilion);font-weight:600;
+}
+.checks li b{color:var(--vermilion)}
+.checks li em{font-style:normal;color:var(--moss);font-weight:700}
+
+.finals{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.final{background:var(--surface);padding:18px 20px}
+.final h4{margin:0 0 6px;font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;color:var(--ink-2);font-weight:500;text-transform:uppercase}
+.final p{font-family:var(--font-disp);font-size:15.5px;font-weight:700;line-height:1.65;margin:0}
+.final p span{color:var(--indigo)}
+
+.foot{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-2);font-family:var(--font-mono);text-align:center;line-height:1.9}
+
+/* svg theming */
+.d-line{stroke:var(--line-strong);fill:none;stroke-width:1.5}
+.d-spring{stroke:var(--indigo);fill:none;stroke-width:2;stroke-linejoin:round}
+.d-mass{fill:var(--indigo-soft);stroke:var(--indigo);stroke-width:1.5}
+.d-dim{stroke:var(--vermilion);fill:none;stroke-width:1.2}
+.d-dash{stroke:var(--line-strong);fill:none;stroke-width:1;stroke-dasharray:4 4}
+.d-t{font-family:var(--font-mono);font-size:11px;fill:var(--ink-2)}
+.d-t.hi{fill:var(--vermilion)}
+.d-t.in{fill:var(--indigo)}
+.d-t.b{font-family:var(--font-body);font-size:12px;fill:var(--ink);font-weight:700}
+.d-fill{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.5}
+.d-plot{stroke:var(--indigo);fill:none;stroke-width:2.2;stroke-linejoin:round}
+.d-plot2{stroke:var(--moss);fill:none;stroke-width:2.2;stroke-dasharray:6 4}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="sp" vector-effect="non-scaling-stroke" fill="none"
+      d="M0,0 V6 L11,10 L-11,18 L11,26 L-11,34 L11,42 L-11,50 L11,58 L0,62 V68"/>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--line-strong)" stroke-width="1.4"/>
+    </pattern>
+    <marker id="ah" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="var(--vermilion)"/>
+    </marker>
+  </defs>
+</svg>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <p class="eyebrow">中学受験理科 / 力学</p>
+      <h1>ばね攻略ノート</h1>
+      <p class="lede">「のび」は力に比例する——原理はこれ一つ。難関校の問題が難しく見えるのは、原理が難しいからではなく、<b>そのばね1本に何gかかっているか</b>を突き止める道のりが長いからです。標準から難関まで、知識と出題パターンを一枚に整理しました。</p>
+    </div>
+    <figure class="masthead-fig" style="background:none;border:0;padding:0;width:130px">
+      <svg viewBox="0 0 130 190" role="img" aria-label="天井からつるしたばねとおもりの図">
+        <g style="color:var(--line-strong)">
+          <rect x="20" y="8" width="90" height="9" fill="url(#hatch)"/>
+        </g>
+        <line class="d-line" x1="20" y1="17" x2="110" y2="17"/>
+        <use href="#sp" class="d-spring" transform="translate(65,17) scale(1,1.55)"/>
+        <rect class="d-mass" x="45" y="124" width="40" height="34" rx="2"/>
+        <text class="d-t in" x="65" y="146" text-anchor="middle">100g</text>
+        <line class="d-dim" x1="112" y1="17" x2="112" y2="124" marker-start="url(#ah)" marker-end="url(#ah)"/>
+        <text class="d-t hi" x="118" y="74" transform="rotate(-90 118 74)" text-anchor="middle">全長</text>
+      </svg>
+    </figure>
+  </div>
+  <div class="laws">
+    <div class="law">
+      <span class="law-n">鉄則 01</span>
+      <b>長さ ＝ 自然長 ＋ のび</b>
+      <p>問題が聞いているのが「のび」か「全長」か。まずそこを線で囲む。</p>
+    </div>
+    <div class="law">
+      <span class="law-n">鉄則 02</span>
+      <b>のびは、そのばね1本にかかる力に比例</b>
+      <p>全体につるした重さではない。分けられたあとの力で計算する。</p>
+    </div>
+    <div class="law">
+      <span class="law-n">鉄則 03</span>
+      <b>まず力を決める、計算はその後</b>
+      <p>てこ・滑車・浮力はすべて「かかる力」を変えるための飾り。</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="cols">
+
+<nav class="toc" aria-label="目次">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="toc-num">01</span>基本の原理と用語</a></li>
+    <li><a href="#s2"><span class="toc-num">02</span>表とグラフの読み取り</a></li>
+    <li><a href="#s3"><span class="toc-num">03</span>つなぎ方の型</a></li>
+    <li><a href="#s4"><span class="toc-num">04</span>力のかけ方の型</a></li>
+    <li><a href="#s5"><span class="toc-num">05</span>出題パターン A〜J</a></li>
+    <li><a href="#s6"><span class="toc-num">06</span>ひっかけ12連発</a></li>
+    <li><a href="#s7"><span class="toc-num">07</span>直前チェック</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ============ 01 ============ -->
+<section id="s1">
+  <div class="sec-head">
+    <span class="sec-num">01</span>
+    <h2 class="sec-title">基本の原理と用語</h2>
+    <span class="sec-sub">ここを外すと全部ずれる</span>
+  </div>
+  <div class="stack">
+
+    <div class="keybox">
+      <span class="k-label">HOOKE'S LAW</span>
+      <div class="k-main">ばねののびは、ばねを引く力の大きさに比例する</div>
+    </div>
+
+    <p>小学生の答案では「ばね定数」という言葉は使わず、<b>「〇gで1cmのびる」</b>という形で持っておくのが最速です。20gで1cmのびるばねなら、150gでは 150 ÷ 20 = 7.5cm。比例式（20 : 1 ＝ 150 : □）で書いてもかまいませんが、「1cmあたり何g」に直しておくと、直列・並列でつまずきません。</p>
+
+    <dl class="terms">
+      <div class="term"><dt>自然長</dt><dd>何もつるさないときの長さ。グラフの<b>切片</b>として出てくる。</dd></div>
+      <div class="term"><dt>のび</dt><dd>自然長より長くなった分。力に比例するのは<b>これだけ</b>。</dd></div>
+      <div class="term"><dt>全長（長さ）</dt><dd>自然長＋のび。答えの単位が cm のとき、どちらを聞かれたか要確認。</dd></div>
+      <div class="term"><dt>ばねにかかる力</dt><dd>そのばね1本が受け持つ重さ。並列なら分けたあと、てこならモーメントで決まる。</dd></div>
+    </dl>
+
+    <figure>
+      <svg viewBox="0 0 400 210" role="img" aria-label="自然長・のび・全長を示した図">
+        <g style="color:var(--line-strong)"><rect x="30" y="6" width="330" height="9" fill="url(#hatch)"/></g>
+        <line class="d-line" x1="30" y1="15" x2="360" y2="15"/>
+        <!-- 自然長 -->
+        <use href="#sp" class="d-spring" transform="translate(110,15) scale(1,1.15)"/>
+        <text class="d-t b" x="110" y="118" text-anchor="middle">おもり なし</text>
+        <line class="d-dim" x1="62" y1="15" x2="62" y2="93" marker-start="url(#ah)" marker-end="url(#ah)"/>
+        <text class="d-t hi" x="55" y="58" text-anchor="middle" transform="rotate(-90 55 58)">自然長</text>
+        <!-- のび -->
+        <use href="#sp" class="d-spring" transform="translate(280,15) scale(1,1.85)"/>
+        <rect class="d-mass" x="258" y="141" width="44" height="32" rx="2"/>
+        <text class="d-t in" x="280" y="161" text-anchor="middle">おもり</text>
+        <text class="d-t b" x="280" y="196" text-anchor="middle">おもり あり</text>
+        <line class="d-dash" x1="200" y1="93" x2="345" y2="93"/>
+        <line class="d-dim" x1="330" y1="15" x2="330" y2="93" marker-start="url(#ah)" marker-end="url(#ah)"/>
+        <line class="d-dim" x1="330" y1="93" x2="330" y2="141" marker-start="url(#ah)" marker-end="url(#ah)"/>
+        <text class="d-t hi" x="338" y="58">自然長</text>
+        <text class="d-t hi" x="338" y="121">のび</text>
+      </svg>
+      <figcaption>自然長／のび／全長。図に3本の寸法線を書き込むクセをつける</figcaption>
+    </figure>
+
+    <div class="warn"><b>単位の約束。</b>中学受験では「g」を重さ（＝力）としてそのまま使います。「100gのおもり」と「100gの力で引く」は同じ意味だと考えて構いません。</div>
+  </div>
+</section>
+
+<!-- ============ 02 ============ -->
+<section id="s2">
+  <div class="sec-head">
+    <span class="sec-num">02</span>
+    <h2 class="sec-title">表とグラフの読み取り</h2>
+    <span class="sec-sub">出題の入口はほぼここ</span>
+  </div>
+  <div class="stack">
+
+    <h3>表：差を取って、0gまで戻す</h3>
+    <p>表に 0g の行が載っていないのが定番です。まず<b>となり合う2列の差</b>から「〇gで〇cm」を出し、それを使って 0g のところまで引き戻せば自然長が出ます。</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>おもりの重さ</th><th class="num">0g</th><th class="num">20g</th><th class="num">40g</th><th class="num">60g</th><th class="num">100g</th></tr></thead>
+        <tbody>
+          <tr><th>ばねの長さ</th><td class="num">（11cm）</td><td class="num">13cm</td><td class="num">15cm</td><td class="num">17cm</td><td class="num">（21cm）</td></tr>
+          <tr><th>のび</th><td class="num">0cm</td><td class="num">2cm</td><td class="num">4cm</td><td class="num">6cm</td><td class="num">10cm</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>20g で 2cm ＝ <b>10g で 1cm</b>。20g のときの長さ 13cm から のび 2cm を引いて、自然長は 11cm。カッコの値は表になくても求められます。</p>
+
+    <h3>グラフ：縦軸が「のび」か「長さ」か</h3>
+    <figure>
+      <svg viewBox="0 0 440 200" role="img" aria-label="のびのグラフと長さのグラフの比較">
+        <!-- left: nobi -->
+        <line class="d-line" x1="40" y1="20" x2="40" y2="160"/>
+        <line class="d-line" x1="40" y1="160" x2="190" y2="160"/>
+        <path class="d-plot" d="M40,160 L180,40"/>
+        <circle cx="40" cy="160" r="3.5" fill="var(--indigo)"/>
+        <text class="d-t" x="34" y="16" text-anchor="end">のび</text>
+        <text class="d-t" x="190" y="176" text-anchor="end">重さ</text>
+        <text class="d-t hi" x="48" y="176">原点を通る</text>
+        <text class="d-t b" x="115" y="196" text-anchor="middle">縦軸＝のび</text>
+        <!-- right: length -->
+        <line class="d-line" x1="270" y1="20" x2="270" y2="160"/>
+        <line class="d-line" x1="270" y1="160" x2="420" y2="160"/>
+        <path class="d-plot2" d="M270,120 L410,30"/>
+        <circle cx="270" cy="120" r="3.5" fill="var(--moss)"/>
+        <line class="d-dash" x1="262" y1="120" x2="415" y2="120"/>
+        <text class="d-t" x="264" y="16" text-anchor="end">長さ</text>
+        <text class="d-t" x="420" y="176" text-anchor="end">重さ</text>
+        <text class="d-t hi" x="278" y="112">切片＝自然長</text>
+        <text class="d-t b" x="345" y="196" text-anchor="middle">縦軸＝長さ</text>
+      </svg>
+      <figcaption>同じばねでも、縦軸のとり方でグラフの形が変わる。傾きはどちらも同じ</figcaption>
+    </figure>
+    <div class="warn"><b>頻出の落とし穴。</b>「グラフを選べ」の問題では、原点を通る／通らないだけで正解が決まることが多い。軸のラベルを読む前に線の形を選ばないこと。傾きが大きいグラフは「やわらかい（よくのびる）ばね」です。</div>
+  </div>
+</section>
+
+<!-- ============ 03 ============ -->
+<section id="s3">
+  <div class="sec-head">
+    <span class="sec-num">03</span>
+    <h2 class="sec-title">つなぎ方の型</h2>
+    <span class="sec-sub">直列・並列・切断</span>
+  </div>
+  <div class="stack">
+
+    <figure>
+      <svg viewBox="0 0 440 250" role="img" aria-label="直列つなぎと並列つなぎの比較図">
+        <!-- serial -->
+        <g style="color:var(--line-strong)"><rect x="30" y="6" width="150" height="9" fill="url(#hatch)"/></g>
+        <line class="d-line" x1="30" y1="15" x2="180" y2="15"/>
+        <use href="#sp" class="d-spring" transform="translate(105,15) scale(1,1.1)"/>
+        <use href="#sp" class="d-spring" transform="translate(105,90) scale(1,1.1)"/>
+        <circle cx="105" cy="88" r="3" fill="var(--indigo)"/>
+        <rect class="d-mass" x="83" y="167" width="44" height="32" rx="2"/>
+        <text class="d-t in" x="105" y="187" text-anchor="middle">100g</text>
+        <text class="d-t b" x="105" y="224" text-anchor="middle">直列（たてに）</text>
+        <text class="d-t hi" x="105" y="242" text-anchor="middle">どちらにも100g／のびは足す</text>
+        <!-- parallel -->
+        <g style="color:var(--line-strong)"><rect x="250" y="6" width="160" height="9" fill="url(#hatch)"/></g>
+        <line class="d-line" x1="250" y1="15" x2="410" y2="15"/>
+        <use href="#sp" class="d-spring" transform="translate(295,15) scale(1,1.1)"/>
+        <use href="#sp" class="d-spring" transform="translate(365,15) scale(1,1.1)"/>
+        <rect class="d-fill" x="272" y="88" width="116" height="8"/>
+        <line class="d-line" x1="330" y1="96" x2="330" y2="120"/>
+        <rect class="d-mass" x="308" y="120" width="44" height="32" rx="2"/>
+        <text class="d-t in" x="330" y="140" text-anchor="middle">100g</text>
+        <text class="d-t b" x="330" y="224" text-anchor="middle">並列（よこに）</text>
+        <text class="d-t hi" x="330" y="242" text-anchor="middle">50gずつに分かれる／のびは半分</text>
+      </svg>
+      <figcaption>直列は「力そのまま・のび合計」、並列は「力を分ける・のびは同じ」</figcaption>
+    </figure>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>つなぎ方・操作</th><th>1本にかかる力</th><th>のび（同じ力で比べて）</th><th>覚え方</th></tr></thead>
+        <tbody>
+          <tr><th>同じばね2本を直列</th><td class="num">そのまま（100%）</td><td class="num">2倍</td><td>力は素通り、のびが積み上がる</td></tr>
+          <tr><th>同じばね<i>n</i>本を直列</th><td class="num">そのまま</td><td class="num"><i>n</i>倍</td><td>長いばね＝よくのびる</td></tr>
+          <tr><th>同じばね2本を並列</th><td class="num">1/2</td><td class="num">1/2</td><td>2人で持てば1人分は半分</td></tr>
+          <tr><th>同じばね<i>n</i>本を並列</th><td class="num">1/<i>n</i></td><td class="num">1/<i>n</i></td><td>本数で割るだけ</td></tr>
+          <tr><th>長さを 1/2 に切る</th><td class="num">そのまま</td><td class="num">1/2</td><td>短いばね＝のびにくい</td></tr>
+          <tr><th>長さを 3:1 に切る</th><td class="num">そのまま</td><td class="num">3/4 と 1/4</td><td>のびは長さに比例する</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warn"><b>並列で「1/2」が使えるのは条件つき。</b>①2本が<b>同じばね</b>で、②<b>おもりが真ん中</b>にあり、③つないだ棒が軽いとき。ばねの種類が違ったり、おもりが中央からずれたら、分け方はてこ（モーメント）で決まります → パターン F。</div>
+
+    <div class="card">
+      <h3>直列で種類の違うばねをつないだら</h3>
+      <p>力は両方に同じだけかかります。のびは<b>別々に計算して足す</b>、自然長も<b>別々に足す</b>。「全長 ＝ （自然長A＋自然長B）＋（のびA＋のびB）」と分けて書くのが事故防止になります。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 ============ -->
+<section id="s4">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
+    <h2 class="sec-title">力のかけ方の型</h2>
+    <span class="sec-sub">「両端引き」を制する</span>
+  </div>
+  <div class="stack">
+    <p>ばねは<b>両端を同じ大きさの力で引かれて</b>のびます。天井につるした場合、おもりが下に引く 100g と、天井が上に引き返す 100g がセット。だから「両側から100gずつ引く」も、答えは<b>100g分ののび</b>です。</p>
+
+    <figure>
+      <svg viewBox="0 0 440 272" role="img" aria-label="天井吊り・壁固定・両端引きの3つの場合の比較">
+        <!-- 1 ceiling -->
+        <rect x="40" y="12" width="70" height="8" fill="url(#hatch)"/>
+        <line class="d-line" x1="40" y1="20" x2="110" y2="20"/>
+        <use href="#sp" class="d-spring" transform="translate(75,20) scale(1,0.85)"/>
+        <rect class="d-mass" x="55" y="78" width="40" height="28" rx="2"/>
+        <text class="d-t in" x="75" y="96" text-anchor="middle">100g</text>
+        <text class="d-t b" x="75" y="128" text-anchor="middle">天井につるす</text>
+        <text class="d-t hi" x="75" y="146" text-anchor="middle">100g分</text>
+        <!-- 2 wall + pulley -->
+        <rect x="176" y="26" width="8" height="64" fill="url(#hatch)"/>
+        <line class="d-line" x1="184" y1="26" x2="184" y2="90"/>
+        <use href="#sp" class="d-spring" transform="translate(184,58) rotate(-90) scale(1,0.85)"/>
+        <line class="d-line" x1="242" y1="58" x2="276" y2="58"/>
+        <circle class="d-fill" cx="282" cy="58" r="10"/>
+        <line class="d-line" x1="292" y1="58" x2="292" y2="84"/>
+        <rect class="d-mass" x="274" y="84" width="36" height="26" rx="2"/>
+        <text class="d-t in" x="292" y="101" text-anchor="middle">100g</text>
+        <text class="d-t b" x="244" y="128" text-anchor="middle">かべ＋滑車</text>
+        <text class="d-t hi" x="244" y="146" text-anchor="middle">100g分</text>
+        <!-- 3 both ends -->
+        <text class="d-t b" x="220" y="180" text-anchor="middle">両側から引く</text>
+        <circle class="d-fill" cx="140" cy="204" r="10"/>
+        <circle class="d-fill" cx="300" cy="204" r="10"/>
+        <use href="#sp" class="d-spring" transform="translate(150,204) rotate(-90) scale(1,2.2)"/>
+        <line class="d-line" x1="140" y1="214" x2="140" y2="230"/>
+        <line class="d-line" x1="300" y1="214" x2="300" y2="230"/>
+        <rect class="d-mass" x="122" y="230" width="36" height="24" rx="2"/>
+        <rect class="d-mass" x="282" y="230" width="36" height="24" rx="2"/>
+        <text class="d-t in" x="140" y="246" text-anchor="middle">100g</text>
+        <text class="d-t in" x="300" y="246" text-anchor="middle">100g</text>
+        <text class="d-t hi" x="220" y="268" text-anchor="middle">これも100g分（200gではない）</text>
+      </svg>
+      <figcaption>3つとも、ばねののびは同じ。ばねばかりの目盛りも 100g を指す</figcaption>
+    </figure>
+
+    <dl class="terms">
+      <div class="term"><dt>ゆかに立てる（押しばね）</dt><dd>上に乗せた重さの分だけ<b>縮む</b>。「〇gで1cm縮む」と読みかえるだけで、計算はまったく同じ。</dd></div>
+      <div class="term"><dt>天井と床の間に固定</dt><dd>上のばねはのび、下のばねは縮む。両方が同じ向きにおもりを支えるので、力は<b>足し算</b>で分け合う。</dd></div>
+      <div class="term"><dt>ばねばかり</dt><dd>示す値は「片側にかかっている力」。ばねばかり自身の重さは無視するのが原則。</dd></div>
+      <div class="term"><dt>斜面・水中</dt><dd>ばねにかかる力＝おもりの重さから、他が支えた分を引いたもの。浮力なら「重さ−浮力」。</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ 05 ============ -->
+<section id="s5">
+  <div class="sec-head">
+    <span class="sec-num">05</span>
+    <h2 class="sec-title">出題パターン A〜J</h2>
+    <span class="sec-sub">●の数＝頻出度</span>
+  </div>
+
+  <div class="patterns">
+
+    <!-- A -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">A</div>
+        <h3 class="pat-name">表から自然長と比例定数を出す</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i class="on"></i><span>最頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「このばねの自然長は何cmですか」「100gのおもりをつるすと何cmになりますか」「長さを22cmにするには何gつるせばよいですか」</p>
+        <ol class="steps">
+          <li>となり合う2列の差から「〇gで〇cm」を作る。</li>
+          <li>どれか1列を使って、のびを引き算し自然長を出す。</li>
+          <li>聞かれているのが のび か 長さ かを確認して答える。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 190" role="img" aria-label="表の値を棒の長さで表し、0gまで戻して自然長を求める図">
+            <rect class="d-fill" x="90" y="39" width="88" height="12" stroke-dasharray="4 3"/>
+            <rect class="d-mass" x="90" y="69" width="104" height="12"/>
+            <rect class="d-mass" x="90" y="99" width="120" height="12"/>
+            <rect class="d-mass" x="90" y="129" width="136" height="12"/>
+            <line class="d-dash" x1="90" y1="28" x2="90" y2="152"/>
+            <text class="d-t" x="82" y="49" text-anchor="end">0g</text>
+            <text class="d-t" x="82" y="79" text-anchor="end">20g</text>
+            <text class="d-t" x="82" y="109" text-anchor="end">40g</text>
+            <text class="d-t" x="82" y="139" text-anchor="end">60g</text>
+            <text class="d-t hi" x="186" y="49">11cm ← 自然長</text>
+            <text class="d-t" x="202" y="79">13cm</text>
+            <text class="d-t" x="218" y="109">15cm</text>
+            <text class="d-t" x="234" y="139">17cm</text>
+            <line class="d-dim" x1="178" y1="61" x2="194" y2="61" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <line class="d-dim" x1="194" y1="91" x2="210" y2="91" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <line class="d-dim" x1="210" y1="121" x2="226" y2="121" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <text class="d-t hi" x="234" y="65">＋2cm</text>
+            <text class="d-t hi" x="250" y="95">＋2cm</text>
+            <text class="d-t hi" x="266" y="125">＋2cm</text>
+            <text class="d-t b" x="200" y="176" text-anchor="middle">差から「10gで1cm」→ 0gまで戻して自然長</text>
+          </svg>
+          <figcaption>表を「長さの棒グラフ」に描きかえると、自然長は左はしの共通部分</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 A</span>20gで13cm、40gで15cm、60gで17cm になるばねがある。(1) 自然長は。(2) 100gでは何cmか。(3) 長さを22cmにするには何gつるすか。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">20g ふえて 2cm のびる → 10g で 1cm
+(1) 13 − 2 = 11cm
+(2) 100g → のび10cm → 11 + 10 = 21cm
+(3) のび = 22 − 11 = 11cm → 11 × 10 = 110g</div>
+              <p class="ans">(1) 11cm　(2) 21cm　(3) 110g</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+
+    <!-- B -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">B</div>
+        <h3 class="pat-name">グラフの読み取り・作図・選択</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i class="on"></i><span>最頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「あてはまるグラフを選べ」「ばねBのグラフを書き加えよ」「グラフから自然長を読み取れ」</p>
+        <ol class="steps">
+          <li>縦軸のラベルを読む。「のび」なら原点を通る、「長さ」なら切片＝自然長。</li>
+          <li>切片と、読みやすい格子点（例：100gのとき）の2点だけで直線が引ける。</li>
+          <li>2本のばねを比べるときは <b>傾きが大きい＝よくのびる（やわらかい）</b>。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 180" role="img" aria-label="やわらかいばねとかたいばねののびのグラフ">
+            <line class="d-line" x1="60" y1="20" x2="60" y2="140"/>
+            <line class="d-line" x1="60" y1="140" x2="360" y2="140"/>
+            <path class="d-plot" d="M60,140 L248,30"/>
+            <path class="d-plot2" d="M60,140 L336,78"/>
+            <circle cx="60" cy="140" r="4" fill="var(--indigo)"/>
+            <text class="d-t" x="54" y="24" text-anchor="end">のび</text>
+            <text class="d-t" x="360" y="158" text-anchor="end">おもりの重さ</text>
+            <text class="d-t in" x="254" y="34">ばねA：よくのびる</text>
+            <text class="d-t" x="342" y="72" text-anchor="end" fill="var(--moss)">ばねB：のびにくい</text>
+            <text class="d-t hi" x="64" y="160">縦軸が「のび」なら原点を通る</text>
+          </svg>
+          <figcaption>縦軸が「長さ」なら、2本とも自然長の高さから出発する</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 B</span>例題Aのばねについて、横軸を重さ、縦軸を「のび」としたグラフを書くと、どんな直線になるか。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">通る点：(0g, 0cm) と (100g, 10cm)</div>
+              <p>原点を通り、100g のとき 10cm を通る直線。<span class="ans">縦軸が「長さ」なら、同じ傾きのまま (0g, 11cm) から出発する直線</span>になる。</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+
+    <!-- C -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">C</div>
+        <h3 class="pat-name">直列・並列の組み合わせ</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i class="on"></i><span>最頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「全体の長さは何cmか」「ばねAののびは何cmか」「同じ長さにするには何本つなげばよいか」</p>
+        <ol class="steps">
+          <li>図に、ばね1本ずつ「かかる力」を書き込む（直列＝同じ、並列＝分ける）。</li>
+          <li>ばねごとに のび を計算する。種類が違えば別々に。</li>
+          <li>全長は「自然長の合計 ＋ のびの合計」。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 214" role="img" aria-label="例題Cの直列つなぎと並列つなぎの図">
+            <!-- serial -->
+            <rect x="30" y="8" width="130" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="30" y1="16" x2="160" y2="16"/>
+            <use href="#sp" class="d-spring" transform="translate(95,16) scale(1,0.8)"/>
+            <circle cx="95" cy="70" r="3" fill="var(--indigo)"/>
+            <use href="#sp" class="d-spring" transform="translate(95,70) scale(1,0.65)"/>
+            <rect class="d-mass" x="73" y="114" width="44" height="28" rx="2"/>
+            <text class="d-t in" x="95" y="132" text-anchor="middle">200g</text>
+            <text class="d-t hi" x="70" y="45" text-anchor="end">A 200g</text>
+            <text class="d-t hi" x="70" y="96" text-anchor="end">B 200g</text>
+            <text class="d-t b" x="95" y="168" text-anchor="middle">直列</text>
+            <text class="d-t" x="95" y="186" text-anchor="middle">10+10 と 8+4 → 32cm</text>
+            <!-- parallel -->
+            <rect x="230" y="8" width="150" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="230" y1="16" x2="380" y2="16"/>
+            <use href="#sp" class="d-spring" transform="translate(272,16) scale(1,0.95)"/>
+            <use href="#sp" class="d-spring" transform="translate(348,16) scale(1,0.95)"/>
+            <rect class="d-fill" x="250" y="81" width="120" height="7"/>
+            <line class="d-line" x1="310" y1="88" x2="310" y2="110"/>
+            <rect class="d-mass" x="288" y="110" width="44" height="28" rx="2"/>
+            <text class="d-t in" x="310" y="128" text-anchor="middle">300g</text>
+            <text class="d-t hi" x="255" y="50" text-anchor="end">150g</text>
+            <text class="d-t hi" x="365" y="50">150g</text>
+            <text class="d-t b" x="310" y="168" text-anchor="middle">並列</text>
+            <text class="d-t" x="310" y="186" text-anchor="middle">1本あたり150g → 17.5cm</text>
+            <text class="d-t hi" x="200" y="208" text-anchor="middle">同じおもりでも、力の分かれ方が正反対</text>
+          </svg>
+          <figcaption>図に「このばねに何g」と書き込んでから計算に入る</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 C</span>ばねA＝自然長10cm・20gで1cmのびる。ばねB＝自然長8cm・50gで1cmのびる。<br>(1) AとBを直列につなぎ、下端に200gをつるすと全体は何cmか。<br>(2) Aを2本並列にし、軽い棒の中央に300gをつるすと、A1本の長さは何cmか。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">(1) 直列 → A・Bどちらにも 200g
+    Aののび 200 ÷ 20 = 10cm
+    Bののび 200 ÷ 50 = 4cm
+    全長 (10 + 8) + (10 + 4) = 32cm
+(2) 並列 → 1本あたり 300 ÷ 2 = 150g
+    のび 150 ÷ 20 = 7.5cm
+    長さ 10 + 7.5 = 17.5cm</div>
+              <p class="ans">(1) 32cm　(2) 17.5cm</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+
+    <!-- D -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">D</div>
+        <h3 class="pat-name">ばねを切る・つぎ足す</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i></i><span>頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「半分に切った1本に同じおもりをつるすと、のびは何cmか」「3:1に切った短いほうは何gで1cmのびるか」</p>
+        <ol class="steps">
+          <li>切っても「1cmあたり何gか」は変わる — <b>のびは長さに比例</b>すると考える。</li>
+          <li>半分に切れば、同じ力でのびも半分（＝2倍かたい）。自然長も半分。</li>
+          <li>切った2本を並列にする問題が多い。力を分けてから、のびを出す。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 180" role="img" aria-label="ばねを半分に切って並列につなぐ図">
+            <rect x="35" y="12" width="80" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="35" y1="20" x2="115" y2="20"/>
+            <use href="#sp" class="d-spring" transform="translate(75,20) scale(1,1.0)"/>
+            <line class="d-dash" x1="48" y1="54" x2="102" y2="54"/>
+            <text class="d-t hi" x="106" y="58">ここで切る</text>
+            <text class="d-t b" x="75" y="118" text-anchor="middle">元のばね</text>
+            <text class="d-t" x="75" y="136" text-anchor="middle">自然長20cm</text>
+            <text class="d-t" x="75" y="152" text-anchor="middle">100gで4cmのび</text>
+            <line class="d-dim" x1="152" y1="92" x2="212" y2="92" marker-end="url(#ah)"/>
+            <text class="d-t hi" x="182" y="84" text-anchor="middle">半分に切る</text>
+            <rect x="235" y="12" width="130" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="235" y1="20" x2="365" y2="20"/>
+            <use href="#sp" class="d-spring" transform="translate(268,20) scale(1,0.5)"/>
+            <use href="#sp" class="d-spring" transform="translate(332,20) scale(1,0.5)"/>
+            <rect class="d-fill" x="248" y="55" width="104" height="7"/>
+            <line class="d-line" x1="300" y1="62" x2="300" y2="82"/>
+            <rect class="d-mass" x="278" y="82" width="44" height="26" rx="2"/>
+            <text class="d-t in" x="300" y="99" text-anchor="middle">100g</text>
+            <text class="d-t b" x="300" y="130" text-anchor="middle">切った2本を並列</text>
+            <text class="d-t" x="300" y="148" text-anchor="middle">1本は 自然長10cm・100gで2cm</text>
+            <text class="d-t hi" x="300" y="166" text-anchor="middle">50gずつ → のび1cm → 11cm</text>
+          </svg>
+          <figcaption>切ると「自然長」も「のびやすさ」も長さに比例して小さくなる</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 D</span>自然長20cm・100gで4cmのびるばねを、10cmずつ2本に切った。この2本を並列につなぎ、軽い棒の中央に100gをつるすと、1本の長さは何cmか。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">切った1本：自然長10cm、100gで2cmのび（= 50gで1cm）
+並列 → 1本あたり 100 ÷ 2 = 50g
+のび 50 ÷ 50 = 1cm
+長さ 10 + 1 = 11cm</div>
+              <p class="ans">11cm</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+
+    <!-- E -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">E</div>
+        <h3 class="pat-name">両端引き・滑車つきばねばかり</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i class="on"></i><span>差がつく</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「ばねばかりは何gを示すか」「①〜③でばねののびが最も大きいのはどれか」</p>
+        <ol class="steps">
+          <li>ばねの左右（上下）の端を、それぞれ何gで引いているかを見る。</li>
+          <li>両端の力は必ず同じ大きさ。<b>その値がそのままのびを決める</b>。</li>
+          <li>「両側に100gずつ ＝ 100g」。足して200gにしない。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 150" role="img" aria-label="ばねの両端を100gずつで引く図">
+            <text class="d-t b" x="200" y="30" text-anchor="middle">ばねは、両端を同じ大きさの力で引かれている</text>
+            <use href="#sp" class="d-spring" transform="translate(150,78) rotate(-90) scale(1,1.47)"/>
+            <circle class="d-fill" cx="150" cy="78" r="6"/>
+            <circle class="d-fill" cx="250" cy="78" r="6"/>
+            <line class="d-dim" x1="144" y1="78" x2="88" y2="78" marker-end="url(#ah)"/>
+            <line class="d-dim" x1="256" y1="78" x2="312" y2="78" marker-end="url(#ah)"/>
+            <text class="d-t hi" x="82" y="74" text-anchor="end">100g</text>
+            <text class="d-t hi" x="318" y="74">100g</text>
+            <text class="d-t in" x="200" y="106" text-anchor="middle">のびを決めるのは、この 100g</text>
+            <text class="d-t hi" x="200" y="132" text-anchor="middle">合計して 200g にはしない</text>
+          </svg>
+          <figcaption>天井・かべ・反対側のおもり — どれも「引き返す 100g」の正体は同じ</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 E</span>①天井につるして下に100g　②かべに固定し滑車を通して100g　③両側の滑車を通して左右に100gずつ。のびが最も大きいのはどれか。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <p>どのばねにも、両端に 100g ずつがかかっている。<span class="ans">3つとも同じ（すべて100g分ののび）</span>。②③の「かべ」や「反対側のおもり」は、①の天井と同じ働きをしているだけ。</p>
+            </div>
+          </details>
+        </div>
+        <div class="warn"><b>関連の定番。</b>ばねの上端を手で持って持ち上げ、下端に100g → 100g。ばねを机の上に置いて両側から50gずつ → 50g分。</div>
+      </div>
+    </article>
+
+    <!-- F -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">F</div>
+        <h3 class="pat-name">棒を水平に保つ（並列＋てこ）</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i class="on"></i><span>難関頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「棒を水平に保つには、おもりを左端から何cmのところにつるせばよいか」「そのときのばねの長さは」</p>
+        <ol class="steps">
+          <li>棒が水平 → 2本のばねの<b>長さが等しい</b>。自然長が同じなら<b>のびも等しい</b>。</li>
+          <li>のびを □ cm とおき、それぞれにかかる力を □ の式で表して、合計＝おもりの重さ。</li>
+          <li>出た2つの力を使い、てこのつり合い（力×距離）でつるす位置を決める。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 190" role="img" aria-label="2本のばねで棒を水平につるし、おもりの位置を求める図">
+            <g style="color:var(--line-strong)"><rect x="40" y="6" width="320" height="9" fill="url(#hatch)"/></g>
+            <line class="d-line" x1="40" y1="15" x2="360" y2="15"/>
+            <use href="#sp" class="d-spring" transform="translate(90,15) scale(1,1.1)"/>
+            <use href="#sp" class="d-spring" transform="translate(310,15) scale(1,1.1)"/>
+            <text class="d-t in" x="66" y="60" text-anchor="end">ばねA</text>
+            <text class="d-t in" x="334" y="60">ばねB</text>
+            <rect class="d-fill" x="80" y="90" width="240" height="8"/>
+            <line class="d-line" x1="240" y1="98" x2="240" y2="128"/>
+            <rect class="d-mass" x="218" y="128" width="44" height="30" rx="2"/>
+            <text class="d-t in" x="240" y="147" text-anchor="middle">300g</text>
+            <line class="d-dim" x1="90" y1="114" x2="240" y2="114" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <line class="d-dim" x1="240" y1="114" x2="310" y2="114" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <text class="d-t hi" x="160" y="109" text-anchor="middle">□cm</text>
+            <text class="d-t hi" x="278" y="109" text-anchor="middle">残り</text>
+            <text class="d-t" x="200" y="182" text-anchor="middle">棒の長さ 60cm・棒の重さは考えない</text>
+          </svg>
+          <figcaption>水平＝2本の全長が同じ。まず「のび□cm」とおいて力を表す</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 F</span>ばねA（自然長10cm・20gで1cmのびる）とばねB（自然長10cm・40gで1cmのびる）を天井からつるし、長さ60cmの軽い棒をわたした。300gのおもりをつるして棒を水平にしたい。おもりの位置とばねの長さを求めよ。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">水平 → のびは等しい。のびを □ cm とおく
+Aにかかる力 = 20 × □ 　Bにかかる力 = 40 × □
+20□ + 40□ = 300 → 60□ = 300 → □ = 5cm
+A = 100g、B = 200g
+てこ：100 × (Aからの距離) = 200 × (Bからの距離)
+距離の比 A側 : B側 = 200 : 100 = 2 : 1
+60cm を 2:1 に分けて、Aから 40cm
+長さ = 10 + 5 = 15cm</div>
+              <p class="ans">ばねAから40cm（ばねBから20cm）の位置。ばねの長さは両方とも15cm</p>
+            </div>
+          </details>
+        </div>
+        <div class="warn"><b>自然長が違うときは要注意。</b>「のびが等しい」ではなく「<b>全長が等しい</b>」が水平の条件。自然長10cmと12cmなら、のびの差が2cmになるように式を立てます。</div>
+      </div>
+    </article>
+
+    <!-- G -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">G</div>
+        <h3 class="pat-name">てこ・支点との融合</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i></i><span>頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「ばねののびは何cmか」「支点が棒をおす力は何gか」</p>
+        <ol class="steps">
+          <li>ばねを「引く力（張力）」の矢印にかきかえる。向きは棒を引っぱる向き。</li>
+          <li>支点のまわりで「力×支点からの距離」のつり合いを立て、ばねの力を求める。</li>
+          <li>その力で、のび → 長さ の順に計算する。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 195" role="img" aria-label="壁の支点でとめた棒の右端をばねでつるした図">
+            <rect x="36" y="34" width="10" height="106" fill="url(#hatch)"/>
+            <line class="d-line" x1="46" y1="34" x2="46" y2="140"/>
+            <rect x="250" y="8" width="100" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="250" y1="16" x2="350" y2="16"/>
+            <use href="#sp" class="d-spring" transform="translate(300,16) scale(1,1.03)"/>
+            <rect class="d-fill" x="46" y="86" width="256" height="8"/>
+            <circle cx="46" cy="90" r="6" fill="var(--vermilion)"/>
+            <text class="d-t hi" x="56" y="112">支点</text>
+            <text class="d-t in" x="310" y="58">ばねの力 □g</text>
+            <line class="d-line" x1="174" y1="94" x2="174" y2="118"/>
+            <rect class="d-mass" x="152" y="118" width="44" height="28" rx="2"/>
+            <text class="d-t in" x="174" y="136" text-anchor="middle">180g</text>
+            <line class="d-dim" x1="46" y1="166" x2="174" y2="166" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <line class="d-dim" x1="174" y1="166" x2="300" y2="166" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <text class="d-t hi" x="110" y="161" text-anchor="middle">45cm</text>
+            <text class="d-t hi" x="237" y="161" text-anchor="middle">45cm</text>
+            <text class="d-t b" x="200" y="190" text-anchor="middle">支点まわりで 力×距離 のつり合い</text>
+          </svg>
+          <figcaption>ばねを「上向きに引く力の矢印」に置きかえれば、ただのてこ</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 G</span>長さ90cmの軽い棒の左端を壁の支点でとめ、右端を天井からばね（自然長10cm・20gで1cmのびる）でつるした。棒の中央（左端から45cm）に180gのおもりをつるすと、ばねの長さは何cmか。また支点が棒を支える力は何gか。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">支点（左端）まわりのつり合い
+ばねの力 × 90 = 180 × 45
+ばねの力 = 90g
+のび 90 ÷ 20 = 4.5cm → 長さ 14.5cm
+支点の力 = 180 − 90 = 90g（上向き）</div>
+              <p class="ans">ばねの長さ 14.5cm、支点が支える力 90g</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+
+    <!-- H -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">H</div>
+        <h3 class="pat-name">浮力との融合</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i></i><span>難関頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「深さ〇cm沈めたときのばねの長さは」「沈めた深さとばねののびの関係をグラフに表せ」</p>
+        <ol class="steps">
+          <li>ばねにかかる力 ＝ おもりの重さ − 浮力。</li>
+          <li>浮力 ＝ 水中にある部分の体積（cm³）＝ 底面積 × 沈んだ深さ。</li>
+          <li>全部沈んだあとは浮力が変わらない → <b>グラフはそこで折れて水平</b>になる。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 180" role="img" aria-label="沈めた深さとばねののびの関係を示すグラフ">
+            <line class="d-line" x1="60" y1="20" x2="60" y2="140"/>
+            <line class="d-line" x1="60" y1="140" x2="370" y2="140"/>
+            <path class="d-plot" d="M60,40 L220,100 L350,100"/>
+            <circle cx="60" cy="40" r="3.5" fill="var(--indigo)"/>
+            <circle cx="220" cy="100" r="3.5" fill="var(--indigo)"/>
+            <line class="d-dash" x1="220" y1="100" x2="220" y2="140"/>
+            <line class="d-dash" x1="60" y1="100" x2="220" y2="100"/>
+            <text class="d-t" x="54" y="44" text-anchor="end">4.8</text>
+            <text class="d-t" x="54" y="104" text-anchor="end">3.2</text>
+            <text class="d-t" x="54" y="18" text-anchor="end">のび(cm)</text>
+            <text class="d-t" x="220" y="156" text-anchor="middle">8</text>
+            <text class="d-t" x="370" y="160" text-anchor="end">沈めた深さ(cm)</text>
+            <text class="d-t hi" x="234" y="86">ここで全部沈む</text>
+          </svg>
+          <figcaption>沈みきったら浮力は一定 — グラフはそこで折れて水平になる</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 H</span>自然長12cm・50gで1cmのびるばねに、底面積10cm²・高さ8cm・重さ240gの直方体をつるし、水にしずめていく。(1) 空気中での長さ。(2) 深さ4cmまで沈めたときの長さ。(3) 全部沈めたときの長さ。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">(1) 240 ÷ 50 = 4.8cm のび → 12 + 4.8 = 16.8cm
+(2) 浮力 = 10 × 4 = 40g
+    ばねの力 240 − 40 = 200g → のび 4cm → 16cm
+(3) 浮力 = 10 × 8 = 80g
+    ばねの力 240 − 80 = 160g → のび 3.2cm → 15.2cm
+    これ以上深くしても長さは変わらない</div>
+              <p class="ans">(1) 16.8cm　(2) 16cm　(3) 15.2cm</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+
+    <!-- I -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">I</div>
+        <h3 class="pat-name">床に立てる・押しばね・上下ではさむ</h3>
+        <div class="freq"><i class="on"></i><i class="on"></i><i></i><span>頻出</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「ばねの長さは何cmになるか」「上のばねと下のばねはそれぞれ何gを支えているか」</p>
+        <ol class="steps">
+          <li>床に立てて上に乗せる＝<b>縮む</b>。「〇gで1cm縮む」と読みかえれば計算は同じ。</li>
+          <li>天井と床の間にはさむ場合、上のばねはのび・下のばねは縮み、<b>2本の力の合計＝おもりの重さ</b>。</li>
+          <li>おもりが動いた距離だけ、上ののびと下の縮みは等しい。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 200" role="img" aria-label="床に立てた押しばねと、天井と床の間にはさんだばねの図">
+            <!-- floor spring -->
+            <rect x="40" y="150" width="130" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="40" y1="150" x2="170" y2="150"/>
+            <use href="#sp" class="d-spring" transform="translate(105,150) scale(1,-0.9)"/>
+            <rect class="d-mass" x="80" y="60" width="50" height="28" rx="2"/>
+            <text class="d-t in" x="105" y="79" text-anchor="middle">600g</text>
+            <text class="d-t b" x="105" y="178" text-anchor="middle">ゆかに立てる</text>
+            <text class="d-t hi" x="105" y="194" text-anchor="middle">乗せた重さの分だけ縮む</text>
+            <!-- sandwiched -->
+            <rect x="240" y="8" width="120" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="240" y1="16" x2="360" y2="16"/>
+            <use href="#sp" class="d-spring" transform="translate(300,16) scale(1,0.6)"/>
+            <rect class="d-mass" x="278" y="57" width="44" height="26" rx="2"/>
+            <text class="d-t in" x="300" y="74" text-anchor="middle">おもり</text>
+            <use href="#sp" class="d-spring" transform="translate(300,83) scale(1,0.6)"/>
+            <rect x="240" y="124" width="120" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="240" y1="124" x2="360" y2="124"/>
+            <text class="d-t hi" x="330" y="42">のびる</text>
+            <text class="d-t hi" x="330" y="110">縮む</text>
+            <text class="d-t b" x="300" y="178" text-anchor="middle">上下ではさむ</text>
+            <text class="d-t hi" x="300" y="194" text-anchor="middle">2本の力の合計＝おもりの重さ</text>
+          </svg>
+          <figcaption>縮む向きでも計算は同じ。「〇gで1cm縮む」に読みかえるだけ</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 I</span>自然長20cm・100gで1cm縮むばねを床に立て、上に600gのおもりを乗せた。ばねの長さは何cmか。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">縮み 600 ÷ 100 = 6cm
+長さ 20 − 6 = 14cm</div>
+              <p class="ans">14cm</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+
+    <!-- J -->
+    <article class="pat">
+      <div class="pat-head">
+        <div class="pat-id">J</div>
+        <h3 class="pat-name">ばね自身の重さを考える</h3>
+        <div class="freq"><i class="on"></i><i></i><i></i><span>最難関</span></div>
+      </div>
+      <div class="pat-body">
+        <p class="ask"><b>問われ方：</b>「太さが一様で重さのあるばねを天井からつるした。のびは何cmか」「上から〇cmの位置での張力は」</p>
+        <ol class="steps">
+          <li>ばねの自重は、上の部分ほど「下にある重さ」を多く支える → 場所によって張力が違う。</li>
+          <li>全体ののびを求めるときは、<b>ばね全体の重さの半分</b>が下端にかかったと考えればよい。</li>
+          <li>おもりもつるすなら「おもりの重さ ＋ ばねの重さ÷2」で計算する。</li>
+        </ol>
+        <figure>
+          <svg viewBox="0 0 400 232" role="img" aria-label="自重でのびたばねと、重さの半分をつるしたばねが同じのびになる図">
+            <rect x="55" y="12" width="90" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="55" y1="20" x2="145" y2="20"/>
+            <path class="d-spring" d="M100,20 V26 L111,44 L89,62 L111,78 L89,92 L111,104 L89,113 L111,120 L89,125 L100,128 V132"/>
+            <text class="d-t hi" x="126" y="50">上ほど広い</text>
+            <text class="d-t" x="126" y="124">下ほどつまる</text>
+            <text class="d-t b" x="100" y="186" text-anchor="middle">重さ60gのばね</text>
+            <text class="d-t" x="100" y="204" text-anchor="middle">自分の重さでのびる</text>
+            <line class="d-dim" x1="180" y1="92" x2="228" y2="92" marker-start="url(#ah)" marker-end="url(#ah)"/>
+            <text class="d-t hi" x="204" y="84" text-anchor="middle">同じのび</text>
+            <rect x="255" y="12" width="90" height="8" fill="url(#hatch)"/>
+            <line class="d-line" x1="255" y1="20" x2="345" y2="20"/>
+            <use href="#sp" class="d-spring" transform="translate(300,20) scale(1,1.65)"/>
+            <rect class="d-mass" x="278" y="132" width="44" height="28" rx="2"/>
+            <text class="d-t in" x="300" y="150" text-anchor="middle">30g</text>
+            <text class="d-t b" x="300" y="186" text-anchor="middle">重さのないばね</text>
+            <text class="d-t" x="300" y="204" text-anchor="middle">下端に「60÷2＝30g」</text>
+            <text class="d-t hi" x="200" y="226" text-anchor="middle">「ばねの重さは考えない」と書いてなければ、この型を疑う</text>
+          </svg>
+          <figcaption>自重は場所ごとに効き方が違うが、全体ののびは「重さの半分」で置きかえられる</figcaption>
+        </figure>
+        <div class="ex">
+          <div class="ex-q"><span class="tag">例題 J</span>太さが一様で自然長30cm・重さ60g、100gで6cmのびるばねを天井からつるした。(1) 何もつるさないときの長さ。(2) 下端に100gをつるしたときの長さ。</div>
+          <details><summary>解答をひらく</summary>
+            <div class="ex-a">
+              <div class="calc">(1) 自重の効果 = 60 ÷ 2 = 30g 相当
+    のび 30 ÷ 100 × 6 = 1.8cm → 31.8cm
+(2) 100 + 30 = 130g 相当
+    のび 130 ÷ 100 × 6 = 7.8cm → 37.8cm</div>
+              <p class="ans">(1) 31.8cm　(2) 37.8cm</p>
+            </div>
+          </details>
+        </div>
+        <div class="warn"><b>ふつうの問題では「ばねの重さは考えない」</b>と書かれています。この断り書きが<b>ない</b>ときだけ、このパターンを疑ってください。</div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 06 ============ -->
+<section id="s6">
+  <div class="sec-head">
+    <span class="sec-num">06</span>
+    <h2 class="sec-title">ひっかけ12連発</h2>
+    <span class="sec-sub">失点の9割はここ</span>
+  </div>
+  <ul class="checks">
+    <li><b>「のび」と「長さ」の取りちがえ</b> → 答えを書く前に、問題文の該当語を丸で囲む。<em>長さ＝自然長＋のび</em></li>
+    <li><b>両側に100gずつ引く問題で200gと答える</b> → <em>ばねにかかる力は100g</em>。天井吊りと同じ状態。</li>
+    <li><b>並列なのに、おもりの重さをそのまま使う</b> → <em>まず本数で割る</em>。3本なら1/3。</li>
+    <li><b>直列なのに、力を半分に分けてしまう</b> → <em>直列は力そのまま、のびが足し算</em>。</li>
+    <li><b>種類の違う2本を並列にして「半分ずつ」と決めつける</b> → <em>のび（全長）が等しくなるように分かれる</em>。パターンF。</li>
+    <li><b>「20gで1cm」を「1gで20cm」と読む</b> → 割り算の向きを、いつも「重さ ÷ 何g で1cm」に固定する。</li>
+    <li><b>グラフの縦軸を見ずに形を選ぶ</b> → <em>のび＝原点を通る／長さ＝切片あり</em>。</li>
+    <li><b>表に0gの列がないので自然長が出せないと思う</b> → 差から比例定数を作り、<em>0gまで引き算で戻す</em>。</li>
+    <li><b>切ったばねの自然長を元のままにする</b> → <em>自然長も、のびやすさも、長さに比例して変わる</em>。</li>
+    <li><b>浮力の問題で、全部沈んだあとも浮力が増えると思う</b> → <em>沈みきったら浮力は一定</em>。グラフは水平に折れる。</li>
+    <li><b>てこの問題で、ばねの力を距離で割ってしまう</b> → モーメントは<em>力×距離</em>のかけ算。</li>
+    <li><b>「ばねの重さは考えない」の一文を読み飛ばす</b> → 断りがあれば無視、なければ<em>重さの半分</em>を足す。</li>
+  </ul>
+</section>
+
+<!-- ============ 07 ============ -->
+<section id="s7">
+  <div class="sec-head">
+    <span class="sec-num">07</span>
+    <h2 class="sec-title">直前チェック</h2>
+    <span class="sec-sub">試験前5分で読む</span>
+  </div>
+  <div class="finals">
+    <div class="final"><h4>基本式</h4><p>長さ ＝ <span>自然長</span> ＋ のび</p></div>
+    <div class="final"><h4>比例</h4><p>のび ＝ 力 ÷ <span>「1cmあたり何g」</span></p></div>
+    <div class="final"><h4>直列</h4><p>力は同じ／<span>のびは足す</span></p></div>
+    <div class="final"><h4>並列（同じばね<i>n</i>本）</h4><p>力ものびも <span>1/<i>n</i></span></p></div>
+    <div class="final"><h4>切断</h4><p>長さ半分 → <span>のびも半分</span></p></div>
+    <div class="final"><h4>両端引き</h4><p>両側100gずつ ＝ <span>100g分</span></p></div>
+    <div class="final"><h4>水平の条件</h4><p><span>2本の全長が等しい</span></p></div>
+    <div class="final"><h4>浮力</h4><p>力 ＝ 重さ − <span>沈んだ体積</span></p></div>
+    <div class="final"><h4>てこ融合</h4><p>支点まわりで <span>力 × 距離</span></p></div>
+    <div class="final"><h4>ばねの自重</h4><p>下端に <span>重さ ÷ 2</span> をつるしたのと同じ</p></div>
+  </div>
+  <p style="margin-top:22px;color:var(--ink-2);font-size:14.5px">解き始めの一手はいつも同じです。<b>図に、ばね1本ずつ「何g」と書き込む。</b>そこまで書ければ、あとは割り算と足し算しか残っていません。</p>
+</section>
+
+<p class="foot">中学受験理科・力学分野／ばね 総整理<br>標準〜難関レベル対応</p>
+
+</main>
+</div>
+</div>
+</body>
+</html>

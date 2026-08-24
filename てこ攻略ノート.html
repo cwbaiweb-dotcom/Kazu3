@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>てこ 攻略ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho+B1:wght@600;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+:root{
+  --paper:#eef1f5;
+  --grid:#dde3ea;
+  --surface:#ffffff;
+  --surface-2:#f5f7fa;
+  --ink:#15202c;
+  --ink-soft:#4d5c6b;
+  --ink-faint:#7a8895;
+  --line:#d3dae2;
+  --line-soft:#e3e8ee;
+  --indigo:#2a5490;
+  --indigo-wash:#e7edf7;
+  --shu:#c23a29;
+  --shu-wash:#fbeae7;
+  --gold:#9d7317;
+  --gold-wash:#f7efdc;
+  --on-solid:#ffffff;
+  --shadow:0 1px 2px rgba(21,32,44,.05), 0 8px 24px -14px rgba(21,32,44,.22);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e141b;
+    --grid:#18212b;
+    --surface:#151d26;
+    --surface-2:#1a232e;
+    --ink:#e3e9ef;
+    --ink-soft:#a3b1bf;
+    --ink-faint:#7b8896;
+    --line:#2b3743;
+    --line-soft:#222d38;
+    --indigo:#82adea;
+    --indigo-wash:#1a2735;
+    --shu:#f27a66;
+    --shu-wash:#2e1c19;
+    --gold:#dcb257;
+    --gold-wash:#2b2416;
+    --on-solid:#0e141b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e141b;
+  --grid:#18212b;
+  --surface:#151d26;
+  --surface-2:#1a232e;
+  --ink:#e3e9ef;
+  --ink-soft:#a3b1bf;
+  --ink-faint:#7b8896;
+  --line:#2b3743;
+  --line-soft:#222d38;
+  --indigo:#82adea;
+  --indigo-wash:#1a2735;
+  --shu:#f27a66;
+  --shu-wash:#2e1c19;
+  --gold:#dcb257;
+  --gold-wash:#2b2416;
+  --on-solid:#0e141b;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 96px;
+  display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:1080px){
+  .wrap{grid-template-columns:210px minmax(0,1fr);gap:56px;padding-right:32px}
+}
+
+/* ---------- masthead ---------- */
+.masthead{grid-column:1/-1;padding:64px 0 40px;border-bottom:2px solid var(--ink);margin-bottom:44px}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--shu);font-weight:600;margin:0 0 14px}
+h1{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-weight:800;
+  font-size:clamp(2.1rem,6vw,3.4rem);line-height:1.24;margin:0 0 16px;text-wrap:balance;
+  letter-spacing:.02em}
+h1 .sub{display:block;font-size:clamp(.95rem,2.2vw,1.15rem);font-weight:600;color:var(--ink-soft);
+  letter-spacing:.06em;margin-top:10px;font-family:"Zen Kaku Gothic New",sans-serif}
+.lede{max-width:60ch;color:var(--ink-soft);margin:0;font-size:1.02rem}
+
+/* ---------- toc ---------- */
+nav.toc{display:none}
+@media(min-width:1080px){
+  nav.toc{display:block;position:sticky;top:28px;align-self:start;
+    font-size:.85rem;line-height:1.6;padding-top:4px}
+  nav.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  nav.toc a{color:var(--ink-faint);text-decoration:none;display:flex;gap:9px;
+    border-left:2px solid var(--line);padding-left:11px;transition:color .15s,border-color .15s}
+  nav.toc a:hover,nav.toc a:focus-visible{color:var(--indigo);border-color:var(--indigo)}
+  nav.toc .num{font-family:"IBM Plex Mono",monospace;font-size:.72rem;padding-top:.25em;opacity:.8}
+}
+
+main{min-width:0}
+section{margin-bottom:64px;scroll-margin-top:24px}
+h2{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-weight:700;
+  font-size:clamp(1.4rem,3.4vw,1.9rem);line-height:1.4;margin:0 0 6px;text-wrap:balance}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;
+  border-bottom:1px solid var(--line);padding-bottom:12px}
+.sec-head .n{font-family:"IBM Plex Mono",monospace;font-size:.8rem;font-weight:600;
+  color:var(--shu);letter-spacing:.1em;flex:none;padding-top:.2em}
+h3{font-size:1.02rem;font-weight:700;margin:32px 0 10px;color:var(--ink);
+  display:flex;align-items:center;gap:9px}
+h3::before{content:"";width:9px;height:9px;background:var(--indigo);flex:none;
+  transform:rotate(45deg)}
+p{margin:0 0 14px}
+strong{font-weight:700;color:var(--ink)}
+.mark{background:linear-gradient(transparent 58%, var(--gold-wash) 58%);font-weight:700}
+a{color:var(--indigo)}
+:focus-visible{outline:2px solid var(--shu);outline-offset:3px;border-radius:2px}
+
+/* ---------- cards / boxes ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:3px;
+  padding:22px 24px;box-shadow:var(--shadow)}
+.rule-box{background:var(--indigo-wash);border:1px solid var(--line);
+  border-left:4px solid var(--indigo);border-radius:2px;padding:20px 24px;margin:20px 0}
+.rule-box .lbl{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--indigo);font-weight:600;display:block;margin-bottom:8px}
+.formula{font-family:"IBM Plex Mono","Zen Kaku Gothic New",monospace;font-size:1.02rem;
+  font-weight:600;line-height:2;text-align:center;margin:6px 0;
+  font-variant-numeric:tabular-nums}
+.warn{background:var(--shu-wash);border-left:4px solid var(--shu);padding:16px 20px;
+  border-radius:2px;margin:18px 0;font-size:.95rem}
+.warn .lbl{font-weight:700;color:var(--shu);display:block;margin-bottom:4px;font-size:.85rem;
+  letter-spacing:.06em}
+
+/* ---------- tables ---------- */
+.tbl-scroll{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:3px;
+  background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{text-align:left;padding:12px 15px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+thead th{background:var(--surface-2);font-size:.76rem;letter-spacing:.1em;color:var(--ink-soft);
+  font-weight:700;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+td.num,th.num{font-variant-numeric:tabular-nums;font-family:"IBM Plex Mono",monospace}
+
+/* ---------- lists ---------- */
+ul.plain{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:9px}
+ul.plain li{padding-left:22px;position:relative}
+ul.plain li::before{content:"";position:absolute;left:4px;top:.72em;width:7px;height:2px;
+  background:var(--shu)}
+ol.steps{list-style:none;counter-reset:s;margin:18px 0;padding:0;
+  display:flex;flex-direction:column;gap:14px}
+ol.steps li{counter-increment:s;padding-left:46px;position:relative}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:.15em;
+  width:30px;height:30px;border-radius:50%;background:var(--indigo);color:var(--on-solid);
+  display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:.85rem;
+  font-weight:600}
+ol.steps b{display:block;font-size:.98rem}
+
+/* ---------- diagrams ---------- */
+figure{margin:22px 0;background:var(--surface);border:1px solid var(--line);border-radius:3px;
+  padding:18px 18px 12px;box-shadow:var(--shadow)}
+figure .dg{overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:340px}
+figcaption{font-size:.82rem;color:var(--ink-faint);margin-top:10px;line-height:1.6;
+  border-top:1px solid var(--line-soft);padding-top:9px}
+.beam{fill:var(--surface-2);stroke:var(--ink-soft);stroke-width:1.5}
+.dim{stroke:var(--ink-faint);stroke-width:1;stroke-dasharray:3 3}
+.arrow{stroke:var(--shu);stroke-width:2.4;fill:none}
+.arrow-up{stroke:var(--indigo);stroke-width:2.4;fill:none}
+text{font-family:"Zen Kaku Gothic New",sans-serif;font-size:12px;fill:var(--ink-soft)}
+text.lab{font-weight:700;fill:var(--ink)}
+text.mono{font-family:"IBM Plex Mono",monospace;font-size:11px}
+
+/* ---------- pattern cards ---------- */
+.patterns{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:720px){.patterns{grid-template-columns:1fr 1fr}}
+.pat{background:var(--surface);border:1px solid var(--line);border-radius:3px;
+  padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.pat-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pat-id{font-family:"IBM Plex Mono",monospace;font-size:.74rem;font-weight:600;
+  color:var(--on-solid);background:var(--ink);padding:2px 7px;border-radius:2px;letter-spacing:.06em}
+.pat h4{margin:0;font-size:1rem;font-weight:700;flex:1;min-width:0}
+.chip{font-size:.7rem;letter-spacing:.08em;font-weight:700;padding:2px 8px;border-radius:99px;
+  border:1px solid currentColor;flex:none}
+.chip.b{color:var(--indigo)}
+.chip.s{color:var(--gold)}
+.chip.a{color:var(--shu)}
+.pat .thumb{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:2px;
+  padding:6px 4px;overflow-x:auto}
+.pat .thumb svg{display:block;width:100%;height:auto;min-width:230px}
+.thumb .beam{fill:var(--surface)}
+.thumb text{font-size:10px;fill:var(--ink-faint)}
+.thumb text.k{font-weight:700}
+.pat p{margin:0;font-size:.9rem;color:var(--ink-soft);line-height:1.75}
+.pat .key{font-size:.85rem;background:var(--surface-2);border-left:3px solid var(--gold);
+  padding:8px 12px;border-radius:2px;color:var(--ink)}
+.pat .key b{color:var(--gold)}
+
+/* ---------- worked examples ---------- */
+.ex{border:1px solid var(--line);border-radius:3px;background:var(--surface);
+  margin:20px 0;box-shadow:var(--shadow);overflow:hidden}
+.ex-h{background:var(--surface-2);border-bottom:1px solid var(--line);padding:11px 20px;
+  font-weight:700;font-size:.92rem;display:flex;gap:10px;align-items:center}
+.ex-h .tag{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--shu);
+  letter-spacing:.1em}
+.ex-b{padding:18px 20px}
+.ex-b .q{margin-bottom:14px}
+details.sol{border-top:1px dashed var(--line);padding-top:12px;margin-top:4px}
+details.sol summary{cursor:pointer;font-weight:700;font-size:.88rem;color:var(--indigo);
+  list-style:none;display:flex;align-items:center;gap:7px}
+details.sol summary::-webkit-details-marker{display:none}
+details.sol summary::before{content:"▸";transition:transform .18s}
+details.sol[open] summary::before{transform:rotate(90deg)}
+details.sol .body{padding-top:12px;font-size:.94rem}
+.calc{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  background:var(--surface-2);padding:10px 14px;border-radius:2px;font-size:.88rem;
+  margin:8px 0;overflow-x:auto;white-space:nowrap}
+.ans{font-weight:700;color:var(--shu)}
+
+/* ---------- simulator ---------- */
+.sim{background:var(--surface);border:1px solid var(--line);border-radius:3px;
+  box-shadow:var(--shadow);padding:20px;margin:22px 0}
+.sim-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  margin-bottom:6px}
+.fld label{display:block;font-size:.76rem;letter-spacing:.08em;color:var(--ink-faint);
+  font-weight:700;margin-bottom:5px}
+.fld input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:2px;
+  background:var(--surface-2);color:var(--ink);font-family:"IBM Plex Mono",monospace;
+  font-size:.95rem;font-variant-numeric:tabular-nums}
+.sim-out{margin-top:14px;padding:12px 16px;border-radius:2px;background:var(--indigo-wash);
+  border-left:4px solid var(--indigo);font-size:.95rem}
+.sim-out .big{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:1.05rem}
+.sim-out.tilt{background:var(--shu-wash);border-left-color:var(--shu)}
+
+footer{grid-column:1/-1;border-top:1px solid var(--line);padding-top:20px;margin-top:16px;
+  font-size:.82rem;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <p class="kicker">中学受験 理科 ／ 力学</p>
+  <h1>てこ 攻略ノート<span class="sub">基礎 → 支点の取り方 → 出題パターン11型</span></h1>
+  <p class="lede">てこは「公式が1本しかないのに、間違える」単元です。差がつくのは計算力ではなく、<strong>力を全部書き出せるか</strong>と<strong>支点をどこに取るか</strong>の2点。基礎から出題パターンまで、解く順番のとおりに並べました。</p>
+</header>
+
+<nav class="toc" aria-label="目次">
+  <ol>
+    <li><a href="#s1"><span class="num">01</span><span>てこの3点</span></a></li>
+    <li><a href="#s2"><span class="num">02</span><span>てこの3種類</span></a></li>
+    <li><a href="#s3"><span class="num">03</span><span>つり合いの2原則</span></a></li>
+    <li><a href="#s4"><span class="num">04</span><span>支点の取り方</span></a></li>
+    <li><a href="#s5"><span class="num">05</span><span>棒の重さ・重心</span></a></li>
+    <li><a href="#s6"><span class="num">06</span><span>解法の手順</span></a></li>
+    <li><a href="#s7"><span class="num">07</span><span>出題パターン11型</span></a></li>
+    <li><a href="#s8"><span class="num">08</span><span>例題と解説</span></a></li>
+    <li><a href="#s9"><span class="num">09</span><span>つり合い計算機</span></a></li>
+    <li><a href="#s10"><span class="num">10</span><span>ミス防止チェック</span></a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <div class="sec-head"><span class="n">01</span><h2>てこの3点 — 支点・力点・作用点</h2></div>
+
+  <p>棒を1点で支えて回転できるようにした道具が「てこ」です。まず3つの点を必ず図に書き込みます。</p>
+
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>点</th><th>意味</th><th>図での見つけ方</th></tr></thead>
+    <tbody>
+      <tr><td><strong>支点</strong></td><td>棒を支える点。<strong>回転の中心</strong>になる。</td><td>三角形の台、糸でつるした点、ちょうつがい、うでの関節</td></tr>
+      <tr><td><strong>力点</strong></td><td>人が<strong>力を加える</strong>点</td><td>手をかける位置、押す・引く矢印のある点</td></tr>
+      <tr><td><strong>作用点</strong></td><td>ものに<strong>力がはたらく</strong>点</td><td>おもり、切る対象、持ち上げられる物</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <figure>
+    <div class="dg">
+    <svg viewBox="0 0 620 190" role="img" aria-label="支点・力点・作用点の位置と、支点からの距離の関係を示した図">
+      <!-- beam -->
+      <rect class="beam" x="60" y="86" width="500" height="14" rx="2"/>
+      <!-- fulcrum -->
+      <polygon points="250,102 274,146 226,146" fill="var(--gold)" opacity=".85"/>
+      <circle cx="250" cy="93" r="5.5" fill="var(--gold)"/>
+      <text class="lab" x="250" y="166" text-anchor="middle" fill="var(--gold)">支点</text>
+      <!-- left load -->
+      <line class="arrow" x1="110" y1="100" x2="110" y2="150"/>
+      <polygon points="110,158 104,146 116,146" fill="var(--shu)"/>
+      <rect x="94" y="52" width="32" height="30" rx="2" fill="var(--shu)" opacity=".18" stroke="var(--shu)"/>
+      <text class="lab" x="110" y="44" text-anchor="middle" fill="var(--shu)">作用点</text>
+      <text class="mono" x="110" y="72" text-anchor="middle" fill="var(--shu)">100g</text>
+      <!-- right effort -->
+      <line class="arrow" x1="510" y1="100" x2="510" y2="150"/>
+      <polygon points="510,158 504,146 516,146" fill="var(--shu)"/>
+      <text class="lab" x="510" y="44" text-anchor="middle" fill="var(--indigo)">力点</text>
+      <text class="mono" x="510" y="72" text-anchor="middle" fill="var(--indigo)">□ g</text>
+      <!-- dims -->
+      <line class="dim" x1="110" y1="118" x2="250" y2="118"/>
+      <line class="dim" x1="250" y1="118" x2="510" y2="118"/>
+      <text class="mono" x="180" y="134" text-anchor="middle">← 支点からの距離 →</text>
+      <text class="mono" x="380" y="134" text-anchor="middle">← 支点からの距離 →</text>
+    </svg>
+    </div>
+    <figcaption>距離はいつも<strong>支点から</strong>測る。棒の端からの数値が問題文に書かれていても、必ず支点起点に直してから式を立てる。</figcaption>
+  </figure>
+
+  <div class="rule-box">
+    <span class="lbl">支点が近いほど得をする</span>
+    <p style="margin:0">支点からの距離が <strong>力点：作用点 = 3：1</strong> なら、必要な力は <strong>1：3</strong>。距離の比と力の比は<span class="mark">つねに逆比</span>になります。「小さい力で動かしたい → 力点を支点から遠ざける」。</p>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <div class="sec-head"><span class="n">02</span><h2>てこの3種類 — 真ん中にある点で決まる</h2></div>
+
+  <p>3点の並び順は3通りしかありません。<strong>まん中にある点</strong>が何かで種類が決まります。覚え方は「<strong>支・作・力</strong>」の順で第1種・第2種・第3種。</p>
+
+  <figure>
+    <div class="dg">
+    <svg viewBox="0 0 620 300" role="img" aria-label="第1種・第2種・第3種てこの3点の並び方を比較した図">
+      <g>
+        <text class="lab" x="8" y="34">第1種</text>
+        <rect class="beam" x="90" y="30" width="470" height="11" rx="2"/>
+        <polygon points="325,43 343,74 307,74" fill="var(--gold)" opacity=".85"/>
+        <circle cx="130" cy="35" r="7" fill="var(--shu)"/><text class="mono" x="130" y="18" text-anchor="middle" fill="var(--shu)">作用点</text>
+        <circle cx="325" cy="35" r="7" fill="var(--gold)"/><text class="mono" x="325" y="18" text-anchor="middle" fill="var(--gold)">支点</text>
+        <circle cx="520" cy="35" r="7" fill="var(--indigo)"/><text class="mono" x="520" y="18" text-anchor="middle" fill="var(--indigo)">力点</text>
+        <text x="90" y="92">はさみ・くぎぬき・ペンチ・シーソー・上皿てんびん</text>
+      </g>
+      <g transform="translate(0,105)">
+        <text class="lab" x="8" y="34">第2種</text>
+        <rect class="beam" x="90" y="30" width="470" height="11" rx="2"/>
+        <polygon points="130,43 148,74 112,74" fill="var(--gold)" opacity=".85"/>
+        <circle cx="130" cy="35" r="7" fill="var(--gold)"/><text class="mono" x="130" y="18" text-anchor="middle" fill="var(--gold)">支点</text>
+        <circle cx="325" cy="35" r="7" fill="var(--shu)"/><text class="mono" x="325" y="18" text-anchor="middle" fill="var(--shu)">作用点</text>
+        <circle cx="520" cy="35" r="7" fill="var(--indigo)"/><text class="mono" x="520" y="18" text-anchor="middle" fill="var(--indigo)">力点</text>
+        <text x="90" y="92">せんぬき・空きかんつぶし・穴あけパンチ・一輪車</text>
+      </g>
+      <g transform="translate(0,210)">
+        <text class="lab" x="8" y="34">第3種</text>
+        <rect class="beam" x="90" y="30" width="470" height="11" rx="2"/>
+        <polygon points="130,43 148,74 112,74" fill="var(--gold)" opacity=".85"/>
+        <circle cx="130" cy="35" r="7" fill="var(--gold)"/><text class="mono" x="130" y="18" text-anchor="middle" fill="var(--gold)">支点</text>
+        <circle cx="325" cy="35" r="7" fill="var(--indigo)"/><text class="mono" x="325" y="18" text-anchor="middle" fill="var(--indigo)">力点</text>
+        <circle cx="520" cy="35" r="7" fill="var(--shu)"/><text class="mono" x="520" y="18" text-anchor="middle" fill="var(--shu)">作用点</text>
+        <text x="90" y="92">ピンセット・糸切りばさみ・トング・菜ばし・人のうで</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>第2種は作用点が支点に近いので<strong>必ず力が小さくてすむ</strong>。第3種は力点が支点に近いので<strong>必ず大きな力がいる</strong>かわりに、作用点を大きく・素早く動かせる。</figcaption>
+  </figure>
+
+  <div class="warn">
+    <span class="lbl">よく問われる「なぜ第3種を使うのか」</span>
+    損をしているのに使うのは、<strong>細かい操作ができる／作用点の動きが大きく速い</strong>から。ピンセットや人のうで（ひじが支点、筋肉が力点、手が作用点）が定番の答え。
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <div class="sec-head"><span class="n">03</span><h2>つり合いの2原則 — これだけで全問解ける</h2></div>
+
+  <div class="rule-box">
+    <span class="lbl">原則1 ／ 回転のつり合い（モーメント）</span>
+    <p class="formula">左回りの和 ＝ 右回りの和</p>
+    <p class="formula" style="font-size:.95rem;color:var(--ink-soft)">回転させるはたらき ＝ 力の大きさ（g） × 支点からの距離（cm）</p>
+  </div>
+
+  <div class="rule-box">
+    <span class="lbl">原則2 ／ 上下のつり合い</span>
+    <p class="formula">上向きの力の合計 ＝ 下向きの力の合計</p>
+    <p style="margin:6px 0 0;font-size:.92rem;color:var(--ink-soft)">下向き＝おもり・棒自身の重さ。上向き＝糸が引く力・支点が支える力・ばねが引く力・浮力。</p>
+  </div>
+
+  <p>原則1だけで解ける問題が半分、<strong>原則2まで使う問題が残り半分</strong>です。とくに「ばねばかり2本」「棒の両端を支える」型は原則2が必須。原則1で片方を出し、原則2で残りを出すのが定石。</p>
+
+  <h3>回転の向きの見分け方</h3>
+  <ul class="plain">
+    <li>支点より<strong>左</strong>にある<strong>下向き</strong>の力 → 左回り（反時計回り）</li>
+    <li>支点より<strong>右</strong>にある<strong>下向き</strong>の力 → 右回り（時計回り）</li>
+    <li><strong>上向き</strong>の力は向きが逆になる（左にあれば右回り）</li>
+  </ul>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <div class="sec-head"><span class="n">04</span><h2>支点の取り方 — 合否を分ける最重要テクニック</h2></div>
+
+  <p>「支点」には<strong>2つの意味</strong>があります。ここを区別できると難問が一気に解けるようになります。</p>
+
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>種類</th><th>正体</th><th>使いどころ</th></tr></thead>
+    <tbody>
+      <tr><td><strong>実物の支点</strong></td><td>三角の台・糸でつるした点など、実際に棒を支えているところ</td><td>そこには<strong>上向きの力</strong>がはたらいている（＝図に矢印を書き足す）</td></tr>
+      <tr><td><strong>計算用の支点</strong></td><td>自分で勝手に決めてよい「回転の中心」</td><td>つり合っている棒は<span class="mark">どの点のまわりでも回らない</span>ので、どこを中心に式を立ててもよい</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="rule-box">
+    <span class="lbl">支点選びの黄金ルール</span>
+    <p style="margin:0"><strong>まだわかっていない力がはたらいている点</strong>を、計算用の支点にする。<br>その力は「支点からの距離＝0」になり、モーメントの式から<span class="mark">消える</span>ので、未知数が1つだけの式になります。</p>
+  </div>
+
+  <figure>
+    <div class="dg">
+    <svg viewBox="0 0 620 210" role="img" aria-label="棒を2本のばねばかりで支える場合に、片方のばねばかりの位置を支点に選ぶと未知の力が式から消えることを示す図">
+      <rect class="beam" x="70" y="70" width="480" height="14" rx="2"/>
+      <!-- spring A -->
+      <line class="arrow-up" x1="80" y1="70" x2="80" y2="24"/>
+      <polygon points="80,16 74,28 86,28" fill="var(--indigo)"/>
+      <text class="lab" x="80" y="10" text-anchor="middle" fill="var(--indigo)">A?</text>
+      <!-- spring B -->
+      <line class="arrow-up" x1="540" y1="70" x2="540" y2="24"/>
+      <polygon points="540,16 534,28 546,28" fill="var(--indigo)"/>
+      <text class="lab" x="540" y="10" text-anchor="middle" fill="var(--indigo)">B?</text>
+      <!-- weight -->
+      <line class="arrow" x1="220" y1="84" x2="220" y2="140"/>
+      <polygon points="220,148 214,136 226,136" fill="var(--shu)"/>
+      <text class="mono" x="220" y="164" text-anchor="middle" fill="var(--shu)">おもり</text>
+      <!-- bar weight -->
+      <line class="arrow" x1="310" y1="84" x2="310" y2="120"/>
+      <polygon points="310,128 304,116 316,116" fill="var(--shu)"/>
+      <text class="mono" x="310" y="144" text-anchor="middle" fill="var(--shu)">棒の重さ</text>
+      <!-- fulcrum choice -->
+      <circle cx="80" cy="77" r="12" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-dasharray="4 3"/>
+      <text class="mono" x="80" y="192" text-anchor="middle" fill="var(--gold)">ここを支点にすると</text>
+      <text class="mono" x="290" y="192" text-anchor="start" fill="var(--gold)">A が式から消える → B が一発で出る</text>
+    </svg>
+    </div>
+    <figcaption>A のまわりで式を立てれば A の距離は0。残った未知数は B だけ。B が出たら「上向きの合計＝下向きの合計」で A を求める。</figcaption>
+  </figure>
+
+  <h3>支点にはたらく力を書き忘れない</h3>
+  <p>棒の<strong>端</strong>が台にのっている、ちょうつがいで固定されている、といった問題では、そこに<strong>上向きの力</strong>がはたらいています。「支点だから力ははたらかない」と思い込むのが最頻出のミス。上下のつり合いを使うときは必ず数に入れます。</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <div class="sec-head"><span class="n">05</span><h2>棒の重さ・重心の扱い</h2></div>
+
+  <p>問題文に「棒の重さは考えない」「軽い棒」と書いてあれば無視。書いていなければ<strong>必ず重さを1つのおもりとして書き込みます</strong>。</p>
+
+  <ul class="plain">
+    <li><strong>太さが一様な棒</strong> … 重さは<strong>真ん中（重心）</strong>に全部集まっているとみなす。</li>
+    <li><strong>太さが一様でない棒</strong> … 「1点で支えてつり合った位置」＝重心。そこに全重量が集まっているとみなす。</li>
+    <li><strong>重心が支点と一致</strong>すると、棒の重さは計算に影響しない（距離0）。</li>
+  </ul>
+
+  <figure>
+    <div class="dg">
+    <svg viewBox="0 0 620 170" role="img" aria-label="太さが一様な棒の重さを重心の1点に置きかえる考え方の図">
+      <text class="lab" x="10" y="30">実際</text>
+      <rect class="beam" x="90" y="18" width="440" height="16" rx="2"/>
+      <g stroke="var(--shu)" stroke-width="1.6" opacity=".7">
+        <line x1="120" y1="34" x2="120" y2="52"/><line x1="180" y1="34" x2="180" y2="52"/>
+        <line x1="240" y1="34" x2="240" y2="52"/><line x1="300" y1="34" x2="300" y2="52"/>
+        <line x1="360" y1="34" x2="360" y2="52"/><line x1="420" y1="34" x2="420" y2="52"/>
+        <line x1="480" y1="34" x2="480" y2="52"/>
+      </g>
+      <text class="mono" x="310" y="70" text-anchor="middle">重さは棒全体に散らばっている</text>
+      <text class="lab" x="310" y="100" text-anchor="middle" fill="var(--gold)">↓ 重心の1点にまとめてよい</text>
+      <text class="lab" x="10" y="140">計算</text>
+      <rect class="beam" x="90" y="128" width="440" height="16" rx="2"/>
+      <line class="arrow" x1="310" y1="144" x2="310" y2="164"/>
+      <circle cx="310" cy="136" r="6" fill="var(--shu)"/>
+      <line class="dim" x1="90" y1="118" x2="310" y2="118"/>
+      <text class="mono" x="200" y="114" text-anchor="middle">全長の半分</text>
+    </svg>
+    </div>
+    <figcaption>一様な棒なら重心＝中央。長さ80cm・120gの棒は「左端から40cmの位置につるした120gのおもり」と同じ扱いになる。</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <div class="sec-head"><span class="n">06</span><h2>解法の手順 — この順番を崩さない</h2></div>
+
+  <ol class="steps">
+    <li><b>力の矢印をすべて書き込む</b>下向き＝おもり・棒の重さ。上向き＝糸・支点・ばね・浮力。「書き込んでいない力がないか」をここで確認する。</li>
+    <li><b>計算用の支点を決める</b>未知の力がはたらいている点を選ぶ。実物の支点と違ってかまわない。</li>
+    <li><b>支点からの距離に直す</b>問題文の「左端から○cm」を、すべて「支点から○cm」に書きかえる。</li>
+    <li><b>左回り＝右回りの式を立てて解く</b>未知数が1つになっているはず。2つ残ったら支点の選び方を見直す。</li>
+    <li><b>上下のつり合いで残りを求める</b>支点にかかる力・もう1本のばねばかりの値はここで出す。</li>
+    <li><b>検算する</b>別の点を支点にして式を立て直し、同じ答えになるか確かめる。数十秒で確実に検算できる。</li>
+  </ol>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <div class="sec-head"><span class="n">07</span><h2>出題パターン11型</h2></div>
+
+  <p>入試のてこは、次の型のどれか、または組み合わせです。図を見た瞬間に型を判定できるようにしておくと処理速度が上がります。</p>
+
+  <div class="patterns">
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">A</span><h4>軽い棒＋おもり</h4><span class="chip b">基本</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="中央を支点にした軽い棒に、左右におもりをつるした図">
+        <rect class="beam" x="20" y="40" width="220" height="8" rx="1"/>
+        <polygon points="130,50 141,72 119,72" fill="var(--gold)" opacity=".85"/>
+        <g stroke="var(--shu)" stroke-width="1.4">
+          <line x1="55" y1="48" x2="55" y2="60"/><line x1="92" y1="48" x2="92" y2="58"/><line x1="200" y1="48" x2="200" y2="60"/>
+        </g>
+        <rect x="46" y="60" width="18" height="17" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <rect x="85" y="58" width="14" height="13" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <rect x="192" y="60" width="16" height="15" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <text class="k" x="130" y="90" text-anchor="middle" fill="var(--gold)">支点</text>
+      </svg></div>
+      <p>重さを無視できる棒に複数のおもり。左右のモーメントを比べるだけ。おもりが3個以上でも、左回りの和と右回りの和を作る。</p>
+      <div class="key"><b>要点</b> 距離は支点から。端からの数値を必ず変換。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">B</span><h4>重さのある棒</h4><span class="chip b">基本</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="支点が中央からずれた棒で、中央に棒の重さがはたらく図">
+        <rect class="beam" x="20" y="40" width="220" height="8" rx="1"/>
+        <polygon points="88,50 99,72 77,72" fill="var(--gold)" opacity=".85"/>
+        <line x1="130" y1="48" x2="130" y2="64" stroke="var(--shu)" stroke-width="1.6"/>
+        <polygon points="130,70 125,60 135,60" fill="var(--shu)"/>
+        <circle cx="130" cy="44" r="3.5" fill="var(--shu)"/>
+        <line x1="40" y1="48" x2="40" y2="58" stroke="var(--shu)" stroke-width="1.4"/>
+        <rect x="32" y="58" width="16" height="15" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <text class="k" x="130" y="90" text-anchor="middle" fill="var(--shu)">棒の重さ（中央）</text>
+      </svg></div>
+      <p>「太さが一様な長さ○cm・重さ○gの棒」。棒の重さを中央のおもりとして追加してから、Aと同じ手順。</p>
+      <div class="key"><b>要点</b> 支点が中央からずれた瞬間、棒の重さが効いてくる。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">C</span><h4>2点で支える／ばねばかり2本</h4><span class="chip s">標準</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="棒の両端を上向きの力で支え、途中におもりをつるした図">
+        <rect class="beam" x="20" y="44" width="220" height="8" rx="1"/>
+        <g stroke="var(--indigo)" stroke-width="2" fill="none">
+          <line x1="32" y1="44" x2="32" y2="20"/><line x1="228" y1="44" x2="228" y2="20"/>
+        </g>
+        <polygon points="32,12 27,23 37,23" fill="var(--indigo)"/>
+        <polygon points="228,12 223,23 233,23" fill="var(--indigo)"/>
+        <line x1="105" y1="52" x2="105" y2="64" stroke="var(--shu)" stroke-width="1.4"/>
+        <rect x="96" y="64" width="18" height="16" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <text class="k" x="32" y="92" text-anchor="middle" fill="var(--indigo)">A?</text>
+        <text class="k" x="228" y="92" text-anchor="middle" fill="var(--indigo)">B?</text>
+      </svg></div>
+      <p>棒の両端を台やばねばかりで支え、それぞれにかかる力を問う。上向きの未知数が2つある型。</p>
+      <div class="key"><b>要点</b> 片方の支持点を支点にして式 → もう一方は上下のつり合いで。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">D</span><h4>端が支点（片持ち）</h4><span class="chip s">標準</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="左端が壁で固定され、右端を糸で引き上げている棒の図">
+        <rect x="10" y="14" width="9" height="66" fill="var(--line)"/>
+        <rect class="beam" x="19" y="44" width="220" height="8" rx="1"/>
+        <circle cx="24" cy="48" r="6" fill="var(--gold)"/>
+        <line x1="205" y1="44" x2="205" y2="18" stroke="var(--indigo)" stroke-width="2"/>
+        <polygon points="205,12 200,22 210,22" fill="var(--indigo)"/>
+        <line x1="120" y1="52" x2="120" y2="62" stroke="var(--shu)" stroke-width="1.4"/>
+        <rect x="111" y="62" width="18" height="16" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <text class="k" x="30" y="92" fill="var(--gold)">支点にも力がかかる</text>
+      </svg></div>
+      <p>棒の一端がちょうつがい・壁で固定され、もう一端を糸やばねで引き上げる。支点にかかる力を問われる。</p>
+      <div class="key"><b>要点</b> 支点にも力がはたらく。図に上向き矢印を必ず追加。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">E</span><h4>太さが一様でない棒</h4><span class="chip a">応用</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="左が太く右が細い棒。重心が中央より左にずれていることを示す図">
+        <polygon points="20,32 240,42 240,50 20,60" fill="var(--surface)" stroke="var(--ink-soft)" stroke-width="1.5"/>
+        <line x1="130" y1="24" x2="130" y2="70" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 3"/>
+        <text x="134" y="22">中央</text>
+        <polygon points="86,58 97,80 75,80" fill="var(--gold)" opacity=".85"/>
+        <circle cx="86" cy="46" r="4" fill="var(--gold)"/>
+        <text class="k" x="86" y="94" text-anchor="middle" fill="var(--gold)">重心</text>
+      </svg></div>
+      <p>重心の位置を先に求めさせる誘導つきが多い。「1点でつるしてつり合う位置」＝重心。</p>
+      <div class="key"><b>要点</b> 重心を出す → そこに全重量を置く → あとはB型。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">F</span><h4>上皿てんびん・さおばかり</h4><span class="chip s">標準</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="さおばかり。左に皿、右に分銅を左右に動かして目盛りを読む図">
+        <rect class="beam" x="20" y="36" width="220" height="7" rx="1"/>
+        <polygon points="66,45 77,66 55,66" fill="var(--gold)" opacity=".85"/>
+        <line x1="32" y1="43" x2="32" y2="54" stroke="var(--shu)" stroke-width="1.4"/>
+        <path d="M18,54 Q32,70 46,54" fill="none" stroke="var(--shu)" stroke-width="1.6"/>
+        <g stroke="var(--ink-faint)" stroke-width="1">
+          <line x1="100" y1="30" x2="100" y2="36"/><line x1="125" y1="30" x2="125" y2="36"/>
+          <line x1="150" y1="30" x2="150" y2="36"/><line x1="175" y1="30" x2="175" y2="36"/>
+          <line x1="200" y1="30" x2="200" y2="36"/><line x1="225" y1="30" x2="225" y2="36"/>
+        </g>
+        <rect x="143" y="43" width="15" height="14" rx="1" fill="var(--indigo)" opacity=".25" stroke="var(--indigo)"/>
+        <g stroke="var(--indigo)" stroke-width="1.4"><line x1="118" y1="66" x2="188" y2="66"/></g>
+        <polygon points="112,66 122,62 122,70" fill="var(--indigo)"/><polygon points="194,66 184,62 184,70" fill="var(--indigo)"/>
+        <text class="k" x="153" y="88" text-anchor="middle" fill="var(--indigo)">分銅を動かす</text>
+      </svg></div>
+      <p>分銅の選び方、目盛りの間隔、はかれる最大の重さ、支点の位置をずらす工夫。器具の使い方（重い分銅から順にのせる等）も同時に問われる。</p>
+      <div class="key"><b>要点</b> さおばかりの目盛りは<b>等間隔</b>。1cmあたり何gかを先に出す。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">G</span><h4>ばねとの複合</h4><span class="chip s">標準</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="棒の右端をばねでつるし、左におもりをつるした図">
+        <line x1="180" y1="10" x2="240" y2="10" stroke="var(--line)" stroke-width="3"/>
+        <path d="M210,10 L210,16 L202,20 L218,26 L202,32 L218,38 L210,42 L210,46"
+              fill="none" stroke="var(--indigo)" stroke-width="1.8"/>
+        <rect class="beam" x="20" y="46" width="220" height="8" rx="1"/>
+        <polygon points="120,56 131,78 109,78" fill="var(--gold)" opacity=".85"/>
+        <line x1="50" y1="54" x2="50" y2="64" stroke="var(--shu)" stroke-width="1.4"/>
+        <rect x="41" y="64" width="18" height="16" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <text class="k" x="210" y="92" text-anchor="middle" fill="var(--indigo)">のび→力</text>
+      </svg></div>
+      <p>棒をばねでつるす、または棒の下にばねをつける。ばねののびから力を求め、てこの式に入れる。</p>
+      <div class="key"><b>要点</b> ばねののび ∝ 力。「1cmのびるのに何g」を先に確定。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">H</span><h4>滑車・輪軸との複合</h4><span class="chip a">応用</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="てこの一端が動滑車につながり、もう一端を引き下げる図">
+        <rect class="beam" x="20" y="34" width="220" height="8" rx="1"/>
+        <polygon points="150,44 161,66 139,66" fill="var(--gold)" opacity=".85"/>
+        <line x1="45" y1="42" x2="45" y2="52" stroke="var(--indigo)" stroke-width="1.5"/>
+        <circle cx="45" cy="60" r="9" fill="none" stroke="var(--indigo)" stroke-width="2"/>
+        <circle cx="45" cy="60" r="2" fill="var(--indigo)"/>
+        <path d="M36,60 L36,76 M54,60 L54,76" stroke="var(--indigo)" stroke-width="1.3" fill="none"/>
+        <rect x="36" y="76" width="18" height="13" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <line x1="215" y1="42" x2="215" y2="66" stroke="var(--shu)" stroke-width="1.8"/>
+        <polygon points="215,74 210,63 220,63" fill="var(--shu)"/>
+        <text class="k" x="45" y="24" text-anchor="middle" fill="var(--indigo)">動滑車</text>
+      </svg></div>
+      <p>てこの一端を動滑車や輪軸につなぐ。滑車側で力を換算してから、てこの式へ。</p>
+      <div class="key"><b>要点</b> 動滑車1個で力は<b>半分</b>、ひもは2倍動く。輪軸は半径の比。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">I</span><h4>浮力との複合</h4><span class="chip a">応用</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="てこにつるした左のおもりを水に沈めた図">
+        <rect class="beam" x="20" y="26" width="220" height="8" rx="1"/>
+        <polygon points="130,36 141,58 119,58" fill="var(--gold)" opacity=".85"/>
+        <rect x="26" y="50" width="70" height="30" rx="2" fill="var(--indigo)" opacity=".16" stroke="var(--indigo)"/>
+        <path d="M26,57 q8,-5 17,0 t17,0 t17,0 t19,0" fill="none" stroke="var(--indigo)" stroke-width="1.3"/>
+        <line x1="61" y1="34" x2="61" y2="62" stroke="var(--shu)" stroke-width="1.4"/>
+        <rect x="52" y="62" width="18" height="15" rx="1" fill="var(--shu)" opacity=".3" stroke="var(--shu)"/>
+        <line x1="200" y1="34" x2="200" y2="46" stroke="var(--shu)" stroke-width="1.4"/>
+        <rect x="191" y="46" width="18" height="16" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <text class="k" x="61" y="94" text-anchor="middle" fill="var(--indigo)">軽くなる</text>
+      </svg></div>
+      <p>てこにつるしたおもりを水に沈める。おもりが軽くなったぶんだけモーメントが減る。</p>
+      <div class="key"><b>要点</b> 見かけの重さ ＝ 重さ − 浮力（＝押しのけた水の重さ）。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">J</span><h4>人体・道具・日常</h4><span class="chip b">基本</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="ひじを支点、筋肉を力点、手を作用点とした人のうでの図">
+        <line x1="46" y1="10" x2="46" y2="46" stroke="var(--ink-soft)" stroke-width="6" stroke-linecap="round"/>
+        <rect class="beam" x="46" y="42" width="180" height="9" rx="4"/>
+        <circle cx="46" cy="46" r="7" fill="var(--gold)"/>
+        <line x1="82" y1="42" x2="82" y2="20" stroke="var(--indigo)" stroke-width="2"/>
+        <polygon points="82,13 77,24 87,24" fill="var(--indigo)"/>
+        <line x1="212" y1="51" x2="212" y2="64" stroke="var(--shu)" stroke-width="1.5"/>
+        <rect x="202" y="64" width="20" height="17" rx="1" fill="var(--shu)" opacity=".22" stroke="var(--shu)"/>
+        <text class="k" x="46" y="72" text-anchor="middle" fill="var(--gold)">ひじ</text>
+        <text class="k" x="86" y="92" fill="var(--indigo)">筋肉＝力点</text>
+        <text class="k" x="212" y="92" text-anchor="middle" fill="var(--shu)">手</text>
+      </svg></div>
+      <p>うでの筋肉、一輪車、ドアノブ、はしなど。3種類の分類と、力が何倍になるかを問う。</p>
+      <div class="key"><b>要点</b> 支点・力点・作用点を実物のどこに当てるかを言葉で説明できるように。</div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-top"><span class="pat-id">K</span><h4>実験・表・グラフの読み取り</h4><span class="chip a">応用</span></div>
+      <div class="thumb"><svg viewBox="0 0 260 96" role="img" aria-label="距離を横軸、必要な重さを縦軸にとると反比例のグラフになることを示す図">
+        <g stroke="var(--ink-faint)" stroke-width="1.2" fill="none">
+          <line x1="46" y1="12" x2="46" y2="74"/><line x1="46" y1="74" x2="234" y2="74"/>
+        </g>
+        <path d="M62,20 C96,58 120,66 150,69 C180,71 208,72 228,72"
+              fill="none" stroke="var(--indigo)" stroke-width="2.2"/>
+        <g fill="var(--shu)">
+          <circle cx="62" cy="20" r="3"/><circle cx="86" cy="43" r="3"/><circle cx="118" cy="60" r="3"/>
+          <circle cx="158" cy="69" r="3"/><circle cx="206" cy="72" r="3"/>
+        </g>
+        <text x="46" y="90">距離 →</text>
+        <text class="k" x="150" y="34" fill="var(--indigo)">重さ×距離＝一定</text>
+        <text x="6" y="18">重さ</text>
+      </svg></div>
+      <p>おもりの位置を変えたときの表から規則性を見つける、グラフの傾きの意味を答える、実験の考察を書く。</p>
+      <div class="key"><b>要点</b> 「重さ×距離が一定」に気づけるか。積を計算して表に書き足す。</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="s8">
+  <div class="sec-head"><span class="n">08</span><h2>例題と解説</h2></div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="tag">A型</span>基本のつり合い</div>
+    <div class="ex-b">
+      <p class="q">重さを考えない長さ60cmの棒の、左端から20cmの点を支点として支える。左端に60gのおもりをつるしたとき、右端に何gのおもりをつるせばつり合うか。</p>
+      <details class="sol"><summary>解説を見る</summary><div class="body">
+        <p>支点からの距離に直す。左端＝支点から20cm、右端＝60−20＝40cm。</p>
+        <div class="calc">左回り 60 × 20 = 1200　／　右回り □ × 40 = 1200</div>
+        <p>□ = 1200 ÷ 40 = <span class="ans">30g</span></p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="tag">B型</span>棒の重さが効く</div>
+    <div class="ex-b">
+      <p class="q">太さが一様で長さ80cm・重さ120gの棒を、左端から20cmの点で支える。左端に何gのおもりをつるせばつり合うか。</p>
+      <details class="sol"><summary>解説を見る</summary><div class="body">
+        <p>棒の重さ120gは中央＝左端から40cmの点にある。支点から見ると右に40−20＝20cm。</p>
+        <div class="calc">右回り 120 × 20 = 2400　／　左回り □ × 20 = 2400</div>
+        <p>□ = <span class="ans">120g</span>（棒の重さと同じ値になるのは、距離が等しいから）</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="tag">C型</span>2点支持 — 支点選びが効く</div>
+    <div class="ex-b">
+      <p class="q">太さが一様で長さ100cm・重さ200gの棒を、両端A（左端）とB（右端）でばねばかりでつるす。左端から30cmの点に300gのおもりをつるしたとき、A・Bのばねばかりはそれぞれ何gを示すか。</p>
+      <details class="sol"><summary>解説を見る</summary><div class="body">
+        <p>未知の力はAとBの2つ。まず<strong>Aを計算用の支点</strong>にすると、Aは距離0で式から消える。</p>
+        <div class="calc">棒 200 × 50 ＝ 10000　＋　おもり 300 × 30 ＝ 9000　＝　19000（右回り）</div>
+        <div class="calc">B × 100 = 19000　→　B = 190g</div>
+        <p>上下のつり合いから A ＝ (200 ＋ 300) − 190 ＝ 310g</p>
+        <p><span class="ans">A = 310g、B = 190g</span></p>
+        <p style="color:var(--ink-soft);font-size:.9rem">検算：Bを支点にすると A×100 ＝ 200×50 ＋ 300×70 ＝ 31000 → A＝310g。一致。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="tag">E型</span>太さが一様でない棒</div>
+    <div class="ex-b">
+      <p class="q">長さ90cm・重さ180gの太さが一様でない棒がある。左端から30cmの点で支えるとちょうどつり合った。この棒を左端から20cmの点で支えるとき、左端に何gのおもりをつるせばつり合うか。</p>
+      <details class="sol"><summary>解説を見る</summary><div class="body">
+        <p>「1点で支えてつり合った」＝そこが<strong>重心</strong>。重心は左端から30cm。</p>
+        <p>新しい支点は左端から20cm。重心は支点の右10cm。</p>
+        <div class="calc">右回り 180 × 10 = 1800　／　左回り □ × 20 = 1800</div>
+        <p>□ = <span class="ans">90g</span></p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="tag">F型</span>さおばかり</div>
+    <div class="ex-b">
+      <p class="q">さおの支点から10cmの位置に皿をつるし、反対側に50gの分銅を動かしてつり合わせる。分銅が支点から40cmのところでつり合ったとき、皿にのせた品物は何gか。（さお・皿の重さは考えない）</p>
+      <details class="sol"><summary>解説を見る</summary><div class="body">
+        <div class="calc">□ × 10 = 50 × 40 = 2000</div>
+        <p>□ = <span class="ans">200g</span></p>
+        <p style="color:var(--ink-soft);font-size:.9rem">発展：分銅が1cm動くごとに 50 × 1 ÷ 10 ＝ 5g ずつ増える。だから目盛りは等間隔（1cm＝5g）になる。</p>
+      </div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="s9">
+  <div class="sec-head"><span class="n">09</span><h2>つり合い計算機</h2></div>
+  <p>数値を入れると、右側に必要なおもりと、棒がどちらに傾くかを確かめられます。自作問題の答え合わせに。</p>
+
+  <div class="sim">
+    <div class="sim-grid">
+      <div class="fld"><label for="lw">左のおもり (g)</label><input id="lw" type="number" value="60" min="0" step="1"></div>
+      <div class="fld"><label for="ld">左の距離 (cm)</label><input id="ld" type="number" value="20" min="0" step="1"></div>
+      <div class="fld"><label for="rw">右のおもり (g)</label><input id="rw" type="number" value="30" min="0" step="1"></div>
+      <div class="fld"><label for="rd">右の距離 (cm)</label><input id="rd" type="number" value="40" min="0" step="1"></div>
+    </div>
+
+    <div class="dg" style="margin-top:14px">
+    <svg id="simsvg" viewBox="0 0 620 220" role="img" aria-label="入力した値に応じて傾きが変わるてこの図">
+      <polygon points="310,132 334,180 286,180" fill="var(--gold)" opacity=".85"/>
+      <line x1="60" y1="180" x2="560" y2="180" stroke="var(--line)" stroke-width="2"/>
+      <g id="simbeam">
+        <rect class="beam" x="90" y="120" width="440" height="13" rx="2"/>
+        <rect id="lbox" x="104" y="76" width="42" height="38" rx="2" fill="var(--shu)" opacity=".2" stroke="var(--shu)"/>
+        <text id="ltxt" class="mono lab" x="125" y="100" text-anchor="middle" fill="var(--shu)">60g</text>
+        <rect id="rbox" x="474" y="76" width="42" height="38" rx="2" fill="var(--indigo)" opacity=".2" stroke="var(--indigo)"/>
+        <text id="rtxt" class="mono lab" x="495" y="100" text-anchor="middle" fill="var(--indigo)">30g</text>
+      </g>
+      <circle cx="310" cy="126" r="5" fill="var(--gold)"/>
+    </svg>
+    </div>
+
+    <div class="sim-out" id="simout" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="s10">
+  <div class="sec-head"><span class="n">10</span><h2>ミス防止チェックリスト</h2></div>
+
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>やりがちなミス</th><th>直し方</th></tr></thead>
+    <tbody>
+      <tr><td>距離を棒の端から測ってしまう</td><td>式を書く前に、すべての距離を「支点から○cm」に書き直す</td></tr>
+      <tr><td>棒自身の重さを入れ忘れる</td><td>問題文に「重さを考えない」とあるか毎回確認。なければ重心に矢印を書く</td></tr>
+      <tr><td>支点にはたらく上向きの力を忘れる</td><td>上下のつり合いを使うときは、支点の矢印を必ず数える</td></tr>
+      <tr><td>未知数が2つ残って手が止まる</td><td>未知の力がある点を支点に選び直す</td></tr>
+      <tr><td>斜めになったてこで棒に沿って距離を測る</td><td>使うのは<strong>水平距離</strong>（真上から見た距離）</td></tr>
+      <tr><td>浮力の問題で元の重さのまま計算</td><td>水中のおもりは「重さ − 浮力」の見かけの重さで計算</td></tr>
+      <tr><td>単位がバラバラ（cmとm、gとkg）</td><td>式を立てる前に単位をそろえる</td></tr>
+      <tr><td>答えの見直しをしない</td><td>別の点を支点にして検算。30秒で確認できる</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<footer>
+  中学受験理科・てこ単元のまとめ。数値例はすべて検算済みです。学校・塾のテキストで扱いが異なる場合は、そちらの表記に合わせてください。
+</footer>
+
+</main>
+</div>
+
+<script>
+(function(){
+  var ids=["lw","ld","rw","rd"];
+  var el={};ids.forEach(function(i){el[i]=document.getElementById(i)});
+  var beam=document.getElementById("simbeam"),
+      out=document.getElementById("simout"),
+      ltxt=document.getElementById("ltxt"),
+      rtxt=document.getElementById("rtxt");
+
+  function num(x){var v=parseFloat(x.value);return isFinite(v)&&v>=0?v:0}
+
+  function update(){
+    var lw=num(el.lw),ld=num(el.ld),rw=num(el.rw),rd=num(el.rd);
+    var L=lw*ld,R=rw*rd,diff=L-R;
+    ltxt.textContent=lw+"g";rtxt.textContent=rw+"g";
+
+    var maxAng=9;
+    var scale=Math.max(L,R,1);
+    var ang=Math.max(-maxAng,Math.min(maxAng,(diff/scale)*maxAng*1.6));
+    beam.setAttribute("transform","rotate("+(ang)+" 310 126)");
+
+    var need = rd>0 ? (L/rd) : null;
+    var msg="";
+    if(Math.abs(diff)<1e-9){
+      out.className="sim-out";
+      msg='<b>つり合っています。</b> 左 '+lw+'×'+ld+' = <span class="big">'+L+
+          '</span>　右 '+rw+'×'+rd+' = <span class="big">'+R+'</span>';
+    }else{
+      out.className="sim-out tilt";
+      var side=diff>0?"左":"右";
+      msg='<b>'+side+'に傾きます。</b> 左 '+lw+'×'+ld+' = <span class="big">'+L+
+          '</span>　右 '+rw+'×'+rd+' = <span class="big">'+R+'</span>';
+      if(need!==null){
+        msg+='<br>右のおもりを <span class="big">'+(Math.round(need*100)/100)+'g</span> にすればつり合います。';
+      }else{
+        msg+='<br>右の距離が0のままではつり合いません。';
+      }
+    }
+    out.innerHTML=msg;
+  }
+
+  ids.forEach(function(i){el[i].addEventListener("input",update)});
+  update();
+})();
+</script>
+
+</body>
+</html>
