@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>溶解度と再結晶の解法帳｜中学受験理科</title>
+<meta name="description" content="中学受験理科の溶解度・再結晶を、基礎から難関校レベルの出題パターン12までまとめた学習ページ。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>html{-webkit-text-size-adjust:100%}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#f1f5f8; --surface:#ffffff; --surface-2:#e9eff4;
+  --ink:#0e1a27; --ink-2:#33475a; --muted:#5d7285; --line:#d7e1ea; --line-2:#c3d1de;
+  --accent:#0a6ea6; --accent-soft:#e2f0f8; --accent-ink:#075a88;
+  --crystal:#a96a05; --crystal-soft:#fbeeda;
+  --hard:#98284f; --hard-soft:#fbe6ec;
+  --ok:#1c6b4d; --ok-soft:#e0f2ea; --hl:#fbe3b4;
+  --shadow:0 1px 2px rgba(14,26,39,.05), 0 8px 24px -12px rgba(14,26,39,.18);
+  --r:14px;
+  --f-disp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","ヒラギノ丸ゴ ProN",system-ui,sans-serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","ヒラギノ角ゴシック",Meiryo,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a1119; --surface:#121d28; --surface-2:#182534;
+    --ink:#e6eef5; --ink-2:#c2d1de; --muted:#8ea2b4; --line:#243543; --line-2:#31465a;
+    --accent:#56b7e7; --accent-soft:#0f2c3d; --accent-ink:#8ed3f5;
+    --crystal:#e5aa46; --crystal-soft:#33260f;
+    --hard:#f2839f; --hard-soft:#351622;
+    --ok:#5fc79b; --ok-soft:#0f2b21; --hl:#5c4315;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a1119; --surface:#121d28; --surface-2:#182534;
+  --ink:#e6eef5; --ink-2:#c2d1de; --muted:#8ea2b4; --line:#243543; --line-2:#31465a;
+  --accent:#56b7e7; --accent-soft:#0f2c3d; --accent-ink:#8ed3f5;
+  --crystal:#e5aa46; --crystal-soft:#33260f;
+  --hard:#f2839f; --hard-soft:#351622;
+  --ok:#5fc79b; --ok-soft:#0f2b21; --hl:#5c4315;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:860px; margin:0 auto; padding:0 20px 96px}
+h1,h2,h3,h4{font-family:var(--f-disp); text-wrap:balance; line-height:1.35; margin:0}
+a{color:var(--accent-ink)}
+
+/* ── header ── */
+.hero{
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(1100px 340px at 12% -40%, var(--accent-soft), transparent 70%),
+    var(--surface);
+}
+.hero-in{max-width:860px; margin:0 auto; padding:52px 20px 40px}
+.eyebrow{
+  font-family:var(--f-mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--accent); font-weight:600; margin:0 0 14px;
+}
+h1{font-size:clamp(30px,6.4vw,46px); font-weight:900; letter-spacing:.01em}
+h1 .sub{display:block; font-size:clamp(15px,3vw,19px); font-weight:700; color:var(--muted); margin-top:10px; letter-spacing:.02em}
+.lede{margin:20px 0 0; color:var(--ink-2); max-width:60ch}
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px}
+.chip{
+  font-family:var(--f-mono); font-size:12.5px; font-weight:500;
+  border:1px solid var(--line-2); border-radius:999px; padding:5px 13px; color:var(--ink-2);
+  background:var(--surface);
+}
+
+/* ── nav ── */
+nav.toc{
+  position:sticky; top:0; z-index:20; background:var(--bg); background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line); margin-bottom:44px;
+}
+.toc-in{max-width:860px; margin:0 auto; padding:10px 20px; display:flex; gap:6px; overflow-x:auto; scrollbar-width:thin}
+.toc a{
+  flex:0 0 auto; font-size:13.5px; font-weight:500; text-decoration:none; color:var(--muted);
+  padding:5px 11px; border-radius:8px; white-space:nowrap;
+}
+.toc a:hover{background:var(--surface-2); color:var(--ink)}
+
+/* ── sections ── */
+section{margin-bottom:66px; scroll-margin-top:64px}
+.sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:8px; padding-bottom:12px; border-bottom:2px solid var(--ink)}
+.sec-num{font-family:var(--f-mono); font-size:13px; font-weight:600; color:var(--accent)}
+h2{font-size:clamp(21px,4.2vw,27px); font-weight:900}
+h3{font-size:18.5px; font-weight:700; margin:34px 0 10px}
+h4{font-size:16px; font-weight:700; margin:20px 0 6px; color:var(--ink-2)}
+p{margin:12px 0}
+.sec-intro{color:var(--muted); font-size:15px; margin:14px 0 26px}
+
+/* ── cards & callouts ── */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:22px; box-shadow:var(--shadow)}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin:18px 0}
+.note{
+  border-left:3px solid var(--accent); background:var(--accent-soft);
+  padding:14px 18px; border-radius:0 10px 10px 0; margin:20px 0; font-size:15.2px;
+}
+.note.warn{border-left-color:var(--crystal); background:var(--crystal-soft)}
+.note.hard{border-left-color:var(--hard); background:var(--hard-soft)}
+.note b{font-family:var(--f-disp)}
+.note p:first-child{margin-top:0}
+.note p:last-child{margin-bottom:0}
+
+ul,ol{padding-left:1.35em; margin:12px 0}
+li{margin:6px 0}
+li::marker{color:var(--accent)}
+.tight li{margin:3px 0}
+
+.formula{
+  font-family:var(--f-disp); font-weight:700; font-size:clamp(15px,3.4vw,19px);
+  background:var(--surface); border:1px dashed var(--line-2); border-radius:12px;
+  padding:16px 18px; margin:16px 0; text-align:center; color:var(--ink);
+  overflow-x:auto; white-space:nowrap;
+}
+.formula .frac{display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 6px}
+.formula .frac span:first-child{border-bottom:2px solid var(--ink); padding:0 8px 2px; font-size:.85em}
+.formula .frac span:last-child{padding:2px 8px 0; font-size:.85em}
+em.hl{font-style:normal; background:linear-gradient(transparent 60%, var(--hl) 60%); font-weight:700; padding:0 2px}
+code, .num{font-family:var(--f-mono); font-variant-numeric:tabular-nums}
+
+/* ── tables ── */
+.tbl-wrap{overflow-x:auto; margin:18px 0; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:520px}
+th,td{padding:9px 12px; text-align:center; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; font-family:var(--f-mono)}
+thead th{background:var(--surface-2); font-weight:600; color:var(--ink-2); font-size:13px}
+tbody th{text-align:left; font-family:var(--f-body); font-weight:700; white-space:nowrap; background:var(--surface)}
+tbody tr:last-child td, tbody tr:last-child th{border-bottom:none}
+td.mark{color:var(--crystal); font-weight:600}
+
+/* ── lab panel (interactive) ── */
+.lab{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:var(--shadow)}
+.seg{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px}
+.seg button{
+  font-family:var(--f-body); font-size:14px; font-weight:700; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--surface); color:var(--muted);
+  padding:7px 14px; border-radius:999px; transition:.15s;
+}
+.seg button:hover{border-color:var(--accent); color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--surface)}
+.chartbox{width:100%; overflow-x:auto}
+svg.chart{width:100%; height:auto; display:block; min-width:480px}
+.sliders{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px 20px; margin-top:18px}
+.sl label{display:flex; justify-content:space-between; align-items:baseline; font-size:13.5px; font-weight:700; color:var(--ink-2); margin-bottom:4px}
+.sl label output{font-family:var(--f-mono); font-size:15px; color:var(--accent); font-weight:600}
+input[type=range]{width:100%; accent-color:var(--accent); height:22px}
+.readout{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:18px}
+.ro{background:var(--surface-2); border-radius:12px; padding:12px 14px}
+.ro .k{font-size:12px; color:var(--muted); font-weight:700; display:block; line-height:1.5}
+.ro .v{font-family:var(--f-mono); font-size:21px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums}
+.ro.out{background:var(--crystal-soft)}
+.ro.out .v{color:var(--crystal)}
+.lab-cap{font-size:13px; color:var(--muted); margin-top:14px}
+
+/* ── pattern cards ── */
+.pat{
+  background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  margin:18px 0; overflow:hidden; box-shadow:var(--shadow);
+}
+.pat-head{display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--line); background:var(--surface-2)}
+.pat-no{
+  font-family:var(--f-mono); font-weight:600; font-size:13px; color:#fff; background:var(--accent);
+  border-radius:8px; padding:3px 9px; flex:0 0 auto;
+}
+.pat-title{font-family:var(--f-disp); font-weight:700; font-size:17px; flex:1 1 auto; line-height:1.4}
+.lv{font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap; flex:0 0 auto; font-family:var(--f-body)}
+.lv.b{background:var(--accent-soft); color:var(--accent-ink)}
+.lv.s{background:var(--surface); color:var(--muted); border:1px solid var(--line-2)}
+.lv.a{background:var(--crystal-soft); color:var(--crystal)}
+.lv.n{background:var(--hard-soft); color:var(--hard)}
+.pat-body{padding:18px 20px 20px}
+.pat-body > p:first-child{margin-top:0}
+.q{
+  background:var(--bg); border:1px solid var(--line); border-radius:10px;
+  padding:14px 16px; margin:14px 0; font-size:15.5px;
+}
+.q .qlab{font-family:var(--f-mono); font-size:11.5px; letter-spacing:.1em; color:var(--muted); font-weight:600; display:block; margin-bottom:6px}
+.q p{margin:8px 0}
+.q p:last-child{margin-bottom:0}
+
+details.ans{border:1px solid var(--line-2); border-radius:10px; margin:12px 0 0; background:var(--surface)}
+details.ans summary{
+  cursor:pointer; list-style:none; padding:11px 16px; font-weight:700; font-size:14.5px;
+  color:var(--accent-ink); display:flex; align-items:center; gap:9px; border-radius:10px;
+}
+details.ans summary::-webkit-details-marker{display:none}
+details.ans summary::before{
+  content:"▶"; font-size:10px; transition:transform .2s; color:var(--accent);
+}
+details.ans[open] summary::before{transform:rotate(90deg)}
+details.ans summary:hover{background:var(--accent-soft)}
+details.ans summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.ans-body{padding:2px 18px 16px; border-top:1px solid var(--line); font-size:15.2px}
+.ans-body ol{padding-left:1.2em}
+.ans-body .final{
+  font-family:var(--f-disp); font-weight:700; font-size:17px; color:var(--ok);
+  background:var(--ok-soft); border-radius:8px; padding:10px 14px; margin-top:14px; display:block;
+}
+.step{display:flex; gap:10px; margin:9px 0; align-items:flex-start}
+.step .s-no{
+  font-family:var(--f-mono); font-size:11px; font-weight:600; background:var(--surface-2); color:var(--muted);
+  border-radius:6px; padding:2px 7px; flex:0 0 auto; margin-top:5px;
+}
+
+/* ── misc ── */
+.kv{display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-size:15px; margin:14px 0}
+.kv dt{font-weight:700; color:var(--accent-ink); font-family:var(--f-disp)}
+.kv dd{margin:0; color:var(--ink-2)}
+.miss{counter-reset:m; list-style:none; padding:0}
+.miss li{
+  position:relative; padding:12px 16px 12px 52px; border:1px solid var(--line);
+  border-radius:12px; margin:10px 0; background:var(--surface); font-size:15.2px;
+}
+.miss li::before{
+  counter-increment:m; content:"×" counter(m); position:absolute; left:14px; top:12px;
+  font-family:var(--f-mono); font-size:13px; font-weight:600; color:var(--hard);
+  background:var(--hard-soft); border-radius:7px; padding:2px 7px;
+}
+footer{border-top:1px solid var(--line); margin-top:60px; padding-top:22px; font-size:13px; color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+@media print{
+  nav.toc{display:none} details.ans[open]{break-inside:avoid} .lab{break-inside:avoid}
+}
+</style>
+
+<header class="hero">
+  <div class="hero-in">
+    <p class="eyebrow">中学受験理科 ／ 水よう液</p>
+    <h1>溶解度と再結晶の解法帳<span class="sub">基礎のしくみから、難関校の「出る型」12パターンまで</span></h1>
+    <p class="lede">溶解度の問題は、じつは<em class="hl">同じ考え方の使い回し</em>でほとんど解けます。このページでは、しくみを図と数字でつかんだあと、入試で出る形を12のパターンに分けて、例題と解き方をひとつずつ確認していきます。</p>
+    <div class="chips">
+      <span class="chip">出題パターン 12</span>
+      <span class="chip">例題 20問（解答つき）</span>
+      <span class="chip">溶解度曲線を動かせる</span>
+      <span class="chip">難関校レベルまで</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="toc-in">
+    <a href="#s1">1. 基礎</a>
+    <a href="#s2">2. 溶解度曲線</a>
+    <a href="#s3">3. 濃度と再結晶</a>
+    <a href="#s4">4. 出題パターン12</a>
+    <a href="#s5">5. 難関校の+α</a>
+    <a href="#s6">6. 実験・記述</a>
+    <a href="#s7">7. 総まとめ</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ══════════ 1 ══════════ -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">01</span><h2>まず、しくみをつかむ</h2></div>
+  <p class="sec-intro">計算の前に、ここだけは言葉で説明できるようにしておきましょう。難関校ほど「なぜそうなるか」を記述で聞いてきます。</p>
+
+  <h3>「とける」とはどういうことか</h3>
+  <p>ものが水にとけると、粒がバラバラになって水の中に均一に広がります。これが<b>水よう液</b>です。水よう液には次の性質があります。</p>
+  <div class="card">
+    <ul class="tight">
+      <li><b>とうめい</b>である（※色がついていてもよい。硫酸銅水よう液は青くてとうめい）</li>
+      <li>こさがどこも<b>同じ</b>（上も下も同じこさ）</li>
+      <li>時間がたっても<b>分かれない</b>・しずまない</li>
+      <li><b>ろ紙を通りぬける</b>（つぶが小さすぎてこしとれない）</li>
+      <li>とかす前と後で、<b>全体の重さは変わらない</b>（水100g＋食塩20g＝水よう液120g）</li>
+    </ul>
+  </div>
+  <div class="note warn">
+    <p><b>「とける」の3つの字を区別する</b>　難関校の頻出。<br>
+    <b>溶ける</b>＝水などにとけて水よう液になる／<b>融ける</b>＝熱で液体になる（氷、鉄）／<b>解ける</b>＝問題がとける。<br>
+    「ドライアイスが小さくなる」は昇華で、どれでもありません。</p>
+  </div>
+
+  <h3>溶解度＝「水100gにとける限界の量」</h3>
+  <p>水にものをとかしていくと、あるところで<b>それ以上とけなくなります</b>。この限界までとけた状態を<b>飽和</b>といい、そのときの水よう液を<b>飽和水よう液</b>といいます。</p>
+  <div class="formula">溶解度 ＝ <em class="hl">水100g</em> にとける最大の重さ（g）</div>
+  <div class="note">
+    <p><b>いちばん多いミス。</b>溶解度は「<b>水</b>100g」であって「<b>水よう液</b>100g」ではありません。問題文に「飽和水よう液150g」と出てきたら、それは水100g＋とけたもの50g かもしれない、というふうに<b>まず分けて考えます</b>。</p>
+  </div>
+
+  <h3>覚えておく基準表（水100gにとける量・g）</h3>
+  <p>入試では表やグラフが与えられますが、この4つの動き方を頭に入れておくと、読み取りが一気に速くなります。</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>温度（℃）</th><th>0</th><th>10</th><th>20</th><th>30</th><th>40</th><th>50</th><th>60</th><th>80</th></tr></thead>
+      <tbody>
+        <tr><th>硝酸カリウム</th><td>13</td><td>22</td><td class="mark">32</td><td>46</td><td>64</td><td>85</td><td class="mark">110</td><td>169</td></tr>
+        <tr><th>ミョウバン</th><td>6</td><td>8</td><td>11</td><td>17</td><td>24</td><td>36</td><td class="mark">57</td><td>321</td></tr>
+        <tr><th>食塩</th><td>36</td><td>36</td><td class="mark">36</td><td>36</td><td>36</td><td>37</td><td>37</td><td>38</td></tr>
+        <tr><th>ホウ酸</th><td>3</td><td>4</td><td>5</td><td>7</td><td>9</td><td>11</td><td>15</td><td>24</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <dl class="kv">
+    <dt>硝酸カリウム</dt><dd>温度でガラッと変わる。<b>再結晶の主役</b>。20℃で約32g、60℃で約110g だけは覚える。</dd>
+    <dt>ミョウバン</dt><dd>これも温度で大きく変わる。結晶づくりの実験でよく出る（正八面体）。</dd>
+    <dt>食塩</dt><dd><b>温度が変わってもほとんど変わらない</b>（いつも約36g）。だから冷やしても出てこない。</dd>
+    <dt>ホウ酸</dt><dd>もともと少ししかとけない。じわっと増える。</dd>
+  </dl>
+  <p style="font-size:13.5px;color:var(--muted)">※このページの数値は中学受験でよく使われる概数にそろえてあります。実際の入試では問題の表の値を必ず使ってください。</p>
+</section>
+
+<!-- ══════════ 2 ══════════ -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">02</span><h2>溶解度曲線を動かしてみる</h2></div>
+  <p class="sec-intro">物質・水の量・温度を変えると、とける量と「冷やしたときに出てくる結晶」がどう変わるか。手を動かして体で覚えるのが最短です。</p>
+
+  <div class="lab">
+    <div class="seg" id="seg" role="group" aria-label="物質をえらぶ">
+      <button type="button" data-i="0" aria-pressed="true">硝酸カリウム</button>
+      <button type="button" data-i="1" aria-pressed="false">ミョウバン</button>
+      <button type="button" data-i="2" aria-pressed="false">食塩</button>
+      <button type="button" data-i="3" aria-pressed="false">ホウ酸</button>
+    </div>
+
+    <div class="chartbox"><svg class="chart" id="chart" viewBox="0 0 720 430" role="img" aria-label="溶解度曲線のグラフ"></svg></div>
+
+    <div class="sliders">
+      <div class="sl">
+        <label for="water">水の量 <output id="waterOut">100 g</output></label>
+        <input type="range" id="water" min="20" max="300" step="10" value="100">
+      </div>
+      <div class="sl">
+        <label for="t1">はじめの温度（高い方） <output id="t1Out">60 ℃</output></label>
+        <input type="range" id="t1" min="0" max="80" step="5" value="60">
+      </div>
+      <div class="sl">
+        <label for="t2">冷やしたあとの温度 <output id="t2Out">20 ℃</output></label>
+        <input type="range" id="t2" min="0" max="80" step="5" value="20">
+      </div>
+    </div>
+
+    <div class="readout">
+      <div class="ro"><span class="k" id="k1">① 60℃でとける量</span><span class="v" id="v1">110 g</span></div>
+      <div class="ro"><span class="k" id="k2">② 20℃でとける量</span><span class="v" id="v2">32 g</span></div>
+      <div class="ro out"><span class="k">③ 出てくる結晶（①−②）</span><span class="v" id="v3">78 g</span></div>
+      <div class="ro"><span class="k">はじめの飽和水よう液の重さ</span><span class="v" id="v4">210 g</span></div>
+      <div class="ro"><span class="k">はじめの水よう液のこさ</span><span class="v" id="v5">52.4 %</span></div>
+      <div class="ro"><span class="k">冷やしたあとのこさ</span><span class="v" id="v6">24.2 %</span></div>
+    </div>
+    <p class="lab-cap">オレンジの縦棒が「出てくる結晶の量」です。<b>食塩</b>にしてみると、いくら冷やしてもほとんど結晶が出ないことが目で確認できます。水の量を変えると、出てくる量が同じ倍率で変わることも見てみましょう。</p>
+  </div>
+
+  <div class="note">
+    <p><b>グラフから読み取れること（記述で頻出）</b></p>
+    <ul class="tight">
+      <li>曲線の<b>かたむきが急</b>な物質ほど、冷やしたときにたくさん結晶が出る。</li>
+      <li>曲線上の点＝<b>その温度の飽和水よう液</b>。曲線より下＝まだとける。曲線より上＝とけ残る。</li>
+      <li>食塩は曲線がほぼ水平＝冷やしても結晶が出ない。だから<b>食塩は水を蒸発させて取り出す</b>。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ 3 ══════════ -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">03</span><h2>こさの計算と、再結晶の2つの方法</h2></div>
+
+  <h3>こさ（濃度）の式</h3>
+  <div class="formula">こさ(%) ＝ <span class="frac"><span>とけているものの重さ</span><span>水よう液全体の重さ</span></span> × 100</div>
+  <p>分母は<b>水よう液全体</b>＝「水＋とけているもの」です。分母を「水」にしてしまうミスが本当に多いので、式を書くときに毎回「全体」と口に出すクセをつけましょう。</p>
+  <div class="note">
+    <p><b>飽和水よう液のこさは、水の量に関係なく決まる。</b><br>
+    60℃の硝酸カリウムなら、水100gに110g。全体210g。こさは 110÷210×100＝<b>52.4%</b>。水が200gでも 220÷420 で同じ52.4%です。<br>
+    つまり <b>飽和水よう液のこさ＝溶解度÷(100＋溶解度)×100</b>。</p>
+  </div>
+
+  <h3>とかしたものを取り出す＝再結晶</h3>
+  <p>いったん水にとかしたものを、もう一度結晶として取り出す操作を<b>再結晶</b>といいます。方法は2つだけです。</p>
+  <div class="grid2">
+    <div class="card">
+      <h4 style="margin-top:0;color:var(--accent-ink)">方法A ── 冷やす</h4>
+      <p style="margin-bottom:0">温度を下げると溶解度が下がる → とけきれなくなった分が出てくる。<br><b>硝酸カリウム・ミョウバン</b>のように、温度で溶解度が大きく変わるものに有効。</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;color:var(--crystal)">方法B ── 水を蒸発させる</h4>
+      <p style="margin-bottom:0">水が減ると、その水にとけていた分がとけきれなくなって出てくる。<br><b>食塩</b>のように温度で変わらないものは、こちらしかない。</p>
+    </div>
+  </div>
+  <div class="formula" style="text-align:left">
+    冷やす場合 … 出てくる量 ＝（高い温度の溶解度 − 低い温度の溶解度）× <span class="frac"><span>水の量</span><span>100</span></span>
+  </div>
+  <div class="formula" style="text-align:left">
+    蒸発させる場合 … 出てくる量 ＝ 溶解度 × <span class="frac"><span>蒸発させた水の量</span><span>100</span></span>
+  </div>
+
+  <div class="note warn">
+    <p><b>すべての問題に効く「3行の表」</b><br>
+    どんなに複雑な問題でも、次の3行を書けば必ず整理できます。</p>
+    <div class="tbl-wrap" style="margin:12px 0 0">
+      <table style="min-width:420px">
+        <thead><tr><th></th><th>水（g）</th><th>とけたもの（g）</th><th>合計（g）</th></tr></thead>
+        <tbody>
+          <tr><th>はじめ</th><td>100</td><td>110</td><td>210</td></tr>
+          <tr><th>変化（蒸発・析出）</th><td>−50</td><td>−78</td><td>−128</td></tr>
+          <tr><th>あと</th><td>50</td><td>32</td><td>82</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-bottom:0"><b>「あと」の行が、その温度の飽和になっている</b>——これが式を立てる手がかりです。</p>
+  </div>
+</section>
+
+<!-- ══════════ 4 ══════════ -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">04</span><h2>出題パターン12</h2></div>
+  <p class="sec-intro">ここからが本番。番号順に難しくなります。P1〜P5が基礎、P6〜P9が合否を分けるところ、P10〜P12が難関校の上位層向けです。数値はすべて上の基準表を使います。</p>
+
+  <!-- P1 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P1</span><span class="pat-title">とけ残りが出るか、出るなら何gか</span><span class="lv b">基本</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>水が100gでないときは、まず<b>「水の量 ÷ 100」の倍率</b>を出して溶解度をかけ算する。</p>
+      <div class="q">
+        <span class="qlab">例題 1</span>
+        <p>60℃の水50gに、硝酸カリウムを70g入れてよくかき混ぜた。とけ残りは何gか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>60℃での溶解度は<span class="num">110</span>g（水100gあたり）。</div></div>
+        <div class="step"><span class="s-no">2</span><div>水は50gなので倍率は <span class="num">50 ÷ 100 = 0.5</span> 倍。とける限界は <span class="num">110 × 0.5 = 55</span>g。</div></div>
+        <div class="step"><span class="s-no">3</span><div>入れたのは70gなので、<span class="num">70 − 55 = 15</span>g がとけ残る。</div></div>
+        <span class="final">答　15 g</span>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:0">※このとき、とけ残りがあってもこの水よう液は<b>飽和</b>。さらに硝酸カリウムを足しても、こさは変わりません。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P2 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P2</span><span class="pat-title">飽和水よう液のこさを求める</span><span class="lv b">基本</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>水100gを勝手に決めてよい。<b>溶解度 ÷（100＋溶解度）</b>で一発。</p>
+      <div class="q">
+        <span class="qlab">例題 2</span>
+        <p>40℃の硝酸カリウムの飽和水よう液のこさは何%か。小数第1位まで答えなさい。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>40℃の溶解度は<span class="num">64</span>g。水100gに64gとけている、と考える。</div></div>
+        <div class="step"><span class="s-no">2</span><div>水よう液全体は <span class="num">100 + 64 = 164</span>g。</div></div>
+        <div class="step"><span class="s-no">3</span><div><span class="num">64 ÷ 164 × 100 = 39.02…</span></div></div>
+        <span class="final">答　39.0 %</span>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P3 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P3</span><span class="pat-title">冷やして出てくる結晶（水100g）</span><span class="lv b">基本</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>水の量は冷やしても変わらない。だから<b>溶解度の差</b>がそのまま答え。</p>
+      <div class="q">
+        <span class="qlab">例題 3</span>
+        <p>60℃の水100gに硝酸カリウムをとけるだけとかし、20℃まで冷やした。出てくる結晶は何gか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>60℃でとけた量＝<span class="num">110</span>g。</div></div>
+        <div class="step"><span class="s-no">2</span><div>20℃でとけていられる量＝<span class="num">32</span>g（水は100gのまま）。</div></div>
+        <div class="step"><span class="s-no">3</span><div><span class="num">110 − 32 = 78</span>g がとけきれなくなって出てくる。</div></div>
+        <span class="final">答　78 g</span>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P4 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P4</span><span class="pat-title">水の量が100gでない冷却＋残った液のこさ</span><span class="lv s">標準</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>倍率をかけるだけ。おまけの「残った液のこさ」は、<b>その温度の飽和水よう液のこさ</b>なので水の量に関係なく決まる。</p>
+      <div class="q">
+        <span class="qlab">例題 4</span>
+        <p>60℃の水150gに硝酸カリウムをとけるだけとかし、20℃まで冷やした。<br>(1) 出てくる結晶は何gか。　(2) 残った水よう液のこさは何%か（小数第1位まで）。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>倍率は <span class="num">150 ÷ 100 = 1.5</span> 倍。</div></div>
+        <div class="step"><span class="s-no">2</span><div>60℃でとけた量＝<span class="num">110 × 1.5 = 165</span>g。20℃でとけていられる量＝<span class="num">32 × 1.5 = 48</span>g。</div></div>
+        <div class="step"><span class="s-no">3</span><div>(1) <span class="num">165 − 48 = 117</span>g。</div></div>
+        <div class="step"><span class="s-no">4</span><div>(2) 残った液は 水150g＋硝酸カリウム48g＝198g。<span class="num">48 ÷ 198 × 100 = 24.24…</span></div></div>
+        <span class="final">答　(1) 117 g　(2) 24.2 %</span>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:0">※20℃の飽和水よう液のこさ <span class="num">32 ÷ 132 × 100 = 24.2%</span> と一致します。ここに気づけば(2)は計算せずに答えられます。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P5 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P5</span><span class="pat-title">水を蒸発させて出てくる結晶</span><span class="lv s">標準</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b><b>「なくなった水にとけていた分」が出てくる</b>。温度が同じなら、蒸発させた水の量だけで決まる。</p>
+      <div class="q">
+        <span class="qlab">例題 5</span>
+        <p>20℃で、水100gに食塩をとけるだけとかした。この水よう液から水を40g蒸発させ、ふたたび20℃にした。出てくる食塩は何gか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>20℃の食塩の溶解度は<span class="num">36</span>g。水100gに36gとけている。</div></div>
+        <div class="step"><span class="s-no">2</span><div>水が40g減る＝<span class="num">40 ÷ 100 = 0.4</span> 倍ぶんの水が消える。</div></div>
+        <div class="step"><span class="s-no">3</span><div>その水にとけていた <span class="num">36 × 0.4 = 14.4</span>g が出てくる。</div></div>
+        <span class="final">答　14.4 g</span>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:0">※確認：残りは水60g＋食塩21.6g。<span class="num">21.6 ÷ 60 × 100 = 36</span> → たしかに飽和のままです。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P6 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P6</span><span class="pat-title">「飽和水よう液◯g」を冷やす（水の量が書いていない）</span><span class="lv a">発展</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>ここが最重要パターン。水の量が与えられていないので、<b>飽和水よう液を「水」と「とけたもの」に分ける</b>ところから始めます。<br>
+      60℃の硝酸カリウムなら <b>水100 ＋ 溶質110 ＝ 水よう液210</b> が「1セット」。与えられた重さが何セット分かを出せば終わりです。</p>
+      <div class="q">
+        <span class="qlab">例題 6</span>
+        <p>60℃の硝酸カリウムの飽和水よう液420gを、20℃まで冷やした。出てくる結晶は何gか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>60℃の飽和水よう液は <b>水100 : 溶質110 : 全体210</b>。</div></div>
+        <div class="step"><span class="s-no">2</span><div><span class="num">420 ÷ 210 = 2</span> セット分。→ 水<span class="num">200</span>g、硝酸カリウム<span class="num">220</span>g。</div></div>
+        <div class="step"><span class="s-no">3</span><div>20℃で水200gにとけるのは <span class="num">32 × 2 = 64</span>g。</div></div>
+        <div class="step"><span class="s-no">4</span><div><span class="num">220 − 64 = 156</span>g。</div></div>
+        <span class="final">答　156 g</span>
+        <p style="margin-bottom:0"><b>もっと速い解き方（比の一発計算）</b><br>
+        「飽和水よう液210gを冷やすと78g出る」と決まっているので、<br>
+        <span class="num">78 × (420 ÷ 210) = 156</span>g。<br>
+        つまり <b>出てくる量 ＝（溶解度の差）×（飽和水よう液の重さ ÷ (100＋高い方の溶解度)）</b>。</p>
+      </div></details>
+
+      <div class="q">
+        <span class="qlab">例題 7（逆に聞かれる形）</span>
+        <p>60℃の硝酸カリウムの飽和水よう液を20℃まで冷やしたところ、結晶が39g出てきた。はじめの飽和水よう液は何gだったか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>飽和水よう液210gあたり78g出る、という関係を使う。</div></div>
+        <div class="step"><span class="s-no">2</span><div><span class="num">39 ÷ 78 = 0.5</span> セット分。</div></div>
+        <div class="step"><span class="s-no">3</span><div><span class="num">210 × 0.5 = 105</span>g。</div></div>
+        <span class="final">答　105 g</span>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P7 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P7</span><span class="pat-title">蒸発させて、さらに冷やす（複合）</span><span class="lv a">発展</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>操作が2つ以上あるときは、<b>途中の状態をいちいち出さず、「最後にとけていられる量」を出して引く</b>のが確実。<br>
+      <b>出てきた結晶の合計 ＝ もともとの溶質の量 − 最後の水にその温度でとける量</b></p>
+      <div class="q">
+        <span class="qlab">例題 8</span>
+        <p>60℃の硝酸カリウムの飽和水よう液315gがある。これを60℃のまま水を50g蒸発させ、そのあと20℃まで冷やした。<br>
+        (1) 蒸発させている間に出てきた結晶は何gか。　(2) そのあと冷やして出てきた結晶は何gか。　(3) 出てきた結晶は合計何gか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div><span class="num">315 ÷ 210 = 1.5</span> セット分 → 水<span class="num">150</span>g、硝酸カリウム<span class="num">165</span>g。</div></div>
+        <div class="step"><span class="s-no">2</span><div>水を50g蒸発させると水は<span class="num">100</span>g。60℃で水100gにとけるのは<span class="num">110</span>g。<br>(1) <span class="num">165 − 110 = 55</span>g が蒸発中に出てくる。</div></div>
+        <div class="step"><span class="s-no">3</span><div>20℃にすると、水100gにとけるのは<span class="num">32</span>g。<br>(2) <span class="num">110 − 32 = 78</span>g がさらに出てくる。</div></div>
+        <div class="step"><span class="s-no">4</span><div>(3) <span class="num">55 + 78 = 133</span>g。（＝ <span class="num">165 − 32</span> と一発でも出る）</div></div>
+        <span class="final">答　(1) 55 g　(2) 78 g　(3) 133 g</span>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P8 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P8</span><span class="pat-title">溶解度そのものを逆算する（表の空らんうめ）</span><span class="lv a">発展</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>「水よう液の重さ − 水の重さ ＝ とけた量」。そこから<b>水100gあたりに直す</b>。比の練習そのものです。</p>
+      <div class="q">
+        <span class="qlab">例題 9</span>
+        <p>ある温度で、水80gに物質Aをとけるだけとかしたところ、水よう液は104gになった。<br>
+        (1) この温度でのAの溶解度はいくらか。　(2) 同じ温度で、Aの飽和水よう液260gには水が何gふくまれるか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>とけたAは <span class="num">104 − 80 = 24</span>g。</div></div>
+        <div class="step"><span class="s-no">2</span><div>水80gで24g → 水100gなら <span class="num">24 × 100 ÷ 80 = 30</span>g。 (1)の答。</div></div>
+        <div class="step"><span class="s-no">3</span><div>この温度の飽和は <b>水100 : A30 : 全体130</b>。<span class="num">260 ÷ 130 = 2</span> セット分。</div></div>
+        <div class="step"><span class="s-no">4</span><div>水は <span class="num">100 × 2 = 200</span>g。（Aは60g）</div></div>
+        <span class="final">答　(1) 30 g　(2) 200 g</span>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P9 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P9</span><span class="pat-title">2種類の混合物を、再結晶で分ける</span><span class="lv a">発展</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>入試では「<b>おたがいのとけ方に影響しない</b>」として、2つを<b>別々に</b>計算します。温度で溶解度が大きく変わる方だけが出てくる、というのがオチ。</p>
+      <div class="q">
+        <span class="qlab">例題 10</span>
+        <p>食塩20gと硝酸カリウム80gの混合物がある。これを60℃の水100gに入れたところ、すべてとけた。この水よう液を20℃まで冷やした。<br>
+        (1) 出てくる結晶は何の結晶で、何gか。　(2) この方法で硝酸カリウムを取り出せる理由を説明しなさい。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div><b>硝酸カリウム</b>：20℃で水100gにとけるのは<span class="num">32</span>g。80gあるので <span class="num">80 − 32 = 48</span>g が出てくる。</div></div>
+        <div class="step"><span class="s-no">2</span><div><b>食塩</b>：20℃で水100gに<span class="num">36</span>gまでとける。20gしかないので<b>出てこない</b>。</div></div>
+        <span class="final">答　(1) 硝酸カリウムの結晶が 48 g</span>
+        <p style="margin-bottom:0">(2)（記述例）<b>硝酸カリウムは温度が下がると溶解度が大きく下がるのに対し、食塩は温度が変わっても溶解度がほとんど変わらないため、冷やすと硝酸カリウムだけがとけきれなくなって結晶として出てくるから。</b></p>
+      </div></details>
+
+      <div class="q">
+        <span class="qlab">例題 11（差がつく追加問い）</span>
+        <p>(3) 取り出した結晶をろ過したあと、少量の<b>冷たい水</b>で洗ってから乾かすのはなぜか。<br>(4) この結晶をさらに純度の高いものにするには、どうすればよいか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <p>(3) 結晶の表面には<b>食塩をふくんだ水よう液がついている</b>ため。そのまま乾かすと、その水よう液の水が蒸発して食塩が結晶にまざってしまう。<b>冷たい</b>水を使うのは、あたたかい水だと目的の硝酸カリウムまでとけて減ってしまうから。</p>
+        <p style="margin-bottom:0">(4) 得られた結晶を<b>もう一度あたたかい水にとかし、また冷やして結晶を出す</b>（再結晶をくり返す）。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P10 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P10</span><span class="pat-title">こさの操作（水を加える・蒸発させる・混ぜる）</span><span class="lv s">標準</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b><b>「とけているものの重さは変わらない」</b>が合言葉。水を足しても蒸発させても、溶質の重さは変わりません（結晶が出ない範囲では）。</p>
+      <div class="q">
+        <span class="qlab">例題 12</span>
+        <p>(1) 20%の食塩水200gに水を50g加えると何%になるか。<br>
+        (2) 20%の食塩水200gと8%の食塩水300gを混ぜると何%になるか。<br>
+        (3) 20%の食塩水200gから水を何g蒸発させれば25%になるか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>もとの食塩は <span class="num">200 × 0.2 = 40</span>g。</div></div>
+        <div class="step"><span class="s-no">2</span><div>(1) 全体は<span class="num">250</span>g。<span class="num">40 ÷ 250 × 100 = 16</span>%。</div></div>
+        <div class="step"><span class="s-no">3</span><div>(2) 食塩は <span class="num">40 + 300 × 0.08 = 40 + 24 = 64</span>g、全体<span class="num">500</span>g。<span class="num">64 ÷ 500 × 100 = 12.8</span>%。</div></div>
+        <div class="step"><span class="s-no">4</span><div>(3) 食塩40gが25%になるときの全体は <span class="num">40 ÷ 0.25 = 160</span>g。<span class="num">200 − 160 = 40</span>g 蒸発させる。</div></div>
+        <span class="final">答　(1) 16 %　(2) 12.8 %　(3) 40 g</span>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P11 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P11</span><span class="pat-title">気体のとけ方（温度と圧力）</span><span class="lv s">標準</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>固体とは<b>逆</b>。気体は<b>温度が高いほどとけにくく</b>、<b>圧力が高いほどとけやすい</b>。記述・選択で頻出。</p>
+      <div class="card" style="margin:14px 0">
+        <ul class="tight" style="margin:0">
+          <li>水を熱すると、沸とうする前に小さなあわが出る → <b>とけていた空気</b>が出てきた。</li>
+          <li>炭酸飲料のふたを開けるとあわが出る → <b>圧力が下がって</b>二酸化炭素がとけきれなくなった。</li>
+          <li>夏に魚が水面近くに来る → 水温が上がって<b>とけている酸素が減った</b>。</li>
+          <li>くみたての水道水を金魚に使わない → とけている塩素をぬくため（<b>くみおき</b>）。</li>
+        </ul>
+      </div>
+      <div class="q">
+        <span class="qlab">例題 13</span>
+        <p>ある気体は、20℃・1気圧のとき水1Lに0.0017gとける。同じ温度で3気圧にすると、水1Lに何gとけるか。また、水温を40℃に上げるととける量はどうなるか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <p>とける重さは<b>圧力に比例</b>するので <span class="num">0.0017 × 3 = 0.0051</span>g。</p>
+        <p style="margin-bottom:0">水温を上げると気体はとけにくくなるので、<b>とける量は減る</b>。</p>
+        <span class="final">答　0.0051 g ／ 減る</span>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- P12 -->
+  <div class="pat">
+    <div class="pat-head"><span class="pat-no">P12</span><span class="pat-title">結晶の中に水がふくまれる物質（結晶水）</span><span class="lv n">難関</span></div>
+    <div class="pat-body">
+      <p><b>型のポイント：</b>最難関校の定番。ミョウバンや硫酸銅の結晶は、<b>結晶そのものの中に水を取りこんでいます</b>。<br>
+      結晶が出ると、<b>溶質だけでなく水も一緒に持っていかれる</b>のがポイント。「出てくる結晶＝□g」とおいて、<b>残った液が飽和になる</b>という式を立てます。</p>
+      <div class="q">
+        <span class="qlab">例題 14</span>
+        <p>物質Xの溶解度は、60℃で60g、20℃で20gである（水100gあたり、水をふくまないXの重さで表す）。Xの結晶は、その重さの<b>半分が水</b>である。<br>
+        60℃の水100gにXをとけるだけとかし、20℃まで冷やしたとき、出てくる<b>結晶</b>は何gか。</p>
+      </div>
+      <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+        <div class="step"><span class="s-no">1</span><div>はじめ：水<span class="num">100</span>g、X<span class="num">60</span>g。</div></div>
+        <div class="step"><span class="s-no">2</span><div>出てくる結晶を <b>□ g</b> とおく。結晶の半分が水なので、結晶が持っていくのは<br>水 <span class="num">0.5×□</span> g、X <span class="num">0.5×□</span> g。</div></div>
+        <div class="step"><span class="s-no">3</span><div>残った液：水 <span class="num">100 − 0.5□</span> g、X <span class="num">60 − 0.5□</span> g。</div></div>
+        <div class="step"><span class="s-no">4</span><div>残った液は20℃の飽和 → 水:X ＝ <span class="num">100 : 20 ＝ 5 : 1</span>。<br>よって <span class="num">100 − 0.5□ ＝ 5 ×(60 − 0.5□)</span></div></div>
+        <div class="step"><span class="s-no">5</span><div><span class="num">100 − 0.5□ ＝ 300 − 2.5□</span> → <span class="num">2□ ＝ 200</span> → <span class="num">□ ＝ 100</span></div></div>
+        <span class="final">答　100 g</span>
+        <p style="font-size:14.2px;color:var(--muted);margin-bottom:0"><b>検算：</b>残った液は 水<span class="num">50</span>g、X<span class="num">10</span>g。<span class="num">10 ÷ 50 × 100 = 20</span> → 水100gあたり20g で、たしかに20℃の飽和。<br>
+        ※結晶水を無視して <span class="num">60 − 20 = 40</span>g と答えるのが典型的なひっかけ。実際にはもっと多く出ます。</p>
+      </div></details>
+      <div class="note hard">
+        <p style="margin:0"><b>実物では：</b>ミョウバンの結晶（正八面体）は重さの約45%が水、硫酸銅の結晶（青い斜方形）は約36%が水です。問題文で必ず割合が与えられるので、覚える必要はありません。<b>「□とおいて、残った液が飽和」</b>——この立式だけを持ち帰ってください。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 5 ══════════ -->
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">05</span><h2>難関校の＋α ── ここで差がつく5つ</h2></div>
+  <p class="sec-intro">パターンは同じでも、条件の与えられ方をひねってくるのが難関校です。よくある「ひねり」を5つ集めました。</p>
+
+  <h3>① 表の単位が「水100g」ではない</h3>
+  <div class="q">
+    <span class="qlab">例題 15</span>
+    <p>ある物質の表に「20℃で<b>水50g</b>に16gとける」とある。この物質の20℃での溶解度はいくらか。<br>
+    また、別の表には「20℃の<b>飽和水よう液100g</b>に、この物質が24gふくまれる」とある。このときの溶解度はいくらか。</p>
+  </div>
+  <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+    <p>前半：水50gで16g → 水100gなら <span class="num">16 × 2 = 32</span>g。</p>
+    <p>後半：飽和水よう液100gのうち、物質が24g → <b>水は</b> <span class="num">100 − 24 = 76</span>g。<br>
+    水76gに24g → 水100gなら <span class="num">24 × 100 ÷ 76 = 31.5…</span></p>
+    <span class="final">答　32 g ／ 約31.6 g</span>
+    <p style="margin-bottom:0;font-size:14px;color:var(--muted)">「水よう液100g中に◯g」と書かれていたら、それは<b>こさ</b>であって溶解度ではありません。必ず<b>水の量に直してから</b>100gあたりに換算します。</p>
+  </div></details>
+
+  <h3>② グラフから途中の温度・値を読ませる</h3>
+  <div class="q">
+    <span class="qlab">例題 16</span>
+    <p>水100gに硝酸カリウムを50g入れ、少しずつ温めていくと、およそ何℃でとけきるか。グラフ（または表）から答えなさい。</p>
+  </div>
+  <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+    <p>「とけきる温度」＝<b>溶解度がちょうど50gになる温度</b>を探す。</p>
+    <p>表より 30℃で46g、40℃で64g。50gは46と64の間なので、30℃と40℃の間。<br>
+    <span class="num">(50 − 46) ÷ (64 − 46) = 4 ÷ 18 ≒ 0.22</span> → <span class="num">30 + 10 × 0.22 ≒ 32</span>℃</p>
+    <span class="final">答　およそ32℃（30〜35℃と答えられればよい）</span>
+    <p style="margin-bottom:0;font-size:14px;color:var(--muted)">上のグラフで温度スライダーを動かし、値が50に近づく温度を確かめてみましょう。</p>
+  </div></details>
+
+  <h3>③ 温度が上がるととけにくくなる物質</h3>
+  <div class="note hard">
+    <p style="margin-top:0"><b>水酸化カルシウム（石灰水）</b>は、<b>温度が高いほどとけにくく</b>なります。だから石灰水を加熱すると、二酸化炭素を通していないのに白くにごることがあります。気体と同じ動きだと覚えておきましょう。</p>
+    <p style="margin-bottom:0">グラフで<b>右下がりの曲線</b>が出てきたら、この仲間か気体です。「冷やすと結晶が出る」の反対で、<b>あたためると結晶が出る</b>ことになります。</p>
+  </div>
+
+  <h3>④ とけ残りがある状態からの操作</h3>
+  <div class="q">
+    <span class="qlab">例題 17</span>
+    <p>20℃の水100gに硝酸カリウムを50g入れたところ、とけ残りがあった。この状態から水を50g加えて20℃のままよくかき混ぜると、とけ残りは何gになるか。</p>
+  </div>
+  <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+    <div class="step"><span class="s-no">1</span><div>はじめ：20℃で水100gにとけるのは<span class="num">32</span>g。とけ残りは <span class="num">50 − 32 = 18</span>g。</div></div>
+    <div class="step"><span class="s-no">2</span><div>水を50g加えて水は<span class="num">150</span>g。20℃でとけるのは <span class="num">32 × 1.5 = 48</span>g。</div></div>
+    <div class="step"><span class="s-no">3</span><div>硝酸カリウムは全部で50gあるので、とけ残りは <span class="num">50 − 48 = 2</span>g。</div></div>
+    <span class="final">答　2 g</span>
+    <p style="margin-bottom:0;font-size:14px;color:var(--muted)">とけ残りがあるときは<b>いつも飽和</b>。だから「こさは何%か」と聞かれたら、水の量に関係なく <span class="num">32 ÷ 132 × 100 = 24.2</span>% です。</p>
+  </div></details>
+
+  <h3>⑤ ろ過した結晶の「ぬれ」を考えさせる</h3>
+  <div class="q">
+    <span class="qlab">例題 18</span>
+    <p>20℃まで冷やして出てきた結晶をろ過し、<b>乾かさずに</b>重さをはかったところ、計算で求めた値より重かった。その理由を答えなさい。</p>
+  </div>
+  <details class="ans"><summary>解答・解き方</summary><div class="ans-body">
+    <p>（記述例）<b>結晶の表面に、20℃の飽和水よう液がついたままになっているから。</b></p>
+    <p style="margin-bottom:0">さらに「乾かすと、ついていた水よう液の水が蒸発し、その中にとけていた物質も結晶として残るので、計算値よりやはり少し重くなる」という発展もあります。だから正しくは<b>冷水で洗ってから乾かす</b>。</p>
+  </div></details>
+</section>
+
+<!-- ══════════ 6 ══════════ -->
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">06</span><h2>実験の操作と記述対策</h2></div>
+  <p class="sec-intro">計算だけでは合格点に届きません。器具の名前と「なぜそうするか」をセットで覚えます。</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4 style="margin-top:0">ろ過の3つのきまり</h4>
+      <ol class="tight" style="margin-bottom:0">
+        <li>液は<b>ガラス棒をつたわらせて</b>そそぐ（液が飛び散らないように）</li>
+        <li>ろうとの<b>あし（長い方）をビーカーの内側につける</b>（液がはねず、連続して流れる）</li>
+        <li>ろ紙は水でぬらして<b>ろうとにぴったりつける</b>（すき間から液がもれないように）</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">蒸発させるとき</h4>
+      <ul class="tight" style="margin-bottom:0">
+        <li>器具は<b>蒸発皿</b>。ガラス棒でかき混ぜながら弱火で。</li>
+        <li><b>完全に蒸発しきる前に火を止める</b>（急に飛び散る＝突沸を防ぐ／余熱で乾かす）</li>
+        <li>顔を近づけない・のぞきこまない。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>結晶の形（選択肢で出る）</h3>
+  <div class="tbl-wrap">
+    <table style="min-width:460px">
+      <thead><tr><th>物質</th><th>結晶の形</th><th>色</th></tr></thead>
+      <tbody>
+        <tr><th>食塩</th><td>立方体（サイコロ形）</td><td>白</td></tr>
+        <tr><th>ミョウバン</th><td>正八面体</td><td>無色とうめい</td></tr>
+        <tr><th>硝酸カリウム</th><td>細長い針状</td><td>無色とうめい</td></tr>
+        <tr><th>ホウ酸</th><td>六角の板状</td><td>白</td></tr>
+        <tr><th>硫酸銅</th><td>ひし形の板状</td><td>青</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>大きな結晶を作るコツ（実験考察）</h3>
+  <div class="card">
+    <p style="margin-top:0">飽和水よう液を<b>ゆっくり</b>冷やす／<b>ゆっくり</b>水を蒸発させると、大きな結晶ができます。急に冷やすと、あちこちで一度に結晶ができるため、<b>小さな結晶がたくさん</b>できてしまいます。</p>
+    <p style="margin-bottom:0">よくある実験手順：あたたかい飽和水よう液に<b>種結晶</b>を糸でつるし、発泡スチロールの箱に入れてゆっくり冷ます。</p>
+  </div>
+</section>
+
+<!-- ══════════ 7 ══════════ -->
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">07</span><h2>総まとめ</h2></div>
+
+  <h3>解く前に必ずやる3ステップ</h3>
+  <div class="card">
+    <div class="step"><span class="s-no">1</span><div><b>水・とけたもの・全体</b>の3つに分けて書き出す。「飽和水よう液◯g」は必ず分ける。</div></div>
+    <div class="step"><span class="s-no">2</span><div><b>操作で何が変わったか</b>を書く。冷やす→水は変わらない／蒸発→水だけ減る／加水→水だけ増える。</div></div>
+    <div class="step"><span class="s-no">3</span><div><b>最後の状態が飽和になっている</b>ことを使って式を立てる。</div></div>
+  </div>
+
+  <h3>やりがちなミス</h3>
+  <ol class="miss">
+    <li>溶解度を「<b>水よう液</b>100gあたり」と勘違いする。正しくは<b>水</b>100gあたり。</li>
+    <li>こさの分母を「水の重さ」にしてしまう。分母は<b>水よう液全体</b>。</li>
+    <li>冷やしたときに「水も減る」と思ってしまう。<b>冷やしても水の量は変わりません</b>。</li>
+    <li>飽和水よう液の重さを、そのまま水の重さとして計算してしまう（P6のパターン）。</li>
+    <li>2物質の混合で、両方の溶解度を足したり引いたりする。<b>別々に</b>考える。</li>
+    <li>気体を固体と同じに考える。気体は<b>温めるととけにくい</b>。</li>
+    <li>結晶水のある問題で、溶解度の差をそのまま答えにする（P12）。</li>
+  </ol>
+
+  <h3>暗記しておく数値（これだけ）</h3>
+  <div class="grid2">
+    <div class="card"><h4 style="margin-top:0">硝酸カリウム</h4><p style="margin-bottom:0" class="num">20℃ ≒ 32 g　／　60℃ ≒ 110 g<br>→ 冷やすと 78 g 出る（水100g）</p></div>
+    <div class="card"><h4 style="margin-top:0">食塩</h4><p style="margin-bottom:0" class="num">何℃でも ≒ 36 g<br>→ 冷やしても出ない。蒸発で取り出す</p></div>
+    <div class="card"><h4 style="margin-top:0">ミョウバン</h4><p style="margin-bottom:0" class="num">20℃ ≒ 11 g　／　60℃ ≒ 57 g</p></div>
+    <div class="card"><h4 style="margin-top:0">60℃飽和硝酸カリウム水よう液</h4><p style="margin-bottom:0" class="num">水100 ＋ 溶質110 ＝ 全体210 g<br>こさ ≒ 52.4 %</p></div>
+  </div>
+
+  <div class="note" style="margin-top:26px">
+    <p style="margin:0"><b>最後に。</b>溶解度の問題は、パターンを覚えるだけでは初見の問題で止まります。上の<b>3ステップ</b>で表を書くクセをつければ、見たことのない条件でも必ず式が立ちます。まずはP1〜P5を何も見ずに解けるようにして、そのあとP6・P7を10題くらい繰り返しましょう。</p>
+  </div>
+</section>
+
+<footer>
+  <p>中学受験理科／水よう液分野の学習用まとめ。数値は中学受験でよく使われる概数にそろえています。実際の入試では、問題に示された表・グラフの値を使ってください。</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  var TEMPS = [0,10,20,30,40,50,60,70,80];
+  var SUBS = [
+    {name:"硝酸カリウム", data:[13,22,32,46,64,85,110,138,169], color:"var(--accent)"},
+    {name:"ミョウバン",   data:[6,8,11,17,24,36,57,110,321],    color:"var(--crystal)"},
+    {name:"食塩",         data:[36,36,36,36,36,37,37,37,38],    color:"var(--hard)"},
+    {name:"ホウ酸",       data:[3,4,5,7,9,11,15,19,24],         color:"var(--ok)"}
+  ];
+  var cur = 0;
+  var YMAX = 180;
+  var M = {l:56, r:22, t:38, b:44}, W = 720, H = 430;
+  var PW = W - M.l - M.r, PH = H - M.t - M.b;
+
+  function px(t){ return M.l + t/80*PW; }
+  function py(v){ return M.t + PH - Math.min(v,YMAX)/YMAX*PH; }
+  function sol(i,t){
+    var d = SUBS[i].data;
+    if(t<=0) return d[0];
+    if(t>=80) return d[8];
+    var k = Math.floor(t/10), f = (t - k*10)/10;
+    return d[k] + (d[k+1]-d[k])*f;
+  }
+  function r1(x){ return Math.round(x*10)/10; }
+  function fmt(x){ var v = r1(x); return (Math.abs(v-Math.round(v))<1e-9) ? String(Math.round(v)) : v.toFixed(1); }
+
+  var svg = document.getElementById('chart');
+  var el = function(n,a){ var e=document.createElementNS("http://www.w3.org/2000/svg",n); for(var k in a) e.setAttribute(k,a[k]); return e; };
+
+  function draw(){
+    var water = +document.getElementById('water').value;
+    var t1 = +document.getElementById('t1').value;
+    var t2 = +document.getElementById('t2').value;
+    var f = water/100;
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var defs = el('defs',{});
+    var cp = el('clipPath',{id:'plotclip'});
+    cp.appendChild(el('rect',{x:M.l,y:M.t,width:PW,height:PH}));
+    defs.appendChild(cp); svg.appendChild(defs);
+
+    // grid + y labels
+    for(var v=0; v<=YMAX; v+=20){
+      svg.appendChild(el('line',{x1:M.l,y1:py(v),x2:M.l+PW,y2:py(v),stroke:'var(--line)','stroke-width':1}));
+      var ty = el('text',{x:M.l-9,y:py(v)+4,'text-anchor':'end','font-size':11,fill:'var(--muted)','font-family':'IBM Plex Mono, monospace'});
+      ty.textContent = v; svg.appendChild(ty);
+    }
+    for(var t=0; t<=80; t+=10){
+      svg.appendChild(el('line',{x1:px(t),y1:M.t,x2:px(t),y2:M.t+PH,stroke:'var(--line)','stroke-width':1}));
+      var tx = el('text',{x:px(t),y:M.t+PH+20,'text-anchor':'middle','font-size':11,fill:'var(--muted)','font-family':'IBM Plex Mono, monospace'});
+      tx.textContent = t; svg.appendChild(tx);
+    }
+    svg.appendChild(el('line',{x1:M.l,y1:M.t+PH,x2:M.l+PW,y2:M.t+PH,stroke:'var(--line-2)','stroke-width':2}));
+    svg.appendChild(el('line',{x1:M.l,y1:M.t,x2:M.l,y2:M.t+PH,stroke:'var(--line-2)','stroke-width':2}));
+
+    var ax = el('text',{x:M.l+PW,y:M.t+PH+38,'text-anchor':'end','font-size':12,fill:'var(--muted)'});
+    ax.textContent='温度（℃）'; svg.appendChild(ax);
+    var ay = el('text',{x:M.l-40,y:M.t-16,'font-size':12,fill:'var(--muted)'});
+    ay.textContent='とける量（g／水100g）'; svg.appendChild(ay);
+
+    // curves
+    var g = el('g',{'clip-path':'url(#plotclip)'});
+    SUBS.forEach(function(s,i){
+      var d='', started=false;
+      for(var t=0;t<=80;t+=1){
+        var y=py(sol(i,t));
+        d += (started?' L ':'M ') + px(t).toFixed(1) + ' ' + y.toFixed(1);
+        started=true;
+      }
+      g.appendChild(el('path',{d:d, fill:'none', stroke:s.color,
+        'stroke-width': i===cur?3.2:1.6, opacity: i===cur?1:0.32,
+        'stroke-linecap':'round','stroke-linejoin':'round'}));
+    });
+    svg.appendChild(g);
+
+    // labels on curves
+    SUBS.forEach(function(s,i){
+      var yv = sol(i,80), yy = py(Math.min(yv,YMAX));
+      var lx = px(80)-4;
+      var tl = el('text',{x:lx,y: i===cur? yy-9 : yy-9,'text-anchor':'end','font-size':12,
+        fill:s.color, opacity: i===cur?1:0.5, 'font-weight': i===cur?700:400});
+      tl.textContent = s.name + (yv>YMAX? ' ↑'+Math.round(yv)+'g' : '');
+      svg.appendChild(tl);
+    });
+
+    var s1 = sol(cur,t1), s2 = sol(cur,t2);
+    var hi = Math.max(s1,s2), lo = Math.min(s1,s2);
+
+    // precipitate band at t2
+    if(Math.abs(s1-s2) > 0.05 && t2 < t1){
+      var bx = px(t2);
+      svg.appendChild(el('rect',{x:bx-7,y:py(Math.min(hi,YMAX)),width:14,
+        height:Math.max(0,py(lo)-py(Math.min(hi,YMAX))),fill:'var(--crystal)',opacity:.28,rx:3}));
+      var bl = el('text',{x:bx+14,y:(py(Math.min(hi,YMAX))+py(lo))/2+4,'font-size':12,'font-weight':700,fill:'var(--crystal)'});
+      bl.textContent = '結晶 ' + fmt((s1-s2)*f) + 'g';
+      svg.appendChild(bl);
+    }
+
+    // guide lines & points
+    [[t1,s1],[t2,s2]].forEach(function(p,idx){
+      var x=px(p[0]), y=py(Math.min(p[1],YMAX));
+      svg.appendChild(el('line',{x1:x,y1:y,x2:x,y2:M.t+PH,stroke:SUBS[cur].color,'stroke-width':1.4,'stroke-dasharray':'4 4',opacity:.65}));
+      svg.appendChild(el('line',{x1:M.l,y1:y,x2:x,y2:y,stroke:SUBS[cur].color,'stroke-width':1.4,'stroke-dasharray':'4 4',opacity:.65}));
+      svg.appendChild(el('circle',{cx:x,cy:y,r:6,fill:'var(--surface)',stroke:SUBS[cur].color,'stroke-width':3}));
+      var lb = el('text',{x:x, y:y-13,'text-anchor':'middle','font-size':12,'font-weight':700,fill:SUBS[cur].color,'font-family':'IBM Plex Mono, monospace'});
+      lb.textContent = fmt(p[1])+'g';
+      svg.appendChild(lb);
+    });
+
+    // readouts
+    document.getElementById('waterOut').textContent = water + ' g';
+    document.getElementById('t1Out').textContent = t1 + ' ℃';
+    document.getElementById('t2Out').textContent = t2 + ' ℃';
+    document.getElementById('k1').textContent = '① ' + t1 + '℃でとける量';
+    document.getElementById('k2').textContent = '② ' + t2 + '℃でとける量';
+    document.getElementById('v1').textContent = fmt(s1*f) + ' g';
+    document.getElementById('v2').textContent = fmt(s2*f) + ' g';
+    var out = (t2 < t1) ? (s1-s2)*f : 0;
+    document.getElementById('v3').textContent = fmt(Math.max(out,0)) + ' g';
+    var total = water + s1*f;
+    document.getElementById('v4').textContent = fmt(total) + ' g';
+    document.getElementById('v5').textContent = fmt(s1/(100+s1)*100) + ' %';
+    document.getElementById('v6').textContent = fmt(s2/(100+s2)*100) + ' %';
+  }
+
+  document.getElementById('seg').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    cur = +b.dataset.i;
+    [].forEach.call(this.querySelectorAll('button'), function(x){
+      x.setAttribute('aria-pressed', x===b ? 'true':'false');
+    });
+    draw();
+  });
+  ['water','t1','t2'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', draw);
+  });
+  draw();
+})();
+</script>
+
+</body>
+</html>

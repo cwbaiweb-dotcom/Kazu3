@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>蒸散 総復習ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho+B1:wght@700&family=Klee+One:wght@600&display=swap">
+
+<style>
+:root{
+  --ground:#F7F8F3;
+  --surface:#FFFFFF;
+  --surface2:#EDF1E8;
+  --ink:#1A241E;
+  --ink2:#48564E;
+  --muted:#78867C;
+  --line:#DCE1D5;
+  --line-strong:#C3CBBA;
+  --water:#136B89;
+  --water-soft:#E0EEF3;
+  --leaf:#4A7C2F;
+  --leaf-soft:#E7F0DA;
+  --flag:#A5432B;
+  --flag-soft:#F7E6E0;
+  --amber:#8E6410;
+  --amber-soft:#F6EDD8;
+  --on-water:#FFFFFF;
+  --shadow:0 1px 2px rgba(26,36,30,.06), 0 8px 24px -16px rgba(26,36,30,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1411;
+    --surface:#151D19;
+    --surface2:#1C2621;
+    --ink:#E7EDE6;
+    --ink2:#B7C3B9;
+    --muted:#8C9B91;
+    --line:#28322C;
+    --line-strong:#3A473F;
+    --water:#63C3DD;
+    --water-soft:#0E2E38;
+    --leaf:#9BD26C;
+    --leaf-soft:#162812;
+    --flag:#EB9077;
+    --flag-soft:#33201A;
+    --amber:#DDB253;
+    --amber-soft:#2C2411;
+    --on-water:#0B1114;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1411;
+  --surface:#151D19;
+  --surface2:#1C2621;
+  --ink:#E7EDE6;
+  --ink2:#B7C3B9;
+  --muted:#8C9B91;
+  --line:#28322C;
+  --line-strong:#3A473F;
+  --water:#63C3DD;
+  --water-soft:#0E2E38;
+  --leaf:#9BD26C;
+  --leaf-soft:#162812;
+  --flag:#EB9077;
+  --flag-soft:#33201A;
+  --amber:#DDB253;
+  --amber-soft:#2C2411;
+  --on-water:#0B1114;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.9;
+  -webkit-font-smoothing:antialiased;
+}
+rt{font-size:.5em;font-weight:400;color:var(--muted);letter-spacing:0;}
+ruby{ruby-position:over;}
+h1,h2,h3,h4{font-family:"Shippori Mincho B1","Yu Mincho",serif;text-wrap:balance;line-height:1.45;margin:0;}
+p{margin:0;}
+a{color:var(--water);}
+:focus-visible{outline:2px solid var(--water);outline-offset:3px;border-radius:3px;}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{
+  max-width:1080px;margin:0 auto;padding:.55rem 1.25rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+.brand{
+  font-family:"Shippori Mincho B1",serif;font-size:1rem;letter-spacing:.06em;
+  white-space:nowrap;
+}
+.brand span{color:var(--water);}
+.navlinks{display:flex;gap:.15rem;flex-wrap:wrap;margin-left:auto;}
+.navlinks a{
+  font-size:.8rem;text-decoration:none;color:var(--ink2);
+  padding:.3rem .6rem;border-radius:999px;white-space:nowrap;
+  border:1px solid transparent;
+}
+.navlinks a:hover{background:var(--surface2);color:var(--ink);}
+.navlinks a.on{background:var(--water);color:var(--on-water);border-color:var(--water);font-weight:700;}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1080px;margin:0 auto;padding:0 1.25rem 6rem;}
+.col{max-width:780px;margin:0 auto;}
+
+/* ---------- hero ---------- */
+.hero{padding:4rem 0 2.5rem;position:relative;}
+.eyebrow{
+  font-size:.72rem;letter-spacing:.22em;color:var(--muted);
+  font-weight:700;margin-bottom:1.1rem;
+}
+.hero h1{
+  font-size:clamp(2.4rem,7vw,3.9rem);letter-spacing:.02em;margin-bottom:.6rem;
+}
+.hero h1 em{font-style:normal;color:var(--water);}
+.hero-lead{color:var(--ink2);max-width:34em;font-size:1.02rem;}
+.hero-rule{
+  height:3px;width:100%;margin:2.2rem 0 1.4rem;border-radius:2px;
+  background:linear-gradient(90deg,var(--water) 0%,var(--water) 38%,var(--leaf) 38%,var(--leaf) 76%,var(--flag) 76%);
+  opacity:.85;
+}
+.legend{display:flex;gap:1.4rem;flex-wrap:wrap;font-size:.78rem;color:var(--muted);}
+.legend b{font-weight:700;}
+.legend .k1{color:var(--water);} .legend .k2{color:var(--leaf);} .legend .k3{color:var(--flag);}
+
+/* ---------- sections ---------- */
+section{scroll-margin-top:70px;}
+.chapter{
+  margin-top:4.5rem;padding-top:2rem;border-top:1px solid var(--line-strong);
+  display:flex;gap:1.1rem;align-items:baseline;
+}
+.chapter .num{
+  font-family:"Shippori Mincho B1",serif;font-size:.95rem;color:var(--water);
+  letter-spacing:.14em;white-space:nowrap;padding-top:.3rem;
+}
+.chapter h2{font-size:clamp(1.6rem,4vw,2.1rem);}
+.chapter .sub{display:block;font-size:.78rem;color:var(--muted);font-family:"Zen Kaku Gothic New",sans-serif;font-weight:500;letter-spacing:.1em;margin-top:.35rem;}
+
+h3.head{
+  font-size:1.18rem;margin:2.6rem 0 .9rem;
+  padding-left:.75rem;border-left:4px solid var(--leaf);
+}
+h4.sub{font-size:1rem;margin:1.8rem 0 .5rem;color:var(--ink);}
+.p{margin:.85rem 0;}
+.lead{color:var(--ink2);margin:.6rem 0 1.4rem;}
+
+ul.list,ol.list{margin:.8rem 0;padding-left:1.35rem;display:flex;flex-direction:column;gap:.4rem;}
+ul.list li::marker{color:var(--leaf);}
+ol.list li::marker{color:var(--water);font-weight:700;}
+
+.kw{color:var(--water);font-weight:700;}
+.kw2{color:var(--leaf);font-weight:700;}
+mark{background:var(--amber-soft);color:var(--ink);padding:0 .18em;border-radius:2px;}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:1.2rem 1.35rem;margin:1.4rem 0;box-shadow:var(--shadow);
+}
+.card > :first-child{margin-top:0;}
+.card-title{
+  font-family:"Shippori Mincho B1",serif;font-size:1rem;margin-bottom:.6rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.tag{
+  display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.08em;
+  padding:.12rem .5rem;border-radius:999px;line-height:1.7;white-space:nowrap;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+}
+.tag.basic{background:var(--leaf-soft);color:var(--leaf);}
+.tag.std{background:var(--water-soft);color:var(--water);}
+.tag.hard{background:var(--flag-soft);color:var(--flag);}
+.tag.memo{background:var(--amber-soft);color:var(--amber);}
+
+.memo{
+  font-family:"Klee One","Zen Kaku Gothic New",sans-serif;
+  background:var(--amber-soft);border-left:4px solid var(--amber);
+  padding:.85rem 1.1rem;border-radius:0 8px 8px 0;margin:1.2rem 0;
+  font-size:.95rem;line-height:1.85;
+}
+.memo b{color:var(--amber);}
+.warn{
+  background:var(--flag-soft);border-left:4px solid var(--flag);
+  padding:.85rem 1.1rem;border-radius:0 8px 8px 0;margin:1.2rem 0;font-size:.95rem;
+}
+.warn b{color:var(--flag);}
+.formula{
+  background:var(--water-soft);border:1px dashed var(--water);border-radius:8px;
+  padding:1rem 1.15rem;margin:1.2rem 0;
+  font-variant-numeric:tabular-nums;line-height:2.1;
+}
+.formula .eq{display:block;font-weight:700;}
+.formula .eq b{color:var(--water);}
+
+/* ---------- tables ---------- */
+.scroller{overflow-x:auto;margin:1.3rem 0;border:1px solid var(--line);border-radius:10px;background:var(--surface);}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:440px;}
+th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;}
+thead th{background:var(--surface2);font-weight:700;font-size:.8rem;letter-spacing:.04em;color:var(--ink2);white-space:nowrap;}
+tbody tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
+caption{caption-side:top;text-align:left;padding:.7rem .8rem 0;font-size:.8rem;color:var(--muted);}
+
+/* ---------- figures ---------- */
+figure{margin:1.6rem 0;}
+figure svg{display:block;width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;}
+figcaption{font-size:.8rem;color:var(--muted);margin-top:.5rem;}
+svg text{font-family:"Zen Kaku Gothic New","Hiragino Sans",sans-serif;}
+
+/* flow chain */
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:1.3rem 0;}
+.chain .n{
+  background:var(--water-soft);color:var(--water);font-weight:700;font-size:.85rem;
+  padding:.35rem .7rem;border-radius:6px;border:1px solid color-mix(in srgb,var(--water) 35%,transparent);
+}
+.chain .n.end{background:var(--leaf-soft);color:var(--leaf);border-color:color-mix(in srgb,var(--leaf) 35%,transparent);}
+.chain .ar{color:var(--muted);font-size:.9rem;}
+
+/* ---------- pattern blocks ---------- */
+.pat{
+  border:1px solid var(--line);border-radius:10px;background:var(--surface);
+  margin:1.1rem 0;overflow:hidden;box-shadow:var(--shadow);
+}
+.pat-h{
+  display:flex;gap:.85rem;align-items:baseline;padding:.95rem 1.2rem;
+  background:var(--surface2);border-bottom:1px solid var(--line);
+}
+.pat-h .pn{
+  font-family:"Shippori Mincho B1",serif;font-size:1.05rem;color:var(--water);
+  font-variant-numeric:tabular-nums;
+}
+.pat-h h4{font-family:"Shippori Mincho B1",serif;font-size:1.02rem;margin:0;flex:1;}
+.pat-b{padding:1.1rem 1.2rem;}
+.pat-b .rowlabel{
+  font-size:.72rem;font-weight:700;letter-spacing:.12em;color:var(--muted);
+  margin-top:1rem;
+}
+.pat-b .rowlabel:first-child{margin-top:0;}
+
+/* ---------- Q&A ---------- */
+.q{
+  border:1px solid var(--line);border-radius:10px;background:var(--surface);
+  margin:1.5rem 0;overflow:hidden;box-shadow:var(--shadow);
+}
+.q-h{
+  display:flex;gap:.7rem;align-items:center;padding:.8rem 1.15rem;
+  border-bottom:1px solid var(--line);background:var(--surface2);
+}
+.q-h .qn{font-family:"Shippori Mincho B1",serif;font-weight:700;font-variant-numeric:tabular-nums;}
+.q-b{padding:1.1rem 1.15rem;}
+.q-b > :first-child{margin-top:0;}
+.ask{margin:.7rem 0;padding-left:1.6rem;text-indent:-1.6rem;}
+.ask b{color:var(--water);}
+
+details{border-top:1px dashed var(--line-strong);}
+details summary{
+  cursor:pointer;padding:.7rem 1.15rem;font-size:.85rem;font-weight:700;
+  color:var(--water);list-style:none;display:flex;align-items:center;gap:.4rem;
+}
+details summary::-webkit-details-marker{display:none;}
+details summary::before{content:"▸";transition:transform .15s;display:inline-block;}
+details[open] summary::before{transform:rotate(90deg);}
+details summary:hover{background:var(--surface2);}
+.ans{padding:0 1.15rem 1.15rem;font-size:.95rem;}
+.ans > :first-child{margin-top:0;}
+.ans .a{margin:.5rem 0;}
+.ans .a b{color:var(--leaf);}
+.why{
+  background:var(--surface2);border-radius:8px;padding:.75rem .95rem;margin:.8rem 0;
+  font-size:.9rem;color:var(--ink2);
+}
+.why b{color:var(--ink);}
+
+.controls{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.5rem 0;}
+button.ctl{
+  font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;
+  background:var(--surface);color:var(--ink2);border:1px solid var(--line-strong);
+  border-radius:999px;padding:.4rem .95rem;
+}
+button.ctl:hover{background:var(--surface2);color:var(--ink);}
+
+/* ---------- checklist ---------- */
+.check{list-style:none;padding:0;margin:1.2rem 0;display:flex;flex-direction:column;gap:.1rem;}
+.check li{border-bottom:1px solid var(--line);}
+.check label{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem .3rem;cursor:pointer;}
+.check input{margin-top:.5rem;accent-color:var(--leaf);width:1rem;height:1rem;flex:none;}
+.check input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-strong);}
+.check span{font-size:.94rem;}
+
+/* ---------- mini test ---------- */
+.mini{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);margin:1.3rem 0;}
+.mini .row{display:flex;gap:1rem;padding:.6rem 1rem;border-bottom:1px solid var(--line);align-items:baseline;font-size:.93rem;}
+.mini .row:last-child{border-bottom:none;}
+.mini .row .qq{flex:1;}
+.mini .row .aa{
+  font-weight:700;color:var(--leaf);min-width:9.5rem;text-align:right;
+  filter:blur(5px);transition:filter .15s;cursor:pointer;
+}
+.mini .row .aa.show{filter:none;}
+
+.foot{margin-top:5rem;padding-top:1.6rem;border-top:1px solid var(--line-strong);font-size:.82rem;color:var(--muted);}
+
+@media (max-width:640px){
+  body{font-size:15.5px;}
+  .chapter{flex-direction:column;gap:.3rem;}
+  .navlinks{width:100%;margin-left:0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:.2rem;}
+  .mini .row{flex-direction:column;gap:.2rem;}
+  .mini .row .aa{text-align:left;min-width:0;}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+@media print{
+  .topbar,.controls,button.ctl{display:none!important;}
+  body{background:#fff;color:#000;font-size:10.5pt;}
+  .q,.pat,.card{break-inside:avoid;box-shadow:none;}
+  details{display:block!important;}
+  .ans{display:block!important;}
+  .mini .row .aa{filter:none!important;}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span>蒸散</span>　総復習ノート</div>
+    <nav class="navlinks">
+      <a href="#ch1">1 基礎</a>
+      <a href="#ch2">2 出題パターン</a>
+      <a href="#ch3">3 演習</a>
+      <a href="#ch4">4 記述の型</a>
+      <a href="#ch5">5 総点検</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="col">
+
+<header class="hero">
+  <div class="eyebrow">中学受験理科 ／ 植物 ／ 総復習</div>
+  <h1><em>蒸散</em>は<br>「引き算」で解く。</h1>
+  <p class="hero-lead">
+    <ruby>蒸散<rt>じょうさん</rt></ruby>の問題は、覚えることは多くありません。
+    <b>気孔がどこにあるか</b>・<b>何が水を減らしたか</b>――この2つを押さえれば、基本から最難関の考察問題まで同じ道すじで解けます。
+    このノートは、基礎 → 出題パターン10種 → 演習13題 の順に一気に総復習するためのものです。
+  </p>
+  <div class="hero-rule"></div>
+  <div class="legend">
+    <span><b class="k1">■</b> 水・<ruby>道管<rt>どうかん</rt></ruby>に関する話</span>
+    <span><b class="k2">■</b> 葉・<ruby>気孔<rt>きこう</rt></ruby>に関する話</span>
+    <span><b class="k3">■</b> 最難関レベルの注意点</span>
+  </div>
+</header>
+
+<!-- ==================== 第1章 ==================== -->
+<section id="ch1">
+  <div class="chapter">
+    <div class="num">第 1 章</div>
+    <div>
+      <h2>蒸散の基礎<span class="sub">KISO ─ ここが全問題の土台</span></h2>
+    </div>
+  </div>
+
+  <h3 class="head">1-1　蒸散とは何か</h3>
+  <p class="p">
+    根から吸い上げた水が、おもに<span class="kw2">葉の気孔</span>から<span class="kw">水蒸気</span>となって空気中に出ていくはたらきを<span class="kw2">蒸散</span>といいます。
+  </p>
+  <div class="memo">
+    <b>「蒸発」と「蒸散」のちがい</b><br>
+    水たまりの水が減るのは<b>蒸発</b>（ただの物理現象）。植物が気孔を開いたり閉じたりして<b>量を調節している</b>のが<b>蒸散</b>です。
+    「蒸散＝植物のはたらき」と言えるようにしておきましょう。
+  </div>
+  <ul class="list">
+    <li>出ていくのは<b>水蒸気</b>（目に見えない気体）。湯気や水てきではありません。</li>
+    <li>植物にポリエチレンのふくろをかぶせると、<b>ふくろの内側がくもり、水てきがつく</b>。ただしこれだけでは証拠として不十分で、<b>葉をすべて取り去った枝</b>にも同じふくろをかぶせて比べる（＝対照実験）ことで、水が葉から出たと言えます。</li>
+    <li>その水てきが本当に水かどうかは、<ruby>塩化<rt>えんか</rt></ruby>コバルト紙で確かめます（<span class="kw">青色 → 赤色（もも色）</span>に変化）。</li>
+  </ul>
+
+  <h3 class="head">1-2　気孔のつくりと分布</h3>
+  <p class="p">
+    気孔は、<ruby>三日月<rt>みかづき</rt></ruby>形をした2つの<span class="kw2"><ruby>孔辺細胞<rt>こうへんさいぼう</rt></ruby></span>にはさまれたすきまです。
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 640 250" role="img" aria-label="気孔が開いた状態と閉じた状態の比較図">
+      <g fill="none" stroke="var(--line-strong)" stroke-width="1"></g>
+      <!-- open -->
+      <text x="150" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="var(--leaf)">開いている（昼・明るい）</text>
+      <path d="M150 55 C 108 55, 92 90, 92 122 C 92 154, 108 189, 150 189 C 133 160, 133 84, 150 55 Z"
+            fill="var(--leaf-soft)" stroke="var(--leaf)" stroke-width="2.5"/>
+      <path d="M150 55 C 192 55, 208 90, 208 122 C 208 154, 192 189, 150 189 C 167 160, 167 84, 150 55 Z"
+            fill="var(--leaf-soft)" stroke="var(--leaf)" stroke-width="2.5"/>
+      <ellipse cx="150" cy="122" rx="15" ry="52" fill="var(--surface2)" stroke="var(--line-strong)" stroke-width="1"/>
+      <g fill="var(--leaf)" opacity=".75">
+        <ellipse cx="118" cy="95" rx="6" ry="4"/><ellipse cx="111" cy="122" rx="6" ry="4"/><ellipse cx="118" cy="150" rx="6" ry="4"/>
+        <ellipse cx="182" cy="95" rx="6" ry="4"/><ellipse cx="189" cy="122" rx="6" ry="4"/><ellipse cx="182" cy="150" rx="6" ry="4"/>
+      </g>
+      <path d="M150 108 L150 66 M144 76 L150 64 L156 76" stroke="var(--water)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <text x="150" y="215" text-anchor="middle" font-size="12.5" fill="var(--water)">水蒸気が出る</text>
+      <text x="150" y="234" text-anchor="middle" font-size="12.5" fill="var(--muted)">二酸化炭素・酸素も出入り</text>
+
+      <!-- closed -->
+      <text x="470" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="var(--muted)">閉じている（夜・暗い）</text>
+      <path d="M470 55 C 440 55, 428 90, 428 122 C 428 154, 440 189, 470 189 C 462 160, 462 84, 470 55 Z"
+            fill="var(--surface2)" stroke="var(--muted)" stroke-width="2.5"/>
+      <path d="M470 55 C 500 55, 512 90, 512 122 C 512 154, 500 189, 470 189 C 478 160, 478 84, 470 55 Z"
+            fill="var(--surface2)" stroke="var(--muted)" stroke-width="2.5"/>
+      <g fill="var(--muted)" opacity=".55">
+        <ellipse cx="446" cy="95" rx="6" ry="4"/><ellipse cx="440" cy="122" rx="6" ry="4"/><ellipse cx="446" cy="150" rx="6" ry="4"/>
+        <ellipse cx="494" cy="95" rx="6" ry="4"/><ellipse cx="500" cy="122" rx="6" ry="4"/><ellipse cx="494" cy="150" rx="6" ry="4"/>
+      </g>
+      <text x="470" y="215" text-anchor="middle" font-size="12.5" fill="var(--muted)">蒸散はほとんど止まる</text>
+
+      <!-- labels -->
+      <line x1="232" y1="105" x2="272" y2="88" stroke="var(--line-strong)" stroke-width="1"/>
+      <text x="276" y="92" font-size="12.5" fill="var(--ink2)">孔辺細胞</text>
+      <line x1="232" y1="140" x2="272" y2="158" stroke="var(--line-strong)" stroke-width="1"/>
+      <text x="276" y="162" font-size="12.5" fill="var(--ink2)">葉緑体（緑のつぶ）</text>
+      <line x1="150" y1="122" x2="300" y2="122" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="304" y="127" font-size="12.5" fill="var(--ink2)">気孔（すきま）</text>
+    </svg>
+    <figcaption>孔辺細胞が水を吸ってふくらむと、内側の細胞かべが厚いため外側に曲がり、気孔が開く。</figcaption>
+  </figure>
+
+  <div class="scroller">
+    <table>
+      <caption>気孔についての必須事項</caption>
+      <thead><tr><th>項目</th><th>内容</th><th>ねらわれ方</th></tr></thead>
+      <tbody>
+        <tr><td>場所</td><td>葉の<b>表皮</b>にある。ふつうの陸上植物は<b>裏に多い</b></td><td>「裏の方が多い理由」の記述</td></tr>
+        <tr><td>開閉</td><td>明るい昼に開き、暗い夜に閉じる。<b>水が足りないときは昼でも閉じる</b></td><td>1日の蒸散量のグラフ</td></tr>
+        <tr><td>通るもの</td><td>水蒸気・酸素・二酸化炭素</td><td>光合成・呼吸との複合問題</td></tr>
+        <tr><td>孔辺細胞</td><td><b>葉緑体をもつ</b>（まわりの表皮細胞にはない）</td><td>顕微鏡スケッチの選択肢</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="sub">植物によって分布がちがう</h4>
+  <div class="scroller">
+    <table>
+      <thead><tr><th>タイプ</th><th>例</th><th>気孔の分布</th></tr></thead>
+      <tbody>
+        <tr><td>ふつうの陸上植物</td><td>ホウセンカ・アジサイ・ツバキ</td><td><b>裏に多い</b>（ツバキは裏だけ）</td></tr>
+        <tr><td>細長い葉が立つ植物</td><td>トウモロコシ・イネ</td><td>表と裏が<b>ほぼ同じ数</b></td></tr>
+        <tr><td>葉の裏が水にぬれる植物</td><td>スイレン（水にうかぶ葉）・ハス（水面から立つ葉）</td><td><b>表に多い（表だけ）</b></td></tr>
+        <tr><td>水中の葉</td><td>クロモ・キンギョモ</td><td><b>気孔がない</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn">
+    <b>ここで差がつく</b>　「気孔は裏に多い」と丸暗記していると、<b>スイレンの表・トウモロコシの同数</b>で失点します。次の<b>2段階</b>でおぼえましょう。<br>
+    ① <b>水に接する面には気孔はつかない</b>（気体を出し入れできないから）。<br>
+    ② 空気にふれる面のうち、<b>日光が直接当たらず乾きにくい面（＝ふつうは裏）に多くつく</b>。
+  </div>
+
+  <h3 class="head">1-3　蒸散の3つのはたらき</h3>
+  <ol class="list">
+    <li><b>根からの水の吸い上げ（吸水）をさかんにする。</b>葉から水が出ていくことで、下から水が引き上げられます。</li>
+    <li><b>水にとけた<ruby>肥料分<rt>ひりょうぶん</rt></ruby>もいっしょに吸い上げる。</b>（肥料分は水にとけた形でしか吸収できません）</li>
+    <li><b>葉の温度が上がりすぎるのを防ぐ。</b>水が水蒸気に変わるとき、まわりから熱をうばうためです。</li>
+  </ol>
+  <div class="memo">
+    <b>記述のときの言い方</b>　「涼しくする」ではなく、
+    <b>「水が水蒸気に変わるときにまわりの熱をうばうので、葉の温度が上がりすぎるのを防ぐ」</b>と書くと満点になります。
+  </div>
+
+  <h3 class="head">1-4　水の通り道</h3>
+  <div class="chain">
+    <span class="n">根毛</span><span class="ar">→</span>
+    <span class="n">根の道管</span><span class="ar">→</span>
+    <span class="n">茎の道管</span><span class="ar">→</span>
+    <span class="n">葉脈の道管</span><span class="ar">→</span>
+    <span class="n">葉の細胞</span><span class="ar">→</span>
+    <span class="n end">気孔</span><span class="ar">→</span>
+    <span class="n end">空気中</span>
+  </div>
+
+  <p class="p">水が通る管を<span class="kw">道管</span>、養分が通る管を<span class="kw2">師管</span>といい、この2つが束になったものを<b><ruby>維管束<rt>いかんそく</rt></ruby></b>といいます。</p>
+  <div class="scroller">
+    <table>
+      <thead><tr><th></th><th><ruby>道管<rt>どうかん</rt></ruby></th><th><ruby>師管<rt>しかん</rt></ruby></th></tr></thead>
+      <tbody>
+        <tr><td>運ぶもの</td><td><b>水と肥料分</b></td><td><b>光合成でできた養分</b></td></tr>
+        <tr><td>向き</td><td>根 → 葉（上向き）</td><td>葉 → 全身（おもに下向き）</td></tr>
+        <tr><td>茎の断面</td><td><b>内側</b></td><td><b>外側</b></td></tr>
+        <tr><td>葉脈の断面</td><td><b>表側（上）</b></td><td><b>裏側（下）</b></td></tr>
+        <tr><td>根の断面</td><td>中心に近い側</td><td>その外側</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 640 300" role="img" aria-label="双子葉類と単子葉類の茎の断面、および葉の断面の図">
+      <!-- 双子葉 -->
+      <text x="105" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">双子葉類の茎</text>
+      <circle cx="105" cy="150" r="82" fill="var(--surface2)" stroke="var(--line-strong)" stroke-width="1.5"/>
+      <defs>
+        <g id="vb1">
+          <rect x="97" y="72" width="16" height="13" rx="3" fill="var(--leaf)"/>
+          <rect x="97" y="85" width="16" height="4" fill="var(--flag)"/>
+          <rect x="97" y="89" width="16" height="13" rx="3" fill="var(--water)"/>
+        </g>
+        <g id="vb2"><rect x="-8" y="-14" width="16" height="14" rx="3" fill="var(--leaf)"/><rect x="-8" y="0" width="16" height="14" rx="3" fill="var(--water)"/></g>
+      </defs>
+      <g>
+        <use href="#vb1"/>
+        <use href="#vb1" transform="rotate(51.4 105 150)"/>
+        <use href="#vb1" transform="rotate(102.8 105 150)"/>
+        <use href="#vb1" transform="rotate(154.2 105 150)"/>
+        <use href="#vb1" transform="rotate(205.6 105 150)"/>
+        <use href="#vb1" transform="rotate(257 105 150)"/>
+        <use href="#vb1" transform="rotate(308.4 105 150)"/>
+      </g>
+      <text x="105" y="256" text-anchor="middle" font-size="12" fill="var(--muted)">輪のようにならぶ</text>
+      <text x="105" y="274" text-anchor="middle" font-size="12" fill="var(--water)">■ 道管（内側）　<tspan fill="var(--leaf)">■ 師管（外側）</tspan></text>
+      <text x="105" y="292" text-anchor="middle" font-size="12" fill="var(--flag)">■ 形成層（道管と師管の間）</text>
+
+      <!-- 単子葉 -->
+      <text x="320" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">単子葉類の茎</text>
+      <circle cx="320" cy="150" r="82" fill="var(--surface2)" stroke="var(--line-strong)" stroke-width="1.5"/>
+      <g>
+        <use href="#vb2" x="320" y="98"/><use href="#vb2" x="277" y="122"/><use href="#vb2" x="363" y="122"/>
+        <use href="#vb2" x="300" y="160"/><use href="#vb2" x="344" y="163"/><use href="#vb2" x="268" y="180"/>
+        <use href="#vb2" x="320" y="205"/><use href="#vb2" x="372" y="180"/><use href="#vb2" x="298" y="128"/>
+      </g>
+      <text x="320" y="256" text-anchor="middle" font-size="12" fill="var(--muted)">ばらばらに散らばる</text>
+      <text x="320" y="274" text-anchor="middle" font-size="12" fill="var(--muted)">形成層なし → 太くならない</text>
+      <text x="320" y="292" text-anchor="middle" font-size="12" fill="var(--water)">■ 道管　<tspan fill="var(--leaf)">■ 師管</tspan></text>
+
+      <!-- 葉の断面 -->
+      <text x="525" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">葉の断面</text>
+      <rect x="440" y="46" width="170" height="24" fill="var(--surface2)" stroke="var(--line-strong)"/>
+      <rect x="440" y="70" width="170" height="46" fill="var(--leaf-soft)" stroke="var(--line-strong)"/>
+      <g stroke="var(--leaf)" stroke-width="1.2" opacity=".8">
+        <line x1="452" y1="74" x2="452" y2="112"/><line x1="466" y1="74" x2="466" y2="112"/><line x1="480" y1="74" x2="480" y2="112"/>
+        <line x1="494" y1="74" x2="494" y2="112"/><line x1="508" y1="74" x2="508" y2="112"/><line x1="522" y1="74" x2="522" y2="112"/>
+        <line x1="536" y1="74" x2="536" y2="112"/><line x1="550" y1="74" x2="550" y2="112"/><line x1="564" y1="74" x2="564" y2="112"/>
+        <line x1="578" y1="74" x2="578" y2="112"/><line x1="592" y1="74" x2="592" y2="112"/><line x1="606" y1="74" x2="606" y2="112"/>
+      </g>
+      <rect x="440" y="116" width="170" height="52" fill="var(--leaf-soft)" stroke="var(--line-strong)" opacity=".6"/>
+      <g fill="var(--leaf)" opacity=".55">
+        <circle cx="455" cy="128" r="6"/><circle cx="478" cy="140" r="6"/><circle cx="500" cy="126" r="6"/>
+        <circle cx="524" cy="145" r="6"/><circle cx="548" cy="129" r="6"/><circle cx="572" cy="143" r="6"/><circle cx="596" cy="127" r="6"/>
+        <circle cx="466" cy="156" r="6"/><circle cx="512" cy="158" r="6"/><circle cx="560" cy="157" r="6"/>
+      </g>
+      <rect x="440" y="168" width="170" height="24" fill="var(--surface2)" stroke="var(--line-strong)"/>
+      <!-- 気孔 on bottom -->
+      <g fill="var(--surface)" stroke="var(--leaf)" stroke-width="2">
+        <rect x="470" y="184" width="14" height="8" rx="4"/>
+        <rect x="524" y="184" width="14" height="8" rx="4"/>
+        <rect x="578" y="184" width="14" height="8" rx="4"/>
+      </g>
+      <path d="M477 200 L477 216 M472 210 L477 218 L482 210" stroke="var(--water)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M531 200 L531 216 M526 210 L531 218 L536 210" stroke="var(--water)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M585 200 L585 216 M580 210 L585 218 L590 210" stroke="var(--water)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <!-- 葉脈 -->
+      <rect x="496" y="72" width="44" height="44" fill="var(--water)" stroke="var(--line-strong)"/>
+      <rect x="496" y="116" width="44" height="52" fill="var(--leaf)" stroke="var(--line-strong)"/>
+      <text x="518" y="99" text-anchor="middle" font-size="12" fill="var(--on-water)">道管</text>
+      <text x="518" y="147" text-anchor="middle" font-size="12" fill="var(--on-water)">師管</text>
+      <line x1="540" y1="120" x2="562" y2="120" stroke="var(--line-strong)"/>
+      <text x="566" y="124" font-size="11.5" fill="var(--ink2)">葉脈</text>
+      <text x="435" y="62" text-anchor="end" font-size="11.5" fill="var(--ink2)">表の表皮</text>
+      <text x="435" y="98" text-anchor="end" font-size="11.5" fill="var(--ink2)">さく状組織</text>
+      <text x="435" y="146" text-anchor="end" font-size="11.5" fill="var(--ink2)">海綿状組織</text>
+      <text x="435" y="184" text-anchor="end" font-size="11.5" fill="var(--ink2)">裏の表皮</text>
+      <text x="525" y="238" text-anchor="middle" font-size="12" fill="var(--water)">気孔は裏に多い</text>
+    </svg>
+    <figcaption>「葉脈の中では道管が表側」――断面図の向きを問う設問は頻出。葉の表側が日光を受ける側です。</figcaption>
+  </figure>
+
+  <div class="memo">
+    <b>着色実験</b>　赤インク（食紅）を入れた水を吸わせて切ると、<b>染まるのは道管</b>。
+    茎の断面では内側の輪、葉では葉脈が赤くなります。「師管が染まる」は誤りです。
+  </div>
+
+  <h3 class="head">1-5　蒸散がさかんになる条件</h3>
+  <div class="scroller">
+    <table>
+      <thead><tr><th>条件</th><th>さかんになる</th><th>おさえられる</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>光</td><td>明るい</td><td>暗い</td><td>気孔が開く／閉じる</td></tr>
+        <tr><td>気温</td><td>高い</td><td>低い</td><td>水が水蒸気になりやすい</td></tr>
+        <tr><td><ruby>湿度<rt>しつど</rt></ruby></td><td>低い（かわいている）</td><td>高い（雨・くもり）</td><td>まわりの空気に水蒸気が入る余地</td></tr>
+        <tr><td>風</td><td>ある</td><td>ない</td><td>葉のまわりの<b>湿った空気を吹きとばす</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn">
+    <b>風の理由をあいまいに書かない</b>　×「風があると水が飛ぶから」
+    ○「<b>葉の表面近くにたまった水蒸気を風が運び去り、まわりの湿度が下がるから</b>」
+  </div>
+
+  <h3 class="head">1-6　蒸散を確かめる実験の道具立て</h3>
+  <ul class="list">
+    <li><b>ポリエチレンのふくろ</b>をかぶせる → 内側に水てき。鉢植えなら<b>土からの蒸発</b>を防ぐため鉢をビニールでおおう（<ruby>対照<rt>たいしょう</rt></ruby>実験の基本）。</li>
+    <li><b>塩化コバルト紙</b>（青 → 赤）。葉の<b>裏</b>につけた方が早く赤くなる＝裏の気孔が多い証拠。</li>
+    <li><b>試験管の水面に油</b>を浮かべる → <b>水面からの蒸発</b>を防ぎ、減った水＝植物が吸った水と考えられるようにする。</li>
+    <li><b>枝の条件をそろえる</b>（種類・太さ・葉の数・葉の大きさ）→ 調べたい条件以外を同じにする。</li>
+  </ul>
+</section>
+
+<!-- ==================== 第2章 ==================== -->
+<section id="ch2">
+  <div class="chapter">
+    <div class="num">第 2 章</div>
+    <div>
+      <h2>出題パターン10<span class="sub">PATTERN ─ 設問を見た瞬間に解法を選ぶ</span></h2>
+    </div>
+  </div>
+  <p class="lead">蒸散の入試問題は、次の10種類のどれか（またはその組み合わせ）です。番号は出題頻度の高い順ではなく、<b>基本から応用へ積み上がる順</b>に並べています。</p>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">01</div><h4>ワセリン式・引き算で分ける</h4><span class="tag basic">最頻出</span></div>
+    <div class="pat-b">
+      <div class="rowlabel">出題のされ方</div>
+      <p class="p">同じ枝を4本用意し、ワセリンを塗る場所を変えて水の減り方を比べる。表・裏・茎それぞれの蒸散量を求めさせる。</p>
+      <div class="rowlabel">解き方の型</div>
+      <div class="formula">
+        <span class="eq">A（何も塗らない）　＝　<b>表 ＋ 裏 ＋ 茎</b></span>
+        <span class="eq">B（表に塗る）　　　＝　<b>裏 ＋ 茎</b></span>
+        <span class="eq">C（裏に塗る）　　　＝　<b>表 ＋ 茎</b></span>
+        <span class="eq">D（表と裏に塗る）　＝　<b>茎</b></span>
+      </div>
+      <ul class="list">
+        <li>表 ＝ A − B　　裏 ＝ A − C　　茎 ＝ D</li>
+        <li>Dがないときは　<b>茎 ＝ B ＋ C − A</b></li>
+        <li>検算は <b>A ＋ D ＝ B ＋ C</b>（両辺とも 表＋裏＋茎×2）</li>
+      </ul>
+      <div class="warn"><b>注意</b>　ワセリンを塗った面は蒸散が<b>止まる</b>（増えるのではない）。「塗った面の蒸散量を足す」向きに式を立てないこと。</div>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">02</div><h4>装置と操作の「理由」を問う</h4><span class="tag basic">記述</span></div>
+    <div class="pat-b">
+      <div class="rowlabel">問われること</div>
+      <ul class="list">
+        <li>なぜ水面に油を浮かべるか → <b>水面からの蒸発を防ぐため</b></li>
+        <li>なぜ同じ大きさ・葉の数の枝を使うか → <b>調べたい条件以外をそろえるため</b></li>
+        <li>なぜ鉢をビニールでおおうか → <b>土（土の水）からの蒸発を防ぐため</b></li>
+        <li>なぜ切り口を水中で切るか → <b>道管に空気が入って水が上がらなくなるのを防ぐため</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">03</div><h4>時間・葉の枚数・面積の換算</h4><span class="tag std">計算</span></div>
+    <div class="pat-b">
+      <p class="p">「3時間で9.0cm³」→「1時間あたり3.0cm³」、「葉10枚で6.6cm³」→「葉1枚あたり0.66cm³」のように、<b>そろえてから比べる</b>。</p>
+      <div class="memo"><b>単位の関門</b>　1 cm² ＝ <b>100 mm²</b>、1 cm³ ＝ <b>1000 mm³</b>、1 cm³ ＝ 1 mL ＝ 1 g（水）。
+      面積は「×100」、体積は「×1000」。ここでの取りちがえが失点の一番の原因です。</div>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">04</div><h4>気孔の数を数える計算</h4><span class="tag std">計算</span></div>
+    <div class="pat-b">
+      <p class="p">「1mm²あたり○個」×「葉の片面の面積（mm²に直す）」×「葉の枚数」。顕微鏡の視野（直径○mmの円）の面積から1mm²あたりに直させる出題もあります。</p>
+      <div class="formula"><span class="eq">気孔の総数 ＝ <b>1mm²あたりの個数 × 片面の面積(mm²) × 枚数</b></span></div>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">05</div><h4>条件を変えた比較実験</h4><span class="tag std">表の読み取り</span></div>
+    <div class="pat-b">
+      <p class="p">明・暗／風あり・なし／湿度高・低／気温をふり分けた表を示し、蒸散量の大小を並べさせる。<b>変えた条件は1つだけか</b>を必ず確認します（2つ変わっていたら比べられない＝それを指摘させるのが難関の作り）。</p>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">06</div><h4>1日の変化グラフ・蒸散量と吸水量のずれ</h4><span class="tag hard">最難関</span></div>
+    <div class="pat-b">
+      <p class="p">晴れた日の蒸散量と吸水量を時間ごとにとったグラフ。<b>蒸散が先に増え、吸水がおくれてついてくる</b>のがポイントです。</p>
+      <figure>
+        <svg viewBox="0 0 640 300" role="img" aria-label="晴れた日の蒸散量と吸水量の時間変化グラフ">
+          <g stroke="var(--line)" stroke-width="1">
+            <line x1="70" y1="250" x2="610" y2="250"/>
+            <line x1="70" y1="40" x2="70" y2="250"/>
+            <line x1="70" y1="200" x2="610" y2="200" stroke-dasharray="3 4"/>
+            <line x1="70" y1="150" x2="610" y2="150" stroke-dasharray="3 4"/>
+            <line x1="70" y1="100" x2="610" y2="100" stroke-dasharray="3 4"/>
+            <line x1="70" y1="50" x2="610" y2="50" stroke-dasharray="3 4"/>
+          </g>
+          <g font-size="11.5" fill="var(--muted)" text-anchor="middle">
+            <text x="70" y="270">0時</text><text x="205" y="270">6時</text><text x="340" y="270">12時</text>
+            <text x="475" y="270">18時</text><text x="610" y="270">24時</text>
+          </g>
+          <text x="34" y="145" font-size="12" fill="var(--muted)" transform="rotate(-90 34 145)" text-anchor="middle">量（多い →）</text>
+          <!-- 蒸散 -->
+          <path d="M70 242 L160 238 L205 215 L250 130 L295 78 L340 62 L385 72 L430 108 L475 175 L520 226 L565 240 L610 243"
+                fill="none" stroke="var(--water)" stroke-width="3" stroke-linejoin="round"/>
+          <!-- 吸水 -->
+          <path d="M70 236 L160 234 L205 226 L250 172 L295 112 L340 84 L385 74 L430 96 L475 148 L520 198 L565 228 L610 238"
+                fill="none" stroke="var(--flag)" stroke-width="3" stroke-linejoin="round" stroke-dasharray="8 5"/>
+          <circle cx="340" cy="62" r="4.5" fill="var(--water)"/>
+          <circle cx="385" cy="74" r="4.5" fill="var(--flag)"/>
+          <g font-size="12.5">
+            <rect x="92" y="50" width="26" height="3" fill="var(--water)"/>
+            <text x="126" y="56" fill="var(--water)">蒸散量</text>
+            <rect x="92" y="72" width="26" height="3" fill="var(--flag)"/>
+            <text x="126" y="78" fill="var(--flag)">吸水量</text>
+          </g>
+          <text x="96" y="122" font-size="12" fill="var(--ink2)">午前　蒸散 &gt; 吸水</text>
+          <text x="600" y="112" font-size="12" fill="var(--ink2)" text-anchor="end">昼過ぎ以降　吸水 &gt; 蒸散</text>
+        </svg>
+        <figcaption>吸水は蒸散に引っぱられて起こるため、山の位置が少しおくれ、山も低くなだらか。1日の合計はほぼ等しくなります。</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">07</div><h4>顕微鏡での気孔の観察</h4><span class="tag std">実験操作</span></div>
+    <div class="pat-b">
+      <ul class="list">
+        <li>ムラサキツユクサなどの葉の<b>裏の表皮をピンセットではがす</b> → スライドガラス → 水を1滴 → カバーガラス。</li>
+        <li>低倍率で探してから高倍率へ。倍率を上げると<b>視野はせまく・暗く</b>なる。</li>
+        <li>孔辺細胞にだけ<b>緑のつぶ（葉緑体）</b>が見える、が正しいスケッチ。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">08</div><h4>水の通り道・着色実験</h4><span class="tag basic">知識</span></div>
+    <div class="pat-b">
+      <p class="p">赤く染まる部分を選ばせる／茎・葉・根の断面図で道管の位置を選ばせる。<b>茎は内側、葉脈は表側、根は中心側</b>の3点セットで覚えます。</p>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">09</div><h4>植物の種類による気孔分布のちがい</h4><span class="tag hard">最難関</span></div>
+    <div class="pat-b">
+      <p class="p">表と裏の蒸散量の比から「この植物はどれか」を選ばせる。表＝裏ならトウモロコシ型、表だけならスイレン型、裏だけならツバキ型。
+      表の蒸散量が<b>0にならない</b>データが出たら、次のパターン10を疑います。</p>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><div class="pn">10</div><h4>考察・実験の欠点を指摘させる</h4><span class="tag hard">最難関</span></div>
+    <div class="pat-b">
+      <ul class="list">
+        <li><b>クチクラ蒸散</b>：気孔がない面からも、表皮を通してわずかに水が出る。</li>
+        <li><b>減った水＝蒸散量とは限らない</b>：吸った水の一部は体内にたまり、ごく一部は光合成に使われる。</li>
+        <li><b>葉をすべて取った枝</b>は「茎だけ」ではない：<b>葉を切った切り口</b>からも水が出る。</li>
+        <li>水が上がる力は蒸散だけではない：<b>根が押し上げる力</b>と<b>細い管を上がる力</b>も加わる。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 第3章 ==================== -->
+<section id="ch3">
+  <div class="chapter">
+    <div class="num">第 3 章</div>
+    <div>
+      <h2>演習13題<span class="sub">ENSHU ─ 基本4・標準4・最難関5</span></h2>
+    </div>
+  </div>
+  <p class="lead">まず答えを見ずに解き、その後「解答・解説」を開いてください。<b>考え方</b>の欄まで読めたら、その問題は合格です。</p>
+
+  <div class="controls">
+    <button class="ctl" id="openAll">解答をすべて開く</button>
+    <button class="ctl" id="closeAll">解答をすべて閉じる</button>
+    <button class="ctl" id="printBtn">印刷 / PDFにする</button>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 640 300" role="img" aria-label="ワセリンを塗る場所を変えた4本の試験管の実験装置図">
+      <defs>
+        <g id="tube">
+          <rect x="-26" y="150" width="52" height="118" rx="6" fill="var(--water-soft)" stroke="var(--line-strong)" stroke-width="1.5"/>
+          <rect x="-26" y="150" width="52" height="9" fill="var(--amber)" opacity=".55"/>
+          <line x1="-4" y1="60" x2="-4" y2="230" stroke="var(--leaf)" stroke-width="3"/>
+        </g>
+      </defs>
+      <g font-size="12.5" fill="var(--ink2)" text-anchor="middle">
+        <!-- A -->
+        <use href="#tube" x="90" y="0"/>
+        <g transform="translate(90,0)">
+          <path d="M-4 92 q-30 -14 -42 -4 q16 16 42 8 Z" fill="var(--leaf-soft)" stroke="var(--leaf)" stroke-width="1.5"/>
+          <path d="M-4 116 q30 -14 42 -4 q-16 16 -42 8 Z" fill="var(--leaf-soft)" stroke="var(--leaf)" stroke-width="1.5"/>
+          <path d="M-4 68 q-28 -12 -40 -2 q15 15 40 6 Z" fill="var(--leaf-soft)" stroke="var(--leaf)" stroke-width="1.5"/>
+        </g>
+        <text x="90" y="40" font-size="17" font-weight="700" fill="var(--ink)">A</text>
+        <text x="90" y="290">何も塗らない</text>
+        <!-- B -->
+        <use href="#tube" x="235" y="0"/>
+        <g transform="translate(235,0)">
+          <path d="M-4 92 q-30 -14 -42 -4 q16 16 42 8 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+          <path d="M-4 116 q30 -14 42 -4 q-16 16 -42 8 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+          <path d="M-4 68 q-28 -12 -40 -2 q15 15 40 6 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+        </g>
+        <text x="235" y="40" font-size="17" font-weight="700" fill="var(--ink)">B</text>
+        <text x="235" y="290">葉の表に塗る</text>
+        <!-- C -->
+        <use href="#tube" x="395" y="0"/>
+        <g transform="translate(395,0)">
+          <path d="M-4 92 q-30 -14 -42 -4 q16 16 42 8 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+          <path d="M-4 116 q30 -14 42 -4 q-16 16 -42 8 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+          <path d="M-4 68 q-28 -12 -40 -2 q15 15 40 6 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+        </g>
+        <text x="395" y="40" font-size="17" font-weight="700" fill="var(--ink)">C</text>
+        <text x="395" y="290">葉の裏に塗る</text>
+        <!-- D -->
+        <use href="#tube" x="550" y="0"/>
+        <g transform="translate(550,0)">
+          <path d="M-4 92 q-30 -14 -42 -4 q16 16 42 8 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+          <path d="M-4 116 q30 -14 42 -4 q-16 16 -42 8 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+          <path d="M-4 68 q-28 -12 -40 -2 q15 15 40 6 Z" fill="var(--flag-soft)" stroke="var(--flag)" stroke-width="1.5"/>
+        </g>
+        <text x="550" y="40" font-size="17" font-weight="700" fill="var(--ink)">D</text>
+        <text x="550" y="290">表と裏に塗る</text>
+      </g>
+      <line x1="596" y1="155" x2="624" y2="140" stroke="var(--line-strong)"/>
+      <text x="628" y="138" font-size="11.5" fill="var(--amber)" text-anchor="end">油</text>
+    </svg>
+    <figcaption>赤くぬられた葉＝ワセリンを塗った枝（どちらの面に塗ったかは各図の下に記載）。試験管の水面には油を浮かべてある。</figcaption>
+  </figure>
+
+  <!-- Q1 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問1</span><span class="tag basic">基本</span><span style="font-size:.85rem;color:var(--muted)">ワセリン式の基本</span></div>
+    <div class="q-b">
+      <p class="p">上の図のように、ホウセンカの<b>同じ大きさ・同じ葉の数</b>の枝A〜Dを用意し、水を入れた試験管にさして水面に油を浮かべ、明るく風のない場所に3時間置いた。減った水の量は次の通りだった。</p>
+      <div class="scroller"><table>
+        <thead><tr><th>枝</th><th class="num">A 何も塗らない</th><th class="num">B 表に塗る</th><th class="num">C 裏に塗る</th><th class="num">D 表と裏に塗る</th></tr></thead>
+        <tbody><tr><td>減った水</td><td class="num">11.0 cm³</td><td class="num">7.5 cm³</td><td class="num">4.5 cm³</td><td class="num">1.0 cm³</td></tr></tbody>
+      </table></div>
+      <p class="ask"><b>(1)</b> 葉の表・葉の裏・茎からの蒸散量をそれぞれ求めなさい。</p>
+      <p class="ask"><b>(2)</b> 水面に油を浮かべたのはなぜか。</p>
+      <p class="ask"><b>(3)</b> 葉の裏の方が蒸散量が多いのはなぜか。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b><br>
+        葉の表 ＝ A − B ＝ 11.0 − 7.5 ＝ <b>3.5 cm³</b><br>
+        葉の裏 ＝ A − C ＝ 11.0 − 4.5 ＝ <b>6.5 cm³</b><br>
+        茎　　 ＝ D ＝ <b>1.0 cm³</b></p>
+        <div class="why"><b>考え方</b>　ワセリンを塗った面は蒸散が止まる。だから B は「裏＋茎」、C は「表＋茎」、D は「茎だけ」。
+        A から B を引けば、B に足りないもの＝表 が残る。<b>検算</b>：3.5＋6.5＋1.0＝11.0 ＝ A。また A＋D＝12.0、B＋C＝12.0 で一致。</div>
+        <p class="a"><b>(2)</b> 水面から水が蒸発して減る分をなくし、<b>減った水の量を植物が吸い上げた量とみなせるようにするため。</b></p>
+        <p class="a"><b>(3)</b> 葉の裏の方に<b>気孔が多い</b>から。</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問2</span><span class="tag basic">基本</span><span style="font-size:.85rem;color:var(--muted)">確かめる実験</span></div>
+    <div class="q-b">
+      <p class="p">葉のついた植物にポリエチレンのふくろをかぶせ、口をひもでしばって明るい所に置いたところ、ふくろの内側がくもった。</p>
+      <p class="ask"><b>(1)</b> ふくろの内側についた液体が水であることを確かめる方法と、その結果を答えなさい。</p>
+      <p class="ask"><b>(2)</b> 鉢植えで実験するとき、鉢の部分をビニールでおおうのはなぜか。</p>
+      <p class="ask"><b>(3)</b> 同じ実験を暗い所で行うと、水てきの量はどうなるか。理由もあわせて答えなさい。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> 青色の塩化コバルト紙をつける。水であれば<b>赤色（もも色）に変わる</b>。</p>
+        <p class="a"><b>(2)</b> <b>土（土にふくまれる水）から蒸発した水がふくろに入るのを防ぎ、葉から出た水だけを調べるため。</b></p>
+        <p class="a"><b>(3)</b> <b>少なくなる。</b>暗いところでは気孔が閉じ、蒸散がほとんど行われなくなるから。</p>
+        <div class="why"><b>考え方</b>　この単元の記述はすべて「<b>調べたいもの以外を混ぜない</b>」という発想でできています。土をおおうのも、油を浮かべるのも、目的は同じです。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問3</span><span class="tag basic">基本</span><span style="font-size:.85rem;color:var(--muted)">条件の判断</span></div>
+    <div class="q-b">
+      <p class="p">次のア〜カのうち、蒸散がさかんになるものをすべて選びなさい。また、蒸散のはたらきとして正しいものを2つ選びなさい。</p>
+      <ul class="list">
+        <li>ア　気温が高い　　イ　湿度が高い　　ウ　風がふいている</li>
+        <li>エ　夜である　　　オ　日光が当たっている　　カ　雨がふっている</li>
+      </ul>
+      <p class="ask"><b>（はたらき）</b> ① 根から水を吸い上げる　② 葉を大きくする　③ 葉の温度が上がりすぎるのを防ぐ　④ 種子をつくる</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a">さかんになる条件 … <b>ア・ウ・オ</b>　／　はたらき … <b>① と ③</b></p>
+        <div class="why"><b>考え方</b>　イ・カは湿度が高く空気が水蒸気を受け取りにくい。エは気孔が閉じる。
+        「蒸散が水を引き上げる」＋「気化のときに熱をうばう」の2本立てが答えの型です。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問4</span><span class="tag basic">基本</span><span style="font-size:.85rem;color:var(--muted)">道管と師管</span></div>
+    <div class="q-b">
+      <p class="p">赤いインクをとかした水にホウセンカをさし、しばらくしてから茎と葉を切って断面を観察した。</p>
+      <p class="ask"><b>(1)</b> 赤く染まっているのは道管・師管のどちらか。またそこを通るものを2つ答えなさい。</p>
+      <p class="ask"><b>(2)</b> ホウセンカの茎の断面で、赤く染まった部分はどのように見えるか。「輪のように」「ばらばらに」のどちらかで答えなさい。</p>
+      <p class="ask"><b>(3)</b> 葉の葉脈の断面では、道管は表側・裏側のどちらにあるか。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> <b>道管</b>。通るものは<b>水</b>と<b>水にとけた肥料分</b>。</p>
+        <p class="a"><b>(2)</b> ホウセンカは双子葉類なので<b>輪のように</b>ならんで見える。</p>
+        <p class="a"><b>(3)</b> <b>表側（上側）</b></p>
+        <div class="why"><b>考え方</b>　「茎は道管が内側」「葉脈は道管が表側」。この2つは向きがちがうので、断面図の問題では必ず<b>どちらが上（表）か</b>を確認してから答えます。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問5</span><span class="tag std">標準</span><span style="font-size:.85rem;color:var(--muted)">Dのない3本実験</span></div>
+    <div class="q-b">
+      <p class="p">アジサイの同じような枝を3本用意し、次のように処理して3時間置いた。葉はどの枝も10枚ついている。</p>
+      <div class="scroller"><table>
+        <thead><tr><th>枝</th><th class="num">ア 何も塗らない</th><th class="num">イ 表にワセリン</th><th class="num">ウ 裏にワセリン</th></tr></thead>
+        <tbody><tr><td>減った水</td><td class="num">9.0 cm³</td><td class="num">7.8 cm³</td><td class="num">3.6 cm³</td></tr></tbody>
+      </table></div>
+      <p class="ask"><b>(1)</b> 茎からの蒸散量を求めなさい。</p>
+      <p class="ask"><b>(2)</b> 葉の表・裏からの蒸散量をそれぞれ求めなさい。</p>
+      <p class="ask"><b>(3)</b> 葉の裏と表の気孔の数の比を、もっとも簡単な整数の比で答えなさい（蒸散量は気孔の数に比例するものとする）。</p>
+      <p class="ask"><b>(4)</b> 枝ア全体の1時間あたりの蒸散量と、<b>葉1枚が1時間に出す水の量</b>をそれぞれ求めなさい。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> 茎 ＝ イ ＋ ウ − ア ＝ 7.8 ＋ 3.6 − 9.0 ＝ <b>2.4 cm³</b></p>
+        <div class="why"><b>考え方</b>　イ（裏＋茎）＋ウ（表＋茎）＝ 表＋裏＋茎×2。ここからア（表＋裏＋茎）を引くと、茎が1つ残る。
+        <b>4本目がない問題は必ずこの式</b>です。</div>
+        <p class="a"><b>(2)</b> 表 ＝ ア − イ ＝ 9.0 − 7.8 ＝ <b>1.2 cm³</b>　／　裏 ＝ ア − ウ ＝ 9.0 − 3.6 ＝ <b>5.4 cm³</b>　（検算 1.2＋5.4＋2.4 ＝ 9.0 ○）</p>
+        <p class="a"><b>(3)</b> 裏 : 表 ＝ 5.4 : 1.2 ＝ <b>9 : 2</b></p>
+        <p class="a"><b>(4)</b> 枝全体 … 9.0 ÷ 3 ＝ <b>1時間あたり 3.0 cm³</b><br>
+        葉1枚 … 葉からの蒸散は 表1.2 ＋ 裏5.4 ＝ 6.6 cm³。6.6 ÷ 10枚 ÷ 3時間 ＝ <b>0.22 cm³</b></p>
+        <div class="why"><b>考え方</b>　「葉1枚あたり」なので、<b>茎の分（2.4）を先に取りのぞく</b>のがポイント。
+        9.0 をそのまま10で割ってしまう答案が非常に多い設問です。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問6</span><span class="tag std">標準</span><span style="font-size:.85rem;color:var(--muted)">気孔の数の計算</span></div>
+    <div class="q-b">
+      <p class="p">ある植物の葉を顕微鏡で観察したところ、気孔の数は<b>裏側が1mm²あたり250個、表側が1mm²あたり50個</b>だった。この植物の葉は1枚の片面の面積が<b>24cm²</b>で、枝には<b>20枚</b>の葉がついている。</p>
+      <p class="ask"><b>(1)</b> 葉1枚の裏側にある気孔の数を求めなさい。</p>
+      <p class="ask"><b>(2)</b> 枝全体の葉の<b>裏側</b>にある気孔の総数を求めなさい。</p>
+      <p class="ask"><b>(3)</b> 枝全体の葉にある気孔の総数（表と裏の合計）を求めなさい。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> 24 cm² ＝ 24 × 100 ＝ 2400 mm²　→　250 × 2400 ＝ <b>600000 個（60万個）</b></p>
+        <div class="why"><b>考え方</b>　最大のわなは<b>面積の単位換算</b>。1cm² ＝ 100mm²（1cm ＝ 10mm を2回かける）です。「×10」にしてしまうと答えが10分の1になります。</div>
+        <p class="a"><b>(2)</b> 600000 × 20 ＝ <b>12000000 個（1200万個）</b></p>
+        <p class="a"><b>(3)</b> 表側は 50 × 2400 × 20 ＝ 2400000 個。合計 12000000 ＋ 2400000 ＝ <b>14400000 個（1440万個）</b></p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問7</span><span class="tag std">標準</span><span style="font-size:.85rem;color:var(--muted)">条件を変えた比較</span></div>
+    <div class="q-b">
+      <p class="p">同じ枝を4本用意し、次の条件で1時間置いて減った水の量をはかった。</p>
+      <div class="scroller"><table>
+        <thead><tr><th>装置</th><th>明るさ</th><th>風</th><th>湿度</th></tr></thead>
+        <tbody>
+          <tr><td>ア</td><td>明るい</td><td>なし</td><td>ふつう</td></tr>
+          <tr><td>イ</td><td>明るい</td><td>あり</td><td>ふつう</td></tr>
+          <tr><td>ウ</td><td>暗い</td><td>なし</td><td>ふつう</td></tr>
+          <tr><td>エ</td><td>明るい</td><td>なし</td><td>高い</td></tr>
+        </tbody>
+      </table></div>
+      <p class="ask"><b>(1)</b> 減った水の量が多い順に並べなさい。</p>
+      <p class="ask"><b>(2)</b> 風の効果を調べるには、どの装置とどの装置を比べればよいか。</p>
+      <p class="ask"><b>(3)</b> 風があると蒸散がさかんになるのはなぜか、説明しなさい。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> <b>イ &gt; ア &gt; エ &gt; ウ</b></p>
+        <div class="why"><b>考え方</b>　順位づけは<b>まず「気孔が開いているか」で判断</b>します。
+        ウだけが暗く、<b>気孔そのものが閉じる</b>ので最下位。エは気孔は開いていて、外へ出ていきにくいだけなのでウよりは多くなります。
+        残るア・イは風の有無だけのちがいなのでイが上。<br>
+        ※もしエが「湿度が<b>ほぼ100%</b>」なら話は別で、気孔が開いていても蒸散はほぼ止まります。条件の書かれ方をよく読むこと。</div>
+        <p class="a"><b>(2)</b> <b>アとイ</b>（風以外の条件が同じだから）</p>
+        <p class="a"><b>(3)</b> <b>葉の表面近くにたまった水蒸気が風で運び去られ、まわりの空気がかわいた状態に保たれるから。</b></p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問8</span><span class="tag std">標準</span><span style="font-size:.85rem;color:var(--muted)">植物の種類を当てる</span></div>
+    <div class="q-b">
+      <p class="p">3種類の植物X・Y・Zについて、葉の表と裏からの1時間あたりの蒸散量を調べたところ、次のようになった。</p>
+      <div class="scroller"><table>
+        <thead><tr><th>植物</th><th class="num">表からの蒸散量</th><th class="num">裏からの蒸散量</th></tr></thead>
+        <tbody>
+          <tr><td>X</td><td class="num">0.2 cm³</td><td class="num">4.8 cm³</td></tr>
+          <tr><td>Y</td><td class="num">2.5 cm³</td><td class="num">2.6 cm³</td></tr>
+          <tr><td>Z</td><td class="num">3.9 cm³</td><td class="num">0.1 cm³</td></tr>
+        </tbody>
+      </table></div>
+      <p class="ask">X・Y・Zはそれぞれ次のどれと考えられるか。理由もあわせて答えなさい。<br>　【 ツバキ　／　トウモロコシ　／　スイレン 】</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a">X ＝ <b>ツバキ</b>　Y ＝ <b>トウモロコシ</b>　Z ＝ <b>スイレン</b></p>
+        <div class="why"><b>考え方</b>　スイレンは葉が水にうかび<b>裏が水に接する</b>ので、気孔は表に集まります。
+        トウモロコシは細長い葉が立ち、表も裏も同じように空気にふれるので<b>ほぼ同数</b>。
+        ツバキのような広い葉の陸上植物は、強い日光と乾燥をさけて<b>裏</b>に集まります。<br>
+        なお、Xの表からも 0.2 cm³ 出ていますが、これは<b>気孔があるという意味ではなく、クチクラ蒸散</b>（問9）によるものです。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問9</span><span class="tag hard">最難関</span><span style="font-size:.85rem;color:var(--muted)">クチクラ蒸散</span></div>
+    <div class="q-b">
+      <p class="p">ツバキの葉を顕微鏡で調べたところ、<b>気孔は葉の裏にしかなかった</b>。ところが、葉の表だけにワセリンを塗った枝は、何も塗らない枝より減った水の量が<b>わずかに少なかった</b>。</p>
+      <p class="ask"><b>(1)</b> このことから、葉の表からも水が出ていると考えられる。どこから出ていると考えられるか。</p>
+      <p class="ask"><b>(2)</b> この現象を考えに入れると、「表 ＝ A − B」という式で求めた値は何を表すことになるか。</p>
+      <p class="ask"><b>(3)</b> この植物の葉の表面は、さわるとつやがあってかたい。この性質は植物にとってどのように役立っているか。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> <b>葉の表面（表皮をおおうクチクラ層）を通してわずかに水が出ている。</b>（クチクラ蒸散）</p>
+        <p class="a"><b>(2)</b> 気孔からの蒸散量ではなく、<b>葉の表の表面全体から出ていた水の量</b>を表す。</p>
+        <p class="a"><b>(3)</b> <b>気孔以外の場所から水がむだに出ていくのをできるだけおさえ、乾燥にたえられるようにしている。</b>（完全には防げず、わずかにもれるのがクチクラ蒸散）</p>
+        <div class="why"><b>考え方</b>　入試の計算問題は「ワセリンを塗った面の蒸散は0」という<b>約束の上</b>で成り立っています。
+        最難関校は、その約束をわざと外して「本当は0ではない」と気づけるかを問います。
+        <b>データが理屈と合わないときは、前提を疑う</b>――これが考察問題の解き方です。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問10</span><span class="tag hard">最難関</span><span style="font-size:.85rem;color:var(--muted)">蒸散量と吸水量のずれ</span></div>
+    <div class="q-b">
+      <p class="p">よく晴れた夏の日に、ある木の蒸散量と吸水量を1日調べたところ、第2章のグラフのようになった。蒸散量の山は正午ごろ、吸水量の山は午後2時ごろだった。また、この木の幹の太さをはかると、昼過ぎにもっとも細くなっていた。</p>
+      <p class="ask"><b>(1)</b> 午前中、蒸散量と吸水量ではどちらが多いか。</p>
+      <p class="ask"><b>(2)</b> 昼過ぎに幹がもっとも細くなるのはなぜか。</p>
+      <p class="ask"><b>(3)</b> 吸水量の山が蒸散量の山よりおくれるのはなぜか。</p>
+      <p class="ask"><b>(4)</b> 1日全体で見ると、蒸散量の合計と吸水量の合計の関係はどうなるか。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> <b>蒸散量</b></p>
+        <p class="a"><b>(2)</b> <b>蒸散量が吸水量を上回り、体内にたくわえられていた水が減るから。</b></p>
+        <p class="a"><b>(3)</b> <b>吸水は蒸散によって水が引き上げられることで起こるため、まず蒸散が増え、それにおくれて吸水が増えるから。</b></p>
+        <p class="a"><b>(4)</b> <b>ほぼ等しくなる。</b></p>
+        <div class="why"><b>考え方</b>　因果の向きは <b>蒸散 → 吸水</b>（葉が引く力で根から水が上がる）。だから山は必ず蒸散が先。
+        午前は「持ち出し（幹が細る）」、午後〜夜は「返済（幹が太る）」、1日で帳消し、というお金の出入りのイメージでとらえると確実です。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問11</span><span class="tag hard">最難関</span><span style="font-size:.85rem;color:var(--muted)">気孔1個あたりの計算</span></div>
+    <div class="q-b">
+      <p class="p">問6の植物（葉20枚、片面24cm²、気孔は裏1mm²あたり250個・表50個）について、1時間に葉全体から出た水の量は<b>7.2cm³</b>だった。蒸散量は気孔の数に比例するものとする。</p>
+      <p class="ask"><b>(1)</b> 葉の裏から出た水の量を求めなさい。</p>
+      <p class="ask"><b>(2)</b> 気孔1個が1時間に出した水の量は何mm³か。</p>
+      <p class="ask"><b>(3)</b> この葉全体（表と裏の合計）の面積1cm²あたり、1時間に出た水の量は何cm³か。小数第4位を四捨五入して答えなさい。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> 気孔の数の比は 裏:表 ＝ 250:50 ＝ 5:1。よって裏は 7.2 × 5/6 ＝ <b>6.0 cm³</b></p>
+        <p class="a"><b>(2)</b> 裏の気孔は1200万個（問6）。6.0 cm³ ＝ 6000 mm³。<br>6000 ÷ 12000000 ＝ <b>0.0005 mm³</b></p>
+        <div class="why"><b>考え方</b>　cm³ のまま割ると 0.0000005 という扱いにくい数になります。
+        <b>先に mm³ に直す（×1000）</b>のが定石。体積は×1000、面積は×100 と、換算の倍率を必ず区別すること。</div>
+        <p class="a"><b>(3)</b> 片面 24cm² × 20枚 × 2面 ＝ 960 cm²。7.2 ÷ 960 ＝ 0.0075 → <b>0.008 cm³</b></p>
+        <div class="why"><b>考え方</b>　「葉の面積」が<b>片面</b>か<b>表裏合計</b>かで答えが2倍ちがいます。問題文の言い方を必ず確認しましょう。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問12</span><span class="tag hard">最難関</span><span style="font-size:.85rem;color:var(--muted)">実験の欠点を指摘する</span></div>
+    <div class="q-b">
+      <p class="p">ある生徒が「茎からの蒸散量を調べたい」と考え、<b>葉をすべて切り取った枝</b>を試験管にさし、減った水の量をはかった。同じ枝で<b>葉の表と裏の両面にワセリンを塗ったもの</b>と比べたところ、葉を切り取った枝の方が減った水の量が多かった。</p>
+      <p class="ask"><b>(1)</b> 葉を切り取った枝の方が多くなった理由を説明しなさい。</p>
+      <p class="ask"><b>(2)</b> 「減った水の量＝蒸散量」とみなしてよいと考えられる理由を書きなさい。また、厳密にはそう言い切れない理由も1つ書きなさい。</p>
+      <p class="ask"><b>(3)</b> 茎からの蒸散量を正しく調べるには、葉を切り取った枝にどのような処理をすればよいか。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> <b>葉を切り取った切り口からも水が出ていくため、茎だけの蒸散量より多くなるから。</b></p>
+        <p class="a"><b>(2)</b> みなしてよい理由 … <b>吸い上げられた水のほとんどは蒸散によって出ていき、体内にとどまる量や光合成に使われる量はごくわずかだから。</b><br>
+        言い切れない理由 … <b>吸った水の一部は植物の体内にたくわえられ、また一部は光合成の材料として使われるから。</b></p>
+        <p class="a"><b>(3)</b> <b>葉を切り取った切り口すべてにワセリンを塗ってふさぐ。</b></p>
+        <div class="why"><b>考え方</b>　最難関の実験考察は、<b>「調べたいもの以外の水の出入り口」をすべて数え上げられるか</b>を見ています。
+        水の出口は ①葉の表 ②葉の裏 ③茎の表面 ④切り口 ⑤水面 の5つ。どれをふさいだか、を毎回チェックしましょう。</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q">
+    <div class="q-h"><span class="qn">問13</span><span class="tag hard">最難関</span><span style="font-size:.85rem;color:var(--muted)">面積をそろえて比べる</span></div>
+    <div class="q-b">
+      <p class="p">2種類の植物P・Qの枝を用意し、明るく風のない同じ部屋で1時間置いて減った水の量をはかった。葉の面積は片面で数えたものである。</p>
+      <div class="scroller"><table>
+        <thead><tr><th>植物</th><th class="num">葉の総面積（片面）</th><th class="num">減った水の量</th></tr></thead>
+        <tbody>
+          <tr><td>P</td><td class="num">200 cm²</td><td class="num">5.0 cm³</td></tr>
+          <tr><td>Q</td><td class="num">320 cm²</td><td class="num">6.4 cm³</td></tr>
+        </tbody>
+      </table></div>
+      <p class="ask"><b>(1)</b> 「Qの方が減った水の量が多いので、Qの方が蒸散がさかんだ」という考えは正しいか。理由をつけて答えなさい。</p>
+      <p class="ask"><b>(2)</b> 葉の面積1cm²あたりの蒸散量をそれぞれ求め、どちらがさかんか答えなさい。</p>
+      <p class="ask"><b>(3)</b> この比べ方でも、なお正確とは言えない点を1つあげなさい。</p>
+    </div>
+    <details>
+      <summary>解答・解説を見る</summary>
+      <div class="ans">
+        <p class="a"><b>(1)</b> <b>正しくない。</b>Qの方が葉の総面積が大きいので、面積あたりで比べなければ、さかんかどうかは判断できないから。</p>
+        <p class="a"><b>(2)</b> P … 5.0 ÷ 200 ＝ <b>0.025 cm³</b>／Q … 6.4 ÷ 320 ＝ <b>0.02 cm³</b>　→　<b>Pの方がさかん</b></p>
+        <p class="a"><b>(3)</b> （例）<b>減った水の中には茎からの蒸散も含まれており、葉だけの蒸散量ではないから。</b><br>
+        （別解）葉の表と裏で気孔の数がちがうので、片面の面積だけでは正しく比べられないから。</p>
+        <div class="why"><b>考え方</b>　「合計で比べるな、単位量あたりで比べよ」は理科全体の鉄則。
+        さらに<b>その単位量あたりの値にも余計なもの（茎）が混ざっていないか</b>まで疑えると、最難関の(3)が取れます。</div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ==================== 第4章 ==================== -->
+<section id="ch4">
+  <div class="chapter">
+    <div class="num">第 4 章</div>
+    <div>
+      <h2>記述の型<span class="sub">KIJUTSU ─ そのまま書ける模範解答</span></h2>
+    </div>
+  </div>
+  <p class="lead">蒸散の記述は種類が限られています。下の言い回しを、意味を理解したうえでそのまま使えるようにしておきましょう。</p>
+
+  <div class="scroller">
+    <table>
+      <thead><tr><th style="min-width:12em">聞かれ方</th><th>模範解答</th></tr></thead>
+      <tbody>
+        <tr><td>蒸散とは何か</td><td>根から吸い上げた水が、おもに葉の気孔から水蒸気となって空気中に出ていくはたらき。</td></tr>
+        <tr><td>蒸散の役割（水の面）</td><td>葉から水が出ることで根からの水の吸い上げがさかんになり、水にとけた肥料分もいっしょに運ばれる。</td></tr>
+        <tr><td>蒸散の役割（温度の面）</td><td>水が水蒸気に変わるときにまわりの熱をうばうので、葉の温度が上がりすぎるのを防ぐ。</td></tr>
+        <tr><td>気孔が裏に多い理由</td><td>葉の裏は直接日光が当たらず乾きにくいので、水を出しすぎずに気体を出入りさせられるから。</td></tr>
+        <tr><td>スイレンの気孔が表に多い理由</td><td>葉の裏が水に接していて気体の出入りができないため、空気にふれる表側に気孔があるから。</td></tr>
+        <tr><td>水面に油を浮かべる理由</td><td>水面から水が蒸発するのを防ぎ、減った水の量を植物が吸い上げた量とみなせるようにするため。</td></tr>
+        <tr><td>鉢をビニールでおおう理由</td><td>土からの水の蒸発を防ぎ、葉から出た水だけを調べられるようにするため。</td></tr>
+        <tr><td>同じ大きさの枝を使う理由</td><td>調べたい条件以外の条件をそろえ、結果のちがいがその条件によるものだと言えるようにするため。</td></tr>
+        <tr><td>水中で茎を切る理由</td><td>切り口から道管に空気が入り、水が上がらなくなるのを防ぐため。</td></tr>
+        <tr><td>風で蒸散がさかんになる理由</td><td>葉の表面近くにたまった水蒸気が運び去られ、まわりの空気がかわいた状態に保たれるから。</td></tr>
+        <tr><td>暗くすると減る理由</td><td>暗いところでは気孔が閉じるため、水蒸気の出口がほとんどなくなるから。</td></tr>
+        <tr><td>吸水が蒸散におくれる理由</td><td>吸水は蒸散によって水が引き上げられて起こるので、蒸散の変化におくれてついてくるから。</td></tr>
+        <tr><td>昼に幹が細くなる理由</td><td>蒸散量が吸水量を一時的に上回り、体内にたくわえられた水が減るから。</td></tr>
+        <tr><td>葉を切った枝の蒸散が多い理由</td><td>茎の表面だけでなく、葉を切り取った切り口からも水が出ていくから。</td></tr>
+        <tr><td>気孔がない面から水が出る理由</td><td>葉の表面（表皮のクチクラ層）を通して、わずかに水が出ていくから。</td></tr>
+        <tr><td>しおれる理由</td><td>蒸散量が吸水量を大きく上回る状態が続き、植物の体内の水が不足するから。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="memo">
+    <b>採点者が探している言葉</b>　「気孔」「水蒸気」「蒸発を防ぐ」「条件をそろえる」「気孔が閉じる」「熱をうばう」。
+    この6語のうち、その問いにふさわしいものが1つでも入っていれば、多くの場合部分点がつきます。<b>短くてもキーワードを必ず入れる</b>。
+  </div>
+</section>
+
+<!-- ==================== 第5章 ==================== -->
+<section id="ch5">
+  <div class="chapter">
+    <div class="num">第 5 章</div>
+    <div>
+      <h2>総点検<span class="sub">SOTEN-KEN ─ 試験前日に見るページ</span></h2>
+    </div>
+  </div>
+
+  <h3 class="head">5-1　まちがえやすい12項目</h3>
+  <p class="lead">チェックを入れると保存されます（同じ端末・同じブラウザで開いたときに残ります）。</p>
+  <ul class="check" id="checklist">
+    <li><label><input type="checkbox" data-k="c1"><span>ワセリンを塗った面は蒸散が<b>止まる</b>。式を足す向きに立てていないか。</span></label></li>
+    <li><label><input type="checkbox" data-k="c2"><span>4本目（表裏両方）がないときは <b>茎 ＝ B ＋ C − A</b>。</span></label></li>
+    <li><label><input type="checkbox" data-k="c3"><span>検算 <b>A ＋ D ＝ B ＋ C</b> を必ず1回やる。</span></label></li>
+    <li><label><input type="checkbox" data-k="c4"><span><b>1cm² ＝ 100mm²</b>、<b>1cm³ ＝ 1000mm³</b>。面積と体積で倍率がちがう。</span></label></li>
+    <li><label><input type="checkbox" data-k="c5"><span>葉の面積が<b>片面</b>か<b>表裏合計</b>か、問題文で確認する。</span></label></li>
+    <li><label><input type="checkbox" data-k="c6"><span>気孔は「裏に多い」で止めない。<b>水に接する面にはつかない → 空気にふれる面のうち乾きにくい面に多い</b>。スイレンは表。</span></label></li>
+    <li><label><input type="checkbox" data-k="c7"><span>茎の道管は<b>内側</b>、葉脈の道管は<b>表側</b>。向きがちがう。</span></label></li>
+    <li><label><input type="checkbox" data-k="c8"><span>赤インクで染まるのは<b>道管</b>。師管ではない。</span></label></li>
+    <li><label><input type="checkbox" data-k="c9"><span>塩化コバルト紙は<b>青 → 赤（もも色）</b>。逆に書かない。</span></label></li>
+    <li><label><input type="checkbox" data-k="c10"><span>条件を並べるときは、まず<b>気孔が開いているか</b>で判断する（暗い＝閉じる／湿度が高いだけ＝開いている）。</span></label></li>
+    <li><label><input type="checkbox" data-k="c11"><span>山が先に来るのは<b>蒸散量</b>、おくれるのが<b>吸水量</b>。</span></label></li>
+    <li><label><input type="checkbox" data-k="c12"><span>葉緑体をもつのは<b>孔辺細胞</b>だけ。まわりの表皮細胞にはない。</span></label></li>
+  </ul>
+  <div class="controls"><button class="ctl" id="resetCheck">チェックを全部消す</button></div>
+
+  <h3 class="head">5-2　用語ミニテスト</h3>
+  <p class="lead">答えはぼかしてあります。答えをつぶやいてから、その行をクリック（タップ）して確かめてください。</p>
+  <div class="mini" id="mini">
+    <div class="row"><span class="qq">根から吸い上げた水が水蒸気として出ていくはたらき</span><span class="aa">蒸散</span></div>
+    <div class="row"><span class="qq">水蒸気が出ていく、葉の表皮にあるすきま</span><span class="aa">気孔</span></div>
+    <div class="row"><span class="qq">気孔をはさんでいる三日月形の細胞</span><span class="aa">孔辺細胞</span></div>
+    <div class="row"><span class="qq">水と肥料分が通る管</span><span class="aa">道管</span></div>
+    <div class="row"><span class="qq">光合成でできた養分が通る管</span><span class="aa">師管</span></div>
+    <div class="row"><span class="qq">道管と師管が集まった束</span><span class="aa">維管束</span></div>
+    <div class="row"><span class="qq">水があると青から赤に変わる紙</span><span class="aa">塩化コバルト紙</span></div>
+    <div class="row"><span class="qq">葉の表側にある、細長い細胞がすきまなく並んだ部分</span><span class="aa">さく状組織</span></div>
+    <div class="row"><span class="qq">葉の裏側にある、すきまの多い部分</span><span class="aa">海綿状組織</span></div>
+    <div class="row"><span class="qq">気孔以外の葉の表面から水が出ていく現象</span><span class="aa">クチクラ蒸散</span></div>
+    <div class="row"><span class="qq">調べたい条件だけを変えて比べる実験</span><span class="aa">対照実験</span></div>
+    <div class="row"><span class="qq">蒸散量が吸水量を大きく上回る状態が続くと起こること</span><span class="aa">しおれる</span></div>
+  </div>
+  <div class="controls"><button class="ctl" id="revealAll">答えを全部見る</button><button class="ctl" id="hideAll">答えを全部かくす</button></div>
+
+  <h3 class="head">5-3　最後に――蒸散の問題の解き方3か条</h3>
+  <div class="card">
+    <div class="card-title"><span class="tag std">1</span>「水がどこから出たか」を数え上げる</div>
+    <p class="p">出口は <b>葉の表・葉の裏・茎・切り口・水面</b> の5つ。どれをふさいだ装置なのかを、式を立てる前に書き出します。</p>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="tag std">2</span>そろえてから比べる</div>
+    <p class="p">時間・葉の枚数・面積がちがえば、そのままでは比べられません。<b>1時間あたり・1枚あたり・1cm²あたり</b>に直してから大小を判断します。</p>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="tag hard">3</span>データが理屈と合わないときは前提を疑う</div>
+    <p class="p">「気孔がないはずの面から水が出ている」「合計が合わない」――そこが最難関校の出題の中心です。
+    <b>クチクラ蒸散・切り口・体内の水</b>の3つを思い出しましょう。</p>
+  </div>
+
+  <div class="foot">
+    蒸散 総復習ノート ／ 中学受験理科・植物　—　基礎から最難関レベルの考察問題まで。
+    数値はすべてこのノート用に作成した練習用のもので、実際の測定値ではありません。
+  </div>
+</section>
+
+</div>
+</div>
+
+<script>
+(function(){
+  // nav highlight
+  var links = Array.prototype.slice.call(document.querySelectorAll('.navlinks a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          links.forEach(function(l){ l.classList.toggle('on', l.getAttribute('href') === '#' + e.target.id); });
+        }
+      });
+    }, { rootMargin: '-70px 0px -70% 0px' });
+    secs.forEach(function(s){ obs.observe(s); });
+  }
+
+  // answers
+  function allDetails(){ return document.querySelectorAll('#ch3 details'); }
+  var oa = document.getElementById('openAll');
+  var ca = document.getElementById('closeAll');
+  if (oa) oa.addEventListener('click', function(){ allDetails().forEach(function(d){ d.open = true; }); });
+  if (ca) ca.addEventListener('click', function(){ allDetails().forEach(function(d){ d.open = false; }); });
+  var pb = document.getElementById('printBtn');
+  if (pb) pb.addEventListener('click', function(){ window.print(); });
+
+  // checklist persistence
+  var KEY = 'josan-check-v1';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#checklist input'));
+  function load(){
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      var saved = JSON.parse(raw) || {};
+      boxes.forEach(function(b){ b.checked = !!saved[b.dataset.k]; });
+    } catch (e) { /* storage unavailable */ }
+  }
+  function save(){
+    try {
+      var o = {};
+      boxes.forEach(function(b){ o[b.dataset.k] = b.checked; });
+      localStorage.setItem(KEY, JSON.stringify(o));
+    } catch (e) { /* storage unavailable */ }
+  }
+  load();
+  boxes.forEach(function(b){ b.addEventListener('change', save); });
+  var rc = document.getElementById('resetCheck');
+  if (rc) rc.addEventListener('click', function(){ boxes.forEach(function(b){ b.checked = false; }); save(); });
+
+  // mini test
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#mini .row'));
+  rows.forEach(function(r){
+    var a = r.querySelector('.aa');
+    r.addEventListener('click', function(){ a.classList.toggle('show'); });
+  });
+  var ra = document.getElementById('revealAll');
+  var ha = document.getElementById('hideAll');
+  if (ra) ra.addEventListener('click', function(){ rows.forEach(function(r){ r.querySelector('.aa').classList.add('show'); }); });
+  if (ha) ha.addEventListener('click', function(){ rows.forEach(function(r){ r.querySelector('.aa').classList.remove('show'); }); });
+})();
+</script>
+</body>
+</html>

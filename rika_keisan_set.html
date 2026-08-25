@@ -53,8 +53,9 @@
   .warn b{color:var(--accent)}
   .more{margin:11px 0 0}
   .more a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;
-    background:var(--phys);color:#fff;border:1px solid var(--phys);border-radius:8px;
+    background:var(--mc,var(--phys));color:#fff;border:1px solid var(--mc,var(--phys));border-radius:8px;
     padding:8px 17px;font-size:13.5px;font-weight:700;transition:.12s}
+  .more.m-chem{--mc:var(--chem)} .more.m-bio{--mc:var(--bio)} .more.m-earth{--mc:var(--earth)}
   .more a:hover{opacity:.85}
   .more a .ar{font-weight:400}
   .more .sub{display:block;font-size:12px;color:var(--sub);margin-top:5px}
@@ -175,6 +176,10 @@
 <li><b>密度</b>（重さ ÷ 体積）が 1 より大きければ沈む、小さければ浮く。</li>
 </ul>
 <div class="warn"><b>いちばん多いミス：</b>深く沈めるほど浮力が増えると思ってしまう。<b>全部沈んだあとは浮力は変わらない</b>。</div>
+<div class="more">
+<a href="4.浮力まとめ.html">浮力 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<span class="sub">密度、浮き沈みの判定、ばねばかりと台ばかりの読み方までくわしく解説。</span>
+</div>
 </div>
 
 <div class="card">
@@ -197,6 +202,10 @@
 <tr><td>電池 並列2個</td><td>1</td><td>ふつう</td><td>長い</td></tr>
 </table>
 <div class="warn"><b>いちばん多いミス：</b>電池の並列を「明るくなる」と答えてしまう。並列は<b>長もちするだけ</b>。また、導線だけの近道がある豆電球は<b>つかない</b>。</div>
+<div class="more">
+<a href="6.電流と豆電球.html">電流と豆電球 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<span class="sub">直列・並列の組み合わせ、電流の比、ショート回路の見分け方までくわしく解説。</span>
+</div>
 </div>
 
 <div class="card">
@@ -226,6 +235,10 @@
 <li><b>食塩を加える</b> → 分子も分母も増える。</li>
 </ul>
 <div class="warn"><b>いちばん多いミス：</b>「水100gに食塩20g」を20%としてしまう。正しくは 20 ÷ 120 で約16.7%。<b>「水」か「水よう液」か</b>を毎回確認。</div>
+<div class="more m-chem">
+<a href="9.水よう液の濃度.html">水よう液の濃度 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<span class="sub">うすめる・蒸発させる・混ぜ合わせるなどの操作をくわしく解説。</span>
+</div>
 </div>
 
 <div class="card">
@@ -236,6 +249,10 @@
 <li><b>水を蒸発させたとき</b> ＝ 蒸発させた水にとけていたぶんが出てくる。</li>
 <li>ホウ酸・ミョウバン・硝酸カリウムは<b>冷やして</b>取り出す。<b>食塩は温度でほとんど変わらない</b>ので水を蒸発させる。</li>
 </ul>
+<div class="more m-chem">
+<a href="10.溶解度と再結晶.html">溶解度と再結晶 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<span class="sub">溶解度曲線の読み方、飽和水よう液の重さ、結晶の量の求め方をくわしく解説。</span>
+</div>
 </div>
 
 <div class="card">
@@ -247,6 +264,10 @@
 <li>グラフの<b>折れ曲がる点＝ちょうど中和した点</b>。</li>
 <li>BTB液：酸性＝黄、中性＝緑、アルカリ性＝青。</li>
 </ul>
+<div class="more m-chem">
+<a href="11.中和.html">中和 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<span class="sub">中和の比の求め方、グラフの読み取り、残る固体の判定までくわしく解説。</span>
+</div>
 </div>
 
 <div class="card">
@@ -283,6 +304,10 @@
 <li>葉の<b>裏</b>のほうが気孔が多いので、ふつう 裏 ＞ 表。</li>
 <li>水面に油を浮かべるのは<b>水面からの蒸発を防ぐ</b>ため。</li>
 </ul>
+<div class="more m-bio">
+<a href="14.蒸散量.html">蒸散量 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<span class="sub">ワセリンの組み合わせから1か所ずつ取り出す手順と、検算のしかたをくわしく解説。</span>
+</div>
 </div>
 
 <div class="card">
@@ -316,6 +341,10 @@
 <li>2地点の（距離の差）÷（時刻の差）＝ 速さ。そこから逆算して<b>地震の発生時刻</b>を出す。</li>
 <li>比例だから「距離2倍 → 初期微動継続時間も2倍」。表の穴うめはこれで即答。</li>
 </ul>
+<div class="more m-earth">
+<a href="17.地震.html">地震 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<span class="sub">P波・S波の計算、発生時刻の逆算、震度とマグニチュードの違いをくわしく解説。</span>
+</div>
 </div>
 
 <div class="card">

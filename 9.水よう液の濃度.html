@@ -1,0 +1,1130 @@
+<title>水よう液の濃度 攻略ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+:root{
+  --bg:#f2f5f9;
+  --surface:#ffffff;
+  --surface-2:#e9eff6;
+  --ink:#111c2b;
+  --ink-2:#4d5f75;
+  --line:#d2dbe7;
+  --line-strong:#b6c3d4;
+  --accent:#0f5596;
+  --accent-2:#0b3f72;
+  --accent-soft:#e2edf9;
+  --warn:#993126;
+  --warn-soft:#f9e8e5;
+  --ok:#10645a;
+  --ok-soft:#e0f0ed;
+  --shadow:0 1px 2px rgba(17,28,43,.06),0 8px 24px -16px rgba(17,28,43,.35);
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b121b;
+    --surface:#131d29;
+    --surface-2:#1a2634;
+    --ink:#e7eef6;
+    --ink-2:#a0b1c5;
+    --line:#293747;
+    --line-strong:#3a4b5e;
+    --accent:#79b6ef;
+    --accent-2:#a9d1f7;
+    --accent-soft:#16283b;
+    --warn:#ef9a90;
+    --warn-soft:#331f1d;
+    --ok:#5dc5b1;
+    --ok-soft:#10302c;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b121b;
+  --surface:#131d29;
+  --surface-2:#1a2634;
+  --ink:#e7eef6;
+  --ink-2:#a0b1c5;
+  --line:#293747;
+  --line-strong:#3a4b5e;
+  --accent:#79b6ef;
+  --accent-2:#a9d1f7;
+  --accent-soft:#16283b;
+  --warn:#ef9a90;
+  --warn-soft:#331f1d;
+  --ok:#5dc5b1;
+  --ok-soft:#10302c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New",-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+.num,code,.f{font-family:"IBM Plex Mono","Zen Kaku Gothic New",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+.layout{display:grid;grid-template-columns:1fr;gap:40px}
+@media(min-width:1040px){
+  .layout{grid-template-columns:230px minmax(0,1fr);gap:52px;align-items:start}
+  .rail{position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto}
+}
+main{min-width:0}
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom:2px solid var(--ink);
+  margin:0 0 36px;
+  padding:44px 0 22px;
+}
+.kicker{
+  font-size:12px;letter-spacing:.22em;color:var(--accent);
+  font-weight:700;margin:0 0 14px;
+}
+h1{
+  font-family:"Zen Old Mincho",serif;font-weight:900;
+  font-size:clamp(30px,5.4vw,48px);line-height:1.24;margin:0;
+  letter-spacing:.01em;text-wrap:balance;
+}
+h1 .sub{display:block;font-size:.44em;font-weight:600;color:var(--ink-2);letter-spacing:.06em;margin-top:12px}
+.meta{
+  display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px;
+  font-size:13px;color:var(--ink-2);
+}
+.meta b{color:var(--ink);font-weight:700}
+
+/* ---------- rail ---------- */
+.rail h2{
+  font-size:11px;letter-spacing:.2em;color:var(--ink-2);font-weight:700;
+  margin:0 0 12px;font-family:"Zen Kaku Gothic New",sans-serif;
+  border:0;padding:0;
+}
+.rail ol{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-direction:column;gap:1px}
+.rail a{
+  display:flex;gap:9px;align-items:baseline;
+  text-decoration:none;color:var(--ink-2);font-size:13.5px;line-height:1.5;
+  padding:5px 8px;border-radius:6px;border-left:2px solid transparent;
+}
+.rail a:hover{background:var(--surface);color:var(--ink);border-left-color:var(--accent)}
+.rail a .n{color:var(--accent);font-weight:600;font-size:11.5px;min-width:1.4em}
+.rail-note{font-size:12px;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;line-height:1.7}
+
+/* ---------- section headings ---------- */
+.sec{margin:0 0 20px;padding-top:14px}
+.sec + *{margin-top:0}
+h2.sec-t{
+  font-family:"Zen Old Mincho",serif;font-weight:900;
+  font-size:26px;line-height:1.4;margin:0;
+  display:flex;align-items:center;gap:14px;
+}
+h2.sec-t::after{content:"";flex:1;height:1px;background:var(--line-strong)}
+.sec p.lead{margin:10px 0 0;color:var(--ink-2);font-size:14.5px}
+section{scroll-margin-top:20px}
+.block{margin-bottom:56px}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px 24px;box-shadow:var(--shadow);
+}
+.grid2{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:640px){.grid3{grid-template-columns:repeat(3,1fr)}}
+
+h3{font-size:17px;font-weight:700;margin:0 0 10px;line-height:1.5}
+h4{font-size:13.5px;font-weight:700;margin:0 0 6px;color:var(--ink-2);letter-spacing:.04em}
+p{margin:0 0 12px}
+p:last-child{margin-bottom:0}
+
+/* ---------- formula ---------- */
+.formula{
+  background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);
+  border-radius:8px;padding:14px 16px;margin:0;
+  font-size:16px;font-weight:600;color:var(--accent-2);text-align:center;line-height:1.9;
+}
+.formula .op{color:var(--ink-2);font-weight:400;padding:0 .2em}
+.formula small{display:block;font-size:12px;font-weight:500;color:var(--ink-2);margin-top:4px;letter-spacing:.02em}
+
+/* ---------- pattern cards ---------- */
+.pat{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden;
+}
+.pat-h{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:18px 22px 14px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,var(--surface-2),transparent);
+}
+.pat-n{
+  flex:none;width:34px;height:34px;border-radius:8px;
+  background:var(--accent);color:var(--surface);
+  display:grid;place-items:center;font-weight:600;font-size:14px;
+  font-family:"IBM Plex Mono",monospace;margin-top:3px;
+}
+:root[data-theme="dark"] .pat-n{color:#0b121b}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .pat-n{color:#0b121b}}
+.pat-h h3{margin:0;flex:1}
+.pat-h .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tag{
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:2px 9px;border-radius:999px;border:1px solid;line-height:1.7;
+}
+.t-base{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent);background:var(--ok-soft)}
+.t-std{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);background:var(--accent-soft)}
+.t-hard{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:var(--warn-soft)}
+.pat-b{padding:18px 22px 22px}
+
+.cue{
+  border-left:3px solid var(--accent);background:var(--accent-soft);
+  padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 16px;font-size:14.5px;
+}
+.cue b{color:var(--accent-2)}
+
+.q{
+  border:1px dashed var(--line-strong);border-radius:8px;
+  padding:14px 16px;margin:0 0 12px;background:var(--surface-2);
+}
+.q .qlabel{
+  font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--ink-2);
+  display:block;margin-bottom:6px;
+}
+.q p{margin:0;font-size:15px}
+.q p + p{margin-top:8px}
+
+details{border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+details + details{margin-top:10px}
+summary{
+  cursor:pointer;list-style:none;padding:10px 14px;
+  font-size:13.5px;font-weight:700;color:var(--accent);
+  display:flex;align-items:center;gap:8px;border-radius:8px;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{
+  content:"▶";font-size:9px;transition:transform .18s ease;display:inline-block;color:var(--ink-2);
+}
+details[open] summary::before{transform:rotate(90deg)}
+details[open] summary{border-bottom:1px solid var(--line);border-radius:8px 8px 0 0}
+.sol{padding:14px 16px 16px;font-size:14.5px}
+.sol ol{margin:0;padding-left:1.35em}
+.sol ol li{margin-bottom:8px}
+.sol ol li:last-child{margin-bottom:0}
+.ans{
+  margin-top:12px;padding:9px 14px;border-radius:8px;
+  background:var(--ok-soft);color:var(--ok);font-weight:700;font-size:15px;
+  border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);
+}
+.ans span{font-size:11px;letter-spacing:.14em;margin-right:10px;opacity:.75}
+
+.tip{
+  margin-top:14px;font-size:13.5px;color:var(--ink-2);
+  border-top:1px dotted var(--line-strong);padding-top:12px;
+}
+.tip b{color:var(--warn)}
+
+/* ---------- tables ---------- */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:420px}
+th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+thead th{
+  background:var(--surface-2);font-size:12px;letter-spacing:.06em;
+  color:var(--ink-2);font-weight:700;
+}
+tbody tr:last-child td{border-bottom:0}
+td.n{text-align:right;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+tr.hl td{background:var(--accent-soft)}
+
+/* ---------- lists ---------- */
+ul.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+ul.checks li{
+  display:flex;gap:11px;font-size:14.5px;line-height:1.75;
+}
+ul.checks li::before{
+  content:"✕";flex:none;color:var(--warn);font-weight:700;font-size:13px;
+  margin-top:.35em;
+}
+ul.checks li b{color:var(--ink)}
+ul.plain{margin:0;padding-left:1.25em;font-size:14.5px}
+ul.plain li{margin-bottom:7px}
+ul.plain li:last-child{margin-bottom:0}
+
+/* ---------- figures ---------- */
+figure{margin:0 0 4px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:12.5px;color:var(--ink-2);margin-top:8px;line-height:1.7}
+.fig-svg{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;
+  overflow-x:auto;
+}
+.svg-t{font-family:"Zen Kaku Gothic New",sans-serif;font-size:12px;fill:var(--ink-2)}
+.svg-t.b{fill:var(--ink);font-weight:700}
+.svg-t.a{fill:var(--accent);font-weight:700}
+.svg-n{font-family:"IBM Plex Mono",monospace;font-size:12px;fill:var(--ink);font-weight:600}
+
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+footer{
+  margin-top:20px;padding-top:22px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--ink-2);
+}
+
+@media print{
+  .rail{display:none}
+  details{border:0}
+  details > summary{display:none}
+  .sol{padding:0}
+  .pat{break-inside:avoid;box-shadow:none}
+  body{background:#fff}
+}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="kicker">中学受験理科 ／ 直前総まとめ</p>
+  <h1>水よう液の濃度<span class="sub">基礎の3公式から、難関校の複合問題まで — 出題パターン13</span></h1>
+  <div class="meta">
+    <span><b>対象</b>　基礎の確認〜難関校対策</span>
+    <span><b>構成</b>　基礎整理 ＋ パターン13（例題・解説つき）＋ 直前チェック</span>
+    <span><b>使い方</b>　例題を自力で解き、「解き方をひらく」で答え合わせ</span>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="rail" aria-label="目次">
+  <h2>基礎</h2>
+  <ol>
+    <li><a href="#kiso1"><span class="n">A</span>用語と3つの公式</a></li>
+    <li><a href="#kiso2"><span class="n">B</span>面積図・てんびん図</a></li>
+    <li><a href="#kiso3"><span class="n">C</span>ようかい度の基礎</a></li>
+  </ol>
+  <h2>出題パターン</h2>
+  <ol>
+    <li><a href="#p1"><span class="n">01</span>3用法の基本</a></li>
+    <li><a href="#p2"><span class="n">02</span>うすめる・蒸発させる</a></li>
+    <li><a href="#p3"><span class="n">03</span>食塩を加える</a></li>
+    <li><a href="#p4"><span class="n">04</span>2つの液を混ぜる</a></li>
+    <li><a href="#p5"><span class="n">05</span>目標の濃度にする混合比</a></li>
+    <li><a href="#p6"><span class="n">06</span>くみ出して水をたす</a></li>
+    <li><a href="#p7"><span class="n">07</span>2つの容器を行き来</a></li>
+    <li><a href="#p8"><span class="n">08</span>飽和水よう液の濃度</a></li>
+    <li><a href="#p9"><span class="n">09</span>冷やして結晶を取り出す</a></li>
+    <li><a href="#p10"><span class="n">10</span>蒸発＋冷却の複合</a></li>
+    <li><a href="#p11"><span class="n">11</span>とけ残りとグラフ</a></li>
+    <li><a href="#p12"><span class="n">12</span>密度・体積がからむ</a></li>
+    <li><a href="#p13"><span class="n">13</span>中和・蒸発乾固との融合</a></li>
+  </ol>
+  <h2>直前チェック</h2>
+  <ol>
+    <li><a href="#otoshi"><span class="n">D</span>失点する10のポイント</a></li>
+    <li><a href="#data"><span class="n">E</span>覚えておく数値</a></li>
+    <li><a href="#kijutsu"><span class="n">F</span>実験・記述の頻出</a></li>
+  </ol>
+  <p class="rail-note">パターン06・07・10〜13が難関校の差がつくところ。時間がなければ、まず<b>04（てんびん）</b>と<b>09（再結晶）</b>を完璧に。</p>
+</nav>
+
+<main>
+
+<!-- ============ 基礎 ============ -->
+<section id="kiso1" class="block">
+  <div class="sec">
+    <h2 class="sec-t">A　用語と3つの公式</h2>
+    <p class="lead">濃度の問題は、結局「全体・とけているもの・水」の3つの重さのうち、2つがわかれば残りが出る、というだけの話です。</p>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <h3>まず、この重さの関係だけは絶対</h3>
+    <figure>
+      <div class="fig-svg">
+        <svg viewBox="0 0 520 150" role="img" aria-label="水よう液200gの内訳。食塩20gと水180gに分かれ、濃度は10パーセント">
+          <rect x="30" y="46" width="46" height="44" rx="4" fill="var(--accent)"></rect>
+          <rect x="76" y="46" width="414" height="44" rx="4" fill="var(--surface-2)" stroke="var(--line-strong)"></rect>
+          <line x1="76" y1="46" x2="76" y2="90" stroke="var(--line-strong)"></line>
+          <text x="53" y="74" class="svg-n" text-anchor="middle" style="fill:var(--surface)">20</text>
+          <text x="283" y="74" class="svg-n" text-anchor="middle">180</text>
+          <text x="53" y="36" class="svg-t a" text-anchor="middle">とけたもの</text>
+          <text x="283" y="36" class="svg-t" text-anchor="middle">水（ようばい）</text>
+          <line x1="30" y1="104" x2="490" y2="104" stroke="var(--line-strong)"></line>
+          <line x1="30" y1="100" x2="30" y2="108" stroke="var(--line-strong)"></line>
+          <line x1="490" y1="100" x2="490" y2="108" stroke="var(--line-strong)"></line>
+          <text x="260" y="126" class="svg-t b" text-anchor="middle">水よう液ぜんたい　200 g　→　濃度 20 ÷ 200 = 10 %</text>
+        </svg>
+      </div>
+      <figcaption>「水の重さ」ではなく「水よう液ぜんたいの重さ」で割る。ここを間違えると全滅します。</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid3" style="margin-bottom:16px">
+    <div class="card">
+      <h4>① 濃度を出す</h4>
+      <p class="formula f">とけたもの<span class="op">÷</span>全体<span class="op">×</span>100<small>単位は ％</small></p>
+    </div>
+    <div class="card">
+      <h4>② とけた量を出す</h4>
+      <p class="formula f">全体<span class="op">×</span>濃度<small>8% → ×0.08 で計算</small></p>
+    </div>
+    <div class="card">
+      <h4>③ 全体を出す</h4>
+      <p class="formula f">とけたもの<span class="op">÷</span>濃度<small>24g が 8% → 24÷0.08</small></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>「水の側」で考えると速くなる</h3>
+    <p>10％の食塩水は、<b>食塩が10％・水が90％</b>。つまり食塩：水＝1：9、食塩：全体＝1：10。</p>
+    <p>濃度の問題の多くは「食塩の重さは変わらない」か「水の重さは変わらない」のどちらかです。<b>変わらない方の量を先に確定させる</b>のが最短ルート。</p>
+    <div class="tbl-wrap" style="margin-top:12px">
+      <table>
+        <thead><tr><th>操作</th><th>とけたもの</th><th>水</th><th>全体</th></tr></thead>
+        <tbody>
+          <tr><td>水を加える（うすめる）</td><td>変わらない</td><td>ふえる</td><td>ふえる</td></tr>
+          <tr><td>水を蒸発させる</td><td>変わらない</td><td>へる</td><td>へる</td></tr>
+          <tr><td>食塩を加えてとかす</td><td>ふえる</td><td>変わらない</td><td>ふえる</td></tr>
+          <tr><td>同じ濃度の液を加える</td><td>ふえる</td><td>ふえる</td><td>ふえる（濃度は不変）</td></tr>
+          <tr><td>一部をくみ出す</td><td>へる</td><td>へる</td><td>へる（濃度は不変）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="kiso2" class="block">
+  <div class="sec">
+    <h2 class="sec-t">B　面積図とてんびん図</h2>
+    <p class="lead">混合の問題は、公式で解くより図で解いたほうが速く、検算にもなります。難関校では必須の道具。</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>面積図</h3>
+      <figure>
+        <div class="fig-svg">
+          <svg viewBox="0 0 300 200" role="img" aria-label="面積図。横が重さ、たてが濃度。4パーセント300gと12パーセント100gを混ぜると6パーセントになる">
+            <rect x="40" y="120" width="150" height="40" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+            <rect x="190" y="40" width="50" height="120" fill="var(--accent-soft)" stroke="var(--accent)"></rect>
+            <line x1="40" y1="100" x2="255" y2="100" stroke="var(--warn)" stroke-dasharray="5 4" stroke-width="1.6"></line>
+            <text x="262" y="104" class="svg-t" style="fill:var(--warn);font-weight:700">6%</text>
+            <line x1="30" y1="160" x2="255" y2="160" stroke="var(--line-strong)"></line>
+            <line x1="30" y1="30" x2="30" y2="160" stroke="var(--line-strong)"></line>
+            <text x="115" y="176" class="svg-t" text-anchor="middle">300 g</text>
+            <text x="215" y="176" class="svg-t" text-anchor="middle">100 g</text>
+            <text x="115" y="145" class="svg-n" text-anchor="middle">4%</text>
+            <text x="215" y="34" class="svg-n" text-anchor="middle">12%</text>
+            <text x="14" y="24" class="svg-t" text-anchor="start">↑ 濃度</text>
+            <text x="143" y="194" class="svg-t" text-anchor="middle">重さ →</text>
+          </svg>
+        </div>
+        <figcaption>横＝重さ、たて＝濃度。<b>面積＝とけている食塩の重さ</b>。２つの長方形の面積の合計を、合計の横はばで割った高さが混ぜた後の濃度。</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>てんびん図</h3>
+      <figure>
+        <div class="fig-svg">
+          <svg viewBox="0 0 300 200" role="img" aria-label="てんびん図。4パーセントに300g、12パーセントに100g。支点は6パーセント">
+            <line x1="45" y1="70" x2="270" y2="70" stroke="var(--ink)" stroke-width="2.5"></line>
+            <line x1="45" y1="62" x2="45" y2="78" stroke="var(--ink)" stroke-width="2"></line>
+            <line x1="270" y1="62" x2="270" y2="78" stroke="var(--ink)" stroke-width="2"></line>
+            <line x1="101" y1="62" x2="101" y2="78" stroke="var(--warn)" stroke-width="2.5"></line>
+            <path d="M101 74 L92 100 L110 100 Z" fill="var(--warn)"></path>
+            <text x="45" y="56" class="svg-n" text-anchor="middle">4%</text>
+            <text x="270" y="56" class="svg-n" text-anchor="middle">12%</text>
+            <text x="101" y="118" class="svg-t" text-anchor="middle" style="fill:var(--warn);font-weight:700">6%</text>
+            <rect x="26" y="86" width="38" height="24" rx="4" fill="var(--accent)"></rect>
+            <rect x="251" y="86" width="38" height="24" rx="4" fill="var(--accent)" opacity=".55"></rect>
+            <text x="45" y="103" class="svg-n" text-anchor="middle" style="fill:var(--surface)">300</text>
+            <text x="270" y="103" class="svg-n" text-anchor="middle" style="fill:var(--surface)">100</text>
+            <line x1="45" y1="140" x2="101" y2="140" stroke="var(--ink-2)"></line>
+            <line x1="101" y1="140" x2="270" y2="140" stroke="var(--ink-2)"></line>
+            <text x="73" y="158" class="svg-t" text-anchor="middle">うで 2</text>
+            <text x="185" y="158" class="svg-t" text-anchor="middle">うで 6</text>
+            <text x="150" y="184" class="svg-t b" text-anchor="middle">重さ 300:100 = 3:1 → うでの長さ 1:3</text>
+          </svg>
+        </div>
+        <figcaption>数直線に濃度をとり、重さをおもりとしてつるす。<b>重さの比と、支点までの長さの比は逆比</b>。支点の位置が混ぜた後の濃度。</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>使い分け</h3>
+    <ul class="plain">
+      <li><b>てんびん図</b>…「混ぜたら何％？」「何：何で混ぜる？」など、<b>濃度がすべて分かっている／比を求める</b>問題に強い。暗算でいける。</li>
+      <li><b>面積図</b>…水（0％）や食塩（100％）を加えるときも同じ図で処理できる。<b>水を加える＝0％の液を混ぜる、食塩を加える＝100％の液を混ぜる</b>と考えれば、パターン02・03もてんびんで解けます。</li>
+    </ul>
+  </div>
+</section>
+
+<section id="kiso3" class="block">
+  <div class="sec">
+    <h2 class="sec-t">C　ようかい度の基礎</h2>
+    <p class="lead">後半のパターン08〜11はすべてここが土台。「水100gあたり」という前提を毎回確認します。</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>定義とグラフ</h3>
+      <p><b>ようかい度</b>＝水100gにとかすことのできる最大の重さ（g）。これ以上とけない状態が<b>ほう和</b>。</p>
+      <figure>
+        <div class="fig-svg">
+          <svg viewBox="0 0 520 320" role="img" aria-label="ようかい度曲線。硝酸カリウム、ミョウバン、食塩、ホウ酸">
+            <line x1="60" y1="280" x2="480" y2="280" stroke="var(--line-strong)"></line>
+            <line x1="60" y1="40" x2="60" y2="280" stroke="var(--line-strong)"></line>
+            <line x1="60" y1="200" x2="480" y2="200" stroke="var(--line)" stroke-dasharray="3 4"></line>
+            <line x1="60" y1="120" x2="480" y2="120" stroke="var(--line)" stroke-dasharray="3 4"></line>
+            <line x1="60" y1="40" x2="480" y2="40" stroke="var(--line)" stroke-dasharray="3 4"></line>
+            <text x="52" y="284" class="svg-t" text-anchor="end">0</text>
+            <text x="52" y="204" class="svg-t" text-anchor="end">60</text>
+            <text x="52" y="124" class="svg-t" text-anchor="end">120</text>
+            <text x="52" y="44" class="svg-t" text-anchor="end">180</text>
+            <text x="60" y="300" class="svg-t" text-anchor="middle">0</text>
+            <text x="165" y="300" class="svg-t" text-anchor="middle">20</text>
+            <text x="270" y="300" class="svg-t" text-anchor="middle">40</text>
+            <text x="375" y="300" class="svg-t" text-anchor="middle">60</text>
+            <text x="480" y="300" class="svg-t" text-anchor="middle">80</text>
+            <text x="270" y="318" class="svg-t" text-anchor="middle">温度（℃）</text>
+            <text x="20" y="160" class="svg-t" text-anchor="middle" transform="rotate(-90 20 160)">水100gにとける量（g）</text>
+
+            <polyline points="60,263 165,237 270,195 375,133 480,55" fill="none" stroke="var(--accent)" stroke-width="2.5"></polyline>
+            <polyline points="60,272 165,265 270,248 375,204" fill="none" stroke="var(--warn)" stroke-width="2.5"></polyline>
+            <polyline points="60,232 165,232 270,232 375,231 480,229" fill="none" stroke="var(--ok)" stroke-width="2.5"></polyline>
+            <polyline points="60,276 165,273 270,268 375,260 480,248" fill="none" stroke="var(--ink-2)" stroke-width="2" stroke-dasharray="6 4"></polyline>
+
+            <text x="472" y="46" class="svg-t a" text-anchor="end">硝酸カリウム</text>
+            <text x="380" y="196" class="svg-t" style="fill:var(--warn);font-weight:700">ミョウバン</text>
+            <text x="472" y="222" class="svg-t" style="fill:var(--ok);font-weight:700" text-anchor="end">食塩</text>
+            <text x="472" y="264" class="svg-t" text-anchor="end">ホウ酸</text>
+          </svg>
+        </div>
+        <figcaption>硝酸カリウム・ミョウバンは温度で大きく変化 → <b>冷やすと結晶が出る</b>。食塩はほぼ水平 → <b>冷やしても出ないので蒸発させる</b>。この対比が記述で問われます。</figcaption>
+      </figure>
+    </div>
+
+    <div class="card">
+      <h3>ほう和水よう液の「3点セット」</h3>
+      <p>ようかい度が <span class="num">S</span> のとき、ほう和水よう液は必ずこの比になります。</p>
+      <p class="formula f">水 100 <span class="op">:</span> とけた物 S <span class="op">:</span> 全体 (100+S)<small>この3つの比を書いてから計算に入る</small></p>
+      <p style="margin-top:14px">例：ようかい度110の温度なら <span class="num">100 : 110 : 210</span>。</p>
+      <ul class="plain" style="margin-top:10px">
+        <li>ほう和水よう液の<b>濃度</b>＝ S ÷ (100+S) × 100</li>
+        <li>ほう和水よう液◯g の中身は、この比で分ければ一発</li>
+        <li>温度が同じなら、<b>液の量が変わってもほう和の濃度は同じ</b></li>
+      </ul>
+      <div class="tip"><b>注意</b>　ようかい度が110でも、濃度は110％にはなりません。110 ÷ 210 = 約52.4％です。「ようかい度＝濃度」と書いてしまう答案が非常に多い。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ パターン ============ -->
+<section class="block" style="margin-bottom:24px">
+  <div class="sec">
+    <h2 class="sec-t">出題パターン 13</h2>
+    <p class="lead">「こう来たら、こう手を動かす」を固定します。例題はまず自分で解いてから解説をひらいてください。</p>
+  </div>
+</section>
+
+<!-- P1 -->
+<section id="p1">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">01</div>
+    <div style="flex:1">
+      <h3>3用法の基本</h3>
+      <div class="tag-row"><span class="tag t-base">基本</span><span class="tag t-std">全校で前半に出る</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　1つの水よう液について、3つの量のうち2つが与えられている。操作が何もない。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>(1) 水180gに食塩20gをとかした水よう液の濃度は何％ですか。</p>
+      <p>(2) 6％の食塩水450gには、食塩が何gとけていますか。</p>
+      <p>(3) 食塩24gをとかして8％の食塩水をつくるには、全体を何gにすればよいですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>(1) 全体は <span class="num">180 + 20 = 200 g</span>。水の180で割らないこと。<span class="num">20 ÷ 200 × 100 = 10</span></li>
+          <li>(2) <span class="num">450 × 0.06 = 27</span></li>
+          <li>(3) 全体を□とすると <span class="num">□ × 0.08 = 24</span>、<span class="num">24 ÷ 0.08 = 300</span>。（＝加える水は276g）</li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 10％　(2) 27g　(3) 300g</p>
+      </div>
+    </details>
+    <div class="tip"><b>落とし穴</b>　(3)で「水を何g加えるか」と聞かれたら 300 ではなく <span class="num">300 − 24 = 276 g</span>。問われているのが「全体」か「水」かを必ず読み直す。</div>
+  </div>
+</article>
+</section>
+
+<!-- P2 -->
+<section id="p2">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">02</div>
+    <div style="flex:1">
+      <h3>うすめる・蒸発させる（とけた物ふへん型）</h3>
+      <div class="tag-row"><span class="tag t-base">基本</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「水を加える」「水を蒸発させる」。どちらも<b>とけている食塩の重さは変わらない</b>。まず食塩の重さを出して固定する。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>(1) 8％の食塩水200gに水を50g加えると、濃度は何％になりますか。</p>
+      <p>(2) 6％の食塩水300gから水を100g蒸発させると、濃度は何％になりますか。</p>
+      <p>(3) 12％の食塩水300gを4％にするには、水を何g加えればよいですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>(1) 食塩 <span class="num">200 × 0.08 = 16 g</span>（不変）。全体 <span class="num">250 g</span>。<span class="num">16 ÷ 250 × 100 = 6.4</span></li>
+          <li>(2) 食塩 <span class="num">300 × 0.06 = 18 g</span>。全体 <span class="num">200 g</span>。<span class="num">18 ÷ 200 × 100 = 9</span></li>
+          <li>(3) 食塩 <span class="num">36 g</span> が4％にあたるので、全体は <span class="num">36 ÷ 0.04 = 900 g</span>。加える水は <span class="num">900 − 300 = 600 g</span></li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 6.4％　(2) 9％　(3) 600g</p>
+      </div>
+    </details>
+    <details>
+      <summary>比で一瞬にする（難関校の時短）</summary>
+      <div class="sol">
+        <p>食塩が不変なので、<b>濃度と全体の重さは反比例</b>します。</p>
+        <ol>
+          <li>(3)は 12％→4％ で濃度が <span class="num">1/3</span> 倍 → 全体は <span class="num">3</span> 倍 → <span class="num">900 g</span> → 加える水は600g。</li>
+          <li>(1)は 全体が <span class="num">200→250</span>（<span class="num">5/4</span>倍）→ 濃度は <span class="num">4/5</span>倍 → <span class="num">8 × 4/5 = 6.4</span>。</li>
+        </ol>
+        <p style="margin-top:10px">「◯倍にうすめる」＝<b>全体の重さを◯倍にする</b>、濃度は 1/◯ 倍。「水を◯倍加える」とは意味がちがうので要注意。</p>
+      </div>
+    </details>
+  </div>
+</article>
+</section>
+
+<!-- P3 -->
+<section id="p3">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">03</div>
+    <div style="flex:1">
+      <h3>食塩を加える（水ふへん型）</h3>
+      <div class="tag-row"><span class="tag t-std">標準</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「食塩を加えて◯％にする」。とけた物も全体も増えるので混乱しがち。<b>変わらないのは水</b>。水に注目して解く。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>5％の食塩水400gに食塩を加えて、20％の食塩水にしたい。食塩を何g加えればよいですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>はじめの水の重さ＝<span class="num">400 × 0.95 = 380 g</span>。食塩を加えても、この380gは変わらない。</li>
+          <li>できあがりが20％なら、<b>水は80％</b>。つまり <span class="num">380 g</span> が全体の80％にあたる。</li>
+          <li>全体＝<span class="num">380 ÷ 0.8 = 475 g</span>。</li>
+          <li>加えた食塩＝<span class="num">475 − 400 = 75 g</span>。</li>
+        </ol>
+        <p class="ans"><span>答え</span>75g</p>
+        <p style="margin-top:12px">検算：食塩は <span class="num">20 + 75 = 95 g</span>、<span class="num">95 ÷ 475 = 0.2</span> ✓</p>
+      </div>
+    </details>
+    <details>
+      <summary>てんびん図で解くと</summary>
+      <div class="sol">
+        <p>「食塩を加える」＝<b>100％の食塩水を混ぜる</b>と考えます。</p>
+        <p>数直線の 5 と 100 の間、支点が 20。うでの長さは <span class="num">(20−5) : (100−20) = 15 : 80 = 3 : 16</span> → 重さは逆比で <span class="num">16 : 3</span>。</p>
+        <p>もとの食塩水が400gで⑯にあたるので、①＝25g、加える食塩は③＝<span class="num">75 g</span>。</p>
+      </div>
+    </details>
+    <div class="tip"><b>ひっかけ</b>　「加えた食塩がすべてとけるとは限らない」問題があります。ようかい度が与えられていたら、加えた後にとけ残りが出ないかを必ず確認（→パターン11）。</div>
+  </div>
+</article>
+</section>
+
+<!-- P4 -->
+<section id="p4">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">04</div>
+    <div style="flex:1">
+      <h3>2つの液を混ぜる</h3>
+      <div class="tag-row"><span class="tag t-std">標準</span><span class="tag t-std">最頻出</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　濃度のちがう2つの液を混ぜる。<b>食塩の合計 ÷ 全体の合計</b>が原則、てんびん図で検算。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>4％の食塩水300gと、12％の食塩水100gを混ぜました。できた食塩水の濃度は何％ですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>食塩の合計＝<span class="num">300 × 0.04 + 100 × 0.12 = 12 + 12 = 24 g</span></li>
+          <li>全体＝<span class="num">400 g</span></li>
+          <li><span class="num">24 ÷ 400 × 100 = 6</span></li>
+        </ol>
+        <p class="ans"><span>答え</span>6％</p>
+        <p style="margin-top:12px"><b>てんびん検算</b>：重さ <span class="num">300:100 = 3:1</span> → うでは <span class="num">1:3</span>。4と12の差8を1:3に分けて、<span class="num">4 + 8 × 1/4 = 6</span> ✓</p>
+      </div>
+    </details>
+    <div class="tip"><b>絶対にやってはいけない</b>　<span class="num">(4 + 12) ÷ 2 = 8％</span>。重さがちがうのに単純平均してはいけません。重い方に濃度が引っぱられます（300gの4％側に近い6％になる）。</div>
+  </div>
+</article>
+</section>
+
+<!-- P5 -->
+<section id="p5">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">05</div>
+    <div style="flex:1">
+      <h3>目標の濃度にする混合比</h3>
+      <div class="tag-row"><span class="tag t-std">標準</span><span class="tag t-hard">逆算は難関</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「何：何で混ぜればよいか」「一方の量を求めよ」。てんびん図の<b>逆比</b>が最速。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>(1) 4％と12％の食塩水を混ぜて9％にするには、重さの比をいくつにすればよいですか。</p>
+      <p>(2) 濃度のわからない食塩水A 300gに、18％の食塩水200gを混ぜたら12％になりました。Aの濃度は何％ですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>(1) 支点9までのうでは <span class="num">(9−4) : (12−9) = 5 : 3</span> → 重さは逆比で <span class="num">3 : 5</span>。<br>検算 <span class="num">(4×3 + 12×5) ÷ 8 = 72 ÷ 8 = 9</span> ✓</li>
+          <li>(2) 重さ <span class="num">300 : 200 = 3 : 2</span> → うでの比は <span class="num">2 : 3</span>。18側のうでは <span class="num">18 − 12 = 6</span>、これが③にあたるので①＝2。A側のうでは②＝<span class="num">4</span>。<span class="num">12 − 4 = 8</span>。</li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 4％：12％ = 3：5　(2) 8％</p>
+        <p style="margin-top:12px">(2)の式解法：<span class="num">500 × 0.12 = 60 g</span>、<span class="num">200 × 0.18 = 36 g</span>、A の食塩 <span class="num">24 g</span>、<span class="num">24 ÷ 300 = 8％</span> ✓</p>
+      </div>
+    </details>
+  </div>
+</article>
+</section>
+
+<!-- P6 -->
+<section id="p6">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">06</div>
+    <div style="flex:1">
+      <h3>くみ出して同じ量の水をたす（くり返し操作）</h3>
+      <div class="tag-row"><span class="tag t-hard">難関</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「◯gをくみ出し、同じ量の水を加える。これを□回くり返す」。1回ごとに<b>濃度が決まった割合で小さくなる</b>ことに気づけば、あとはかけ算だけ。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>15％の食塩水300gが入った容器から60gをくみ出し、かわりに水を60g加えてよくかき混ぜます。</p>
+      <p>(1) この操作を2回くり返したあとの濃度は何％ですか。</p>
+      <p>(2) 濃度がはじめの半分より小さくなるのは、何回くり返したときですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li><b>1回の操作でおこること</b>：60gくみ出すと、残るのは <span class="num">240 / 300 = 4/5</span>。このとき食塩も <span class="num">4/5</span> になる。そのあと水を加えて全体は300gにもどる。<br>→ 全体が同じで食塩が <span class="num">4/5</span> → <b>濃度も 4/5 倍</b>。</li>
+          <li>(1) <span class="num">15 × 4/5 = 12</span> → <span class="num">12 × 4/5 = 9.6</span></li>
+          <li>(2) <span class="num">15 → 12 → 9.6 → 7.68 → 6.144</span>。半分は7.5％なので、7.5％を下回るのは4回目。</li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 9.6％　(2) 4回</p>
+      </div>
+    </details>
+    <div class="tip"><b>キモ</b>　「くみ出す」だけでは濃度は変わりません（濃さが同じ液が減るだけ）。濃度が下がるのは<b>水を加えた瞬間</b>。この2段階を分けて考えると混乱しません。<br>公式化すると、全体W・くみ出しaのとき、1回で濃度は <span class="num">(W−a)/W</span> 倍。</div>
+  </div>
+</article>
+</section>
+
+<!-- P7 -->
+<section id="p7">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">07</div>
+    <div style="flex:1">
+      <h3>2つの容器を行き来させる</h3>
+      <div class="tag-row"><span class="tag t-hard">難関</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　AからBへ移し、かき混ぜてからBからAへ戻す。<b>1操作ごとに「重さ・食塩の重さ」の表を作る</b>のが唯一の安全策。暗算しないこと。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>容器Aに10％の食塩水200g、容器Bに4％の食塩水200gが入っています。まずAからBへ100gを移してよくかき混ぜ、次にBからAへ100gを戻してよくかき混ぜました。最後のA・Bの濃度はそれぞれ何％ですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li><b>はじめ</b>　A：200g・食塩20g／B：200g・食塩8g</li>
+          <li><b>A→B 100g</b>　移る食塩は10gなので、<br>A：100g・食塩10g（濃度は10％のまま）<br>B：300g・食塩18g → <span class="num">18 ÷ 300 = 6％</span></li>
+          <li><b>B→A 100g</b>　Bは6％なので、移る食塩は6g。<br>A：200g・食塩 <span class="num">10 + 6 = 16 g</span> → <span class="num">8％</span><br>B：200g・食塩 <span class="num">18 − 6 = 12 g</span> → <span class="num">6％</span></li>
+        </ol>
+        <p class="ans"><span>答え</span>A 8％　B 6％</p>
+      </div>
+    </details>
+    <div class="tip"><b>チェック</b>　最後に<b>食塩の総量</b>で検算。はじめ <span class="num">20 + 8 = 28 g</span>、最後 <span class="num">16 + 12 = 28 g</span> ✓　移しかえだけなら総量は変わりません。<br>また「かき混ぜてから」でなければ移る食塩の量が決まらない、という点を記述で問う学校もあります。</div>
+  </div>
+</article>
+</section>
+
+<!-- P8 -->
+<section id="p8">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">08</div>
+    <div style="flex:1">
+      <h3>ほう和水よう液の濃度</h3>
+      <div class="tag-row"><span class="tag t-std">標準</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　ようかい度の表やグラフが与えられ、「ほう和水よう液の濃度は」「ほう和水よう液◯gには何gとけているか」。<b>100 : S : (100+S) の比</b>を書いてから動く。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>硝酸カリウムのようかい度は、20℃で32g、60℃で110gです。</p>
+      <p>(1) 60℃のほう和水よう液の濃度は何％ですか。小数第2位を四捨五入して答えなさい。</p>
+      <p>(2) 60℃のほう和水よう液315gには、水と硝酸カリウムがそれぞれ何gふくまれていますか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>60℃の比は <span class="num">水100 : 物110 : 全体210</span>。</li>
+          <li>(1) <span class="num">110 ÷ 210 × 100 = 52.38… → 52.4</span></li>
+          <li>(2) <span class="num">315 ÷ 210 = 1.5 倍</span>。よって 水 <span class="num">100 × 1.5 = 150 g</span>、硝酸カリウム <span class="num">110 × 1.5 = 165 g</span>。</li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 52.4％　(2) 水150g、硝酸カリウム165g</p>
+      </div>
+    </details>
+    <div class="tip"><b>頻出の記述</b>　「ほう和水よう液を同じ温度のままで半分に分けたら、濃度はどうなるか」→ <b>変わらない</b>。水よう液は均一だから、というのが答え方の核。</div>
+  </div>
+</article>
+</section>
+
+<!-- P9 -->
+<section id="p9">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">09</div>
+    <div style="flex:1">
+      <h3>冷やして結晶を取り出す（再結晶）</h3>
+      <div class="tag-row"><span class="tag t-std">標準</span><span class="tag t-hard">最重要</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「◯℃のほう和水よう液を△℃まで冷やすと、何gの結晶が出るか」。手順は固定：<b>①水の重さを出す ②冷やした後にとける量を計算 ③引き算</b>。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>硝酸カリウムのようかい度は20℃で32g、60℃で110g（水100gあたり）です。60℃のほう和水よう液315gを20℃まで冷やしました。出てくる結晶は何gですか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li><b>①水の重さ</b>　<span class="num">315 ÷ 210 × 100 = 150 g</span>（同時に硝酸カリウムは165g）</li>
+          <li><b>②20℃でとける量</b>　水150gなので <span class="num">32 × 1.5 = 48 g</span></li>
+          <li><b>③引き算</b>　<span class="num">165 − 48 = 117 g</span></li>
+        </ol>
+        <p class="ans"><span>答え</span>117g</p>
+      </div>
+    </details>
+    <details>
+      <summary>なぜ「水の重さ」から始めるのか</summary>
+      <div class="sol">
+        <p>冷やすだけなら<b>水の重さは変化しません</b>。だから水を基準にすれば、冷やした後の「とける量」がそのまま計算できます。</p>
+        <p>逆に、水よう液全体の重さを基準にすると、結晶が出たぶん全体が減るので式が立てにくくなります。<b>再結晶は水を軸に</b>、が鉄則。</p>
+        <p style="margin-top:10px">ちなみに残った水よう液は <span class="num">150 + 48 = 198 g</span> で、20℃のほう和水よう液（<span class="num">32/132 = 24.2％</span>）になっています。</p>
+      </div>
+    </details>
+    <div class="tip"><b>食塩は出ない</b>　食塩のようかい度は温度でほとんど変わらないので、冷やしても結晶はほとんど出ません。食塩水から食塩を取り出すには<b>水を蒸発させる</b>。この理由説明は超頻出。</div>
+  </div>
+</article>
+</section>
+
+<!-- P10 -->
+<section id="p10">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">10</div>
+    <div style="flex:1">
+      <h3>蒸発＋冷却の複合</h3>
+      <div class="tag-row"><span class="tag t-hard">難関</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「水を◯g蒸発させてから△℃に冷やす」。<b>操作のたびに水の重さを更新</b>していけば、パターン09の繰り返しにすぎません。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>硝酸カリウムのようかい度は20℃で32g、40℃で64g、60℃で110g（水100gあたり）です。</p>
+      <p>(1) 60℃のほう和水よう液315gから水を50g蒸発させ、60℃のまま保ちました。出てくる結晶は何gですか。</p>
+      <p>(2) (1)の液（結晶はろ過で取り除いた）をさらに20℃まで冷やすと、あと何gの結晶が出ますか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li><b>はじめの中身</b>　水150g・硝酸カリウム165g。</li>
+          <li>(1) 水が <span class="num">150 − 50 = 100 g</span> に。60℃で水100gにとけるのは110g。<br><span class="num">165 − 110 = 55 g</span> が出てくる。</li>
+          <li>(2) いま水100g・硝酸カリウム110g。20℃では32gしかとけない。<br><span class="num">110 − 32 = 78 g</span></li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 55g　(2) 78g</p>
+        <p style="margin-top:12px">通しで見ると、最初の165gのうち <span class="num">55 + 78 = 133 g</span> が結晶になり、32gが液に残っています。</p>
+      </div>
+    </details>
+    <div class="tip"><b>ひっかけ</b>　「蒸発させた水50gの中にも食塩が入っているのでは？」→ <b>入っていません</b>。蒸発するのは水だけ（食塩は不揮発性）。逆に、水よう液を熱して出てきた気体を冷やすと<b>純すいな水</b>が得られる、という蒸留の話につながります。</div>
+  </div>
+</article>
+</section>
+
+<!-- P11 -->
+<section id="p11">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">11</div>
+    <div style="flex:1">
+      <h3>とけ残りとグラフの読み取り</h3>
+      <div class="tag-row"><span class="tag t-hard">難関</span><span class="tag t-std">グラフ作図</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「加えた量」と「とけた量」のグラフ、または「全部とけるか」を問う。<b>まず上限（とける最大量）を計算</b>し、加えた量と比べる。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>硝酸カリウムのようかい度は20℃で32g、60℃で110g（水100gあたり）です。60℃の水150gに硝酸カリウムを150g加えてよくかき混ぜました。</p>
+      <p>(1) 硝酸カリウムはすべてとけますか。とけ残る場合は何gですか。</p>
+      <p>(2) この液を20℃まで冷やすと、結晶は何g出てきますか。</p>
+      <p>(3) 60℃の水150gに硝酸カリウムを0gから200gまで加えていったとき、「加えた量」を横軸、「とけた量」をたて軸にとったグラフはどんな形になりますか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>(1) 60℃・水150gにとける上限は <span class="num">110 × 1.5 = 165 g</span>。加えたのは150gなので<b>すべてとける</b>（あと15gとける余地がある＝ほう和していない）。</li>
+          <li>(2) 20℃・水150gにとけるのは <span class="num">32 × 1.5 = 48 g</span>。<span class="num">150 − 48 = 102 g</span></li>
+          <li>(3) 165gまでは加えた分だけとけるので<b>傾き1の直線</b>、165gを超えるととける量は増えないので<b>165gで水平になる折れ線</b>。</li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) すべてとける　(2) 102g　(3) 原点から45度の直線が(165, 165)で折れ、以後165gで水平</p>
+      </div>
+    </details>
+    <div class="tip"><b>差がつく点</b>　(2)で「ほう和していないのだから165gを基準にするのでは？」と迷わないこと。実際にとけているのは<b>150g</b>なので、そこから48gを引きます。<b>「入っている量」と「とける上限」を区別</b>するのが、この単元最大の分かれ目です。</div>
+  </div>
+</article>
+</section>
+
+<!-- P12 -->
+<section id="p12">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">12</div>
+    <div style="flex:1">
+      <h3>密度・体積がからむ濃度</h3>
+      <div class="tag-row"><span class="tag t-hard">難関</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　cm³（mL）が出てきたら要注意。<b>濃度は重さの割合</b>なので、体積は必ず密度で重さに直してから計算する。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>20％の食塩水の密度は1.15g/cm³です。</p>
+      <p>(1) この食塩水500cm³にとけている食塩は何gですか。</p>
+      <p>(2) 水500cm³に食塩115gをとかしたとき、できた食塩水の体積は615cm³になりますか。理由とともに答えなさい。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>(1) まず重さに直す。<span class="num">500 × 1.15 = 575 g</span>。<span class="num">575 × 0.2 = 115 g</span></li>
+          <li>(2) ならない。<b>重さは足し算できるが、体積は足し算できない</b>。食塩のつぶが水の分子のすき間に入りこむため、できた液の体積は単純な合計より小さくなる。<br>実際、(1)より 575g の20％食塩水の体積は500cm³。</li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 115g　(2) ならない（体積は加算できない／重さだけが保存される）</p>
+      </div>
+    </details>
+    <div class="tip"><b>覚えておく</b>　水は 1cm³ = 1g だが、<b>食塩水は 1cm³ > 1g</b>（1より重い）。「水100cm³＝100g」は使ってよいが、「食塩水100cm³＝100g」は密度が示されない限り使ってはいけません。<br>また、<b>こい食塩水ほど密度が大きい</b>ので、こい液の上にうすい液を静かに注ぐと二層になる、という実験も出ます。</div>
+  </div>
+</article>
+</section>
+
+<!-- P13 -->
+<section id="p13">
+<article class="pat">
+  <div class="pat-h">
+    <div class="pat-n">13</div>
+    <div style="flex:1">
+      <h3>中和・蒸発乾固との融合</h3>
+      <div class="tag-row"><span class="tag t-hard">難関</span><span class="tag t-hard">大問後半</span></div>
+    </div>
+  </div>
+  <div class="pat-b">
+    <div class="cue"><b>見分け方</b>　「中和させたあと蒸発させると、固体は何g残るか」。<b>ちょうど中和する点の前後で、残る固体の内わけが変わる</b>のがポイント。</div>
+    <div class="q">
+      <span class="qlabel">例題</span>
+      <p>ある塩酸50cm³と、ある水酸化ナトリウム水よう液40cm³を混ぜると、ちょうど中和しました。この液を蒸発させると、食塩が5.85g残りました。また、この水酸化ナトリウム水よう液20cm³だけを蒸発させると、固体が1.2g残ります。</p>
+      <p>(1) 同じ塩酸50cm³に、水酸化ナトリウム水よう液を60cm³加えて蒸発させると、固体は何g残りますか。</p>
+      <p>(2) 同じ塩酸50cm³に、水酸化ナトリウム水よう液を20cm³加えて蒸発させると、固体は何g残りますか。</p>
+    </div>
+    <details>
+      <summary>解き方をひらく</summary>
+      <div class="sol">
+        <ol>
+          <li>(1) 40cm³ぶんはちょうど中和して<b>食塩5.85g</b>。あまった <span class="num">60 − 40 = 20 cm³</span> の水酸化ナトリウムは、そのまま固体として残る（<span class="num">1.2 g</span>）。<br><span class="num">5.85 + 1.2 = 7.05 g</span></li>
+          <li>(2) 水酸化ナトリウムが足りず、塩酸があまっている状態。<b>あまった塩酸は蒸発させると気体になって出ていく</b>ので、残るのは中和でできた食塩だけ。<br>40cm³で5.85gだから、20cm³では <span class="num">5.85 × 20/40 = 2.925 g</span>。</li>
+        </ol>
+        <p class="ans"><span>答え</span>(1) 7.05g　(2) 2.925g</p>
+      </div>
+    </details>
+    <details>
+      <summary>グラフの形を覚える</summary>
+      <div class="sol">
+        <p>横軸に「加えた水酸化ナトリウム水よう液の体積」、たて軸に「蒸発後に残る固体の重さ」をとると——</p>
+        <ol>
+          <li><b>中和点まで</b>：食塩だけが増えるので、原点から直線的に増加。</li>
+          <li><b>中和点</b>：40cm³で5.85g。ここで<b>グラフの傾きが変わる</b>。</li>
+          <li><b>中和点から先</b>：あまった水酸化ナトリウムが加わるので、<b>傾きが変わって（ゆるやかになって）さらに増加</b>。0にはならない。</li>
+        </ol>
+        <p style="margin-top:10px">傾きが変わる点を読み取れば、中和点の体積が分かります。<b>「折れ曲がる点＝ちょうど中和」</b>と覚えてください。</p>
+      </div>
+    </details>
+    <div class="tip"><b>塩酸・炭酸水は蒸発させても何も残らない</b>（気体がとけているから）。<b>食塩水・水酸化ナトリウム水よう液・石灰水・砂糖水は固体が残る</b>（砂糖水はこげる）。この分類がそのまま失点ポイントです。</div>
+  </div>
+</article>
+</section>
+
+<!-- ============ 直前チェック ============ -->
+<section id="otoshi" class="block">
+  <div class="sec">
+    <h2 class="sec-t">D　失点する10のポイント</h2>
+    <p class="lead">実力ではなく「読み違い・条件落とし」で落とすところ。試験前日に読み返す用。</p>
+  </div>
+  <div class="card">
+    <ul class="checks">
+      <li><b>水の重さで割ってしまう</b>　濃度は必ず「水よう液ぜんたい」で割る。20g÷180g は誤り。</li>
+      <li><b>ようかい度をそのまま濃度と書く</b>　ようかい度110 → 濃度は110％ではなく約52.4％。</li>
+      <li><b>ようかい度の「水100gあたり」を忘れる</b>　水が150gなら1.5倍する。水よう液150gと混同しない。</li>
+      <li><b>濃度をそのまま平均する</b>　4％と12％を混ぜて8％、は重さが同じときだけ。</li>
+      <li><b>「全体」と「加える水」を取りちがえる</b>　答えが「全体300g」なのか「加える水276g」なのか、問題文に戻って確認。</li>
+      <li><b>くみ出しただけで濃度が下がると思う</b>　同じ濃さの液が減るだけ。下がるのは水を加えた後。</li>
+      <li><b>体積を足し算してしまう</b>　重さは保存されるが体積は保存されない。cm³ が出たら密度を探す。</li>
+      <li><b>とけ残りを全体の重さに入れてしまう</b>　とけ残った固体は水よう液の一部ではない。液の重さから除く。</li>
+      <li><b>冷やしたのに「水も減った」と考える</b>　冷やす＝水は不変。減るのは蒸発させたときだけ。</li>
+      <li><b>四捨五入の指示を読み飛ばす</b>　「小数第2位を四捨五入」「整数で」を必ず指示どおりに。割り切れない答えは指示があるサイン。</li>
+    </ul>
+  </div>
+</section>
+
+<section id="data" class="block">
+  <div class="sec">
+    <h2 class="sec-t">E　覚えておく数値と性質</h2>
+    <p class="lead">問題に与えられることが多いですが、頭に入っていると検算とグラフ読み取りが速くなります。</p>
+  </div>
+
+  <div class="tbl-wrap" style="margin-bottom:16px">
+    <table>
+      <thead><tr><th>物質（水100gあたり）</th><th>0℃</th><th>20℃</th><th>40℃</th><th>60℃</th><th>特ちょう</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>食塩（塩化ナトリウム）</td><td class="n">36</td><td class="n">36</td><td class="n">36</td><td class="n">37</td><td>ほぼ変化しない → 蒸発で取り出す</td></tr>
+        <tr><td>硝酸カリウム</td><td class="n">13</td><td class="n">32</td><td class="n">64</td><td class="n">110</td><td>変化が最も大きい → 再結晶の主役</td></tr>
+        <tr><td>ミョウバン</td><td class="n">6</td><td class="n">11</td><td class="n">24</td><td class="n">57</td><td>正八面体の結晶。冷やすとよく出る</td></tr>
+        <tr><td>ホウ酸</td><td class="n">3</td><td class="n">5</td><td class="n">9</td><td class="n">15</td><td>とける量が小さい。うすい液で出題</td></tr>
+        <tr><td>水酸化カルシウム（石灰水）</td><td class="n">0.18</td><td class="n">0.17</td><td class="n">0.14</td><td class="n">0.12</td><td>温度が上がるととけにくくなる（例外）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>気体のとけ方（逆になる）</h3>
+      <ul class="plain">
+        <li>気体は<b>温度が高いほどとけにくい</b>（水を温めるとあわが出る）。</li>
+        <li>気体は<b>圧力が高いほどとけやすい</b>（炭酸飲料のふたを開けるとあわが出る）。</li>
+        <li>とけやすい順：アンモニア＞塩化水素＞二酸化炭素＞酸素・水素・ちっ素。</li>
+      </ul>
+      <div class="tip">固体と気体でルールが逆。「グラフが右下がりなら気体」と見当をつけられます。</div>
+    </div>
+    <div class="card">
+      <h3>結晶の形</h3>
+      <ul class="plain">
+        <li><b>食塩</b>…立方体（さいころ形）</li>
+        <li><b>ミョウバン</b>…正八面体</li>
+        <li><b>硝酸カリウム</b>…細長い針状</li>
+        <li><b>ホウ酸</b>…うすい六角形の板状</li>
+      </ul>
+      <div class="tip">作図で出題されることがあります。とくに食塩の立方体とミョウバンの正八面体は描けるように。</div>
+    </div>
+  </div>
+</section>
+
+<section id="kijutsu" class="block">
+  <div class="sec">
+    <h2 class="sec-t">F　実験操作・記述の頻出</h2>
+    <p class="lead">計算が合っていても、ここで2〜3点落ちます。答え方を型で覚えます。</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>ろ過の3つの約束</h3>
+      <ul class="plain">
+        <li>ろうとの<b>あしのとがった方をビーカーの内かべにつける</b>（液がはねず、伝って流れるため）。</li>
+        <li>液は<b>ガラス棒を伝わらせて</b>静かに注ぐ（ろ紙が破れず、はねないため）。</li>
+        <li>ろ紙は<b>水でぬらしてろうとに密着</b>させる。</li>
+      </ul>
+      <div class="tip">理由まで書かせる学校が多い。「〜のため」で必ず結ぶ。</div>
+    </div>
+
+    <div class="card">
+      <h3>そのまま使える言い回し</h3>
+      <ul class="plain">
+        <li><b>食塩を取り出すには</b>「食塩は温度が変わってもようかい度がほとんど変化しないため、冷やしても結晶が出ない。だから水を蒸発させて取り出す。」</li>
+        <li><b>ミョウバンを取り出すには</b>「ミョウバンは温度が下がるとようかい度が大きく小さくなるため、冷やすと とけきれなくなった分が結晶として出てくる。」</li>
+        <li><b>水よう液の3条件</b>「とうめいである・色がついていてもよい・どこも濃さが同じ（時間がたっても分かれない）。」</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>蒸発乾固で残るか／残らないか</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>水よう液</th><th>とけているもの</th><th>蒸発させると</th></tr></thead>
+        <tbody>
+          <tr><td>食塩水</td><td>固体</td><td>白い固体が残る</td></tr>
+          <tr><td>砂糖水</td><td>固体</td><td>残る（熱し続けると黒くこげる）</td></tr>
+          <tr><td>石灰水</td><td>固体</td><td>白い固体が残る</td></tr>
+          <tr><td>水酸化ナトリウム水よう液</td><td>固体</td><td>白い固体が残る</td></tr>
+          <tr class="hl"><td>塩酸</td><td>気体（塩化水素）</td><td>何も残らない</td></tr>
+          <tr class="hl"><td>炭酸水</td><td>気体（二酸化炭素）</td><td>何も残らない</td></tr>
+          <tr class="hl"><td>アンモニア水</td><td>気体（アンモニア）</td><td>何も残らない</td></tr>
+          <tr><td>ホウ酸水</td><td>固体</td><td>残る</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip">パターン13の融合問題は、この表が前提になっています。「あまった塩酸は残らない」が分かっていないと解けません。</div>
+  </div>
+</section>
+
+<footer>
+  <p>ようかい度の数値は中学受験でよく使われる概数です。実際の入試では問題文に与えられた数値を必ず優先してください。</p>
+</footer>
+
+</main>
+</div>
+</div>

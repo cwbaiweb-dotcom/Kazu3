@@ -1,0 +1,1248 @@
+<title>豆電球と電熱線の攻略ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Shippori+Mincho+B1:wght@600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap">
+
+<style>
+/* ============ tokens ============ */
+:root{
+  --paper:#F1F4F8;
+  --surface:#FFFFFF;
+  --surface-2:#E9EEF4;
+  --ink:#16223A;
+  --ink-soft:#4E5B73;
+  --ink-faint:#7A879C;
+  --line:#CFD8E4;
+  --line-strong:#A9B6C8;
+  --amber:#B87413;
+  --amber-ink:#8A5409;
+  --amber-wash:#FAEFDC;
+  --cur:#1B6C8C;
+  --cur-wash:#DDEDF3;
+  --warn:#AE3722;
+  --warn-wash:#FAE6E1;
+  --ok:#28684B;
+  --ok-wash:#DFEDE5;
+  --shadow:0 1px 0 rgba(22,34,58,.05), 0 8px 24px -18px rgba(22,34,58,.5);
+  --grid:rgba(22,34,58,.055);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D131B;
+    --surface:#151F2A;
+    --surface-2:#1D2A38;
+    --ink:#E5EBF3;
+    --ink-soft:#A2B0C4;
+    --ink-faint:#7B8AA0;
+    --line:#2A3849;
+    --line-strong:#3D5069;
+    --amber:#F0B24A;
+    --amber-ink:#F6C877;
+    --amber-wash:#33260F;
+    --cur:#63B8D6;
+    --cur-wash:#12303C;
+    --warn:#EC8067;
+    --warn-wash:#3A1D16;
+    --ok:#72C79C;
+    --ok-wash:#12301F;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+    --grid:rgba(226,235,245,.05);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D131B; --surface:#151F2A; --surface-2:#1D2A38;
+  --ink:#E5EBF3; --ink-soft:#A2B0C4; --ink-faint:#7B8AA0;
+  --line:#2A3849; --line-strong:#3D5069;
+  --amber:#F0B24A; --amber-ink:#F6C877; --amber-wash:#33260F;
+  --cur:#63B8D6; --cur-wash:#12303C;
+  --warn:#EC8067; --warn-wash:#3A1D16;
+  --ok:#72C79C; --ok-wash:#12301F;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+  --grid:rgba(226,235,245,.05);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-weight:700;text-wrap:balance;line-height:1.35;margin:0}
+.mono,code,.num{font-family:"Roboto Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ============ shell ============ */
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+.layout{display:grid;grid-template-columns:1fr;gap:0}
+.layout>*{min-width:0}
+@media(min-width:1060px){
+  .layout{grid-template-columns:212px minmax(0,1fr);gap:56px;align-items:start}
+}
+
+/* ============ hero ============ */
+.hero{position:relative;padding:64px 0 40px;border-bottom:1px solid var(--line)}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 92%);
+  mask-image:linear-gradient(180deg,#000 0%,transparent 92%);
+}
+.hero>*{position:relative}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:11.5px;letter-spacing:.22em;color:var(--cur);text-transform:uppercase;margin:0 0 14px}
+.hero h1{font-size:clamp(30px,5.6vw,50px);font-weight:800;letter-spacing:.01em}
+.hero h1 .lit{color:var(--amber)}
+.lede{max-width:60ch;color:var(--ink-soft);margin:18px 0 0;font-size:16.5px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.chip{font-family:"Roboto Mono",monospace;font-size:11.5px;letter-spacing:.06em;padding:5px 11px;border:1px solid var(--line-strong);border-radius:999px;color:var(--ink-soft);background:var(--surface)}
+
+/* ============ nav rail ============ */
+.rail{display:none}
+@media(min-width:1060px){
+  .rail{display:block;position:sticky;top:24px;padding-top:44px}
+  .rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--line)}
+  .rail a{display:block;padding:5px 0 5px 14px;margin-left:-1px;border-left:2px solid transparent;
+    font-size:13px;line-height:1.5;color:var(--ink-faint);text-decoration:none;transition:color .15s,border-color .15s}
+  .rail a:hover{color:var(--ink)}
+  .rail a.on{color:var(--amber);border-left-color:var(--amber);font-weight:700}
+  .rail .rail-t{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.2em;color:var(--ink-faint);margin:0 0 10px 14px}
+}
+.jump{margin:28px 0 0}
+@media(min-width:1060px){.jump{display:none}}
+.jump select{width:100%;padding:11px 12px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font-family:inherit;font-size:14px}
+
+/* ============ toolbar ============ */
+.bar{position:sticky;top:0;z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  padding:10px 0;margin-bottom:8px;background:color-mix(in srgb,var(--paper) 90%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.btn{font-family:"Roboto Mono",monospace;font-size:12px;letter-spacing:.04em;padding:7px 13px;border-radius:7px;
+  border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);cursor:pointer;transition:.15s}
+.btn:hover{border-color:var(--amber);color:var(--amber)}
+.btn:focus-visible{outline:2px solid var(--cur);outline-offset:2px}
+.bar .spacer{flex:1}
+.bar .count{font-family:"Roboto Mono",monospace;font-size:12px;color:var(--ink-faint)}
+
+/* ============ sections ============ */
+section{padding-top:56px;scroll-margin-top:64px}
+.sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.sec-n{font-family:"Roboto Mono",monospace;font-size:12px;letter-spacing:.14em;color:var(--amber);flex:none;padding-top:4px}
+.sec-h h2{font-size:clamp(21px,3.4vw,27px)}
+.sec-sub{color:var(--ink-soft);font-size:14.5px;margin:12px 0 0}
+h3{font-size:18.5px;margin:38px 0 10px;padding-left:12px;border-left:4px solid var(--amber)}
+h4{font-size:15.5px;margin:24px 0 6px;color:var(--ink-soft);font-family:"BIZ UDPGothic",sans-serif}
+p{margin:12px 0}
+.prose{max-width:66ch}
+ul,ol{padding-left:1.35em;margin:12px 0}
+li{margin:5px 0}
+strong{font-weight:700;color:var(--ink)}
+.hl{background:linear-gradient(transparent 62%,var(--amber-wash) 62%);padding:0 1px;font-weight:700}
+em.t{font-style:normal;color:var(--cur);font-weight:700}
+
+/* ============ boxes ============ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:20px 0;box-shadow:var(--shadow)}
+.rule{background:var(--amber-wash);border:1px solid color-mix(in srgb,var(--amber) 35%,transparent);border-radius:12px;padding:16px 20px;margin:20px 0}
+.rule .rt{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.2em;color:var(--amber-ink);display:block;margin-bottom:6px}
+.rule p:first-of-type{margin-top:0}
+.rule p:last-child{margin-bottom:0}
+.note{border-left:3px solid var(--cur);background:var(--cur-wash);border-radius:0 10px 10px 0;padding:14px 18px;margin:20px 0;font-size:14.5px}
+.trap{border-left:3px solid var(--warn);background:var(--warn-wash);border-radius:0 10px 10px 0;padding:14px 18px;margin:20px 0;font-size:14.5px}
+.note .lb,.trap .lb{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.18em;display:block;margin-bottom:4px}
+.note .lb{color:var(--cur)} .trap .lb{color:var(--warn)}
+.note p,.trap p{margin:6px 0}
+.note p:last-child,.trap p:last-child{margin-bottom:0}
+
+/* ============ tables ============ */
+.tw{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:460px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+thead th{background:var(--surface-2);font-weight:700;font-size:12.5px;letter-spacing:.03em;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.n,th.n{font-family:"Roboto Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+tbody tr:hover{background:var(--surface-2)}
+
+/* ============ circuits ============ */
+.figs{display:flex;flex-wrap:wrap;gap:14px;margin:20px 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px;
+  flex:1 1 236px;min-width:214px;box-shadow:var(--shadow)}
+figure svg{display:block;width:100%;height:auto;color:var(--ink)}
+figcaption{font-size:12.5px;color:var(--ink-soft);text-align:center;margin-top:4px;line-height:1.5}
+figcaption b{color:var(--ink)}
+.cir text{font-family:"Roboto Mono",monospace;font-size:11px;font-weight:500;fill:var(--ink-soft)}
+.cir text.amb{fill:var(--amber);font-weight:700}
+.cir text.cu{fill:var(--cur);font-weight:700}
+.glow{fill:var(--amber);opacity:.25}
+
+/* ============ pattern cards ============ */
+.pat{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin:22px 0;overflow:hidden;box-shadow:var(--shadow)}
+.pat-h{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--surface-2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pat-n{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;color:var(--amber);letter-spacing:.08em}
+.pat-h h3{margin:0;padding:0;border:0;font-size:17px;flex:1 1 auto}
+.lv{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.1em;padding:3px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
+.lv1{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:var(--ok-wash)}
+.lv2{color:var(--cur);border-color:color-mix(in srgb,var(--cur) 45%,transparent);background:var(--cur-wash)}
+.lv3{color:var(--amber-ink);border-color:color-mix(in srgb,var(--amber) 45%,transparent);background:var(--amber-wash)}
+.lv4{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:var(--warn-wash)}
+.pat-b{padding:18px 20px 20px}
+.q{margin:0 0 4px}
+.q .qt{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.18em;color:var(--ink-faint);display:block;margin-bottom:4px}
+details.ans{margin-top:16px;border-top:1px dashed var(--line-strong);padding-top:2px}
+details.ans>summary{cursor:pointer;list-style:none;font-family:"Roboto Mono",monospace;font-size:12px;letter-spacing:.08em;
+  color:var(--cur);padding:10px 0 6px;display:flex;align-items:center;gap:8px}
+details.ans>summary::-webkit-details-marker{display:none}
+details.ans>summary::before{content:"▸";display:inline-block;transition:transform .18s}
+details.ans[open]>summary::before{transform:rotate(90deg)}
+details.ans>summary:hover{color:var(--amber)}
+details.ans[open]>summary{color:var(--ink-faint)}
+.sol{font-size:15px}
+.sol ol{counter-reset:st;list-style:none;padding-left:0}
+.sol ol>li{counter-increment:st;position:relative;padding-left:32px;margin:9px 0}
+.sol ol>li::before{content:counter(st);position:absolute;left:0;top:2px;width:21px;height:21px;border-radius:50%;
+  background:var(--cur-wash);color:var(--cur);font-family:"Roboto Mono",monospace;font-size:11px;font-weight:700;
+  display:grid;place-items:center}
+.final{margin-top:12px;padding:11px 16px;border-radius:9px;background:var(--amber-wash);
+  border:1px solid color-mix(in srgb,var(--amber) 32%,transparent);font-weight:700}
+.final span{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.18em;color:var(--amber-ink);font-weight:400;margin-right:10px}
+
+/* ============ checklist ============ */
+.check{list-style:none;padding:0;margin:16px 0;display:grid;gap:2px}
+.check li{margin:0}
+.check label{display:flex;gap:11px;align-items:flex-start;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:14.5px;transition:background .12s}
+.check label:hover{background:var(--surface-2)}
+.check input{margin:6px 0 0;accent-color:var(--amber);width:15px;height:15px;flex:none}
+.check input:checked+span{color:var(--ink-faint);text-decoration:line-through}
+
+/* ============ formula strip ============ */
+.forms{display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:12px;margin:22px 0}
+.f{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+.f .fl{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.16em;color:var(--ink-faint);display:block;margin-bottom:5px}
+.f .fv{font-family:"Roboto Mono",monospace;font-size:14.5px;font-weight:700;color:var(--amber);line-height:1.55}
+.f .fn{font-size:12.5px;color:var(--ink-soft);margin-top:5px;line-height:1.6}
+
+footer{margin-top:72px;padding-top:24px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:13px}
+
+@media print{
+  body{background:#fff;color:#000;font-size:11pt;line-height:1.6}
+  .bar,.rail,.jump,.hero::before{display:none!important}
+  details.ans{border-top:1px solid #999}
+  details.ans>summary{display:none}
+  section{page-break-inside:auto;padding-top:24px}
+  .pat,.card,figure{page-break-inside:avoid;box-shadow:none}
+  .layout{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="s-bulb" viewBox="-16 -16 32 32">
+    <circle cx="0" cy="0" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-7.8 -7.8 L7.8 7.8 M7.8 -7.8 L-7.8 7.8 M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="s-bulb-on" viewBox="-16 -16 32 32">
+    <circle cx="0" cy="0" r="15" class="glow"/>
+    <circle cx="0" cy="0" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-7.8 -7.8 L7.8 7.8 M7.8 -7.8 L-7.8 7.8 M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="s-batt" viewBox="-18 -18 36 36">
+    <path d="M-18 0 H-4 M4 0 H18 M-4 -13 V13" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M4 -7 V7" stroke="currentColor" stroke-width="3.4" fill="none"/>
+  </symbol>
+  <symbol id="s-batt2" viewBox="-28 -18 56 36">
+    <path d="M-28 0 H-14 M-6 0 H6 M14 0 H28 M-14 -13 V13 M6 -13 V13" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M-6 -7 V7 M14 -7 V7" stroke="currentColor" stroke-width="3.4" fill="none"/>
+  </symbol>
+  <symbol id="s-res" viewBox="-22 -12 44 24">
+    <rect x="-14" y="-7" width="28" height="14" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-22 0 H-14 M14 0 H22" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="s-sw" viewBox="-18 -14 36 28">
+    <path d="M-18 0 H-10 M10 0 H18" stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="-10" cy="0" r="2.4" fill="currentColor"/><circle cx="10" cy="0" r="2.4" fill="currentColor"/>
+    <path d="M-9 -1 L10 -10" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="s-swc" viewBox="-18 -14 36 28">
+    <path d="M-18 0 H-10 M10 0 H18 M-10 0 H10" stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="-10" cy="0" r="2.4" fill="currentColor"/><circle cx="10" cy="0" r="2.4" fill="currentColor"/>
+  </symbol>
+  <symbol id="s-amm" viewBox="-16 -16 32 32">
+    <circle cx="0" cy="0" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="0" y="4.5" text-anchor="middle" font-family="Roboto Mono,monospace" font-size="12" font-weight="700" fill="currentColor" stroke="none">A</text>
+  </symbol>
+  <symbol id="s-vm" viewBox="-16 -16 32 32">
+    <circle cx="0" cy="0" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="0" y="4.5" text-anchor="middle" font-family="Roboto Mono,monospace" font-size="12" font-weight="700" fill="currentColor" stroke="none">V</text>
+  </symbol>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">中学受験理科 / 物理 / 電流回路</p>
+  <h1>豆電球と<span class="lit">電熱線</span>の攻略ノート</h1>
+  <p class="lede">回路の基本から、御三家・最難関で問われる立体回路や非線形グラフまで。「なぜそうなるか」→「典型パターン」→「入試レベル」の順に、電流分野をひととおり点検できる総復習用ノートです。</p>
+  <div class="hero-meta">
+    <span class="chip">10章</span>
+    <span class="chip">出題パターン 16</span>
+    <span class="chip">最難関チャレンジ 4</span>
+    <span class="chip">答えは開閉式</span>
+    <span class="chip">印刷対応</span>
+  </div>
+</header>
+
+<div class="jump">
+  <select id="jumpsel" aria-label="章にジャンプ"></select>
+</div>
+
+<div class="layout">
+  <nav class="rail" aria-label="目次">
+    <p class="rail-t">CONTENTS</p>
+    <ol id="railList"></ol>
+  </nav>
+
+  <main>
+  <div class="bar">
+    <button class="btn" id="openAll" type="button">答えをすべて開く</button>
+    <button class="btn" id="closeAll" type="button">すべて閉じる</button>
+    <span class="spacer"></span>
+    <span class="count" id="ckCount"></span>
+  </div>
+
+<!-- ============================ 01 ============================ -->
+<section id="ch1">
+  <div class="sec-h"><span class="sec-n">01</span><h2>電流のきほん — ここを外すと全部ずれる</h2></div>
+  <p class="sec-sub">回路の問題は「電流がどこをどれだけ流れるか」を追うだけの問題です。まず、追いかけ方の約束を固めます。</p>
+
+  <div class="prose">
+  <h3>1-1　回路図の記号</h3>
+  <p>入試では実物の絵ではなく<strong>回路図</strong>で出ます。記号を見た瞬間に読み替えられるようにしておきます。</p>
+  </div>
+
+  <figure style="flex-basis:100%">
+    <svg class="cir" viewBox="0 0 700 92" role="img" aria-label="回路記号一覧">
+      <use href="#s-bulb" x="24" y="14" width="32" height="32"/>
+      <text x="40" y="66" text-anchor="middle">豆電球</text>
+      <use href="#s-batt" x="107" y="12" width="36" height="36"/>
+      <text x="125" y="66" text-anchor="middle">かん電池</text>
+      <text x="125" y="82" text-anchor="middle" class="amb">長い方が＋</text>
+      <use href="#s-batt2" x="192" y="12" width="56" height="36"/>
+      <text x="220" y="66" text-anchor="middle">電池2個直列</text>
+      <use href="#s-res" x="298" y="20" width="44" height="24"/>
+      <text x="320" y="66" text-anchor="middle">電熱線・抵抗</text>
+      <use href="#s-sw" x="402" y="18" width="36" height="28"/>
+      <text x="420" y="66" text-anchor="middle">スイッチ</text>
+      <use href="#s-amm" x="484" y="14" width="32" height="32"/>
+      <text x="500" y="66" text-anchor="middle">電流計</text>
+      <use href="#s-vm" x="554" y="14" width="32" height="32"/>
+      <text x="570" y="66" text-anchor="middle">電圧計</text>
+      <path d="M622 30 H678" stroke="currentColor" stroke-width="2" fill="none"/>
+      <text x="650" y="66" text-anchor="middle">導線</text>
+      <text x="650" y="82" text-anchor="middle" class="cu">曲がっても同じ</text>
+    </svg>
+    <figcaption>覚えるべき記号はこれだけ。<b>電池は「長い線が＋極」</b>。ここを取り違えると電流の向きの問題を落とします。</figcaption>
+  </figure>
+
+  <div class="prose">
+  <h3>1-2　電流は「使われて減る」ものではない</h3>
+  <p>いちばん多い誤解がこれです。豆電球を通ったあとの電流は、通る前と<span class="hl">まったく同じ大きさ</span>です。減るのは電流ではなく、電流が運んでいる<em class="t">電気のエネルギー</em>。それが光と熱に変わっています。</p>
+  </div>
+
+  <div class="rule">
+    <span class="rt">RULE 01 — 電流保存</span>
+    <p><strong>1本道（直列）では、どこを測っても電流は同じ大きさ。</strong></p>
+    <p><strong>分かれ道（並列）では、分かれる前の電流＝分かれたあとの電流の合計。</strong>合流するときも同じで、足し算で戻ります。</p>
+  </div>
+
+  <div class="trap">
+    <span class="lb">FREQUENT MISTAKE</span>
+    <p>「豆電球を2個直列にすると、1個目で電気を使うから2個目は暗くなる」——<strong>×</strong>。1本道なので2個には同じ電流が流れ、明るさも同じです。「電池に近い方が明るい」も同じ理由で誤りです。</p>
+  </div>
+
+  <div class="prose">
+  <h3>1-3　直列と並列の見分け方</h3>
+  <p>図がごちゃごちゃしていても、判定はこの一手だけです。</p>
+  <p><strong>電池の＋極から指でたどる。</strong>ゴールの−極まで<em class="t">道が1本しかなければ直列</em>、<em class="t">途中で枝分かれしたら並列</em>。枝分かれの数だけ道があります。</p>
+  </div>
+
+  <div class="note">
+    <span class="lb">CHECK</span>
+    <p>「豆電球を1個はずすと、残りはどうなるか」でも判定できます。<strong>全部消えれば直列／残りがつけば並列</strong>。実験の問題文はよくこの形で聞いてきます。</p>
+  </div>
+
+  <div class="prose">
+  <h3>1-4　明るさは何で決まるか</h3>
+  <p>中学受験の標準ルールは<strong>「同じ豆電球なら、流れる電流が大きいほど明るい」</strong>。以降このノートでは、明るさ＝電流の大きさで比べます。</p>
+  </div>
+
+  <div class="trap">
+    <span class="lb">TOP-TIER NOTE</span>
+    <p>難関校では<strong>明るさ＝電流×電圧（＝消費する電気の量）</strong>で考えさせる問題も出ます。問題文に「電流が2倍になると明るさは4倍になるものとする」などの断りがあれば、必ずそちらに従ってください。断りがなければ電流で比較します。<strong>電熱線の発熱量は必ず「電流×電圧」で計算</strong>します（第7章）。</p>
+  </div>
+</section>
+
+<!-- ============================ 02 ============================ -->
+<section id="ch2">
+  <div class="sec-h"><span class="sec-n">02</span><h2>基準回路法 — ①を決めて比で解く</h2></div>
+  <p class="sec-sub">中学受験の電流計算は、単位のついた数字ではなく「基準の何倍か」で解きます。この型に持ち込めば、ほぼ全部の回路が同じ手順で片づきます。</p>
+
+  <div class="rule">
+    <span class="rt">RULE 02 — 基準のとり方</span>
+    <p>かん電池1個・豆電球1個の回路を<strong>基準</strong>とし、そこに流れる電流を<strong>①</strong>とします。そのうえで</p>
+    <p>・豆電球1個の<strong>電流の流れにくさ（抵抗）＝1</strong>　・かん電池1個の<strong>電流を押す力（電圧）＝1</strong></p>
+    <p style="margin-top:10px"><span class="hl">電流 ＝ 電圧 ÷ 抵抗</span>　この1本だけで計算します。</p>
+  </div>
+
+  <div class="figs">
+    <figure>
+      <svg class="cir" viewBox="0 0 260 148" role="img" aria-label="電池1個 豆電球1個">
+        <path d="M34 34 H114 M146 34 H226 M34 34 V116 M226 34 V116 M34 116 H112 M148 116 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-bulb-on" x="114" y="18" width="32" height="32"/>
+        <use href="#s-batt" x="112" y="98" width="36" height="36"/>
+        <text x="130" y="12" text-anchor="middle" class="amb">明るさ 1</text>
+        <text x="20" y="79" text-anchor="middle" class="cu">①</text>
+      </svg>
+      <figcaption><b>基準</b>　電池1・豆1<br>電流①・明るさ1</figcaption>
+    </figure>
+    <figure>
+      <svg class="cir" viewBox="0 0 260 148" role="img" aria-label="豆電球2個直列">
+        <path d="M34 34 H74 M106 34 H154 M186 34 H226 M34 34 V116 M226 34 V116 M34 116 H112 M148 116 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-bulb" x="74" y="18" width="32" height="32"/>
+        <use href="#s-bulb" x="154" y="18" width="32" height="32"/>
+        <use href="#s-batt" x="112" y="98" width="36" height="36"/>
+        <text x="90" y="12" text-anchor="middle" class="amb">½</text>
+        <text x="170" y="12" text-anchor="middle" class="amb">½</text>
+        <text x="20" y="79" text-anchor="middle" class="cu">½</text>
+      </svg>
+      <figcaption><b>豆2個・直列</b>　抵抗2倍<br>電流½・両方とも明るさ½</figcaption>
+    </figure>
+    <figure>
+      <svg class="cir" viewBox="0 0 260 148" role="img" aria-label="豆電球2個並列">
+        <path d="M34 34 H114 M146 34 H226 M34 34 V116 M226 34 V116 M34 75 H114 M146 75 H226 M34 116 H112 M148 116 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-bulb-on" x="114" y="18" width="32" height="32"/>
+        <use href="#s-bulb-on" x="114" y="59" width="32" height="32"/>
+        <use href="#s-batt" x="112" y="98" width="36" height="36"/>
+        <text x="130" y="12" text-anchor="middle" class="amb">1</text>
+        <text x="196" y="66" text-anchor="middle" class="amb">1</text>
+        <text x="20" y="100" text-anchor="middle" class="cu">②</text>
+      </svg>
+      <figcaption><b>豆2個・並列</b>　各枝に①<br>明るさは基準と同じ・電池は②</figcaption>
+    </figure>
+    <figure>
+      <svg class="cir" viewBox="0 0 260 148" role="img" aria-label="電池2個直列 豆電球1個">
+        <path d="M34 34 H114 M146 34 H226 M34 34 V116 M226 34 V116 M34 116 H102 M158 116 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-bulb-on" x="114" y="18" width="32" height="32"/>
+        <use href="#s-batt2" x="102" y="98" width="56" height="36"/>
+        <text x="130" y="12" text-anchor="middle" class="amb">明るさ 2</text>
+        <text x="20" y="79" text-anchor="middle" class="cu">②</text>
+      </svg>
+      <figcaption><b>電池2個・直列</b>　電圧2倍<br>電流②・明るさ2</figcaption>
+    </figure>
+  </div>
+
+  <h3>2-1　絶対に暗記する8パターン表</h3>
+  <p class="prose">電池の数×豆電球のつなぎ方の組み合わせ。<strong>明るさ</strong>と<strong>電池のもち（何時間使えるか）</strong>を分けて覚えるのがコツです。</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>回路</th><th class="n">全体の抵抗</th><th class="n">豆1個の電流<br>＝明るさ</th><th class="n">電池を流れる<br>電流</th><th class="n">電池のもち</th></tr></thead>
+    <tbody>
+      <tr><td>電池1・豆1 <b>（基準）</b></td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+      <tr><td>電池1・豆2 直列</td><td class="n">2</td><td class="n">1/2</td><td class="n">1/2</td><td class="n">2倍</td></tr>
+      <tr><td>電池1・豆3 直列</td><td class="n">3</td><td class="n">1/3</td><td class="n">1/3</td><td class="n">3倍</td></tr>
+      <tr><td>電池1・豆2 並列</td><td class="n">1/2</td><td class="n">1</td><td class="n">2</td><td class="n">1/2</td></tr>
+      <tr><td>電池2直列・豆1</td><td class="n">1</td><td class="n">2</td><td class="n">2</td><td class="n">1/2</td></tr>
+      <tr><td>電池2並列・豆1</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">2倍</td></tr>
+      <tr><td>電池2直列・豆2直列</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+      <tr><td>電池2直列・豆2並列</td><td class="n">1/2</td><td class="n">2</td><td class="n">4</td><td class="n">1/4</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <span class="lb">HOW TO READ</span>
+    <p><strong>電池のもち</strong>＝（電池の容量）÷（電池1個を流れる電流）。直列につないでも容量は1個分のままですが、並列なら2個で分担するので、1個あたりの電流は半分になり<strong>2倍もつ</strong>。「明るさは変わらないのに長もちする」のが電池の並列の利点です。</p>
+  </div>
+
+  <div class="trap">
+    <span class="lb">FREQUENT MISTAKE</span>
+    <p>「豆電球2個を並列にすると暗くなる」——<strong>×</strong>。各豆電球には基準と同じ①が流れるので、<strong>明るさは1個のときと同じ</strong>です。変わるのは電池の負担（②になる＝もちが半分）。<br>逆に「豆電球2個を直列にすると電池が早くなくなる」——これも<strong>×</strong>。電流が半分なので<strong>2倍もちます</strong>。</p>
+  </div>
+</section>
+
+<!-- ============================ 03 ============================ -->
+<section id="ch3">
+  <div class="sec-h"><span class="sec-n">03</span><h2>抵抗の合成 — ぐしゃぐしゃの回路を1個にたたむ</h2></div>
+  <p class="sec-sub">豆電球が3個以上になったら、外側から順に「まとめて1個」に置きかえます。</p>
+
+  <div class="forms">
+    <div class="f"><span class="fl">SERIES</span><div class="fv">直列 → たし算</div><p class="fn">抵抗1と1 → 合わせて2。長い1本の道になるので流れにくくなる。</p></div>
+    <div class="f"><span class="fl">PARALLEL / SAME</span><div class="fv">同じもの n個並列 → 1/n</div><p class="fn">2個で1/2、3個で1/3。道が増えるほど流れやすい。</p></div>
+    <div class="f"><span class="fl">PARALLEL / DIFFERENT</span><div class="fv">和分の積<br>(a×b)÷(a＋b)</div><p class="fn">抵抗1と2の並列 → (1×2)÷(1+2)＝2/3。</p></div>
+    <div class="f"><span class="fl">CURRENT SPLIT</span><div class="fv">電流は抵抗の逆比</div><p class="fn">抵抗1と2に分かれるなら、電流は2：1。流れやすい方に多く流れる。</p></div>
+  </div>
+
+  <div class="card">
+    <p class="q"><span class="qt">EXAMPLE</span>同じ豆電球A・B・C・Dとかん電池1個。Aと直列に、BとCの並列、さらにDが直列につながっている。各豆電球の電流と明るさの順を答えなさい。</p>
+    <div class="sol">
+      <ol>
+        <li>BとCの並列部分をまとめる → 抵抗 <span class="mono">1/2</span></li>
+        <li>回路全体は A(1) ＋ BC(1/2) ＋ D(1) の1本道 → 全体の抵抗 <span class="mono">5/2</span></li>
+        <li>全体の電流 ＝ 1 ÷ 5/2 ＝ <span class="mono">2/5</span>。これがAとDに流れる。</li>
+        <li>BとCは同じ抵抗なので半分ずつ → 各 <span class="mono">1/5</span></li>
+      </ol>
+      <p class="final"><span>ANSWER</span>A＝D＝2/5、B＝C＝1/5。明るさは A＝D ＞ B＝C（Aの方がBの2倍明るい）</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="lb">SHORTCUT</span>
+    <p>並列部分に入る電流は、<strong>「合流したあとの電流」を枝の抵抗の逆比で分ける</strong>だけ。抵抗1と2の枝なら 2：1 に分かれます。「太い管には水がたくさん流れる」とイメージすると間違えません。</p>
+  </div>
+</section>
+
+<!-- ============================ 04 ============================ -->
+<section id="ch4">
+  <div class="sec-h"><span class="sec-n">04</span><h2>複雑回路の解きほぐし方 — 難関校はここで差がつく</h2></div>
+  <p class="sec-sub">見た目が複雑な回路は、線をきれいに描き直せば9割が「直列と並列の組み合わせ」に化けます。その手順を型にします。</p>
+
+  <h3>4-1　書きかえの4ステップ（等電位法）</h3>
+  <div class="card">
+    <div class="sol">
+      <ol>
+        <li><strong>導線だけでつながっている点に、同じ名前をつける。</strong>途中に豆電球も電熱線も入っていなければ、どんなに離れていても<span class="hl">それは同じ1点</span>。ア・イ・ウ…と書き込む。</li>
+        <li><strong>各豆電球の両はしの名前を書く。</strong>「Aは ア–イ」「Bは ア–イ」のように。</li>
+        <li><strong>同じ名前の組を結んでいる豆電球どうしは並列。</strong>上の例ならAとBは並列。</li>
+        <li><strong>点を左から順に並べ直して描く。</strong>電池の＋極を左はし、−極を右はしにすると必ずきれいな図になる。</li>
+      </ol>
+    </div>
+  </div>
+  <div class="note">
+    <span class="lb">WHY IT WORKS</span>
+    <p>導線には電流の流れにくさがありません。だから導線でつながった点は<strong>電気的にまったく同じ場所</strong>。図の上で離れていても、くっつけて考えてよいのです。</p>
+  </div>
+
+  <h3>4-2　ショート（短絡）— つかない豆電球</h3>
+  <div class="figs">
+    <figure>
+      <svg class="cir" viewBox="0 0 260 148" role="img" aria-label="豆電球Bがショートされた回路">
+        <path d="M34 34 H74 M106 34 H154 M186 34 H226 M34 34 V116 M226 34 V116 M34 116 H112 M148 116 H226 M130 34 V62 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-bulb-on" x="74" y="18" width="32" height="32"/>
+        <use href="#s-bulb" x="154" y="18" width="32" height="32"/>
+        <use href="#s-batt" x="112" y="98" width="36" height="36"/>
+        <circle cx="130" cy="34" r="3" fill="currentColor"/><circle cx="226" cy="62" r="3" fill="currentColor"/>
+        <text x="90" y="12" text-anchor="middle" class="amb">A 明るさ1</text>
+        <text x="176" y="12" text-anchor="middle" class="cu">B つかない</text>
+      </svg>
+      <figcaption>Bの両はしが導線で直結 → <b>電流はすべて導線側へ</b>。Bには流れず光らない。</figcaption>
+    </figure>
+    <figure>
+      <svg class="cir" viewBox="0 0 260 148" role="img" aria-label="電池をショートさせた危険な回路">
+        <path d="M34 34 H226 M34 34 V116 M226 34 V116 M34 116 H112 M148 116 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-batt" x="112" y="98" width="36" height="36"/>
+        <text x="130" y="20" text-anchor="middle" style="fill:var(--warn);font-weight:700">危険！</text>
+        <text x="130" y="60" text-anchor="middle" class="cu">豆電球なし・導線だけ</text>
+        <text x="130" y="78" text-anchor="middle">電流が非常に大きくなる</text>
+      </svg>
+      <figcaption>電池を導線だけで結ぶと<b>非常に大きな電流</b>が流れ、導線と電池が発熱してあぶない。実験の禁止事項として頻出。</figcaption>
+    </figure>
+  </div>
+  <div class="rule">
+    <span class="rt">RULE 03 — ショート</span>
+    <p><strong>豆電球（や電熱線）と並列に導線がつながれていたら、その豆電球は光らない。</strong>電流は流れにくい豆電球を避け、抵抗ゼロの導線を通ります。回路の計算では、その豆電球ごと消して考えます。</p>
+  </div>
+  <div class="trap">
+    <span class="lb">FREQUENT MISTAKE</span>
+    <p>ショートした結果、<strong>残った豆電球はむしろ明るくなる</strong>ことに注意。上の図でAは、Bと直列だったとき½でしたが、Bが消えたことで回路の抵抗が半分になり、明るさ1に上がります。「1個消えたから暗くなる」ではありません。</p>
+  </div>
+
+  <h3>4-3　対称の回路 — 電流が流れない道を見ぬく</h3>
+  <p class="prose">左右がまったく同じ形の回路では、まん中の枝に<strong>電流が流れない</strong>ことがあります。両はしの「電気的な高さ（電圧）」が等しくなるからです。ここに気づけるかどうかが難関校の分かれ目です。</p>
+
+  <div class="figs">
+    <figure style="flex-basis:100%;max-width:340px">
+      <svg class="cir" viewBox="0 0 260 178" role="img" aria-label="ブリッジ回路">
+        <path d="M34 76 L67.8 58.4 M96.2 43.6 L130 26
+                 M130 26 L163.8 43.6 M192.2 58.4 L226 76
+                 M34 76 L67.8 93.6 M96.2 108.4 L130 126
+                 M130 126 L163.8 108.4 M192.2 93.6 L226 76
+                 M34 76 H14 V152 H112 M148 152 H246 V76 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-bulb" x="66" y="35" width="32" height="32" transform="rotate(-27.5 82 51)"/>
+        <use href="#s-bulb" x="162" y="35" width="32" height="32" transform="rotate(27.5 178 51)"/>
+        <use href="#s-bulb" x="66" y="85" width="32" height="32" transform="rotate(27.5 82 101)"/>
+        <use href="#s-bulb" x="162" y="85" width="32" height="32" transform="rotate(-27.5 178 101)"/>
+        <path d="M130 42 V60 M130 92 V110" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-bulb" x="114" y="60" width="32" height="32" transform="rotate(90 130 76)"/>
+        <use href="#s-batt" x="112" y="134" width="36" height="36"/>
+        <text x="130" y="18" text-anchor="middle">ア</text>
+        <text x="142" y="130">イ</text>
+        <text x="150" y="72" class="cu">電流0</text>
+        <text x="48" y="40" class="amb">½</text><text x="198" y="40" class="amb">½</text>
+        <text x="48" y="122" class="amb">½</text><text x="198" y="122" class="amb">½</text>
+      </svg>
+      <figcaption>5個とも同じ豆電球のブリッジ回路。左右対称なので<b>ア と イ の電圧が等しく、まん中の豆電球には電流が流れない</b>（光らない）。まん中を取り去ってよいので、回路は「2個直列 × 2列の並列」＝抵抗1。全体の電流は①、外側4個には各½が流れる。</figcaption>
+    </figure>
+  </div>
+
+  <h3>4-4　立体回路（立方体）</h3>
+  <div class="figs">
+    <figure style="flex-basis:100%;max-width:340px">
+      <svg class="cir" viewBox="0 0 250 200" role="img" aria-label="立方体の各辺に豆電球をつけた回路">
+        <g stroke="currentColor" stroke-width="1.8" fill="none">
+          <path d="M40 170 H150 V60 H40 Z"/>
+          <path d="M100 130 H210 V20 H100 Z"/>
+          <path d="M40 170 L100 130 M150 170 L210 130 M150 60 L210 20 M40 60 L100 20"/>
+        </g>
+        <g class="amb-dots">
+          <circle cx="95" cy="170" r="6.5" fill="var(--amber)"/>
+          <circle cx="40" cy="115" r="6.5" fill="var(--amber)"/>
+          <circle cx="70" cy="150" r="6.5" fill="var(--amber)"/>
+          <circle cx="210" cy="75" r="6.5" fill="var(--amber)"/>
+          <circle cx="155" cy="20" r="6.5" fill="var(--amber)"/>
+          <circle cx="180" cy="40" r="6.5" fill="var(--amber)"/>
+        </g>
+        <g>
+          <circle cx="150" cy="115" r="6.5" fill="var(--cur)"/>
+          <circle cx="95" cy="60" r="6.5" fill="var(--cur)"/>
+          <circle cx="155" cy="130" r="6.5" fill="var(--cur)"/>
+          <circle cx="100" cy="75" r="6.5" fill="var(--cur)"/>
+          <circle cx="180" cy="150" r="6.5" fill="var(--cur)"/>
+          <circle cx="70" cy="40" r="6.5" fill="var(--cur)"/>
+        </g>
+        <circle cx="40" cy="170" r="4.5" fill="currentColor"/>
+        <circle cx="210" cy="20" r="4.5" fill="currentColor"/>
+        <text x="14" y="190" class="amb">A（＋極）</text>
+        <text x="238" y="16" text-anchor="end" class="amb">G（−極）</text>
+      </svg>
+      <figcaption>同じ豆電球12個を立方体の辺に置き、<b>もっとも遠い頂点AとGに電池</b>をつないだ回路。<span style="color:var(--amber)">●</span>＝明るい6個（電流0.4）、<span style="color:var(--cur)">●</span>＝暗い6個（電流0.2）。明るさの比は<b>2：1</b>。</figcaption>
+    </figure>
+  </div>
+  <div class="card">
+    <p class="q"><span class="qt">なぜそうなるか</span>Aから出る3本はまったく同じ立場（対称）なので、電流を3等分。次の6本も同じ立場なので、それぞれがさらに半分に分かれる。最後の3本でまた合流する。</p>
+    <div class="sol">
+      <ol>
+        <li>全体の電流を1とすると、Aから出る3本は各 <span class="mono">1/3</span></li>
+        <li>まん中の6本は各 <span class="mono">1/6</span></li>
+        <li>Gに入る3本は各 <span class="mono">1/3</span></li>
+        <li>A→Gの電圧は 1/3 ＋ 1/6 ＋ 1/3 ＝ <span class="mono">5/6</span> → 全体の抵抗は豆電球 <span class="mono">5/6</span> 個分</li>
+        <li>電池1個（電圧1）なら全体の電流は <span class="mono">6/5＝1.2</span> → 外側6本は各0.4、まん中6本は各0.2</li>
+      </ol>
+      <p class="final"><span>ANSWER</span>合成抵抗 5/6・明るさの比 2：1（外側が明るい）</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 05 ============================ -->
+<section id="ch5">
+  <div class="sec-h"><span class="sec-n">05</span><h2>電流計と電圧計 — 実験問題の失点源</h2></div>
+  <p class="sec-sub">計算より先に、つなぎ方と目盛りの読みで落とす人が多い分野です。</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th></th><th>電流計</th><th>電圧計</th></tr></thead>
+    <tbody>
+      <tr><td>つなぎ方</td><td><strong>直列</strong>（調べたい道の途中に割りこませる）</td><td><strong>並列</strong>（調べたい部品の両はしにはさむ）</td></tr>
+      <tr><td>＋たんし</td><td colspan="2">電池の＋極側につながる方へ</td></tr>
+      <tr><td>−たんし</td><td>5A → 500mA → 50mA<br>いちばん<strong>大きい5A</strong>から使う</td><td>300V → 15V → 3V<br>いちばん<strong>大きい300V</strong>から使う</td></tr>
+      <tr><td>内部の抵抗</td><td>とても小さい</td><td>とても大きい</td></tr>
+      <tr><td>やってはいけない</td><td>電池に直接つなぐ（＝ショート、こわれる）</td><td>回路を切って直列に入れる（電流がほぼ流れない）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <span class="lb">WHY</span>
+    <p>電流計の抵抗が小さいのは、<strong>回路に割りこんでも電流を変えてしまわないため</strong>。電圧計の抵抗が大きいのは、<strong>並列につないでもそちらに電流を横取りしないため</strong>。この理由を記述で書かせる学校があります。</p>
+  </div>
+
+  <div class="card">
+    <p class="q"><span class="qt">EXAMPLE</span>500mAの−たんしにつないだ電流計で、0〜5の目盛りの針が「2.4」を指した。電流は何mAか。また、この値を50mAのたんしで測ろうとするとどうなるか。</p>
+    <div class="sol">
+      <ol>
+        <li>500mAたんし → 目盛りの「5」が500mAにあたる → <span class="mono">1目盛り＝100mA</span></li>
+        <li>2.4 × 100 ＝ <span class="mono">240mA</span></li>
+        <li>50mAたんしの測定上限は50mA。240mAは大幅に超えるので、<strong>針がふり切れて電流計がこわれる</strong>。</li>
+      </ol>
+      <p class="final"><span>ANSWER</span>240mA／50mAたんしでは針がふり切れる（だから大きいたんしから試す）</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 06 ============================ -->
+<section id="ch6">
+  <div class="sec-h"><span class="sec-n">06</span><h2>電熱線と発熱 — 豆電球とはルールが変わる</h2></div>
+  <p class="sec-sub">豆電球は「電流」で比べましたが、発熱量は必ず<strong>電流×電圧</strong>で計算します。ここを混ぜると全滅します。</p>
+
+  <h3>6-1　電熱線の抵抗を決める3つ</h3>
+  <div class="forms">
+    <div class="f"><span class="fl">LENGTH</span><div class="fv">長さ2倍 → 抵抗2倍</div><p class="fn">長い道は通りにくい。電流は半分に。<strong>長さに比例</strong>。</p></div>
+    <div class="f"><span class="fl">THICKNESS</span><div class="fv">断面積2倍 → 抵抗½</div><p class="fn">太い道は通りやすい。電流は2倍に。<strong>断面積に反比例</strong>。</p></div>
+    <div class="f"><span class="fl">MATERIAL</span><div class="fv">材質で決まる</div><p class="fn">ニクロム線は銅線よりずっと抵抗が大きい。だから発熱用に使う。</p></div>
+  </div>
+  <div class="trap">
+    <span class="lb">FREQUENT MISTAKE</span>
+    <p>「太さ2倍」が<strong>直径2倍</strong>を指すのか<strong>断面積2倍</strong>を指すのかは問題によります。表に「太さ（断面積）」と書いてあれば断面積、円の直径が与えられていれば<strong>断面積は直径の2乗に比例</strong>（直径2倍 → 断面積4倍 → 抵抗1/4）。ここは必ず問題文を確認。</p>
+  </div>
+
+  <h3>6-2　発熱量の公式</h3>
+  <div class="rule">
+    <span class="rt">RULE 04 — 発熱量</span>
+    <p><span class="hl">発熱量 ＝ 電流 × 電圧 × 時間</span></p>
+    <p>電圧＝電流×抵抗 なので、言いかえると</p>
+    <p>・<strong>電流が同じ（直列）なら、発熱量は抵抗に比例</strong>　→ 抵抗の大きい（細い・長い）方が熱い</p>
+    <p>・<strong>電圧が同じ（並列）なら、発熱量は抵抗に反比例</strong>　→ 抵抗の小さい（太い・短い）方が熱い</p>
+  </div>
+  <div class="note">
+    <span class="lb">MOST ASKED</span>
+    <p>この「直列なら細い方が熱い／並列なら太い方が熱い」は、電熱線分野で<strong>いちばん出題される一行</strong>です。理由まで言えるようにしておくこと。</p>
+  </div>
+
+  <div class="figs">
+    <figure>
+      <svg class="cir" viewBox="0 0 260 148" role="img" aria-label="電熱線2本直列">
+        <path d="M34 34 H68 M112 34 H148 M192 34 H226 M34 34 V116 M226 34 V116 M34 116 H112 M148 116 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-res" x="68" y="22" width="44" height="24"/>
+        <use href="#s-res" x="148" y="22" width="44" height="24"/>
+        <use href="#s-batt" x="112" y="98" width="36" height="36"/>
+        <text x="90" y="14" text-anchor="middle">a（抵抗1）</text>
+        <text x="170" y="14" text-anchor="middle" class="amb">b（抵抗2）</text>
+        <text x="130" y="70" text-anchor="middle" class="cu">電流は共通</text>
+        <text x="130" y="86" text-anchor="middle">発熱 a：b ＝ 1：2</text>
+      </svg>
+      <figcaption><b>直列</b>＝抵抗の大きい b の方が熱い</figcaption>
+    </figure>
+    <figure>
+      <svg class="cir" viewBox="0 0 260 158" role="img" aria-label="電熱線2本並列">
+        <path d="M34 34 H68 M112 34 H226 M34 34 V126 M226 34 V126 M34 75 H68 M112 75 H226 M34 126 H112 M148 126 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+        <use href="#s-res" x="68" y="22" width="44" height="24"/>
+        <use href="#s-res" x="68" y="63" width="44" height="24"/>
+        <use href="#s-batt" x="112" y="108" width="36" height="36"/>
+        <text x="150" y="28" class="amb">a（抵抗1）</text>
+        <text x="150" y="69">b（抵抗2）</text>
+        <text x="130" y="94" text-anchor="middle" class="cu">電圧は共通</text>
+        <text x="130" y="108" text-anchor="middle">発熱 a：b ＝ 2：1</text>
+      </svg>
+      <figcaption><b>並列</b>＝抵抗の小さい a の方が熱い</figcaption>
+    </figure>
+  </div>
+
+  <h3>6-3　水の温度上昇</h3>
+  <div class="rule">
+    <span class="rt">RULE 05 — 熱量と水温</span>
+    <p><span class="hl">上がる温度 ＝ 発熱量 ÷ 水の重さ</span></p>
+    <p>・同じ電熱線・同じ水なら、<strong>上がる温度は時間に比例</strong></p>
+    <p>・同じ発熱量なら、<strong>上がる温度は水の重さに反比例</strong>（水が2倍なら上昇は半分）</p>
+    <p>・ビーカーが分かれていれば、<strong>その電熱線が出した熱だけ</strong>がその水に入る</p>
+  </div>
+  <div class="trap">
+    <span class="lb">TOP-TIER TRAP</span>
+    <p>電池を2個直列にすると、<strong>電流も電圧も2倍</strong>なので発熱量は「2×2＝<strong>4倍</strong>」。温度上昇も4倍です。「2倍」と答える人が非常に多い最頻出のわなです。</p>
+  </div>
+</section>
+
+<!-- ============================ 07 ============================ -->
+<section id="ch7">
+  <div class="sec-h"><span class="sec-n">07</span><h2>出題パターン16 — 入試はこの形で出る</h2></div>
+  <p class="sec-sub">見た瞬間に「あ、あの型だ」と反応できるかどうか。難易度は <span class="lv lv1">基本</span> <span class="lv lv2">標準</span> <span class="lv lv3">難関</span> <span class="lv lv4">最難関</span> の4段階です。</p>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P01</span><h3>明るい順に並べる</h3><span class="lv lv1">基本</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ豆電球と同じかん電池を使った次の回路を、豆電球1個の明るい順に並べなさい。<br>ア＝電池1・豆1／イ＝電池1・豆2直列／ウ＝電池1・豆2並列／エ＝電池2直列・豆1／オ＝電池2並列・豆1</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>豆電球1個ぶんの電流を出す。<span class="mono">電流＝電池の電圧 ÷ その豆電球にかかる抵抗</span></li>
+          <li>ア＝1／イ＝½（抵抗2倍）／ウ＝1（各枝が独立して電池につながる）／エ＝2（電圧2倍）／オ＝1（電圧は1個分のまま）</li>
+          <li>並列は「明るさが分かれる」のではなく「道が増える」だけ、と押さえる。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>エ ＞ ア＝ウ＝オ ＞ イ</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P02</span><h3>電池が長もちする順</h3><span class="lv lv1">基本</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>P01のア〜オで、かん電池が長もちする順に並べなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>見るのは明るさではなく<strong>電池1個を流れる電流</strong>。これが小さいほど長もちする。</li>
+          <li>ア＝1／イ＝½／ウ＝2／エ＝2（直列なので同じ電流が両方を通る）／オ＝1を2個で分担して各½</li>
+          <li>もちは電流の逆比。イ＝2倍、オ＝2倍、ア＝1倍、ウ＝エ＝½倍。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>イ＝オ ＞ ア ＞ ウ＝エ</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P03</span><h3>光らない豆電球（ショート）</h3><span class="lv lv2">標準</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>豆電球AとBが直列につながれた回路で、Bの両はしを1本の導線で結んだ。(1) Bは光るか。(2) Aの明るさは、導線を結ぶ前とくらべてどうなるか。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>Bと導線が並列。導線には抵抗がないので、電流はすべて導線を通る → <strong>Bには電流が流れない</strong>。</li>
+          <li>計算では<strong>Bを消して</strong>考える。回路は「電池1・豆A1個」だけになる。</li>
+          <li>結ぶ前のAの電流は½、結んだあとは1。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) 光らない　(2) 2倍明るくなる</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P04</span><h3>スイッチを閉じると明るさはどう変わるか</h3><span class="lv lv2">標準</span></div>
+    <div class="pat-b">
+      <figure style="max-width:320px;margin:0 0 14px">
+        <svg class="cir" viewBox="0 0 260 142" role="img" aria-label="スイッチ付き回路">
+          <path d="M34 34 H64 M96 34 H162 M194 34 H226 M34 34 V116 M226 34 V116 M34 116 H112 M148 116 H226
+                   M130 34 V75 M130 75 H134 M170 75 H180 M212 75 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#s-bulb" x="64" y="18" width="32" height="32"/>
+          <use href="#s-bulb" x="162" y="18" width="32" height="32"/>
+          <use href="#s-sw" x="134" y="61" width="36" height="28"/>
+          <use href="#s-bulb" x="180" y="59" width="32" height="32"/>
+          <use href="#s-batt" x="112" y="98" width="36" height="36"/>
+          <circle cx="130" cy="34" r="3" fill="currentColor"/>
+          <text x="80" y="14" text-anchor="middle">C</text>
+          <text x="178" y="14" text-anchor="middle">A</text>
+          <text x="196" y="104" text-anchor="middle">B</text>
+          <text x="152" y="56" text-anchor="middle" class="cu">S</text>
+        </svg>
+        <figcaption>豆電球A・Bが並列、それにCが直列。Bの枝にスイッチS。</figcaption>
+      </figure>
+      <p class="q"><span class="qt">QUESTION</span>スイッチSを閉じると、AとCの明るさはそれぞれどうなるか。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li><strong>S開</strong>：AとCの直列だけ。抵抗2 → 電流½。A＝C＝½</li>
+          <li><strong>S閉</strong>：AとBの並列（抵抗½）＋C（抵抗1）＝ 3/2 → 全電流 <span class="mono">2/3</span></li>
+          <li>Cには全部通るので 2/3。AとBは半分ずつで各 <span class="mono">1/3</span></li>
+        </ol>
+        <p class="final"><span>ANSWER</span>Cは ½→2/3 で<strong>明るくなる</strong>、Aは ½→1/3 で<strong>暗くなる</strong></p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">「豆電球を増やしたのに暗くなるものがある」——並列を足すと全体の抵抗が減り、直列部分の負担が増えるためです。ここが問われます。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P05</span><h3>ぐちゃぐちゃ配線を整理する</h3><span class="lv lv2">標準</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>導線が斜めに走り、交差もしている図を見せて「A・B・Cはどのようにつながっているか」「電流が最も大きいのはどれか」と問う形。図そのものは学校ごとに変わりますが、<strong>解き方は毎回同じ</strong>です。</p>
+      <details class="ans"><summary>手順（第4章の4ステップ）</summary><div class="sol">
+        <ol>
+          <li>導線だけでつながった点をすべて同じ記号にする（ア、イ、ウ…）。交差していても、黒丸がなければつながっていない。</li>
+          <li>各豆電球の両はしを「A＝ア–イ」の形でメモする。</li>
+          <li>同じ組み合わせの豆電球は並列。ちがう組み合わせで数珠つなぎになっていれば直列。</li>
+          <li>電池の＋極を左、−極を右にして、点を横一列に並べ直して描く。</li>
+        </ol>
+        <p class="final"><span>POINT</span>図の見た目は無視。<strong>「両はしがどの点か」だけ</strong>が回路を決める</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P06</span><h3>3個以上の直並列</h3><span class="lv lv2">標準</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ豆電球A・B・C・Dとかん電池1個。Aと、BC並列と、Dが順に直列につながっている。各豆電球の電流を求めなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>内側から合成：BC並列 ＝ ½</li>
+          <li>全体 ＝ 1 ＋ ½ ＋ 1 ＝ <span class="mono">5/2</span></li>
+          <li>全電流 ＝ 1 ÷ 5/2 ＝ <span class="mono">2/5</span> → AとDに流れる</li>
+          <li>BCは半分ずつ → 各 <span class="mono">1/5</span></li>
+        </ol>
+        <p class="final"><span>ANSWER</span>A＝D＝2/5、B＝C＝1/5（明るさは A＝D がBの2倍）</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P07</span><h3>抵抗のちがう豆電球が混ざる</h3><span class="lv lv3">難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>豆電球Pの抵抗を1、Qの抵抗を2とする。かん電池1個に (1) PとQを直列 (2) PとQを並列 につないだとき、それぞれに流れる電流と、電池を流れる電流を求めなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li><strong>(1) 直列</strong>：全体の抵抗＝1＋2＝3 → 電流 <span class="mono">1/3</span>。1本道なのでPもQも同じ1/3。</li>
+          <li><strong>(2) 並列</strong>：それぞれが電池に直接つながる。P＝1÷1＝<span class="mono">1</span>、Q＝1÷2＝<span class="mono">1/2</span>。</li>
+          <li>電池を流れる電流＝合計＝<span class="mono">3/2</span>（＝合成抵抗 2/3 の逆数）</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) P＝Q＝1/3、電池1/3　(2) P＝1、Q＝1/2、電池3/2</p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">注意：抵抗のちがう豆電球どうしは、電流が同じでも明るさが同じとは限りません。明るさを比べる問題は<strong>同じ種類の豆電球どうし</strong>で聞かれるのがふつうです。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P08</span><h3>電流計のつなぎ方と読み</h3><span class="lv lv2">標準</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>並列回路で「電池を流れる電流」を測りたい。電流計はどこに入れるか。また5Aたんしで0〜5の目盛りが1.6を指したときの電流は。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>「電池を流れる電流」＝枝分かれする<strong>前</strong>。電池のすぐとなり（＋極から出てすぐ、または−極に入る直前）に<strong>直列</strong>に入れる。</li>
+          <li>枝の中に入れると、その枝の電流しか測れない。</li>
+          <li>5Aたんし → 目盛りの5が5Aにあたる → そのまま読んで <span class="mono">1.6A</span></li>
+        </ol>
+        <p class="final"><span>ANSWER</span>電池のすぐ横に直列に入れる／1.6A</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P09</span><h3>長さ・太さから抵抗を出す</h3><span class="lv lv1">基本</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ材質のニクロム線。ア＝長さ10cm・断面積1、イ＝長さ20cm・断面積1、ウ＝長さ10cm・断面積2、エ＝長さ20cm・断面積2。アの抵抗を1として他を求め、同じ電池につないだときの電流が大きい順に並べなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>抵抗 ＝ 長さ ÷ 断面積 の比で出す。</li>
+          <li>ア＝10÷1＝<span class="mono">1</span>、イ＝20÷1＝<span class="mono">2</span>、ウ＝10÷2＝<span class="mono">1/2</span>、エ＝20÷2＝<span class="mono">1</span></li>
+          <li>電流は抵抗の逆比。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>抵抗 ア1・イ2・ウ½・エ1／電流は ウ ＞ ア＝エ ＞ イ</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P10</span><h3>直列・並列でどちらが熱いか</h3><span class="lv lv2">標準</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>抵抗1の電熱線aと抵抗2の電熱線b。(1) 直列につないだとき (2) 並列につないだとき、発熱量の比 a：b をそれぞれ答えなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>発熱量＝電流×電圧。まずどちらが共通かを見る。</li>
+          <li><strong>直列</strong>は電流が共通 → 発熱量は電圧に比例し、電圧は抵抗に比例 → <span class="mono">a：b＝1：2</span></li>
+          <li><strong>並列</strong>は電圧が共通 → 発熱量は電流に比例し、電流は抵抗に反比例 → <span class="mono">a：b＝2：1</span></li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) 1：2（bが熱い）　(2) 2：1（aが熱い）</p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">合言葉：<strong>直列なら細い（長い）方が熱い／並列なら太い（短い）方が熱い</strong></p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P11</span><h3>水の温度上昇 5題セット</h3><span class="lv lv3">難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>電熱線a（抵抗1）をかん電池1個につなぎ、100gの水に入れて5分間電流を流すと、水温が4℃上がった。次の場合の温度上昇は。<br>(1) 同じ条件で10分間　(2) 水を200gにして5分間　(3) 電池を2個直列にして5分間　(4) aを2本直列にして、2本とも同じ100gの水に入れ5分間　(5) aを2本並列にして、別々の100gの水に入れ5分間</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li><strong>(1)</strong> 時間に比例 → 4×2 ＝ <span class="mono">8℃</span></li>
+          <li><strong>(2)</strong> 水の重さに反比例 → 4÷2 ＝ <span class="mono">2℃</span></li>
+          <li><strong>(3)</strong> 電流2倍・電圧2倍 → 発熱量は<strong>4倍</strong> → <span class="mono">16℃</span></li>
+          <li><strong>(4)</strong> 全体の抵抗2倍 → 電流½。全体の発熱量＝½×1＝もとの½ → その熱が全部同じ水に入るので <span class="mono">2℃</span>（1本あたりは¼だが2本ぶん）</li>
+          <li><strong>(5)</strong> 並列なので各電熱線にかかる電圧は電池1個ぶんのまま＝もとと同じ条件 → 各ビーカー <span class="mono">4℃</span>（電池の消耗は2倍）</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) 8℃　(2) 2℃　(3) 16℃　(4) 2℃　(5) それぞれ4℃</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P12</span><h3>時間と温度のグラフ</h3><span class="lv lv2">標準</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>電熱線AとBを直列につなぎ、それぞれ別の100gの水に入れた。10分後の水温上昇はAが12℃、Bが4℃だった。(1) AとBの抵抗の比は。(2) この2本を並列につなぎかえると、水温が高くなるのはどちらか。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>グラフが直線＝上昇温度は時間に比例。傾きの比＝発熱量の比＝<span class="mono">12：4＝3：1</span></li>
+          <li>直列は電流共通なので、発熱量の比＝抵抗の比 → <strong>A：B＝3：1</strong>（Aの方が細い、または長い）</li>
+          <li>並列にすると電圧が共通 → 発熱量は抵抗に反比例 → A：B＝<span class="mono">1：3</span></li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) A：B＝3：1　(2) B（熱さの関係が逆転する）</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P13</span><h3>電流と電圧のグラフ（電熱線 vs 豆電球）</h3><span class="lv lv3">難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>電熱線と豆電球について、電圧を変えながら電流を測ると次のようになった。豆電球のグラフが直線にならない理由を説明しなさい。</p>
+      <div class="tw"><table>
+        <thead><tr><th>加えた電圧 (V)</th><th class="n">0.25</th><th class="n">0.50</th><th class="n">0.75</th><th class="n">1.00</th><th class="n">1.25</th><th class="n">1.50</th></tr></thead>
+        <tbody>
+          <tr><td>電熱線の電流 (A)</td><td class="n">0.05</td><td class="n">0.10</td><td class="n">0.15</td><td class="n">0.20</td><td class="n">0.25</td><td class="n">0.30</td></tr>
+          <tr><td>豆電球の電流 (A)</td><td class="n">0.10</td><td class="n">0.16</td><td class="n">0.20</td><td class="n">0.23</td><td class="n">0.25</td><td class="n">0.27</td></tr>
+        </tbody>
+      </table></div>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>電熱線は電圧が2倍なら電流も2倍＝<strong>比例（原点を通る直線）</strong>。抵抗は一定。</li>
+          <li>豆電球は電圧を上げるほど電流の増え方がにぶる。抵抗（＝電圧÷電流）を計算すると 2.5 → 3.1 → 3.75 → 4.3 → 5.0 → 5.6 と<strong>増えている</strong>。</li>
+          <li>理由は温度。フィラメント（タングステン）は明るく光るほど高温になり、金属は<strong>温度が上がると抵抗が大きくなる</strong>。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>電流が大きいほどフィラメントの温度が上がり、抵抗が大きくなるため、電圧に比例して電流が増えないから</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P14</span><h3>ブリッジ回路で「電流0」を見ぬく</h3><span class="lv lv3">難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ豆電球5個を第4章のブリッジの形につなぎ、かん電池1個をつないだ。(1) まん中の豆電球は光るか。(2) 回路全体に流れる電流を求めなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>回路を左右で折り返すとぴったり重なる＝<strong>完全に対称</strong>。</li>
+          <li>まん中の豆電球の両はし（アとイ）は、電池から見てまったく同じ立場 → <strong>電圧が等しい → 電流は流れない</strong>。</li>
+          <li>まん中を取り去っても他は変わらない。残りは「2個直列」が2列の並列 → 抵抗 2÷2 ＝ <span class="mono">1</span></li>
+          <li>全体の電流＝1÷1＝<span class="mono">①</span>。外側4個には各½。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) 光らない　(2) ①（基準回路と同じ大きさ）</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P15</span><h3>立方体の各辺に豆電球</h3><span class="lv lv4">最難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ豆電球12個を立方体の各辺につけ、最も遠い2つの頂点A・Gにかん電池1個をつないだ。明るさは何種類に分かれ、その比はいくらか。また全体の抵抗は豆電球何個分か。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>Aから出る3本は対称なので電流を3等分 → 全電流を1として各 <span class="mono">1/3</span></li>
+          <li>その先で各枝がさらに2つに分かれる → まん中の6本は各 <span class="mono">1/6</span></li>
+          <li>Gに入る3本でまた合流 → 各 <span class="mono">1/3</span></li>
+          <li>A→Gの電圧 ＝ 1/3＋1/6＋1/3 ＝ <span class="mono">5/6</span> → 全体の抵抗は豆電球 <strong>5/6個分</strong></li>
+          <li>電池1個なら全電流 ＝ <span class="mono">6/5＝1.2</span>。外側6本は各0.4、まん中6本は各0.2。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>明るさは2種類、比は 2：1（A・G側の6個が明るい）／全体の抵抗は 5/6</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">P16</span><h3>光らない原因をつきとめる</h3><span class="lv lv3">難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ豆電球A・B・Cを直列につないでかん電池1個につないだところ、<strong>Bだけが光らず</strong>、AとCは光った。(1) Bが光らない原因は何か。(2) このときAとCの明るさは、3個とも正常だったときとくらべてどうなっているか。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>まず<strong>断線ではない</strong>と決める。直列は1本道なので、Bのフィラメントが切れていればAもCも光らないはず。AとCが光っている＝電流は流れている。</li>
+          <li>電流は流れているのにBだけ光らない → Bの両はしが<strong>導線でつながれている（ショートしている）</strong>。ソケットの中でつながってしまった場合もこれ。</li>
+          <li>計算では<strong>Bを消して</strong>考える。正常時は3個直列で電流 <span class="mono">1/3</span>、Bが消えると2個直列で <span class="mono">1/2</span>。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) Bの両はしが導線でつながれている（ショート）　(2) 1/3 → 1/2 になり、AもCも<strong>明るくなる</strong></p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">「1個消えたのに残りが明るくなる」——この違和感を説明できるかが出題のねらいです。並列回路で1個切れた場合は、残りの明るさは<strong>変わりません</strong>（こちらもセットで問われます）。</p>
+      </div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 08 ============================ -->
+<section id="ch8">
+  <div class="sec-h"><span class="sec-n">08</span><h2>最難関チャレンジ — 御三家・筑駒レベル</h2></div>
+  <p class="sec-sub">対称性・非線形・エネルギー。この4問が解ければ、電流分野で困ることはほぼありません。</p>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">C1</span><h3>立方体・面の対角線につなぐ</h3><span class="lv lv4">最難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ豆電球12個を立方体の各辺につける。今度は<strong>同じ面の向かい合った頂点</strong>（面の対角線の両はし）にかん電池1個をつないだ。(1) 光らない豆電球は何個あるか。(2) 全体の抵抗は豆電球何個分か。(3) 明るさは何種類に分かれ、その比は。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>電池をつないだ2頂点をA・Cとする（下の面の対角）。下の面の残り2頂点B・Dは、AからもCからも豆電球1個ぶんの距離で<strong>まったく同じ立場</strong>。よってB・Dの電圧は、AとCのちょうどまん中。</li>
+          <li>上の面で、Bの真上の頂点B′を考える。上の面もA側とC側で対称なので、B′の電圧もやはり<strong>ちょうどまん中</strong>。つまり<span class="hl">BとB′は同じ電圧</span> → BB′の豆電球には電流が流れない。DD′も同じ。</li>
+          <li>この2個を取り去ると、A→Cの道は3本だけになる。<br>　① A–B–C（豆2個）　② A–D–C（豆2個）　③ A–A′→〈上の面をB′経由とD′経由の2通り〉→C′–C</li>
+          <li>③の上の面部分は「2個直列が2列の並列」＝1個ぶん。よって③全体は 1＋1＋1 ＝ <span class="mono">3</span></li>
+          <li>3本の並列：流れやすさを足すと ½＋½＋⅓ ＝ <span class="mono">4/3</span> → 全体の抵抗は <span class="mono">3/4</span></li>
+          <li>電池1個なら全電流 <span class="mono">4/3</span>。①②の豆電球は各 <span class="mono">1/2</span>、AA′とCC′は <span class="mono">1/3</span>、上の面の4個は <span class="mono">1/6</span>、BB′・DD′は <span class="mono">0</span></li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) 2個　(2) 3/4個分　(3) 4種類（0を数えなければ3種類）で、比は 3：2：1：0</p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">参考：<strong>となり合う頂点</strong>につないだ場合の全体の抵抗は 7/12 個分。3通りの結び方で 5/6・3/4・7/12 と変わります。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">C2</span><h3>電熱線3本の発熱配分</h3><span class="lv lv4">最難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>同じ電熱線a・b・cが3本ある。aとbを並列にしたものを、cと直列にしてかん電池1個につないだ。3本をそれぞれ別のビーカー（水100gずつ）に入れて10分間電流を流したとき、上がる温度の比 c：a：b を求めなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>抵抗を1として、ab並列＝<span class="mono">1/2</span>。全体＝1/2＋1＝<span class="mono">3/2</span></li>
+          <li>全電流＝1÷3/2＝<span class="mono">2/3</span>。これがcを流れる。aとbは半分ずつで各 <span class="mono">1/3</span></li>
+          <li>発熱量＝電流×電圧＝電流×（電流×抵抗）。抵抗が同じなら<strong>電流の2乗に比例</strong>。</li>
+          <li>c：a：b ＝ (2/3)²：(1/3)²：(1/3)² ＝ 4/9：1/9：1/9</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>c：a：b ＝ 4：1：1</p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">検算：全発熱量＝4/9＋1/9＋1/9＝2/3。これは「全電流2/3 × 電池の電圧1」と一致します。<strong>合計が電池の出す量と合うか</strong>は必ず確かめてください。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">C3</span><h3>豆電球の抵抗は一定ではない</h3><span class="lv lv4">最難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>P13の表の豆電球を使う。(1) この豆電球2個を直列にして1.5Vの電源につないだとき、流れる電流は何Aか。(2) 1個だけを1.5Vにつないだときの電流の何倍か。(3) 「豆電球を2個直列にすると電流はちょうど半分になる」という説明は正しいか、理由をつけて答えなさい。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>同じ豆電球2個の直列なので、1個あたりにかかる電圧は 1.5÷2＝<span class="mono">0.75V</span></li>
+          <li>表の0.75Vの欄を読む → <span class="mono">0.20A</span></li>
+          <li>1個だけ1.5Vなら <span class="mono">0.27A</span>。0.20÷0.27 ＝ <strong>約0.74倍</strong>（半分の0.135Aよりずっと多い）</li>
+          <li>理由：直列にすると1個あたりの電流が減る → フィラメントの温度が下がる → <span class="hl">抵抗が小さくなる</span> → その分だけ電流が流れやすくなるので、半分より多く流れる。</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) 0.20A　(2) 約0.74倍　(3) 正しくない。豆電球の抵抗は温度によって変わり、暗いときほど抵抗が小さくなるため</p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">このノートの他の章では「豆電球の抵抗は一定」として計算しています。それは<strong>中学受験のための近似</strong>で、実験データを与えられたときだけこの本当の性質が問われます。</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="pat">
+    <div class="pat-h"><span class="pat-n">C4</span><h3>手回し発電機の手ごたえ</h3><span class="lv lv3">難関</span></div>
+    <div class="pat-b">
+      <p class="q"><span class="qt">QUESTION</span>手回し発電機に豆電球1個をつなぎ、一定の速さで回した。同じ速さで回したまま、(1) 豆電球2個を直列 (2) 豆電球2個を並列 につなぎかえると、ハンドルの手ごたえはそれぞれどうなるか。</p>
+      <details class="ans"><summary>考え方と答え</summary><div class="sol">
+        <ol>
+          <li>同じ速さで回す＝発電機が生み出す<strong>電圧は同じ</strong>。</li>
+          <li>手ごたえの正体は「取り出される電気の量（電流×電圧）」。<strong>電流が多いほど重い</strong>。</li>
+          <li><strong>(1) 直列</strong>：抵抗2倍 → 電流½ → 手ごたえは<strong>軽くなる</strong>（豆電球は2個とも暗い）</li>
+          <li><strong>(2) 並列</strong>：電流2倍 → 手ごたえは<strong>重くなる</strong>（2個とも1個のときと同じ明るさ）</li>
+        </ol>
+        <p class="final"><span>ANSWER</span>(1) 軽くなる　(2) 重くなる</p>
+        <p style="font-size:14px;color:var(--ink-soft);margin-top:8px">導線だけでつなぐ（ショート）と電流が非常に大きくなり、ハンドルはほとんど回せないほど重くなります。「豆電球が明るいほど重い」ではなく「電流が多いほど重い」が本質です。</p>
+      </div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 09 ============================ -->
+<section id="ch9">
+  <div class="sec-h"><span class="sec-n">09</span><h2>知識と記述の総点検</h2></div>
+  <p class="sec-sub">計算問題の合間に必ず1〜2問出る、覚えていれば取れるところ。</p>
+
+  <h3>9-1　一問一答</h3>
+  <div class="card">
+    <div class="sol">
+      <p><strong>Q. 豆電球のフィラメントに使われる金属と、その理由は。</strong></p>
+      <details class="ans"><summary>答え</summary><p>タングステン。<strong>融点が非常に高く</strong>、高温になっても溶けにくいから。</p></details>
+      <p style="margin-top:18px"><strong>Q. 電球の中に空気が入っていないのはなぜか。</strong></p>
+      <details class="ans"><summary>答え</summary><p>空気中の<strong>酸素があると、高温のフィラメントが酸化して（燃えて）すぐ切れてしまう</strong>から。中は真空か、反応しにくいアルゴンなどの気体で満たされている。</p></details>
+      <p style="margin-top:18px"><strong>Q. 電熱線に使われるニクロム線とはどんなものか。</strong></p>
+      <details class="ans"><summary>答え</summary><p><strong>ニッケルとクロムの合金</strong>。抵抗が大きくて発熱しやすく、高温でも酸化しにくい。導線に使う銅は逆に抵抗が非常に小さい。</p></details>
+      <p style="margin-top:18px"><strong>Q. 電流の向きの約束と、実際に動いているもの。</strong></p>
+      <details class="ans"><summary>答え</summary><p>電流は<strong>＋極 → −極</strong>と決められている。実際に動いているのは電子で、その向きは<strong>−極 → ＋極</strong>（逆向き）。</p></details>
+      <p style="margin-top:18px"><strong>Q. 家庭のコンセントが並列につながれているのはなぜか。</strong></p>
+      <details class="ans"><summary>答え</summary><p>①どの器具にも<strong>同じ電圧（100V）</strong>がかかるから　②1つのスイッチを切っても<strong>他の器具は使えるまま</strong>だから。直列だと1つ切っただけで全部止まってしまう。</p></details>
+      <p style="margin-top:18px"><strong>Q. ヒューズやブレーカーのはたらきは。</strong></p>
+      <details class="ans"><summary>答え</summary><p>決められた以上の<strong>大きな電流が流れたときに回路を切り</strong>、導線の発熱による火災を防ぐ。ヒューズは熱で溶けて切れる金属。</p></details>
+      <p style="margin-top:18px"><strong>Q. 電池を導線だけでつなぐとどうなるか。</strong></p>
+      <details class="ans"><summary>答え</summary><p>抵抗がほとんどないので<strong>非常に大きな電流</strong>が流れ、導線と電池が高温になる。やけどや発火のおそれがあり、電池もすぐに使えなくなる。</p></details>
+    </div>
+  </div>
+
+  <h3>9-2　発展：LED・コンデンサー・発電機</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>もの</th><th>性質</th><th>入試での問われ方</th></tr></thead>
+    <tbody>
+      <tr><td><strong>LED<br>（発光ダイオード）</strong></td><td>決まった向きにしか電流を流さない。長い足が＋側。少ない電流で光り、発熱がとても少ない。</td><td>逆向きにつなぐと光らない／豆電球と比べて省エネな理由</td></tr>
+      <tr><td><strong>コンデンサー</strong></td><td>電気をためる部品。豆電球につなぐとはじめ明るく、だんだん暗くなって消える。</td><td>同じだけためた電気で、LEDの方が豆電球よりずっと長く光る（消費が少ないから）</td></tr>
+      <tr><td><strong>手回し発電機</strong></td><td>速く回すほど電圧が大きい。逆に回すと電流の向きが逆になる。</td><td>つないだものによって手ごたえが変わる理由（C4）</td></tr>
+      <tr><td><strong>光電池</strong></td><td>光が強いほど、また光が垂直に当たるほど電流が大きい。</td><td>当てる角度・距離を変える実験</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section id="ch10">
+  <div class="sec-h"><span class="sec-n">10</span><h2>総復習チェックリスト</h2></div>
+  <p class="sec-sub">説明できるものにチェック。1つでも空いていたら、その章に戻ってください。チェックはこのブラウザに保存されます。</p>
+  <ul class="check" id="checklist">
+    <li><label><input type="checkbox"><span>豆電球を通っても電流は減らない、と理由つきで言える</span></label></li>
+    <li><label><input type="checkbox"><span>枝分かれの前後で電流の合計が等しいことを使える</span></label></li>
+    <li><label><input type="checkbox"><span>＋極から指でたどって直列・並列を判定できる</span></label></li>
+    <li><label><input type="checkbox"><span>基準①をとり、電流＝電圧÷抵抗 で計算できる</span></label></li>
+    <li><label><input type="checkbox"><span>8パターン表（明るさと電池のもち）を空で書ける</span></label></li>
+    <li><label><input type="checkbox"><span>豆電球の並列で明るさが変わらない理由を説明できる</span></label></li>
+    <li><label><input type="checkbox"><span>電池の直列と並列で「もち」がどう変わるか言える</span></label></li>
+    <li><label><input type="checkbox"><span>直列＝たし算、同じもの n個並列＝1/n で合成できる</span></label></li>
+    <li><label><input type="checkbox"><span>ちがう抵抗の並列を「和分の積」で出せる</span></label></li>
+    <li><label><input type="checkbox"><span>電流が抵抗の逆比に分かれることを使える</span></label></li>
+    <li><label><input type="checkbox"><span>導線でつながった点に同じ名前をつけて描き直せる</span></label></li>
+    <li><label><input type="checkbox"><span>ショートされた豆電球を消して計算できる</span></label></li>
+    <li><label><input type="checkbox"><span>ショートすると残りが明るくなる理由を言える</span></label></li>
+    <li><label><input type="checkbox"><span>対称な回路でまん中に電流が流れないと見ぬける</span></label></li>
+    <li><label><input type="checkbox"><span>立方体の合成抵抗（5/6）を自力で出せる</span></label></li>
+    <li><label><input type="checkbox"><span>電流計は直列・電圧計は並列、大きいたんしから</span></label></li>
+    <li><label><input type="checkbox"><span>たんしに応じて目盛りを読みかえられる</span></label></li>
+    <li><label><input type="checkbox"><span>抵抗は長さに比例・断面積に反比例、と使える</span></label></li>
+    <li><label><input type="checkbox"><span>発熱量＝電流×電圧×時間 で計算できる</span></label></li>
+    <li><label><input type="checkbox"><span>直列なら細い方・並列なら太い方が熱い、を理由つきで</span></label></li>
+    <li><label><input type="checkbox"><span>電池2個直列で発熱が4倍になることを間違えない</span></label></li>
+    <li><label><input type="checkbox"><span>上がる温度＝発熱量÷水の重さ を使える</span></label></li>
+    <li><label><input type="checkbox"><span>豆電球のグラフが曲がる理由を書ける</span></label></li>
+    <li><label><input type="checkbox"><span>フィラメント・ニクロム線・電球内の気体を答えられる</span></label></li>
+    <li><label><input type="checkbox"><span>手回し発電機の手ごたえの変化を説明できる</span></label></li>
+  </ul>
+</section>
+
+<footer>
+  <p>中学受験理科・電流分野 総復習ノート／すべての計算は「かん電池1個・豆電球1個」を基準①とした比で表しています。実際の入試では単位（A・V・Ω）つきで出る場合もありますが、考え方は同じです。</p>
+</footer>
+
+  </main>
+</div>
+</div>
+
+<script>
+(function(){
+  var secs = [
+    ["ch1","電流のきほん"],["ch2","基準回路法"],["ch3","抵抗の合成"],
+    ["ch4","複雑回路の解きほぐし"],["ch5","電流計と電圧計"],["ch6","電熱線と発熱"],
+    ["ch7","出題パターン16"],["ch8","最難関チャレンジ"],["ch9","知識と記述"],["ch10","チェックリスト"]
+  ];
+  var rail = document.getElementById('railList');
+  var sel  = document.getElementById('jumpsel');
+  var ph = document.createElement('option');
+  ph.textContent = '章にジャンプ…'; ph.value = ''; sel.appendChild(ph);
+  secs.forEach(function(s,i){
+    var n = String(i+1).padStart(2,'0');
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = '#'+s[0]; a.textContent = n+'　'+s[1]; a.dataset.t = s[0];
+    li.appendChild(a); rail.appendChild(li);
+    var o = document.createElement('option');
+    o.value = s[0]; o.textContent = n+'　'+s[1]; sel.appendChild(o);
+  });
+  sel.addEventListener('change', function(){
+    if(!this.value) return;
+    var el = document.getElementById(this.value);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+    this.value = '';
+  });
+
+  var links = Array.prototype.slice.call(rail.querySelectorAll('a'));
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(!e.isIntersecting) return;
+        links.forEach(function(a){ a.classList.toggle('on', a.dataset.t === e.target.id); });
+      });
+    }, {rootMargin:'-15% 0px -70% 0px'});
+    secs.forEach(function(s){
+      var el = document.getElementById(s[0]);
+      if(el) io.observe(el);
+    });
+  }
+
+  function setAll(open){
+    document.querySelectorAll('details.ans').forEach(function(d){ d.open = open; });
+  }
+  document.getElementById('openAll').addEventListener('click', function(){ setAll(true); });
+  window.addEventListener('beforeprint', function(){ setAll(true); });
+  document.getElementById('closeAll').addEventListener('click', function(){ setAll(false); });
+
+  var KEY = 'mamedenkyu-check-v1';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#checklist input'));
+  var counter = document.getElementById('ckCount');
+  function render(){
+    var n = boxes.filter(function(b){ return b.checked; }).length;
+    counter.textContent = 'チェック ' + n + ' / ' + boxes.length;
+  }
+  var saved = [];
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ saved = []; }
+  if(Array.isArray(saved)) boxes.forEach(function(b,i){ b.checked = !!saved[i]; });
+  boxes.forEach(function(b){
+    b.addEventListener('change', function(){
+      render();
+      try { localStorage.setItem(KEY, JSON.stringify(boxes.map(function(x){ return x.checked; }))); } catch(e){}
+    });
+  });
+  render();
+})();
+</script>

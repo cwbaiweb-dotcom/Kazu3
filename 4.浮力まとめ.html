@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="中学受験理科の浮力を、原理・3つの式・出題14パターン・記述テーマに整理した図解つきまとめ（難関校対応）。">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0}
+  img,svg{vertical-align:middle}
+  @media print{
+    body{background:#fff !important}
+    nav.rail{display:none !important}
+    section{break-inside:auto;page-break-inside:auto}
+    figure,.pat,.call,table{break-inside:avoid;page-break-inside:avoid}
+    h2.sec-title,h3{break-after:avoid;page-break-after:avoid}
+  }
+</style>
+</head>
+<body>
+<title>浮力の出題パターン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --paper:      #EDF1F5;
+    --surface:    #FFFFFF;
+    --surface-2:  #F6F9FB;
+    --ink:        #0F1B2E;
+    --ink-2:      #4B5D77;
+    --ink-3:      #7B8BA1;
+    --rule:       #D4DCE6;
+    --rule-soft:  #E4EAF1;
+    --blue:       #14539E;
+    --blue-soft:  #E2ECF8;
+    --brass:      #8F6310;
+    --brass-soft: #F6EFDC;
+    --alert:      #A32C24;
+    --alert-soft: #F8E9E7;
+
+    --f-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --f-body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    --f-data: "Roboto Mono", "Zen Kaku Gothic New", ui-monospace, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #0C121C;
+      --surface:    #131B29;
+      --surface-2:  #182233;
+      --ink:        #E5ECF5;
+      --ink-2:      #A2B1C5;
+      --ink-3:      #78889E;
+      --rule:       #263347;
+      --rule-soft:  #1D2739;
+      --blue:       #7BAEF3;
+      --blue-soft:  #16263E;
+      --brass:      #DFB25E;
+      --brass-soft: #2A2316;
+      --alert:      #EE8880;
+      --alert-soft: #2E1A18;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:      #0C121C;
+    --surface:    #131B29;
+    --surface-2:  #182233;
+    --ink:        #E5ECF5;
+    --ink-2:      #A2B1C5;
+    --ink-3:      #78889E;
+    --rule:       #263347;
+    --rule-soft:  #1D2739;
+    --blue:       #7BAEF3;
+    --blue-soft:  #16263E;
+    --brass:      #DFB25E;
+    --brass-soft: #2A2316;
+    --alert:      #EE8880;
+    --alert-soft: #2E1A18;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 16px;
+    line-height: 1.85;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0 48px;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    padding: 72px 0 40px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .eyebrow {
+    font-family: var(--f-data);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+    margin: 0 0 18px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(34px, 6vw, 58px);
+    line-height: 1.24;
+    letter-spacing: 0.01em;
+    margin: 0 0 20px;
+    text-wrap: balance;
+  }
+
+  h1 .sub { display: block; font-size: 0.52em; color: var(--blue); margin-top: 10px; }
+
+  .standfirst {
+    max-width: 40em;
+    color: var(--ink-2);
+    font-size: 16.5px;
+    margin: 0 0 28px;
+  }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  .chip {
+    font-family: var(--f-data);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    padding: 5px 11px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--ink-2);
+    background: var(--surface);
+  }
+
+  /* ---------- nav rail ---------- */
+
+  nav.rail { grid-column: 1 / -1; padding: 28px 0 0; }
+
+  .rail h2 {
+    font-family: var(--f-data);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--ink-3);
+    margin: 0 0 12px;
+    font-weight: 500;
+  }
+
+  .rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+
+  .rail a {
+    color: var(--ink-2);
+    text-decoration: none;
+    font-size: 14px;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+  }
+
+  .rail a:hover, .rail a:focus-visible { color: var(--blue); border-bottom-color: var(--blue); }
+
+  main { grid-column: 1 / -1; min-width: 0; }
+
+  @media (min-width: 1040px) {
+    .wrap { grid-template-columns: 196px minmax(0, 1fr); }
+    nav.rail {
+      grid-column: 1;
+      position: sticky;
+      top: 0;
+      align-self: start;
+      max-height: 100vh;
+      overflow-y: auto;
+      padding: 52px 0 40px;
+    }
+    .rail ol { flex-direction: column; gap: 3px; }
+    .rail a { font-size: 13.5px; }
+    main { grid-column: 2; padding-top: 52px; }
+  }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 44px 0 8px; scroll-margin-top: 20px; }
+  section + section { border-top: 1px solid var(--rule-soft); }
+
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+
+  .sec-num {
+    font-family: var(--f-data);
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: 0.1em;
+    padding-top: 4px;
+  }
+
+  h2.sec-title {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(24px, 3.4vw, 32px);
+    line-height: 1.4;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .sec-lead { color: var(--ink-2); max-width: 42em; margin: 6px 0 30px; font-size: 15.5px; }
+
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.5;
+    margin: 38px 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--blue);
+  }
+
+  h4 { font-size: 15px; font-weight: 700; margin: 22px 0 6px; color: var(--ink); }
+
+  p { max-width: 42em; margin: 0 0 14px; }
+
+  ul, ol.plain { max-width: 42em; padding-left: 1.35em; margin: 0 0 16px; }
+  li { margin-bottom: 5px; }
+  li::marker { color: var(--ink-3); }
+
+  b, strong { font-weight: 700; }
+
+  em.key {
+    font-style: normal;
+    background: linear-gradient(transparent 62%, var(--blue-soft) 62%);
+    font-weight: 700;
+    padding: 0 1px;
+  }
+
+  /* ---------- formula ---------- */
+
+  .formulas {
+    display: grid;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    margin: 20px 0 26px;
+    max-width: 44em;
+    overflow: hidden;
+  }
+
+  .formula { background: var(--surface); padding: 16px 20px; display: grid; gap: 5px; }
+
+  .formula .tag {
+    font-family: var(--f-data);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--blue);
+  }
+
+  .formula .expr {
+    font-family: var(--f-data);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+  }
+
+  .formula .note { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; }
+
+  /* ---------- callouts ---------- */
+
+  .call {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--blue);
+    background: var(--surface);
+    padding: 15px 19px;
+    margin: 20px 0;
+    max-width: 44em;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .call .lab {
+    display: block;
+    font-family: var(--f-data);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--blue);
+    margin-bottom: 5px;
+  }
+
+  .call p:last-child, .call ul:last-child { margin-bottom: 0; }
+  .call p, .call ul { font-size: 14.5px; }
+
+  .call.warn { border-left-color: var(--alert); background: var(--alert-soft); }
+  .call.warn .lab { color: var(--alert); }
+  .call.brass { border-left-color: var(--brass); background: var(--brass-soft); }
+  .call.brass .lab { color: var(--brass); }
+
+  /* ---------- pattern cards ---------- */
+
+  .patterns { display: grid; gap: 14px; margin: 24px 0 8px; }
+
+  @media (min-width: 720px) { .patterns { grid-template-columns: 1fr 1fr; } }
+
+  .pat {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 18px 20px 20px;
+    display: grid;
+    align-content: start;
+    gap: 9px;
+  }
+
+  .pat-top { display: flex; align-items: baseline; gap: 10px; }
+
+  .pat-n {
+    font-family: var(--f-data);
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    background: var(--blue);
+    border-radius: 2px;
+    padding: 1px 7px;
+    flex: none;
+  }
+
+  :root[data-theme="dark"] .pat-n { color: #0C121C; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pat-n { color: #0C121C; } }
+
+  .pat-t { font-weight: 700; font-size: 15.5px; line-height: 1.55; }
+
+  .pat dl { margin: 0; display: grid; gap: 8px; }
+
+  .pat dt {
+    font-family: var(--f-data);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    margin-bottom: 1px;
+  }
+
+  .pat dd { margin: 0; font-size: 14.5px; line-height: 1.78; color: var(--ink-2); }
+  .pat dd b { color: var(--ink); }
+
+  .pat.hard { border-color: var(--brass); }
+  .pat.hard .pat-n { background: var(--brass); }
+
+  .hard-flag {
+    font-family: var(--f-data);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--brass);
+    border: 1px solid var(--brass);
+    border-radius: 2px;
+    padding: 0 5px;
+    margin-left: auto;
+    flex: none;
+    align-self: center;
+  }
+
+  /* ---------- figures ---------- */
+
+  figure {
+    margin: 30px 0;
+    padding: 20px 20px 16px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    max-width: 46em;
+    overflow-x: auto;
+  }
+
+  figure svg { display: block; width: 100%; height: auto; color: var(--ink); }
+  figure.wide svg { min-width: 560px; }
+
+  figcaption {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.7;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .svg-lab { font-family: var(--f-body); font-size: 11.5px; fill: currentColor; }
+  .svg-lab-s { font-family: var(--f-body); font-size: 10.5px; fill: currentColor; opacity: 0.72; }
+  .svg-num { font-family: var(--f-data); font-size: 11px; fill: currentColor; }
+  .svg-accent { fill: var(--blue); }
+  .svg-oil { stroke: var(--brass); }
+
+  /* ---------- tables ---------- */
+
+  .tbl-scroll { overflow-x: auto; margin: 20px 0 26px; max-width: 46em; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 440px;
+    font-size: 14.5px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+  }
+
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+
+  thead th {
+    font-family: var(--f-data);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    font-weight: 500;
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface-2);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  td.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ---------- steps ---------- */
+
+  ol.steps { list-style: none; padding: 0; margin: 18px 0 24px; max-width: 44em; display: grid; gap: 10px; counter-reset: st; }
+
+  ol.steps li {
+    counter-increment: st;
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 15px;
+    margin: 0;
+  }
+
+  ol.steps li::before {
+    content: counter(st);
+    font-family: var(--f-data);
+    font-size: 11.5px;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    margin-top: 4px;
+  }
+
+  /* ---------- checklist ---------- */
+
+  .checks { display: grid; gap: 0; max-width: 46em; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); margin: 20px 0; }
+  .check { display: grid; grid-template-columns: 22px 1fr; gap: 12px; padding: 13px 18px; border-bottom: 1px solid var(--rule-soft); font-size: 14.5px; line-height: 1.7; }
+  .check:last-child { border-bottom: none; }
+  .check .box { width: 15px; height: 15px; border: 1.5px solid var(--ink-3); border-radius: 2px; margin-top: 6px; }
+
+  /* ---------- Q&A list ---------- */
+
+  .qa { display: grid; gap: 0; max-width: 46em; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); margin: 22px 0; }
+  .qa-item { padding: 16px 20px; border-bottom: 1px solid var(--rule-soft); }
+  .qa-item:last-child { border-bottom: none; }
+  .qa-q { font-weight: 700; font-size: 14.5px; margin: 0 0 6px; }
+  .qa-q::before { content: "Q"; font-family: var(--f-data); color: var(--blue); margin-right: 8px; font-size: 12px; }
+  .qa-a { font-size: 14px; color: var(--ink-2); margin: 0; line-height: 1.8; }
+  .qa-a::before { content: "A"; font-family: var(--f-data); color: var(--ink-3); margin-right: 8px; font-size: 12px; }
+
+  footer.end {
+    grid-column: 1 / -1;
+    margin-top: 40px;
+    padding-top: 22px;
+    border-top: 2px solid var(--ink);
+    font-size: 13px;
+    color: var(--ink-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+  }
+
+  a { color: var(--blue); }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">中学受験理科 ／ 力学 ／ 基礎から難関校まで</p>
+    <h1>浮力<span class="sub">出題パターンの地図</span></h1>
+    <p class="standfirst">浮力でつまずくのは、公式を忘れるからではなく「この問題はどの型か」を見分けられないからです。原理を最短で押さえ、標準5型・難関9型・思考型テーマの順に整理しました。各パターンは<b>見分け方 → 解く手順 → つまずきポイント</b>で並べています。</p>
+    <div class="meta-row">
+      <span class="chip">原理と3つの式</span>
+      <span class="chip">出題 14 パターン</span>
+      <span class="chip">記述・思考型 9 テーマ</span>
+      <span class="chip">難関校対応</span>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="目次">
+    <h2>CONTENTS</h2>
+    <ol>
+      <li><a href="#s1">1 浮力の正体</a></li>
+      <li><a href="#s2">2 三本柱と密度</a></li>
+      <li><a href="#s3">3 共通の解き方</a></li>
+      <li><a href="#s4">4 標準の5型</a></li>
+      <li><a href="#s5">5 難関の9型</a></li>
+      <li><a href="#s6">6 思考・記述テーマ</a></li>
+      <li><a href="#s7">7 ミス防止と結論表</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- ================= 1 ================= -->
+    <section id="s1">
+      <div class="sec-head"><span class="sec-num">01</span>
+        <h2 class="sec-title">浮力の正体 ── 水圧の「差」である</h2>
+      </div>
+      <p class="sec-lead">「浮力とは何ですか」に「水が押し上げる力」で止まると、難関校の記述では点になりません。浮力は<em class="key">上下の面が受ける水圧による力の差</em>です。ここを押さえると、あとの公式は全部そこから出てきます。</p>
+
+      <h3>まず水圧の3つの性質</h3>
+      <ul>
+        <li>あらゆる向きにはたらく（上からも下からも横からも）</li>
+        <li>同じ深さなら、どの向きでも大きさは同じ</li>
+        <li><b>深いほど大きい</b>（水深1cmごとに1cm²あたり1gずつ増える）</li>
+      </ul>
+      <p>3つめが決定的です。物体の下面は上面より深いところにあるので、受ける力が必ず大きくなります。</p>
+
+      <figure>
+        <svg viewBox="0 0 440 268" role="img" aria-label="水中の直方体で、下面が受ける上向きの水圧が上面の下向きの水圧より大きく、その差が浮力になることを示す図">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+            <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2E7DD1"/>
+            </marker>
+          </defs>
+
+          <rect x="46" y="26" width="330" height="212" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <rect x="47" y="62" width="328" height="175" fill="#2E7DD1" opacity="0.12"/>
+          <line x1="47" y1="62" x2="375" y2="62" stroke="#2E7DD1" stroke-width="1.6"/>
+          <text class="svg-lab-s" x="54" y="55">水面</text>
+
+          <rect x="168" y="104" width="86" height="76" fill="currentColor" opacity="0.07"/>
+          <rect x="168" y="104" width="86" height="76" fill="none" stroke="currentColor" stroke-width="1.8"/>
+
+          <line x1="186" y1="80" x2="186" y2="100" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+          <line x1="211" y1="80" x2="211" y2="100" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+          <line x1="236" y1="80" x2="236" y2="100" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+          <text class="svg-lab-s" x="266" y="88">上面を押し下げる力（小）</text>
+
+          <line x1="186" y1="222" x2="186" y2="184" stroke="#2E7DD1" stroke-width="2" marker-end="url(#arb)"/>
+          <line x1="211" y1="222" x2="211" y2="184" stroke="#2E7DD1" stroke-width="2" marker-end="url(#arb)"/>
+          <line x1="236" y1="222" x2="236" y2="184" stroke="#2E7DD1" stroke-width="2" marker-end="url(#arb)"/>
+          <text class="svg-lab-s" x="266" y="216">下面を押し上げる力（大）</text>
+
+          <line x1="150" y1="142" x2="164" y2="142" stroke="currentColor" stroke-width="1.2" opacity="0.5" marker-end="url(#ar)"/>
+          <line x1="272" y1="142" x2="258" y2="142" stroke="currentColor" stroke-width="1.2" opacity="0.5" marker-end="url(#ar)"/>
+          <text class="svg-lab-s" x="52" y="204">左右は打ち消し合う</text>
+
+          <line x1="126" y1="62" x2="126" y2="104" stroke="currentColor" stroke-width="1" opacity="0.55"/>
+          <line x1="126" y1="104" x2="126" y2="180" stroke="currentColor" stroke-width="1" opacity="0.55" marker-start="url(#ar)" marker-end="url(#ar)"/>
+          <text class="svg-num" x="100" y="146">高さ</text>
+
+          <text class="svg-lab" x="18" y="258">力の差＝（下面の深さ－上面の深さ）×底面積×密度＝押しのけた液体の重さ</text>
+        </svg>
+        <figcaption>下面のほうが深いので受ける力が大きい。上下の差だけが残り、それがちょうど「押しのけた液体の重さ」に一致する。だから浮力は物体の材質にも形にも無関係で、<b>沈んでいる部分の体積と液体の密度だけ</b>で決まる。</figcaption>
+      </figure>
+
+      <div class="call">
+        <span class="lab">記述でそのまま書ける</span>
+        <p>「水圧は深いほど大きいため、物体の下面が受ける上向きの力が上面が受ける下向きの力より大きくなり、その差が浮力となる。」</p>
+      </div>
+
+      <div class="call brass">
+        <span class="lab">この図から一気に出る3つの結論</span>
+        <p>① 深く沈めても、<b>完全に水没した後は浮力は変わらない</b>（上下の深さの差＝高さは一定だから）。<br>
+        ② <b>形を変えても体積が同じなら浮力は同じ</b>。<br>
+        ③ 浮力は<b>物体の重さとは無関係</b>。鉄でも発泡スチロールでも、同じ体積が沈んでいれば浮力は同じ。</p>
+      </div>
+    </section>
+
+    <!-- ================= 2 ================= -->
+    <section id="s2">
+      <div class="sec-head"><span class="sec-num">02</span>
+        <h2 class="sec-title">三本柱の式と、密度という道具</h2>
+      </div>
+      <p class="sec-lead">浮力の問題は、結局この3つの式のどれを使うか選ぶ作業です。3つとも書けるようにしてから問題に入ってください。</p>
+
+      <div class="formulas">
+        <div class="formula">
+          <span class="tag">FORMULA 1 ／ 浮力そのもの</span>
+          <div class="expr">浮力(g) ＝ 液体中にある部分の体積(cm³) × 液体の密度(g/cm³)</div>
+          <div class="note">水なら密度1.0なので「浮力(g)＝水中部分の体積(cm³)」。数字がそのまま移るのが水の便利なところ。</div>
+        </div>
+        <div class="formula">
+          <span class="tag">FORMULA 2 ／ つるしているとき</span>
+          <div class="expr">ばねばかりの値 ＝ 空気中での重さ － 浮力</div>
+          <div class="note">「水中で軽くなった分」がそのまま浮力。逆に言えば、軽くなった分から体積が読める。</div>
+        </div>
+        <div class="formula">
+          <span class="tag">FORMULA 3 ／ 浮いて止まっているとき</span>
+          <div class="expr">浮力 ＝ 物体全体の重さ</div>
+          <div class="note">浮いて静止＝力のつり合い。ここから「沈んでいる体積の割合＝物体の密度÷液体の密度」が出る。</div>
+        </div>
+      </div>
+
+      <h3>密度は暗記ではなく変換レート</h3>
+      <p>密度（1cm³あたりの重さ）は<em class="key">重さと体積を行き来するレート</em>です。次の値を覚えておくと計算が速くなります。</p>
+
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr><th>物質</th><th>密度 g/cm³</th><th>入試での使われ方</th></tr></thead>
+          <tbody>
+            <tr><td>水</td><td class="num">1.0</td><td>基準。体積＝重さで読み替える</td></tr>
+            <tr><td>氷</td><td class="num">0.9</td><td>「10分の1が水面上に出る」の根拠</td></tr>
+            <tr><td>食塩水（例）</td><td class="num">1.1〜1.2</td><td>液体を変える問題。値は問題文で与えられる</td></tr>
+            <tr><td>灯油・石油</td><td class="num">0.8</td><td>水に浮く液体。2層問題で登場（食用油は約0.9）</td></tr>
+            <tr><td>アルミニウム</td><td class="num">2.7</td><td>金属の判別・空洞問題</td></tr>
+            <tr><td>鉄</td><td class="num">7.9</td><td>同上</td></tr>
+            <tr><td>銅</td><td class="num">9.0</td><td>同上</td></tr>
+            <tr><td>水銀</td><td class="num">13.6</td><td>鉄でも浮く液体として出題</td></tr>
+            <tr><td>空気</td><td class="num">0.0012</td><td>気球・風船。1Lで約1.2g</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="call">
+        <span class="lab">最頻出の派生公式</span>
+        <p><b>浮いている物体で、沈んでいる体積の割合 ＝ 物体の密度 ÷ 液体の密度。</b><br>
+        氷(0.9)を水(1.0)に浮かべると 0.9÷1.0＝0.9、つまり<b>9割が水中・1割が水面上</b>。同じ氷を食塩水(1.2)に浮かべると 0.9÷1.2＝0.75 で、水中は7.5割に減ります。</p>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 440 224" role="img" aria-label="同じ氷を水と食塩水に浮かべたとき、沈んでいる部分の割合が9割と7.5割で異なることを示す比較図">
+          <defs>
+            <marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <g>
+            <rect x="30" y="30" width="150" height="140" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="31" y="70" width="148" height="99" fill="#2E7DD1" opacity="0.12"/>
+            <line x1="31" y1="70" x2="179" y2="70" stroke="#2E7DD1" stroke-width="1.6"/>
+            <rect x="70" y="64" width="70" height="60" fill="currentColor" opacity="0.13" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="152" y1="64" x2="152" y2="70" stroke="currentColor" stroke-width="1" marker-start="url(#ar7)" marker-end="url(#ar7)"/>
+            <text class="svg-num" x="158" y="62">1/10</text>
+            <line x1="152" y1="70" x2="152" y2="124" stroke="currentColor" stroke-width="1" marker-start="url(#ar7)" marker-end="url(#ar7)"/>
+            <text class="svg-num" x="158" y="104">9/10</text>
+            <text class="svg-lab" x="30" y="24">水 1.0</text>
+            <text class="svg-lab-s" x="30" y="192">0.9 ÷ 1.0 ＝ 0.9</text>
+            <text class="svg-lab-s" x="30" y="210">9割が水中</text>
+          </g>
+          <g>
+            <rect x="256" y="30" width="150" height="140" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="257" y="70" width="148" height="99" fill="#2E7DD1" opacity="0.24"/>
+            <line x1="257" y1="70" x2="405" y2="70" stroke="#2E7DD1" stroke-width="1.6"/>
+            <rect x="296" y="55" width="70" height="60" fill="currentColor" opacity="0.13" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="378" y1="55" x2="378" y2="70" stroke="currentColor" stroke-width="1" marker-start="url(#ar7)" marker-end="url(#ar7)"/>
+            <text class="svg-num" x="384" y="56">2.5</text>
+            <line x1="378" y1="70" x2="378" y2="115" stroke="currentColor" stroke-width="1" marker-start="url(#ar7)" marker-end="url(#ar7)"/>
+            <text class="svg-num" x="384" y="98">7.5</text>
+            <text class="svg-lab" x="256" y="24">食塩水 1.2</text>
+            <text class="svg-lab-s" x="256" y="192">0.9 ÷ 1.2 ＝ 0.75</text>
+            <text class="svg-lab-s" x="256" y="210">7.5割が水中＝浮き上がる</text>
+          </g>
+        </svg>
+        <figcaption>同じ氷でも、濃い液体ほど<b>沈む部分が浅くなる</b>。ここで大事なのは、浮力そのものは両方とも「氷の重さ」で同じだということ。変わっているのは<b>沈む体積のほう</b>で、浮力ではない。</figcaption>
+      </figure>
+
+      <div class="call warn">
+        <span class="lab">よくある失点</span>
+        <p>「体積」と書いてあっても、浮力に使うのは<b>液体の中に入っている部分だけ</b>。浮いている物体で全体積を掛けてしまう事故が最多です。</p>
+      </div>
+    </section>
+
+    <!-- ================= 3 ================= -->
+    <section id="s3">
+      <div class="sec-head"><span class="sec-num">03</span>
+        <h2 class="sec-title">どの型でも共通の解き方</h2>
+      </div>
+      <p class="sec-lead">難関校の複雑な図でも、やることは毎回同じです。<em class="key">物体を1つだけ取り出して、はたらく力を全部書く</em>。これを飛ばして式を立てようとするから迷子になります。</p>
+
+      <ol class="steps">
+        <li><b>物体を1つ選び、まわりから切り離して描く</b>（水そうも棒もいったん忘れる）</li>
+        <li><b>下向きの力</b>を書く … 重さ（必ずある）、上から押す力、下向きに引く糸</li>
+        <li><b>上向きの力</b>を書く … 浮力（液体に入っていれば必ずある）、ばねばかりや糸が引く力、床や底が支える力</li>
+        <li>止まっているなら <b>上向きの合計 ＝ 下向きの合計</b> で式を1本立てる</li>
+        <li>未知が2つ残るときだけ、もう1つの物体か「系全体」で2本目の式を立てる</li>
+      </ol>
+
+      <div class="call">
+        <span class="lab">系全体で見るという第二の視点</span>
+        <p>容器・液体・物体をまとめて1つの箱と見ると、外から支えている力（台ばかり・ばねばかり）の合計＝中身の全重さになります。<b>台ばかりの値を問われたら、まずこれを疑う</b>。個別の力を追わずに一発で出ます。</p>
+      </div>
+
+      <h3>単位のそろえ方</h3>
+      <p>中学受験では <b>体積 cm³ ／ 重さ g ／ 密度 g/cm³</b> でそろえます。「1L＝1000cm³」「1mL＝1cm³」「1m³＝1000000cm³」の3つは即答できるように。気球の問題だけは L（リットル）で与えられることがあり、空気1L＝約1.2gを使います。</p>
+    </section>
+
+    <!-- ================= 4 ================= -->
+    <section id="s4">
+      <div class="sec-head"><span class="sec-num">04</span>
+        <h2 class="sec-title">標準の5型 ── ここが土台</h2>
+      </div>
+      <p class="sec-lead">まずこの5つ。どの学校でも必ず出るうえ、難関の型はすべてこの5つの組み合わせでできています。</p>
+
+      <figure>
+        <svg viewBox="0 0 440 276" role="img" aria-label="物体を水に沈めていくときの、下げた距離とばねばかりの値の関係を示す4区間のグラフ">
+          <defs>
+            <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <line x1="64" y1="228" x2="410" y2="228" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
+          <line x1="64" y1="228" x2="64" y2="34" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
+          <text class="svg-lab-s" x="336" y="248">下げた距離</text>
+          <text class="svg-lab-s" x="34" y="28">ばねばかり(g)</text>
+
+          <polyline points="64,66 126,66" fill="none" stroke="#2E7DD1" stroke-width="2.6"/>
+          <polyline points="126,66 232,152" fill="none" stroke="#2E7DD1" stroke-width="2.6"/>
+          <polyline points="232,152 306,152" fill="none" stroke="#2E7DD1" stroke-width="2.6"/>
+          <polyline points="306,152 372,228" fill="none" stroke="#2E7DD1" stroke-width="2.6"/>
+
+          <circle cx="126" cy="66" r="3.4" fill="#2E7DD1"/>
+          <circle cx="232" cy="152" r="3.4" fill="#2E7DD1"/>
+          <circle cx="306" cy="152" r="3.4" fill="#2E7DD1"/>
+
+          <line x1="126" y1="66" x2="126" y2="228" stroke="currentColor" stroke-width="0.9" stroke-dasharray="3 3" opacity="0.45"/>
+          <line x1="232" y1="152" x2="232" y2="228" stroke="currentColor" stroke-width="0.9" stroke-dasharray="3 3" opacity="0.45"/>
+          <line x1="306" y1="152" x2="306" y2="228" stroke="currentColor" stroke-width="0.9" stroke-dasharray="3 3" opacity="0.45"/>
+          <line x1="64" y1="152" x2="232" y2="152" stroke="currentColor" stroke-width="0.9" stroke-dasharray="3 3" opacity="0.45"/>
+          <line x1="64" y1="66" x2="266" y2="66" stroke="currentColor" stroke-width="0.9" stroke-dasharray="3 3" opacity="0.45"/>
+
+          <line x1="266" y1="66" x2="266" y2="152" stroke="currentColor" stroke-width="1.2" marker-start="url(#ar2)" marker-end="url(#ar2)"/>
+          <text class="svg-lab-s" x="330" y="100">減った分＝</text>
+          <text class="svg-lab-s" x="330" y="116">全体積×密度</text>
+
+          <text class="svg-lab-s" x="70" y="58">① 空気中</text>
+          <text class="svg-lab-s" x="132" y="124">② 沈めている途中</text>
+          <text class="svg-lab-s" x="138" y="140">傾き＝底面積×密度</text>
+          <text class="svg-lab-s" x="240" y="144">③ 水没：一定</text>
+          <text class="svg-lab-s" x="316" y="196">④ 底につく</text>
+          <text class="svg-lab-s" x="106" y="248">水面に接触</text>
+          <text class="svg-lab-s" x="196" y="248">全部沈んだ</text>
+          <text class="svg-lab-s" x="284" y="248">底に着地</text>
+          <line x1="126" y1="268" x2="232" y2="268" stroke="currentColor" stroke-width="1.1" opacity="0.6" marker-start="url(#ar2)" marker-end="url(#ar2)"/>
+          <text class="svg-lab-s" x="142" y="264">＝物体の高さ</text>
+        </svg>
+        <figcaption>折れ点の間隔②が<b>物体の高さ</b>、下がった目盛りの総量が<b>全体積分の浮力</b>、②の傾きが<b>底面積×液体の密度</b>。区間④まで描かれていたら底についており、そこから先はばねばかりが0に向かう（残りは底が支えている）。※この形になるのは水面の上昇が無視できるとき。細い容器では難関型06の補正が要る。</figcaption>
+      </figure>
+
+      <div class="patterns">
+
+        <article class="pat">
+          <div class="pat-top"><span class="pat-n">01</span><h4 class="pat-t">沈める深さとばねばかりのグラフ</h4></div>
+          <dl>
+            <dt>見分け方</dt><dd>「少しずつ沈めていく」「グラフから読み取れ」</dd>
+            <dt>手順</dt><dd>① 折れ点を探す ② 最初の水平部＝<b>物体の重さ</b> ③ 次の水平部との差＝<b>全体積分の浮力</b> ④ 傾き（1cm沈めるごとの減り）＝<b>底面積×密度</b></dd>
+            <dt>注意</dt><dd>区間が4つあれば<b>底についている</b>。ばねばかりが0になった後は、糸がたるむので値は0のまま。</dd>
+          </dl>
+        </article>
+
+        <article class="pat">
+          <div class="pat-top"><span class="pat-n">02</span><h4 class="pat-t">材質・密度・空洞を当てる</h4></div>
+          <dl>
+            <dt>見分け方</dt><dd>空気中の重さと水中でのばねばかりの値の2つが与えられる</dd>
+            <dt>手順</dt><dd>① 差をとる＝浮力 ② 水なら浮力の数値＝<b>体積(cm³)</b> ③ 密度＝空気中の重さ÷体積 ④ 表と照合して物質名を答える</dd>
+            <dt>注意</dt><dd>計算した密度が表の値より小さければ<b>中が空洞</b>。空洞の体積＝全体積－（重さ÷本来の密度）で出せる。</dd>
+          </dl>
+        </article>
+
+        <article class="pat">
+          <div class="pat-top"><span class="pat-n">03</span><h4 class="pat-t">液体を変える（食塩水・油）</h4></div>
+          <dl>
+            <dt>見分け方</dt><dd>「同じ物体を食塩水に入れると」「濃さの違う液体で」</dd>
+            <dt>手順</dt><dd>完全に沈んでいる物体なら浮力は<b>液体の密度に比例</b>（水での浮力×密度比）。液体の密度を求める型は、浮力÷液体中の体積。</dd>
+            <dt>注意</dt><dd>浮いている物体では浮力は<b>変わらない</b>（＝重さのまま）。変わるのは沈む体積のほうで、<b>体積の比＝密度の逆比</b>。ただし物体より軽い液体（氷を灯油に入れるなど）では沈むので、この話は<b>浮いていられる限り</b>。</dd>
+          </dl>
+        </article>
+
+        <article class="pat">
+          <div class="pat-top"><span class="pat-n">04</span><h4 class="pat-t">浮いている物体に重りをのせる</h4></div>
+          <dl>
+            <dt>見分け方</dt><dd>「木片の上におもりをのせると何cm沈むか」</dd>
+            <dt>手順</dt><dd>のせる前後どちらも「浮力＝全体の重さ」で立式。<b>沈む体積の増加分 ＝ のせた重さ ÷ 液体の密度</b>。それを底面積で割れば沈む深さ。</dd>
+            <dt>注意</dt><dd>水没した瞬間から先はこの式が使えない。「これ以上のせると沈む限界の重さ」＝<b>全体積×密度－物体の重さ</b>。</dd>
+          </dl>
+        </article>
+
+        <article class="pat">
+          <div class="pat-top"><span class="pat-n">05</span><h4 class="pat-t">台ばかりの示す値</h4></div>
+          <dl>
+            <dt>見分け方</dt><dd>容器ごと台ばかりにのせ、上からばねばかりでつるした物体を入れる</dd>
+            <dt>手順</dt><dd>系全体で考える。<b>台ばかり ＋ ばねばかり ＝ 容器＋液体＋物体の全重さ</b>。だから台ばかりは<b>浮力の分だけ増える</b>。</dd>
+            <dt>注意</dt><dd>手を離して物体が浮いた／沈んだ場合、台ばかりは<b>物体の重さ全部の分</b>増える。糸をつけたままかどうかで答えが変わる。</dd>
+          </dl>
+        </article>
+
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 440 262" role="img" aria-label="ばねばかりでつるした物体を水そうに沈めたとき、台ばかりの値が浮力の分だけ増えることを示す図">
+          <defs>
+            <marker id="ar8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <rect x="168" y="18" width="94" height="30" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.5"/>
+          <text class="svg-lab" x="182" y="38">ばねばかり</text>
+          <line x1="215" y1="48" x2="215" y2="112" stroke="currentColor" stroke-width="1.3"/>
+
+          <rect x="120" y="94" width="190" height="106" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="121" y="120" width="188" height="79" fill="#2E7DD1" opacity="0.12"/>
+          <line x1="121" y1="120" x2="309" y2="120" stroke="#2E7DD1" stroke-width="1.6"/>
+          <rect x="191" y="112" width="48" height="56" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.6"/>
+
+          <rect x="100" y="204" width="230" height="26" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.5"/>
+          <text class="svg-lab" x="114" y="222">台ばかり</text>
+
+          <line x1="264" y1="164" x2="264" y2="130" stroke="#2E7DD1" stroke-width="1.8" marker-end="url(#ar8)"/>
+          <text class="svg-lab-s" x="272" y="150">浮力</text>
+          <line x1="215" y1="172" x2="215" y2="196" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8)"/>
+          <text class="svg-lab-s" x="224" y="192">反作用（同じ大きさ）</text>
+
+          <text class="svg-lab" x="20" y="252">台ばかり ＋ ばねばかり ＝ 容器＋水＋物体の全重さ</text>
+          <text class="svg-lab-s" x="20" y="120">水が物体を</text>
+          <text class="svg-lab-s" x="20" y="136">押し上げた分だけ</text>
+          <text class="svg-lab-s" x="20" y="152">物体も水を押す</text>
+        </svg>
+        <figcaption>物体が水から浮力を受けると、その反作用で<b>物体も同じ大きさで水を下に押します</b>。だから台ばかりは浮力の分だけ増える。「増えた分は？」と聞かれたら浮力、「合計は？」と聞かれたら系全体の式。</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= 5 ================= -->
+    <section id="s5">
+      <div class="sec-head"><span class="sec-num">05</span>
+        <h2 class="sec-title">難関の9型 ── 差がつくのはここ</h2>
+      </div>
+      <p class="sec-lead">開成・麻布・武蔵・桜蔭・駒東クラスで実際に差がつく型です。新しい公式は一つも要りません。標準5型の<em class="key">どこを1段ひねっているか</em>を見抜く練習だと思ってください。</p>
+
+      <div class="patterns">
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">06</span><h4 class="pat-t">水面の上昇と「見かけの沈み」</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>「棒を◯cm下げたとき」「水面は何cm上がるか」／容器が細い</dd>
+            <dt>手順</dt><dd>水面の上昇 ＝ <b>水中部分の体積 ÷ 容器の底面積</b>（物体の断面積は引かない）。そして<b>物体が水中に入る長さ ＝ 下げた距離 ＋ 水面の上昇</b>。この2つを連立で解く。</dd>
+            <dt>注意</dt><dd>「下げた距離＝沈んだ長さ」と即断すると全滅する。容器が細いほど差が大きく、そこが出題意図そのもの。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">07</span><h4 class="pat-t">糸で固定する（張力を問う）</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>「容器の底と糸でつないで沈めた」「糸が切れるのは」</dd>
+            <dt>手順</dt><dd>浮くものを沈めている糸は <b>張力＝浮力－重さ</b>。沈むものをつるしている糸は <b>張力＝重さ－浮力</b>。上向き・下向きに分けて書き出せば迷わない。</dd>
+            <dt>注意</dt><dd>糸を切った後に「浮き上がって静止したときの水面上の高さ」まで続く。切った後は型04に切り替わる。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">08</span><h4 class="pat-t">氷がとけたときの水面</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>「氷がすべてとけたとき水面はどうなるか」</dd>
+            <dt>手順</dt><dd>とける前に<b>押しのけていた水の体積</b>と、とけてできる<b>水の体積</b>を比べるだけ。4パターンは下図。</dd>
+            <dt>注意</dt><dd>「変わらない」が正解でも理由を書かせる。<b>浮いている氷は自分の重さの分だけ水を押しのけており、とけるとちょうどその体積の水になる</b>が模範。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">09</span><h4 class="pat-t">2層の液体・境界にまたがる</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>油と水が上下2層になった容器、境目に浮いている物体</dd>
+            <dt>手順</dt><dd>浮力を<b>層ごとに足す</b>。「油中の体積×0.8 ＋ 水中の体積×1.0 ＝ 物体の重さ」。2つの未知の長さは<b>合計＝物体の高さ</b>で結んで連立に。</dd>
+            <dt>注意</dt><dd>油の層より物体の密度が小さければ油の上に浮く。密度の大小を最初に確かめてから立式する。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">10</span><h4 class="pat-t">水があふれる・注ぎ足す</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>「容器いっぱいに水が入っている」「あふれた水を集めると」</dd>
+            <dt>手順</dt><dd>あふれた水の重さ＝<b>押しのけた水の重さ＝浮力</b>。浮く物体なら、あふれた水の重さ＝<b>物体の重さ</b>。</dd>
+            <dt>注意</dt><dd>満水容器では<b>水面が上がらない</b>。浮く物体を入れると、あふれた水の重さと物体の重さが等しいので、あふれた水が台ばかりの外に出るなら<b>台ばかりの値は変わらない</b>（受け皿ごとのっていれば物体の重さ分だけ増える）。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">11</span><h4 class="pat-t">複数物体・つないだ物体</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>木片と金属をつなぐ、物体を積み重ねる、片方が水中で片方が空中</dd>
+            <dt>手順</dt><dd>つないだ2つは<b>合計の重さと合計の体積</b>で1つの物体とみなす（平均密度）。<b>平均密度＜液体の密度なら浮く</b>。</dd>
+            <dt>注意</dt><dd>「木片を沈めるのに必要な金属」型は、金属自身も浮力を受けることを忘れない。<b>水面より上にのせる型04の重りは浮力を受けず、水中でつなぐこの型は受ける</b>のが分かれ目。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">12</span><h4 class="pat-t">段のある物体・複雑な形</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>階段状の物体、太さが途中で変わる円柱、逆さの三角柱</dd>
+            <dt>手順</dt><dd>グラフの<b>傾きが変わる点＝断面積が変わる高さ</b>。区間ごとに「その区間の断面積×密度」で傾きを読む。</dd>
+            <dt>注意</dt><dd>傾きが急な区間ほど<b>断面積が大きい</b>。グラフの形から物体の形を答えさせる逆向きの設問も出る。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">13</span><h4 class="pat-t">てこ・ばね・滑車との複合</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>棒の端から糸でつるした物体を水に入れる、ばねの伸びが与えられる</dd>
+            <dt>手順</dt><dd>まず<b>浮力を計算して糸が引く力を確定</b>（重さ－浮力）。それを、てこならおもり・ばねなら力として、そのまま渡す。橋渡しはこの1点だけ。</dd>
+            <dt>注意</dt><dd>ばねは「のび」から力を出す（全長ではない）。動滑車では引く力が<b>（荷物＋動滑車）の重さの半分</b>になる。</dd>
+          </dl>
+        </article>
+
+        <article class="pat hard">
+          <div class="pat-top"><span class="pat-n">14</span><h4 class="pat-t">空気の浮力（気球・風船）</h4><span class="hard-flag">難関</span></div>
+          <dl>
+            <dt>見分け方</dt><dd>気球、ヘリウム風船、「空気1Lは1.2g」と与えられる</dd>
+            <dt>手順</dt><dd>浮力＝<b>押しのけた空気の重さ</b>＝気球の体積×空気の密度。<b>浮く条件＝浮力 ＞ 気球全体（袋＋中の気体＋人）の重さ</b>。</dd>
+            <dt>注意</dt><dd>熱気球は<b>中の空気を温めて密度を下げる</b>（体積ではなく中身を軽くする）。上空ほど空気が薄く、浮力が減って上昇が止まる。</dd>
+          </dl>
+        </article>
+
+      </div>
+
+      <figure class="wide">
+        <svg viewBox="0 0 640 216" role="img" aria-label="氷がとけたときの水面変化を4つの条件で比較した図。純氷が浮く場合は変わらず、石入りの氷と沈めた氷は下がり、食塩水に浮く氷は上がる">
+          <g>
+            <rect x="20" y="30" width="112" height="112" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <rect x="21" y="66" width="110" height="75" fill="#2E7DD1" opacity="0.12"/>
+            <line x1="21" y1="66" x2="131" y2="66" stroke="#2E7DD1" stroke-width="1.6"/>
+            <rect x="52" y="63" width="44" height="26" fill="currentColor" opacity="0.13" stroke="currentColor" stroke-width="1.2"/>
+            <text class="svg-lab" x="20" y="166">① 水に浮く氷</text>
+            <text class="svg-lab-s" x="20" y="184">押しのけた水の体積＝</text>
+            <text class="svg-lab-s" x="20" y="199">とけてできる水の体積</text>
+            <text class="svg-lab svg-accent" x="20" y="24">変わらない</text>
+          </g>
+          <g>
+            <rect x="172" y="30" width="112" height="112" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <rect x="173" y="66" width="110" height="75" fill="#2E7DD1" opacity="0.12"/>
+            <line x1="173" y1="66" x2="283" y2="66" stroke="#2E7DD1" stroke-width="1.6"/>
+            <line x1="173" y1="76" x2="283" y2="76" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <rect x="204" y="64" width="44" height="30" fill="currentColor" opacity="0.13" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="226" cy="80" r="6" fill="currentColor" opacity="0.55"/>
+            <text class="svg-lab" x="172" y="166">② 石を含む氷</text>
+            <text class="svg-lab-s" x="172" y="184">とける前は石の重さの分まで</text>
+            <text class="svg-lab-s" x="172" y="199">水を押しのけていたから</text>
+            <text class="svg-lab" x="172" y="24">下がる</text>
+          </g>
+          <g>
+            <rect x="324" y="30" width="112" height="112" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <rect x="325" y="66" width="110" height="75" fill="#2E7DD1" opacity="0.12"/>
+            <line x1="325" y1="66" x2="435" y2="66" stroke="#2E7DD1" stroke-width="1.6"/>
+            <line x1="325" y1="76" x2="435" y2="76" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <rect x="356" y="92" width="44" height="28" fill="currentColor" opacity="0.13" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="378" y1="66" x2="378" y2="92" stroke="currentColor" stroke-width="1.4"/>
+            <text class="svg-lab" x="324" y="166">③ 押さえて沈めた氷</text>
+            <text class="svg-lab-s" x="324" y="184">体積分を押しのけていたが</text>
+            <text class="svg-lab-s" x="324" y="199">とけると0.9倍の体積に</text>
+            <text class="svg-lab" x="324" y="24">下がる</text>
+          </g>
+          <g>
+            <rect x="476" y="30" width="112" height="112" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <rect x="477" y="66" width="110" height="75" fill="#2E7DD1" opacity="0.2"/>
+            <line x1="477" y1="66" x2="587" y2="66" stroke="#2E7DD1" stroke-width="1.6"/>
+            <line x1="477" y1="56" x2="587" y2="56" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <rect x="508" y="60" width="44" height="24" fill="currentColor" opacity="0.13" stroke="currentColor" stroke-width="1.2"/>
+            <text class="svg-lab" x="476" y="166">④ 食塩水に浮く氷</text>
+            <text class="svg-lab-s" x="476" y="184">押しのけた体積は小さく</text>
+            <text class="svg-lab-s" x="476" y="199">とけて出る水は多い</text>
+            <text class="svg-lab" x="476" y="24">上がる</text>
+          </g>
+        </svg>
+        <figcaption>破線が氷がとけた後の水面。判定の物差しは常に一つ、<b>「押しのけていた体積」と「とけてできる水の体積」の大小</b>。②は、氷に浮かべてもらっていた石が底に沈み、自分の体積分しか押しのけなくなるぶん。③は押さえつけて体積いっぱい押しのけていたのに、とけると0.9倍の水にしかならないぶん。どちらも下がる。</figcaption>
+      </figure>
+
+      <figure>
+        <svg viewBox="0 0 440 246" role="img" aria-label="油と水の2層の液体の境界にまたがって浮く物体で、浮力を層ごとに足し合わせることを示す図">
+          <defs>
+            <marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <rect x="90" y="24" width="200" height="176" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="91" y="56" width="198" height="52" fill="#C9922E" opacity="0.22"/>
+          <rect x="91" y="108" width="198" height="91" fill="#2E7DD1" opacity="0.14"/>
+          <line class="svg-oil" x1="91" y1="56" x2="289" y2="56" stroke-width="1.6"/>
+          <line x1="91" y1="108" x2="289" y2="108" stroke="#2E7DD1" stroke-width="1.6"/>
+          <text class="svg-lab" x="98" y="50">油 0.8</text>
+          <text class="svg-lab" x="98" y="128">水 1.0</text>
+
+          <rect x="166" y="72" width="62" height="76" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.7"/>
+
+          <line x1="248" y1="72" x2="248" y2="108" stroke="currentColor" stroke-width="1" marker-start="url(#ar9)" marker-end="url(#ar9)"/>
+          <text class="svg-num" x="256" y="94">a</text>
+          <line x1="248" y1="108" x2="248" y2="148" stroke="currentColor" stroke-width="1" marker-start="url(#ar9)" marker-end="url(#ar9)"/>
+          <text class="svg-num" x="256" y="132">b</text>
+
+          <text class="svg-lab" x="20" y="220">浮力 ＝ a の体積×0.8 ＋ b の体積×1.0 ＝ 物体の重さ</text>
+          <text class="svg-lab-s" x="20" y="236">未知は a と b の2つ。もう1本の式は「a ＋ b ＝ 物体の高さ」</text>
+        </svg>
+        <figcaption>2層問題は<b>層ごとに浮力を足す</b>だけ。未知が2つになるので、必ず「a＋b＝物体の高さ」を2本目の式として用意する。物体が油の層より軽ければ油の上に、水より重ければ底に沈む。</figcaption>
+      </figure>
+
+      <div class="call warn">
+        <span class="lab">まれに出る思考型の設問</span>
+        <p><b>「押しのけた体積」はどこまでか</b>。物体が容器の底にぴったり密着していて下面に水が回り込んでいない場合、下から押す水圧がはたらかないので<b>浮力は生じません</b>。<br>
+        ただしふつうの問題では底と物体のすき間に水が入り込むので、<b>底についていても浮力ははたらきます</b>（上のグラフの区間④もその前提）。密着して水が回り込まないと明示されたときだけの特例だと考えてください。</p>
+      </div>
+    </section>
+
+    <!-- ================= 6 ================= -->
+    <section id="s6">
+      <div class="sec-head"><span class="sec-num">06</span>
+        <h2 class="sec-title">思考・記述テーマ ── 計算のない浮力</h2>
+      </div>
+      <p class="sec-lead">難関校は「浮力を使って身のまわりを説明させる」問題を必ず入れてきます。<em class="key">重さを変えているのか、体積（＝浮力）を変えているのか</em>。この一本の軸でほとんど整理できます。</p>
+
+      <figure>
+        <svg viewBox="0 0 440 216" role="img" aria-label="潜水艦は重さを変えて沈み、浮沈子や魚のうきぶくろは体積を変えて浮力を変えることを対比した図">
+          <defs>
+            <marker id="ar10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <g>
+            <text class="svg-lab" x="20" y="22">重さを変える型</text>
+            <rect x="20" y="34" width="180" height="104" fill="#2E7DD1" opacity="0.1"/>
+            <rect x="20" y="34" width="180" height="104" fill="none" stroke="currentColor" stroke-width="1.3"/>
+            <rect x="46" y="60" width="80" height="34" rx="16" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="60" y="68" width="30" height="18" fill="#2E7DD1" opacity="0.5"/>
+            <text class="svg-lab-s" x="46" y="114">タンクに水を入れる</text>
+            <line x1="150" y1="62" x2="150" y2="96" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar10)"/>
+            <text class="svg-lab-s" x="20" y="160">体積は変わらない</text>
+            <text class="svg-lab-s" x="20" y="176">→ <tspan font-weight="700">浮力は一定</tspan></text>
+            <text class="svg-lab-s" x="20" y="192">重さが増えて沈む</text>
+            <text class="svg-lab-s" x="20" y="212">例：潜水艦・バラストタンク</text>
+          </g>
+          <g>
+            <text class="svg-lab" x="240" y="22">体積を変える型</text>
+            <rect x="240" y="34" width="180" height="104" fill="#2E7DD1" opacity="0.1"/>
+            <rect x="240" y="34" width="180" height="104" fill="none" stroke="currentColor" stroke-width="1.3"/>
+            <rect x="266" y="56" width="60" height="42" rx="8" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/>
+            <ellipse cx="296" cy="72" rx="18" ry="9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+            <ellipse cx="296" cy="74" rx="10" ry="5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 2"/>
+            <text class="svg-lab-s" x="252" y="114">中の気体の体積が減る</text>
+            <line x1="350" y1="62" x2="350" y2="96" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar10)"/>
+            <text class="svg-lab-s" x="240" y="160">重さは変わらない</text>
+            <text class="svg-lab-s" x="240" y="176">→ <tspan font-weight="700">浮力が減る</tspan></text>
+            <text class="svg-lab-s" x="240" y="192">押しのける体積が減って沈む</text>
+            <text class="svg-lab-s" x="240" y="212">例：浮沈子（縮む）・魚（量を減らす）</text>
+          </g>
+        </svg>
+        <figcaption>同じ「沈む」でも仕組みが正反対。<b>潜水艦は重さを増やして沈み、浮沈子は浮力を減らして沈む</b>。この2つを並べて「違いを説明せよ」という設問が定番なので、どちらの型かを言い当てられるようにしておく。</figcaption>
+      </figure>
+
+      <div class="qa">
+        <div class="qa-item">
+          <p class="qa-q">鉄でできた船が浮くのはなぜか</p>
+          <p class="qa-a">船の内部は空洞で空気を含むため、<b>船全体の平均の密度が水より小さくなる</b>から。鉄そのものの密度ではなく、押しのける水の体積で決まる。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">深く沈めても浮力が変わらないのはなぜか</p>
+          <p class="qa-a">深くなると上面も下面も水圧が同じだけ増えるので、<b>上下の水圧の差は変わらない</b>から。完全に水没した後は、押しのける体積も一定。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">死海では人が浮きやすいのはなぜか</p>
+          <p class="qa-a">塩分が非常に濃く<b>液体の密度が大きい</b>ため、同じ体積を沈めても受ける浮力が大きくなるから。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">浮沈子（ペットボトルを押すと沈む）の仕組み</p>
+          <p class="qa-a">ボトルを押すと<b>中の空気が押し縮められて体積が減り</b>、押しのける水の体積＝浮力が減って沈む。重さは変わっていない。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">潜水艦と魚のうきぶくろの違い</p>
+          <p class="qa-a">潜水艦はタンクに水を出し入れして<b>重さ</b>を変える。魚はうきぶくろの気体の量で<b>体積＝浮力</b>を変える。変えている量が逆。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">熱気球が上がるのはなぜか</p>
+          <p class="qa-a">中の空気を温めると<b>膨張して外へ逃げ、袋の中の空気が軽くなる</b>。押しのける空気の重さ（浮力）が気球全体の重さを上回って上昇する。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">ヘリウム風船が上がるのはなぜか</p>
+          <p class="qa-a">ヘリウムは空気より密度が小さいので、<b>風船が押しのけた空気の重さ（浮力）が、風船全体の重さより大きくなる</b>から。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">比重計（浮ひょう）の目盛りの向き</p>
+          <p class="qa-a">液体の密度が大きいほど浮き上がるので、<b>目盛りは上へ行くほど小さい値</b>になる。沈んだ深さから液体の密度を読む道具。</p>
+        </div>
+        <div class="qa-item">
+          <p class="qa-q">水に浮かべた氷がとけても水面が変わらないのはなぜか</p>
+          <p class="qa-a">浮いている氷は<b>自分の重さと同じ重さの水を押しのけて</b>いて、とけるとちょうどその体積の水になるから。</p>
+        </div>
+      </div>
+
+      <div class="call brass">
+        <span class="lab">記述の型</span>
+        <p>浮力の記述はほぼ「<b>◯◯が変わるので、押しのける液体（気体）の重さが変わり、浮力が◯◯なるから</b>」の一文で書けます。何が変わったのか（密度／体積／重さ）を最初に名指しするのがコツです。</p>
+      </div>
+    </section>
+
+    <!-- ================= 7 ================= -->
+    <section id="s7">
+      <div class="sec-head"><span class="sec-num">07</span>
+        <h2 class="sec-title">解き始める前の確認と、覚えておく結論</h2>
+      </div>
+      <p class="sec-lead">浮力の失点は理解不足より手順の省略で起きます。テスト直前はこの欄だけ読み返してください。</p>
+
+      <h3>問題を読んだ直後にやること</h3>
+      <div class="checks">
+        <div class="check"><span class="box"></span><span>物体を1つ取り出して、<b>力の矢印を全部</b>書き込んだか（重さ・浮力・糸・支え）</span></div>
+        <div class="check"><span class="box"></span><span>浮力に使う体積は<b>液体の中にある部分だけ</b>か</span></div>
+        <div class="check"><span class="box"></span><span>浮いているのか、沈んで支えられているのか、<b>状態を確定</b>したか</span></div>
+        <div class="check"><span class="box"></span><span>液体は水か。水以外なら<b>密度を掛け忘れていない</b>か</span></div>
+        <div class="check"><span class="box"></span><span>容器が細いとき、<b>水面の上昇</b>を計算に入れたか</span></div>
+        <div class="check"><span class="box"></span><span>単位はそろっているか（体積cm³・重さg・密度g/cm³）</span></div>
+        <div class="check"><span class="box"></span><span>答えが出たら、<b>浮くはずのものが浮く答えになっているか</b>で検算したか</span></div>
+      </div>
+
+      <h3>そのまま使える結論</h3>
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr><th>問われること</th><th>結論</th></tr></thead>
+          <tbody>
+            <tr><td>深く沈めると浮力は増えるか</td><td>完全に沈んだ後は<b>変わらない</b>。増えるのは沈んでいる途中だけ</td></tr>
+            <tr><td>形や材質を変えると浮力は</td><td><b>変わらない</b>。沈んでいる体積と液体の密度だけで決まる</td></tr>
+            <tr><td>浮いている物体の浮力は</td><td><b>その液体でも浮いていられる限り</b>、いつでも物体の重さと等しい（液体を変えても浮力は同じ）</td></tr>
+            <tr><td>氷は水面上にどれだけ出るか</td><td><b>10分の1</b>（密度0.9のとき）</td></tr>
+            <tr><td>水に浮く氷がとけると水面は</td><td><b>変わらない</b></td></tr>
+            <tr><td>石入りの氷／押さえて沈めた氷は</td><td><b>下がる</b></td></tr>
+            <tr><td>食塩水に浮く氷がとけると</td><td><b>上がる</b></td></tr>
+            <tr><td>水面の上昇の求め方</td><td>水中部分の体積 ÷ <b>容器の底面積</b>（物体の断面積は引かない）</td></tr>
+            <tr><td>物体を沈めると台ばかりは</td><td><b>浮力の分だけ増える</b>（作用・反作用）</td></tr>
+            <tr><td>満水の容器に浮く物体を入れると</td><td>あふれた水の重さ＝<b>物体の重さ</b>。あふれた水が台ばかりの外に流れ出るなら台ばかりの値は変わらない</td></tr>
+            <tr><td>底に密着していて水が回り込まないとき</td><td>浮力は<b>はたらかない</b>（明示されたときだけの特例。通常は底についても浮力あり）</td></tr>
+            <tr><td>気球が浮く条件</td><td>押しのけた空気の重さ ＞ 気球全体の重さ</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="end">
+    <span>中学受験理科／浮力 まとめ</span>
+    <span>標準5型・難関9型・記述9テーマ</span>
+    <span>難関校対応</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

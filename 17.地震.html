@@ -1,0 +1,1237 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>中学受験理科 地震ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&family=BIZ+UDPGothic:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+:root{
+  --ground:#F1F4F5;
+  --surface:#FFFFFF;
+  --surface2:#E6EBED;
+  --ink:#131C22;
+  --ink2:#48585F;
+  --ink3:#7A8A92;
+  --rule:#D2DADE;
+  --rule2:#BFCACF;
+  --accent:#1C5D7C;
+  --accent-soft:#E1EDF3;
+  --pwave:#1C5D7C;
+  --swave:#B23F2A;
+  --gold:#96702A;
+  --gold-soft:#F5EEDD;
+  --on-accent:#FFFFFF;
+  --shadow:0 1px 0 rgba(19,28,34,.05), 0 6px 20px -12px rgba(19,28,34,.28);
+  --d0:#E9ECEE; --d1:#C6E2F0; --d2:#7CC3E3; --d3:#63C58C; --d4:#EFCE45;
+  --d5w:#EFA53A; --d5s:#DF7C28; --d6w:#D5493B; --d6s:#AC2A2A; --d7:#B563B8;
+  --dtxt:#131C22;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1418;
+    --surface:#141F26;
+    --surface2:#1C2A33;
+    --ink:#E2EAEF;
+    --ink2:#A0B0B9;
+    --ink3:#74858E;
+    --rule:#283A44;
+    --rule2:#3B5666;
+    --accent:#74BADB;
+    --accent-soft:#14303E;
+    --pwave:#74BADB;
+    --swave:#EA8A70;
+    --gold:#D3A959;
+    --gold-soft:#26220F;
+    --on-accent:#0D1418;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1418;
+  --surface:#141F26;
+  --surface2:#1C2A33;
+  --ink:#E2EAEF;
+  --ink2:#A0B0B9;
+  --ink3:#74858E;
+  --rule:#283A44;
+  --rule2:#3B5666;
+  --accent:#74BADB;
+  --accent-soft:#14303E;
+  --pwave:#74BADB;
+  --swave:#EA8A70;
+  --gold:#D3A959;
+  --gold-soft:#26220F;
+  --on-accent:#0D1418;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+
+/* ---------- header ---------- */
+.masthead{
+  background:var(--surface);
+  border-bottom:1px solid var(--rule);
+  padding:38px 0 30px;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 12px;
+}
+h1{
+  font-family:"Zen Old Mincho",serif;
+  font-weight:900;
+  font-size:clamp(30px,6vw,44px);
+  line-height:1.28;
+  letter-spacing:.02em;
+  margin:0 0 14px;
+  text-wrap:balance;
+}
+.lede{margin:0;color:var(--ink2);font-size:15px;max-width:62ch}
+.meta{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+}
+.meta span{
+  border:1px solid var(--rule2);border-radius:2px;
+  padding:3px 9px;color:var(--ink2);
+}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky;top:0;z-index:20;
+  background:color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.navrow{display:flex;gap:2px;overflow-x:auto;padding:0 20px;max-width:860px;margin:0 auto;scrollbar-width:thin}
+nav a{
+  flex:0 0 auto;
+  padding:11px 12px;
+  font-size:13px;
+  color:var(--ink2);
+  text-decoration:none;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+}
+nav a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+nav a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* ---------- sections ---------- */
+section{padding:52px 0 8px;scroll-margin-top:52px}
+.chapno{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;letter-spacing:.2em;color:var(--ink3);
+  display:block;margin-bottom:6px;
+}
+h2{
+  font-family:"Zen Old Mincho",serif;font-weight:700;
+  font-size:clamp(23px,4.4vw,30px);line-height:1.4;margin:0 0 6px;
+  padding-bottom:12px;border-bottom:2px solid var(--ink);
+  text-wrap:balance;
+}
+h3{
+  font-family:"Zen Old Mincho",serif;font-weight:700;
+  font-size:19px;line-height:1.5;margin:34px 0 10px;
+  display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;
+}
+h4{font-size:15px;margin:22px 0 6px;color:var(--accent);font-weight:700}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 14px;padding-left:1.4em}
+li{margin-bottom:5px}
+strong{font-weight:700}
+.hl{background:linear-gradient(transparent 62%, color-mix(in srgb, var(--gold) 34%, transparent) 62%);font-weight:700}
+.acc{color:var(--accent);font-weight:700}
+
+/* ---------- chips ---------- */
+.chip{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;
+  border-radius:2px;padding:2px 7px;vertical-align:middle;white-space:nowrap;
+  border:1px solid currentColor;font-weight:600;line-height:1.7;
+}
+.c-base{color:var(--ink3)}
+.c-freq{color:var(--accent);background:var(--accent-soft)}
+.c-hard{color:var(--swave)}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:18px 20px;margin:16px 0;box-shadow:var(--shadow);
+}
+.card > :last-child{margin-bottom:0}
+.card h4:first-child{margin-top:0}
+
+.def{
+  background:var(--surface);border-left:3px solid var(--accent);
+  padding:13px 16px;margin:14px 0;
+}
+.def > :last-child{margin-bottom:0}
+.def dt{font-weight:700;color:var(--accent)}
+.def dl{margin:0}
+.def dd{margin:0 0 10px;padding-left:0}
+.def dd:last-child{margin-bottom:0}
+
+.note{
+  background:var(--gold-soft);border:1px dashed var(--gold);
+  padding:12px 15px;margin:16px 0;font-size:14px;color:var(--ink2);border-radius:3px;
+}
+.note::before{
+  content:"指導者メモ";display:block;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+  color:var(--gold);font-weight:600;margin-bottom:4px;
+}
+.note > :last-child{margin-bottom:0}
+
+.warn{
+  border-left:3px solid var(--swave);background:var(--surface);
+  padding:12px 15px;margin:14px 0;font-size:14.5px;
+}
+.warn > :last-child{margin-bottom:0}
+.warn b{color:var(--swave)}
+
+/* ---------- tables ---------- */
+.scroll{overflow-x:auto;margin:16px 0;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:460px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  background:var(--surface2);font-size:12px;letter-spacing:.04em;
+  font-weight:700;color:var(--ink2);white-space:nowrap;
+}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:none}
+td.num,th.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sd.inv{color:#FFFFFF}
+.sd{display:inline-block;min-width:34px;text-align:center;border-radius:2px;
+  font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12.5px;padding:1px 6px;color:var(--dtxt)}
+
+/* ---------- figures ---------- */
+figure{margin:20px 0;background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:14px 12px 10px;box-shadow:var(--shadow)}
+figure .scrollsvg{overflow-x:auto}
+figure svg{display:block;width:100%;min-width:520px;height:auto}
+figcaption{font-size:12.5px;color:var(--ink3);margin-top:8px;padding:0 4px;line-height:1.7}
+.svg-bg{fill:none}
+.axis{stroke:var(--rule2);stroke-width:1.4;fill:none}
+.grid{stroke:var(--rule);stroke-width:.8;fill:none}
+.lbl,.lbl-s,.lbl-b{paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.lbl{font-family:"BIZ UDPGothic",sans-serif;font-size:12px;fill:var(--ink2)}
+.lbl-s{font-family:"IBM Plex Mono",monospace;font-size:10.5px;fill:var(--ink3)}
+.lbl-b{font-family:"BIZ UDPGothic",sans-serif;font-size:12.5px;font-weight:700;fill:var(--ink)}
+.p-st{stroke:var(--pwave);fill:none;stroke-width:2.2}
+.s-st{stroke:var(--swave);fill:none;stroke-width:2.2}
+.p-fl{fill:var(--pwave)} .s-fl{fill:var(--swave)}
+.dash{stroke:var(--ink3);stroke-width:1;stroke-dasharray:4 3;fill:none}
+.solidk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.rock{fill:var(--surface2)}
+.ocean{fill:color-mix(in srgb, var(--accent) 34%, transparent)}
+
+/* ---------- example / answer ---------- */
+.q{
+  background:var(--surface);border:1px solid var(--rule2);border-radius:3px;
+  padding:0;margin:18px 0;box-shadow:var(--shadow);overflow:hidden;
+}
+.q-head{
+  display:flex;align-items:center;gap:10px;
+  background:var(--accent);color:var(--on-accent);padding:8px 16px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.1em;font-weight:600;
+}
+.q-body{padding:16px 18px}
+.q-body > :last-child{margin-bottom:0}
+.q-body ol{padding-left:1.5em}
+
+details{border-top:1px solid var(--rule);background:var(--surface2)}
+details summary{
+  cursor:pointer;padding:10px 18px;font-size:13.5px;font-weight:700;color:var(--accent);
+  list-style:none;display:flex;align-items:center;gap:8px;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▶";font-size:9px;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+details summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.ans-body{padding:2px 18px 16px;font-size:14.5px}
+.ans-body > :last-child{margin-bottom:0}
+.ans-body .step{
+  border-left:2px solid var(--rule2);padding-left:12px;margin:0 0 12px;
+}
+.ans-body .step b{color:var(--accent)}
+.eq{
+  font-family:"IBM Plex Mono",monospace;font-size:13.5px;
+  background:var(--surface);border:1px solid var(--rule);border-radius:2px;
+  padding:7px 11px;margin:6px 0;display:block;overflow-x:auto;white-space:nowrap;
+}
+.final{
+  font-weight:700;color:var(--ink);
+  border-top:1px dashed var(--rule2);padding-top:10px;margin-top:12px;
+}
+
+/* ---------- pattern index ---------- */
+.pidx{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:16px 0}
+.pidx a{
+  display:block;text-decoration:none;color:var(--ink);
+  background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:10px 13px;font-size:13.5px;line-height:1.55;
+}
+.pidx a:hover{border-color:var(--accent);color:var(--accent)}
+.pidx a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pidx .pn{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--accent);display:block;letter-spacing:.1em}
+
+/* ---------- Q&A drill ---------- */
+.drill{display:grid;gap:0;border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:var(--surface);margin:16px 0}
+.drill div{display:grid;grid-template-columns:1fr;border-bottom:1px solid var(--rule)}
+.drill div:last-child{border-bottom:none}
+.drill .qq{padding:9px 14px;font-size:14.5px}
+.drill .aa{padding:0 14px 9px;font-size:14px;color:var(--accent);font-weight:700}
+.drill.hide .aa{visibility:hidden}
+.toggle{
+  font-family:"BIZ UDPGothic",sans-serif;font-size:13.5px;font-weight:700;
+  background:var(--accent);color:var(--on-accent);border:none;border-radius:3px;
+  padding:8px 18px;cursor:pointer;
+}
+.toggle:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+footer{
+  margin-top:56px;border-top:1px solid var(--rule);background:var(--surface);
+  padding:26px 0 40px;font-size:12.5px;color:var(--ink3);
+}
+footer a{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:560px){
+  body{font-size:15.5px}
+  .q-body,.ans-body{padding-left:14px;padding-right:14px}
+}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">中学受験理科 / 大地の変化</p>
+    <h1>地震 ― 基礎から難関校まで<br>総復習ノート</h1>
+    <p class="lede">用語の整理 → 波の計算 → 作図 → 記述 → 時事。入試で問われる形に並べ直した一冊完結の復習ノートです。例題の解答は折りたたんであるので、まず自分で解いてから開いてください。</p>
+    <div class="meta"><span>全7章</span><span>例題 9パターン</span><span>作図・グラフ対応</span><span>2026年 時事つき</span></div>
+  </div>
+</header>
+
+<nav>
+  <div class="navrow">
+    <a href="#c1">1 しくみ</a>
+    <a href="#c2">2 P波・S波</a>
+    <a href="#c3">3 震度とM</a>
+    <a href="#c4">4 災害と防災</a>
+    <a href="#c5">5 出題パターン</a>
+    <a href="#c6">6 時事</a>
+    <a href="#c7">7 総点検</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section id="c0">
+  <span class="chapno">MAP</span>
+  <h2>この単元の全体像</h2>
+  <p>地震は「<span class="hl">知識7割・計算3割</span>」に見えて、難関校では配点が逆転します。知識問題は落とせない前提で、差がつくのは <strong>①初期微動継続時間の計算 ②走時グラフ ③震源の深さ・震央の作図 ④プレートと防災の記述</strong> の4つ。この4つに向かって知識を組み立てていくのが最短ルートです。</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>ブロック</th><th>ここで身につけること</th><th>入試での出方</th></tr></thead>
+    <tbody>
+      <tr><td>地震のしくみ</td><td>震源・震央・断層・プレート</td><td>用語記号選択、記述</td></tr>
+      <tr><td>P波とS波</td><td>速さのちがい、初期微動継続時間</td><td><strong>計算・グラフ（最頻出）</strong></td></tr>
+      <tr><td>震度とマグニチュード</td><td>2つの区別、エネルギー比</td><td>選択・短文記述</td></tr>
+      <tr><td>災害と防災</td><td>津波・液状化・緊急地震速報</td><td>記述・資料読み取り</td></tr>
+      <tr><td>時事</td><td>その年に起きた大地震と新しい情報</td><td>リード文・総合問題の題材</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">
+    <p>単元テストで点が取れているのに模試で崩れる子は、ほぼ例外なく「知識は入っているが、走時グラフと作図の型が入っていない」パターンです。第5章の9パターンを型として先に固め、そこから第1〜4章に戻ると定着が速くなります。</p>
+  </div>
+</section>
+
+<section id="c1">
+  <span class="chapno">CHAPTER 1</span>
+  <h2>地震はどこで、なぜ起こるか</h2>
+
+  <h3>1-1 震源・震央・距離 <span class="chip c-base">基礎</span></h3>
+  <p>まず言葉を立体でとらえます。<strong>震源は地下の点</strong>、<strong>震央はその真上の地表の点</strong>です。ここを平面で覚えると、第5章の「深さを求める作図」でつまずきます。</p>
+
+  <figure>
+    <div class="scrollsvg">
+    <svg viewBox="0 0 720 300" role="img" aria-label="震源・震央・震源距離・震央距離・震源の深さの関係を示した立体図">
+      <!-- ground plane -->
+      <path d="M60 130 L560 130 L660 210 L160 210 Z" class="rock" stroke="var(--rule2)" stroke-width="1.2"/>
+      <!-- epicenter -->
+      <circle cx="330" cy="168" r="5" fill="var(--swave)"/>
+      <text x="340" y="163" class="lbl-b">震央</text>
+      <!-- hypocenter -->
+      <circle cx="330" cy="262" r="6" fill="var(--ink)"/>
+      <text x="340" y="278" class="lbl-b">震源（震源域）</text>
+      <!-- depth -->
+      <line x1="330" y1="168" x2="330" y2="262" class="solidk"/>
+      <text x="248" y="222" class="lbl">震源の深さ</text>
+      <!-- station -->
+      <circle cx="530" cy="150" r="5" fill="var(--accent)"/>
+      <text x="500" y="140" class="lbl-b">観測点</text>
+      <!-- epicentral distance -->
+      <line x1="330" y1="168" x2="530" y2="150" class="s-st"/>
+      <text x="368" y="150" class="lbl" fill="var(--swave)">震央距離</text>
+      <!-- hypocentral distance -->
+      <line x1="330" y1="262" x2="530" y2="150" class="p-st"/>
+      <text x="430" y="228" class="lbl" fill="var(--pwave)">震源距離</text>
+      <text x="60" y="118" class="lbl-s">地表</text>
+      <text x="60" y="285" class="lbl-s">地下</text>
+    </svg>
+    </div>
+    <figcaption>震源距離は「地下の点までの斜めの距離」。観測点で測れる初期微動継続時間から求まるのは<strong>震源距離</strong>であって震央距離ではない ― ここが難関校の作図問題の入口になります。</figcaption>
+  </figure>
+
+  <div class="def">
+    <dl>
+      <dt>震源</dt><dd>地下で岩石が破壊され、ゆれが発生した場所。広がりを持つときは震源域という。</dd>
+      <dt>震央</dt><dd>震源の真上の地表の点。ふつう震央付近がもっとも強くゆれる。</dd>
+      <dt>震源距離</dt><dd>観測点から震源までの距離（斜め）。</dd>
+      <dt>震央距離</dt><dd>観測点から震央までの地表にそった距離。</dd>
+      <dt>震源の深さ</dt><dd>震央から震源までの距離。ふつう浅いほど地表のゆれは強い。</dd>
+    </dl>
+  </div>
+
+  <h3>1-2 断層と活断層 <span class="chip c-freq">頻出</span></h3>
+  <p>地震は、たまった<strong>ひずみ</strong>に岩石がたえきれず<strong>断層</strong>としてずれることで起こります。地層のずれ方で3種類に分かれます。</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>種類</th><th>ずれ方</th><th>はたらいた力</th></tr></thead>
+    <tbody>
+      <tr><td>正断層</td><td>上側の岩ばんがずり<strong>下がる</strong></td><td>両側に<strong>引っぱる</strong>力</td></tr>
+      <tr><td>逆断層</td><td>上側の岩ばんがずり<strong>上がる</strong></td><td>両側から<strong>おす</strong>力</td></tr>
+      <tr><td>横ずれ断層</td><td>水平方向に食いちがう</td><td>ずらす向きの力</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>活断層</strong>＝今後もずれて地震を起こす可能性のある断層。日本には2000以上あるとされ、内陸の地震の原因になります。</p>
+  <div class="warn"><p><b>ミス注意</b>　日本の海溝ぞいで起こる巨大地震は、海洋プレートが大陸プレートを引きずり込み、その反発で起こる<strong>逆断層型</strong>が中心です。「押される力＝逆断層」とセットで覚えます。</p></div>
+
+  <h3>1-3 プレートと2つの地震タイプ <span class="chip c-freq">頻出</span> <span class="chip c-hard">難関</span></h3>
+  <p>日本は<strong>4枚のプレート</strong>がぶつかる、世界でもまれな場所にあります。世界の地震の約1割が日本周辺で起こります。</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>プレート</th><th>種類</th><th>向き・特徴</th></tr></thead>
+    <tbody>
+      <tr><td>北アメリカプレート</td><td>大陸プレート</td><td>東日本がのっている</td></tr>
+      <tr><td>ユーラシアプレート</td><td>大陸プレート</td><td>西日本がのっている</td></tr>
+      <tr><td>太平洋プレート</td><td>海洋プレート</td><td>年約8cmで西へ、日本海溝・千島海溝から沈み込む</td></tr>
+      <tr><td>フィリピン海プレート</td><td>海洋プレート</td><td>年約4cmで北西へ、南海トラフ・相模トラフから沈み込む</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <figure>
+    <div class="scrollsvg">
+    <svg viewBox="0 0 720 360" role="img" aria-label="海溝型地震と内陸型地震のちがいを示すプレート断面図">
+      <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="var(--pwave)"/></marker></defs>
+      <!-- sea -->
+      <path d="M400 110 L700 110 L700 155 L500 175 Z" class="ocean"/>
+      <!-- continental plate -->
+      <path d="M20 110 L400 110 L500 175 L20 175 Z" class="rock" stroke="var(--rule2)" stroke-width="1.2"/>
+      <!-- oceanic plate -->
+      <path d="M700 155 L505 178 L330 285 L285 262 L520 215 L700 205 Z"
+            fill="color-mix(in srgb, var(--accent) 24%, transparent)" stroke="var(--accent)" stroke-width="1.4"/>
+      <!-- sea floor line -->
+      <path d="M400 110 L500 175 L700 155" fill="none" stroke="var(--rule2)" stroke-width="1.2"/>
+      <!-- trench -->
+      <line x1="500" y1="175" x2="500" y2="74" class="dash"/>
+      <text x="500" y="66" class="lbl-b" text-anchor="middle">海溝</text>
+      <!-- subduction arrow -->
+      <path d="M672 176 L592 187" class="p-st" marker-end="url(#ar)"/>
+      <text x="630" y="150" class="lbl-b" fill="var(--pwave)" text-anchor="middle">沈み込む</text>
+      <!-- labels -->
+      <text x="30" y="104" class="lbl-s">地表</text>
+      <text x="70" y="165" class="lbl-b">大陸プレート</text>
+      <text x="505" y="209" class="lbl-b" fill="var(--accent)">海洋プレート</text>
+      <text x="560" y="126" class="lbl-s">海</text>
+      <!-- inland fault + quake -->
+      <line x1="185" y1="110" x2="200" y2="158" class="solidk"/>
+      <circle cx="192" cy="136" r="6" fill="var(--gold)"/>
+      <text x="212" y="126" class="lbl-s">活断層</text>
+      <!-- plate boundary quake -->
+      <circle cx="507" cy="180" r="7" fill="var(--swave)"/>
+      <!-- deep seismic plane -->
+      <line x1="505" y1="178" x2="345" y2="276" class="dash"/>
+      <circle cx="460" cy="206" r="4" fill="var(--ink3)"/>
+      <circle cx="415" cy="233" r="4" fill="var(--ink3)"/>
+      <circle cx="370" cy="261" r="4" fill="var(--ink3)"/>
+      <text x="96" y="274" class="lbl-s">← 内陸に向かうほど震源が深くなる（深発地震面）</text>
+      <!-- legend -->
+      <line x1="20" y1="300" x2="700" y2="300" class="grid"/>
+      <circle cx="34" cy="318" r="6" fill="var(--swave)"/>
+      <text x="50" y="323" class="lbl-b" fill="var(--swave)">① 海溝型地震</text>
+      <text x="152" y="323" class="lbl">プレートの境界でおこる／浅い／Mが大きい／津波を起こしやすい</text>
+      <circle cx="34" cy="344" r="6" fill="var(--gold)"/>
+      <text x="50" y="349" class="lbl-b" fill="var(--gold)">② 内陸型地震</text>
+      <text x="152" y="349" class="lbl">陸地の活断層でおこる／ごく浅い／Mが小さくても真上の震度は大きい</text>
+    </svg>
+    </div>
+    <figcaption>海洋プレートが海溝から沈み込み、その境界や内部で地震が起こります。「震源の深さが海溝から内陸に向かって深くなる」分布を、地図と断面図で読ませるのが難関校の定番です。</figcaption>
+  </figure>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th></th><th>海溝型（プレート境界型）</th><th>内陸型（直下型・活断層型）</th></tr></thead>
+    <tbody>
+      <tr><th>場所</th><td>海底のプレート境界</td><td>陸地の地下（活断層）</td></tr>
+      <tr><th>深さ</th><td>比較的浅い〜深い</td><td>ごく浅い（10〜20km程度）</td></tr>
+      <tr><th>規模M</th><td>大きい（M8〜9級も）</td><td>M7前後が多い</td></tr>
+      <tr><th>ゆれの範囲</th><td>広い、長くゆれる</td><td>せまいが真上は激しい</td></tr>
+      <tr><th>津波</th><td><strong>起こしやすい</strong></td><td>ふつう起こさない</td></tr>
+      <tr><th>くり返し</th><td>数十〜百数十年周期</td><td>千〜数万年間隔</td></tr>
+      <tr><th>例</th><td>東北地方太平洋沖地震(2011)、想定される南海トラフ地震</td><td>兵庫県南部地震(1995)、熊本地震(2016)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note"><p>「マグニチュードが小さいのに被害が大きかったのはなぜか」という記述は、内陸型＝震源が浅く人口密集地の真下、が答えの骨格。逆に「Mが大きいのに震度が小さい」は震源が深い／遠いです。<strong>M＝規模、震度＝その場のゆれ</strong>の区別を答案の中で言い換えさせると得点が安定します。</p></div>
+</section>
+
+<section id="c2">
+  <span class="chapno">CHAPTER 2</span>
+  <h2>P波・S波と初期微動継続時間</h2>
+
+  <h3>2-1 2つの波の性質 <span class="chip c-freq">頻出</span></h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th></th><th>P波（primary＝最初の）</th><th>S波（secondary＝2番目の）</th></tr></thead>
+    <tbody>
+      <tr><th>速さ</th><td class="num">約 5〜7 km/秒（速い）</td><td class="num">約 3〜4 km/秒（おそい）</td></tr>
+      <tr><th>起こすゆれ</th><td><strong>初期微動</strong>（小さいゆれ）</td><td><strong>主要動</strong>（大きいゆれ）</td></tr>
+      <tr><th>波の種類</th><td>たて波（進む向きに振動）</td><td>よこ波（直角に振動）</td></tr>
+      <tr><th>液体・気体中</th><td>伝わる</td><td><strong>伝わらない</strong></td></tr>
+      <tr><th>被害</th><td>小さい</td><td>大きい</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>P波もS波も、<strong>同じ震源から同時に出発</strong>します。速さがちがうので、遠い観測点ほど到着時刻の差が開く ― これが初期微動継続時間の正体です。</p>
+
+  <figure>
+    <div class="scrollsvg">
+    <svg viewBox="0 0 720 245" role="img" aria-label="地震計の記録。P波の到着から初期微動、S波の到着から主要動が始まる">
+      <defs>
+        <marker id="a2l" markerWidth="8" markerHeight="8" refX="1" refY="3" orient="auto">
+          <path d="M6 0 L0 3 L6 6 z" fill="var(--ink)"/></marker>
+        <marker id="a2r" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto">
+          <path d="M0 0 L6 3 L0 6 z" fill="var(--ink)"/></marker>
+      </defs>
+      <line x1="48" y1="150" x2="700" y2="150" class="grid"/>
+      <polyline id="wave" class="solidk" stroke-width="1.1" points="48,150 700,150"/>
+      <line x1="180" y1="40" x2="180" y2="212" class="p-st" stroke-dasharray="5 4" stroke-width="1.6"/>
+      <line x1="330" y1="40" x2="330" y2="212" class="s-st" stroke-dasharray="5 4" stroke-width="1.6"/>
+      <text x="186" y="36" class="lbl-b" fill="var(--pwave)">P波の到着</text>
+      <text x="336" y="36" class="lbl-b" fill="var(--swave)">S波の到着</text>
+      <path d="M180 206 L330 206" class="solidk" marker-start="url(#a2l)" marker-end="url(#a2r)"/>
+      <text x="255" y="232" class="lbl-b" text-anchor="middle">初期微動継続時間（PS時間）</text>
+      <text x="255" y="182" class="lbl-s" text-anchor="middle">初期微動</text>
+      <text x="470" y="200" class="lbl-s" text-anchor="middle">主要動</text>
+      <text x="52" y="176" class="lbl-s">ゆれなし</text>
+    </svg>
+    </div>
+    <figcaption>地震計は、<strong>おもりが慣性でその場にとどまる</strong>性質を使い、地面といっしょに動く記録紙とのずれを記録します。上下動用と水平動用があり、水平動は東西・南北の2台が必要です。</figcaption>
+  </figure>
+
+  <h3>2-2 初期微動継続時間の公式 <span class="chip c-freq">頻出</span></h3>
+  <p>震源距離を <em>D</em>（km）、P波の速さを <em>V<sub>P</sub></em>、S波の速さを <em>V<sub>S</sub></em> とすると、</p>
+  <span class="eq">T ＝ D ÷ V_S － D ÷ V_P　　→　　D ＝ k × T</span>
+  <p><em>T</em> は初期微動継続時間（秒）。<strong>D と T は比例</strong>し、比例定数 <em>k</em> を<strong>大森公式の定数</strong>といいます。たとえば V<sub>P</sub>＝6、V<sub>S</sub>＝4 km/秒なら</p>
+  <span class="eq">k ＝ 1 ÷ (1/4 － 1/6) ＝ 12　→　D ＝ 12T</span>
+  <div class="warn"><p><b>ここが分かれ目</b>　k を暗記するのではなく、<strong>「1km進むのにP波とS波で何秒差がつくか」</strong>を出す、と理解させます。上の例なら 1km で 1/4－1/6 ＝ 1/12 秒の差。12km 進んで 1 秒差。だから D ＝ 12T。この言い方なら速さが変わっても対応できます。</p></div>
+</section>
+
+<section id="c3">
+  <span class="chapno">CHAPTER 3</span>
+  <h2>震度とマグニチュード</h2>
+
+  <h3>3-1 まったく別のもの <span class="chip c-base">基礎</span></h3>
+  <div class="def">
+    <dl>
+      <dt>震度</dt><dd>その場所での<strong>ゆれの大きさ</strong>。1つの地震で場所ごとに異なる。日本では気象庁震度階級 <strong>0・1・2・3・4・5弱・5強・6弱・6強・7 の10階級</strong>。震度計で自動的に測る。</dd>
+      <dt>マグニチュード（M）</dt><dd>地震そのものの<strong>規模（エネルギー）</strong>。1つの地震に1つだけ。</dd>
+    </dl>
+  </div>
+  <div class="scroll">
+  <table>
+    <thead><tr><th class="num">震度</th><th>おおよそのようす</th></tr></thead>
+    <tbody>
+      <tr><td class="num"><span class="sd" style="background:var(--d0)">0</span></td><td>人は感じない</td></tr>
+      <tr><td class="num"><span class="sd" style="background:var(--d1)">1</span></td><td>屋内で静かにしている人の一部が感じる</td></tr>
+      <tr><td class="num"><span class="sd" style="background:var(--d2)">2</span></td><td>電灯などがわずかにゆれる</td></tr>
+      <tr><td class="num"><span class="sd" style="background:var(--d3)">3</span></td><td>棚の食器が音をたてる</td></tr>
+      <tr><td class="num"><span class="sd" style="background:var(--d4)">4</span></td><td>つり下げ物が大きくゆれ、多くの人がおどろく</td></tr>
+      <tr><td class="num"><span class="sd" style="background:var(--d5w)">5弱</span></td><td>棚の食器や本が落ちることがある</td></tr>
+      <tr><td class="num"><span class="sd" style="background:var(--d5s)">5強</span></td><td>固定していない家具がたおれることがある</td></tr>
+      <tr><td class="num"><span class="sd inv" style="background:var(--d6w)">6弱</span></td><td>立っているのが困難。かべのタイルが落ちる</td></tr>
+      <tr><td class="num"><span class="sd inv" style="background:var(--d6s)">6強</span></td><td>はわないと動けない。多くの建物がかたむく</td></tr>
+      <tr><td class="num"><span class="sd inv" style="background:var(--d7)">7</span></td><td>耐震性の低い建物がたおれるものが多い</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>3-2 マグニチュードとエネルギー <span class="chip c-hard">難関</span></h3>
+  <ul>
+    <li>M が <strong>1 大きい</strong>とエネルギーは<strong>約32倍</strong></li>
+    <li>M が <strong>2 大きい</strong>とエネルギーは<strong>約1000倍</strong>（32×32＝1024）</li>
+  </ul>
+  <p>M8.0 は M6.0 の約1000倍、M9.0 は M7.0 の約1000倍。「M7 の地震が何回分で M9 になるか」＝約1000回分、という問い方もされます。</p>
+
+  <h3>3-3 震度が大きくなる／小さくなる条件 <span class="chip c-freq">頻出</span></h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>条件</th><th>震度への影響</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>震源距離が近い</td><td>大きい</td><td>波は進むほど弱まる</td></tr>
+      <tr><td>震源が浅い</td><td>大きい</td><td>地表までの距離が短い</td></tr>
+      <tr><td>マグニチュードが大きい</td><td>大きい</td><td>そもそものエネルギーが大きい</td></tr>
+      <tr><td><strong>やわらかい地ばん</strong>（沖積平野・埋め立て地・盆地）</td><td><strong>大きい</strong></td><td>やわらかい層でゆれが増幅される</td></tr>
+      <tr><td>かたい岩ばん（台地・山地）</td><td>小さい</td><td>ゆれが増幅されにくい</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note"><p>「震央から等距離なのに震度が異なる」「震度分布が同心円にならない」タイプの資料問題は、ほぼ<strong>地ばんの差</strong>が答え。加えて、プレート境界地震では海洋プレートに沿って揺れが伝わりやすいための<strong>異常震域</strong>（震源から遠い太平洋側で震度が大きい）も難関校では出ます。</p></div>
+</section>
+
+<section id="c4">
+  <span class="chapno">CHAPTER 4</span>
+  <h2>地震による災害と防災のしくみ</h2>
+
+  <h3>4-1 津波 <span class="chip c-freq">頻出</span></h3>
+  <ul>
+    <li><strong>原因</strong>：海底の地ばんが<strong>上下に</strong>ずれ、真上の海水が持ち上げられる／引き下げられる。だから海溝型（逆断層型）で起こりやすい。</li>
+    <li><strong>速さ</strong>：水深が深いほど速い。水深4000mでは時速約700km（ジェット機なみ）、水深10mでも時速約36km（全力疾走より速い）。</li>
+    <li><strong>高さ</strong>：岸に近づき浅くなると<strong>速さが落ち、後ろの波が追いついて高くなる</strong>。V字型の湾（リアス海岸）の奥では特に高くなる。</li>
+    <li><strong>波の性質</strong>：ふつうの波とちがい<strong>波長が非常に長い</strong>ため、水のかたまりが押し寄せ、長く引かない。第1波より<strong>あとの波のほうが大きいことがある</strong>。引き波が先に来るとは限らない。川をさかのぼる。</li>
+  </ul>
+
+  <h3>4-2 液状化現象 <span class="chip c-freq">頻出</span></h3>
+  <p>地下水を多くふくむ<strong>砂の地ばん</strong>がゆすられると、砂のつぶがばらばらになって水にういた状態になり、地面が液体のようにふるまいます。</p>
+  <ul>
+    <li>おきやすい場所：<strong>埋め立て地・干拓地・昔の川や池のあと・砂丘のふもと</strong></li>
+    <li>おきること：建物が<strong>かたむく・しずむ</strong>／地中の軽いマンホールや水道管が<strong>うき上がる</strong>／砂と水がふき出す（<strong>噴砂</strong>）</li>
+  </ul>
+  <div class="warn"><p><b>頻出の逆転</b>　「重い建物がしずみ、軽いマンホールがうかぶ」。<strong>地面が液体になった＝密度で浮き沈みする</strong>と説明できれば記述で満点になります。</p></div>
+
+  <h3>4-3 緊急地震速報 <span class="chip c-freq">頻出</span> <span class="chip c-hard">難関</span></h3>
+  <p>しくみは第2章の「P波はS波より速い」の応用です。</p>
+  <ol>
+    <li>震源に近い地震計が<strong>P波</strong>をとらえる</li>
+    <li>震源・規模をただちに計算し、震度5弱以上が予想される地域に発表</li>
+    <li>大きなゆれ（<strong>S波</strong>）が届く前に、数秒〜数十秒の猶予をつくる</li>
+  </ol>
+  <div class="warn"><p><b>必ず問われる弱点</b>　<strong>震源に近い場所では、速報より先にS波が来てしまい間に合わない。</strong>また、震源やMを速報値で出すため<strong>予想震度がずれることがある</strong>。この2点をセットで書けるようにします。</p></div>
+
+  <h3>4-4 そのほかの災害と備え <span class="chip c-base">基礎</span></h3>
+  <ul>
+    <li><strong>長周期地震動</strong>：ゆっくり大きくゆれる波。<strong>高層ビルが遠くでも大きく長くゆれる</strong>。階級1〜4で発表される。</li>
+    <li><strong>地割れ・がけくずれ・土砂ダム</strong>、火災（<strong>通電火災</strong>を防ぐため感震ブレーカー）</li>
+    <li><strong>ハザードマップ</strong>：津波・浸水・土砂災害の危険度と避難場所を示した地図。</li>
+    <li><strong>耐震・制震・免震</strong>：耐震＝じょうぶにする／制震＝装置でゆれを吸収／免震＝建物と地面を切りはなす。</li>
+    <li><strong>地形からわかる過去</strong>：海岸段丘・隆起した貝がらの層は、地震のたびに土地が隆起したあと。</li>
+  </ul>
+</section>
+
+<section id="c5">
+  <span class="chapno">CHAPTER 5</span>
+  <h2>出題パターン9型と解法</h2>
+  <p>ここからが本番です。<strong>まず自分で解いてから</strong>「解答・解説」を開いてください。</p>
+
+  <div class="pidx">
+    <a href="#p1"><span class="pn">PATTERN 1</span>初期微動継続時間 ⇄ 震源距離</a>
+    <a href="#p2"><span class="pn">PATTERN 2</span>2地点の到着時刻から速さと発生時刻</a>
+    <a href="#p3"><span class="pn">PATTERN 3</span>走時グラフの読み取り・作図</a>
+    <a href="#p4"><span class="pn">PATTERN 4</span>緊急地震速報の猶予時間</a>
+    <a href="#p5"><span class="pn">PATTERN 5</span>震源の深さを作図で求める</a>
+    <a href="#p6"><span class="pn">PATTERN 6</span>3地点から震央を決める</a>
+    <a href="#p7"><span class="pn">PATTERN 7</span>津波の到達時刻</a>
+    <a href="#p8"><span class="pn">PATTERN 8</span>表・グラフ読み取り総合</a>
+    <a href="#p9"><span class="pn">PATTERN 9</span>記述問題の型</a>
+  </div>
+
+  <h3 id="p1">PATTERN 1｜初期微動継続時間 ⇄ 震源距離 <span class="chip c-base">基礎</span></h3>
+  <p><strong>解法の型</strong>：①P波・S波の速さから 1km あたりの時間差を出す　②その逆数が <em>k</em>　③ <em>D</em>＝<em>k</em>×<em>T</em> に代入。</p>
+  <div class="q">
+    <div class="q-head">例題 1</div>
+    <div class="q-body">
+      <p>ある地震で、P波の速さは毎秒8km、S波の速さは毎秒4kmだった。</p>
+      <ol>
+        <li>震源距離160kmの地点での初期微動継続時間は何秒か。</li>
+        <li>初期微動継続時間が15秒だった地点の震源距離は何kmか。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>①1kmあたりの差を出す</b>
+          <span class="eq">1/4 － 1/8 ＝ 1/8（秒）　→　k ＝ 8</span>
+          つまり「8km進むごとに1秒の差がつく」。</div>
+        <div class="step"><b>②あてはめる</b>
+          <span class="eq">(1) T ＝ 160 ÷ 8 ＝ 20 秒</span>
+          <span class="eq">(2) D ＝ 8 × 15 ＝ 120 km</span></div>
+        <p class="final">答　(1) 20秒　(2) 120km</p>
+      </div>
+    </details>
+  </div>
+  <div class="note"><p>「160÷4＝40秒、160÷8＝20秒、差は20秒」と<strong>2回わって引く</strong>解き方でも正解です。むしろ最初はこちらで通し、時間が足りない子にだけ <em>k</em> を導入するのが安全です（<em>k</em> だけ覚えて速さが与えられた瞬間に固まる子が多いため）。</p></div>
+
+  <h3 id="p2">PATTERN 2｜2地点の到着時刻から速さと発生時刻 <span class="chip c-freq">頻出</span></h3>
+  <p><strong>解法の型</strong>：①2地点の<strong>距離の差 ÷ 時刻の差</strong>で速さを出す　②片方の地点で「震源からかかった時間」を出し、到着時刻から<strong>引き算</strong>して発生時刻。</p>
+  <div class="q">
+    <div class="q-head">例題 2</div>
+    <div class="q-body">
+      <div class="scroll">
+      <table>
+        <thead><tr><th>地点</th><th class="num">震源距離</th><th class="num">P波の到着</th><th class="num">S波の到着</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td class="num">60 km</td><td class="num">10時23分12秒</td><td class="num">10時23分17秒</td></tr>
+          <tr><td>B</td><td class="num">180 km</td><td class="num">10時23分32秒</td><td class="num">10時23分47秒</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <ol>
+        <li>P波・S波の速さはそれぞれ毎秒何kmか。</li>
+        <li>この地震の発生時刻は何時何分何秒か。</li>
+        <li>震源距離300kmの地点の初期微動継続時間は何秒か。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>①速さ＝距離の差÷時間の差</b>
+          <span class="eq">P波：(180－60) ÷ (32－12) ＝ 120 ÷ 20 ＝ 6 km/秒</span>
+          <span class="eq">S波：(180－60) ÷ (47－17) ＝ 120 ÷ 30 ＝ 4 km/秒</span></div>
+        <div class="step"><b>②発生時刻はA地点から逆算</b>
+          A地点までP波がかかった時間は 60 ÷ 6 ＝ 10秒。
+          <span class="eq">10時23分12秒 － 10秒 ＝ 10時23分02秒</span>
+          B地点で確かめると 180 ÷ 6 ＝ 30秒、02秒＋30秒＝32秒 ✓</div>
+        <div class="step"><b>③k を出してから代入</b>
+          <span class="eq">1/4 － 1/6 ＝ 1/12　→　k ＝ 12</span>
+          <span class="eq">T ＝ 300 ÷ 12 ＝ 25 秒</span></div>
+        <p class="final">答　(1) P波 6km/秒、S波 4km/秒　(2) 10時23分02秒　(3) 25秒</p>
+      </div>
+    </details>
+  </div>
+  <div class="warn"><p><b>ミス注意</b>　発生時刻は<strong>必ず引き算</strong>。分をまたぐ繰り下がり（例：23分02秒－10秒＝22分52秒）でのミスが最多です。答えを出したら<strong>もう一方の地点で検算</strong>する習慣をつけます。</p></div>
+
+  <h3 id="p3">PATTERN 3｜走時グラフの読み取り・作図 <span class="chip c-freq">頻出</span></h3>
+  <p>横軸に震源距離、縦軸に時刻（または地震発生からの時間）をとったグラフ。<strong>直線の傾きが「1kmあたりの時間」＝速さの逆数</strong>です。</p>
+
+  <figure>
+    <div class="scrollsvg">
+    <svg viewBox="0 0 720 330" role="img" aria-label="走時グラフ。P波とS波の直線と、その間隔が初期微動継続時間を表す">
+      <g class="grid">
+        <line x1="160" y1="30" x2="160" y2="270"/><line x1="260" y1="30" x2="260" y2="270"/>
+        <line x1="360" y1="30" x2="360" y2="270"/><line x1="460" y1="30" x2="460" y2="270"/>
+        <line x1="560" y1="30" x2="560" y2="270"/>
+        <line x1="60" y1="240" x2="660" y2="240"/><line x1="60" y1="210" x2="660" y2="210"/>
+        <line x1="60" y1="180" x2="660" y2="180"/><line x1="60" y1="150" x2="660" y2="150"/>
+        <line x1="60" y1="120" x2="660" y2="120"/><line x1="60" y1="90" x2="660" y2="90"/>
+        <line x1="60" y1="60" x2="660" y2="60"/>
+      </g>
+      <line x1="60" y1="270" x2="660" y2="270" class="axis"/>
+      <line x1="60" y1="270" x2="60" y2="30" class="axis"/>
+      <line x1="60" y1="270" x2="660" y2="120" class="p-st"/>
+      <line x1="60" y1="270" x2="660" y2="45" class="s-st"/>
+      <text x="612" y="112" class="lbl-b" fill="var(--pwave)">P波</text>
+      <text x="612" y="40" class="lbl-b" fill="var(--swave)">S波</text>
+      <g class="lbl-s">
+        <text x="52" y="286">0</text><text x="146" y="286">50</text><text x="244" y="286">100</text>
+        <text x="344" y="286">150</text><text x="444" y="286">200</text><text x="544" y="286">250</text>
+        <text x="640" y="286">300</text>
+        <text x="36" y="274">0</text><text x="32" y="244">10</text><text x="32" y="214">20</text>
+        <text x="32" y="184">30</text><text x="32" y="154">40</text><text x="32" y="124">50</text>
+        <text x="32" y="94">60</text><text x="32" y="64">70</text>
+      </g>
+      <text x="560" y="308" class="lbl">震源距離（km）</text>
+      <text x="66" y="24" class="lbl">地震発生からの時間（秒）</text>
+      <line x1="460" y1="270" x2="460" y2="170" class="dash"/>
+      <line x1="460" y1="170" x2="460" y2="120" stroke="var(--gold)" stroke-width="4"/>
+      <path d="M470 240 L462 152" stroke="var(--gold)" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+      <text x="440" y="254" class="lbl-b" fill="var(--gold)">この縦のすき間＝初期微動継続時間</text>
+      <circle cx="460" cy="170" r="4" class="p-fl"/><circle cx="460" cy="120" r="4" class="s-fl"/>
+    </svg>
+    </div>
+    <figcaption>P波は300kmを50秒（6km/秒）、S波は300kmを75秒（4km/秒）。<strong>2直線の縦のすき間が初期微動継続時間</strong>で、震源距離に比例して広がります。両直線は必ず<strong>原点（震源距離0・発生時刻）で交わる</strong>。</figcaption>
+  </figure>
+
+  <div class="q">
+    <div class="q-head">例題 3</div>
+    <div class="q-body">
+      <p>上の走時グラフについて答えなさい。</p>
+      <ol>
+        <li>P波・S波の速さはそれぞれ毎秒何kmか。</li>
+        <li>震源距離200kmの地点の初期微動継続時間は何秒か。</li>
+        <li>初期微動継続時間が20秒になるのは震源距離何kmの地点か。</li>
+        <li>2本の直線が原点で交わるのはなぜか、説明しなさい。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>(1) 端の点を読む</b>
+          <span class="eq">P波：300km ÷ 50秒 ＝ 6 km/秒　S波：300km ÷ 75秒 ＝ 4 km/秒</span>
+          グラフは<strong>いちばん読みやすい格子点</strong>で読むのがコツ。</div>
+        <div class="step"><b>(2) 縦のすき間を読む</b>
+          200kmでは P波 200÷6 ≒ 33.3秒、S波 200÷4 ＝ 50秒。
+          <span class="eq">50 － 33.3 ＝ 約17秒（k＝12 として 200÷12 ≒ 16.7秒）</span></div>
+        <div class="step"><b>(3) 比例で戻す</b>
+          <span class="eq">D ＝ 12 × 20 ＝ 240 km</span></div>
+        <div class="step"><b>(4) 記述</b>
+          「P波とS波は<strong>震源で同時に発生し</strong>、震源距離0の点では到着時刻の差が0になるから。」</div>
+        <p class="final">答　(1) P波6km/秒・S波4km/秒　(2) 約17秒　(3) 240km　(4) 上記</p>
+      </div>
+    </details>
+  </div>
+
+  <h3 id="p4">PATTERN 4｜緊急地震速報の猶予時間 <span class="chip c-hard">難関</span></h3>
+  <p><strong>解法の型</strong>：時間軸を「地震発生を0秒」に統一して、<strong>①速報が出る時刻 ②その地点にS波が届く時刻</strong>の2つを別々に出し、引く。</p>
+  <div class="q">
+    <div class="q-head">例題 4</div>
+    <div class="q-body">
+      <p>P波6km/秒、S波4km/秒の地震。震源距離36kmの地点にある地震計がP波をとらえ、その3秒後に緊急地震速報が発表された。</p>
+      <ol>
+        <li>速報は地震発生から何秒後に発表されたか。</li>
+        <li>震源距離180kmの地点では、速報の何秒後に大きなゆれが始まるか。</li>
+        <li>この速報が間に合わないのは、震源距離が何km以内の地点か。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>(1) 検知＋処理時間</b>
+          <span class="eq">36 ÷ 6 ＝ 6秒（P波が地震計に到達）　6 ＋ 3 ＝ 9秒後</span></div>
+        <div class="step"><b>(2) S波の到達時刻から引く</b>
+          <span class="eq">180 ÷ 4 ＝ 45秒後にS波到達</span>
+          <span class="eq">45 － 9 ＝ 36秒</span></div>
+        <div class="step"><b>(3) 「S波到達＝速報発表」となる距離</b>
+          S波が9秒で進む距離を求めればよい。
+          <span class="eq">4 × 9 ＝ 36 km</span>
+          震源距離36km以内では、速報より先に主要動が来る。</div>
+        <p class="final">答　(1) 9秒後　(2) 36秒後　(3) 36km以内</p>
+      </div>
+    </details>
+  </div>
+  <div class="note"><p>(3)は「速報が間に合わない範囲＝震央付近＝いちばん被害が大きい場所」という<strong>制度の限界</strong>につながる問いです。計算のあとに必ず一言で言わせておくと、記述で同じ内容が問われたときに書けます。</p></div>
+
+  <h3 id="p5">PATTERN 5｜震源の深さを作図で求める <span class="chip c-hard">難関</span></h3>
+  <p>小学生は三平方の定理を使えません。だから難関校は<strong>方眼と作図（コンパス）で読み取らせる</strong>形にしてきます。手順を型で覚えます。</p>
+  <ol>
+    <li>各地点の初期微動継続時間から<strong>震源距離</strong>を求める</li>
+    <li>方眼に<strong>地表の線</strong>を引き、震央を通る<strong>断面図</strong>として各地点を置く</li>
+    <li>各地点を中心に、<strong>半径＝震源距離</strong>の円（弧）を地下側にかく</li>
+    <li>弧の<strong>交点が震源</strong>。そこから地表までの長さが<strong>深さ</strong></li>
+  </ol>
+
+  <figure>
+    <div class="scrollsvg">
+    <svg viewBox="0 0 720 280" role="img" aria-label="断面図で2地点から円弧をかき、交点として震源と深さを求める作図">
+      <defs>
+        <clipPath id="below"><rect x="40" y="80" width="660" height="180"/></clipPath>
+        <marker id="a3u" markerWidth="8" markerHeight="8" refX="3" refY="1" orient="auto">
+          <path d="M0 6 L3 0 L6 6 z" fill="var(--ink3)"/></marker>
+        <marker id="a3d" markerWidth="8" markerHeight="8" refX="3" refY="5" orient="auto">
+          <path d="M0 0 L3 6 L6 0 z" fill="var(--ink3)"/></marker>
+      </defs>
+      <rect x="40" y="80" width="660" height="180" class="rock" opacity=".5"/>
+      <g clip-path="url(#below)">
+        <circle cx="240" cy="80" r="150" class="p-st" stroke-dasharray="5 4" stroke-width="1.5" fill="none"/>
+        <circle cx="576" cy="80" r="234" class="s-st" stroke-dasharray="5 4" stroke-width="1.5" fill="none"/>
+      </g>
+      <line x1="40" y1="80" x2="700" y2="80" class="axis" stroke-width="2"/>
+      <circle cx="240" cy="80" r="5" fill="var(--pwave)"/>
+      <text x="240" y="70" class="lbl-b" fill="var(--pwave)" text-anchor="middle">地点P</text>
+      <circle cx="576" cy="80" r="5" fill="var(--swave)"/>
+      <text x="576" y="70" class="lbl-b" fill="var(--swave)" text-anchor="middle">地点Q</text>
+      <circle cx="360" cy="80" r="5" fill="var(--ink)"/>
+      <text x="360" y="70" class="lbl-b" text-anchor="middle">震央</text>
+      <circle cx="360" cy="170" r="7" fill="var(--ink)"/>
+      <text x="360" y="192" class="lbl-b" text-anchor="middle">震源</text>
+      <line x1="360" y1="80" x2="360" y2="170" class="solidk"/>
+      <path d="M390 86 L390 164" class="grid" stroke-width="1.2" marker-start="url(#a3u)" marker-end="url(#a3d)"/>
+      <text x="400" y="129" class="lbl-b">深さ 30km</text>
+      <line x1="240" y1="80" x2="360" y2="170" class="dash"/>
+      <text x="289" y="141" class="lbl-s" text-anchor="middle">50km</text>
+      <line x1="576" y1="80" x2="360" y2="170" class="dash"/>
+      <text x="461" y="105" class="lbl-s" text-anchor="middle">78km</text>
+      <text x="46" y="98" class="lbl-s">地表</text>
+      <text x="46" y="252" class="lbl-s">1マス＝10km／弧はコンパスでかく</text>
+    </svg>
+    </div>
+    <figcaption>震央距離40kmの地点Pから半径50km、震央距離72kmの地点Qから半径78kmの弧をかくと、深さ30kmの1点で交わります。</figcaption>
+  </figure>
+
+  <div class="q">
+    <div class="q-head">例題 5</div>
+    <div class="q-body">
+      <p>ある地震について、震央を通る東西の断面を考える。震央から西に40kmの地点Pの震源距離は50km、震央から東に72kmの地点Qの震源距離は78kmだった。</p>
+      <ol>
+        <li>この地震の震源の深さは何kmか。作図の方法とともに答えなさい。</li>
+        <li>震央にいる人の震源距離は何kmか。</li>
+        <li>地点Pと地点Q、初期微動継続時間が長いのはどちらか。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>(1) 作図で1点に決める</b>
+          方眼に地表の線を引き、震央から西へ40km、東へ72kmの位置にP・Qをとる。Pを中心に半径50km、Qを中心に半径78kmの弧を地下側にかくと、両方の弧は<strong>震央の真下30kmの点</strong>で交わる。これが震源。
+          <span class="eq">確かめ：40－30－50 と 72－30－78 は、どちらも直角三角形の3辺</span></div>
+        <div class="step"><b>(2) 震央の真下が震源</b>
+          震央から震源までの距離＝<strong>深さそのもの</strong>。
+          <span class="eq">30 km</span></div>
+        <div class="step"><b>(3) 震源距離が長いほうが長い</b>
+          初期微動継続時間は<strong>震源距離</strong>に比例（震央距離ではない）。P＝50km、Q＝78km。
+          <span class="eq">Q のほうが長い</span></div>
+        <p class="final">答　(1) 30km（作図は上記）　(2) 30km　(3) 地点Q</p>
+      </div>
+    </details>
+  </div>
+  <div class="warn"><p><b>最頻出のワナ</b>　<strong>震央距離と震源距離をとりちがえる</strong>こと。「地図上の距離」＝震央距離、「初期微動継続時間から出る距離」＝震源距離。震源が深い地震では、震央にいても震源距離は0になりません。</p></div>
+
+  <h3 id="p6">PATTERN 6｜3地点から震央を決める <span class="chip c-hard">難関</span></h3>
+  <p><strong>解法の型</strong>：地図（上から見た図）に、各地点を中心として<strong>半径＝震源距離</strong>の円をかく。円が2つずつ交わってできる<strong>交点どうしを結んだ直線</strong>を3本引くと、<strong>1点で交わる。そこが震央</strong>。</p>
+
+  <figure>
+    <div class="scrollsvg">
+    <svg id="fig-epi" viewBox="0 0 720 400" role="img" aria-label="3地点を中心にかいた円の共通弦が1点で交わり、その点が震央になることを示す地図"></svg>
+    </div>
+    <figcaption>円そのものの交点ではなく、<strong>2円の交点どうしを結んだ直線</strong>の交わりが震央。震源に深さがあるため円は1点で交わらず、重なり合う ― この理由を書かせる出題があります。</figcaption>
+  </figure>
+
+  <div class="q">
+    <div class="q-head">例題 6</div>
+    <div class="q-body">
+      <p>3つの観測点A・B・Cの震源距離が、それぞれ50km・78km・34kmと分かった。地図上に円をかいて震央を求めたところ、3つの円は1点では交わらず、重なり合う部分ができた。</p>
+      <ol>
+        <li>3つの円が1点で交わらないのはなぜか。</li>
+        <li>震央を求める作図の手順を説明しなさい。</li>
+        <li>震央からA・B・Cまでの地図上の距離が40km・72km・16kmだったとき、震源の深さは何kmか。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>(1) 深さのぶんだけ大きい</b>
+          「震源距離は<strong>地下の震源までの斜めの距離</strong>で、地図上の震央距離より<strong>震源の深さのぶんだけ長い</strong>ため、地図にかいた円は震央より外側までふくらみ、1点で交わらないから。」</div>
+        <div class="step"><b>(2) 共通弦を3本</b>
+          ①A・B・Cを中心に半径50km・78km・34kmの円をかく　②A-B、B-C、C-Aの各組で<strong>2円の交点2つを結ぶ直線</strong>を引く　③3直線の交点が震央。</div>
+        <div class="step"><b>(3) 断面にもどす</b>
+          Aについて、震央距離40km・震源距離50km。PATTERN 5と同じ作図（または 40－30－50 の直角三角形）から
+          <span class="eq">深さ ＝ 30 km</span>
+          Bで確かめると 72－30－78、Cでは 16－30－34。すべて深さ30kmで一致する。</div>
+        <p class="final">答　(1)(2) 上記　(3) 30km</p>
+      </div>
+    </details>
+  </div>
+
+  <h3 id="p7">PATTERN 7｜津波の到達時刻 <span class="chip c-base">基礎</span></h3>
+  <div class="q">
+    <div class="q-head">例題 7</div>
+    <div class="q-body">
+      <p>震央から海岸まで600km離れている。津波の平均の速さを時速720kmとする。</p>
+      <ol>
+        <li>津波が海岸に届くのは地震発生の何分後か。</li>
+        <li>沖合では時速720kmだった津波が、岸に近づくと速さが落ちる。それなのに波が高くなるのはなぜか。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>(1) 単位をそろえる</b>
+          <span class="eq">600 ÷ 720 ＝ 5/6 時間 ＝ 50 分</span></div>
+        <div class="step"><b>(2) 記述</b>
+          「浅くなると津波の速さがおそくなり、<strong>後ろから来る速い波が追いついて重なる</strong>ため、波の高さが高くなる。」（＋「V字型の湾の奥では波が集まってさらに高くなる」を加えると加点されやすい）</div>
+        <p class="final">答　(1) 50分後　(2) 上記</p>
+      </div>
+    </details>
+  </div>
+  <div class="warn"><p><b>単位のワナ</b>　地震の波は<strong>秒速（km/秒）</strong>、津波は<strong>時速（km/時）</strong>で与えられることが多い。問題文を読んだ瞬間に単位に丸をつけさせます。</p></div>
+
+  <h3 id="p8">PATTERN 8｜表・グラフ読み取り総合 <span class="chip c-hard">難関</span></h3>
+  <p>難関校では、これまでの型が1問にまとめて出ます。<strong>まず表から速さ・発生時刻・kを確定させる</strong>のが鉄則です。</p>
+  <div class="q">
+    <div class="q-head">例題 8（総合）</div>
+    <div class="q-body">
+      <p>ある地震について、4つの観測点の記録をまとめた。</p>
+      <div class="scroll">
+      <table>
+        <thead><tr><th>地点</th><th class="num">震源距離</th><th class="num">P波の到着</th><th class="num">S波の到着</th><th class="num">震度</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td class="num">36 km</td><td class="num">9時30分06秒</td><td class="num">9時30分09秒</td><td class="num">5弱</td></tr>
+          <tr><td>B</td><td class="num">72 km</td><td class="num">9時30分12秒</td><td class="num">9時30分18秒</td><td class="num">4</td></tr>
+          <tr><td>C</td><td class="num">120 km</td><td class="num">9時30分20秒</td><td class="num">9時30分30秒</td><td class="num">4</td></tr>
+          <tr><td>D</td><td class="num">180 km</td><td class="num">9時30分30秒</td><td class="num">9時30分45秒</td><td class="num">2</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <ol>
+        <li>P波とS波の速さを求めなさい。</li>
+        <li>地震が発生した時刻を求めなさい。</li>
+        <li>初期微動継続時間が8秒だった地点Eの震源距離を求めなさい。</li>
+        <li>地点Aの地震計がP波を感知した3秒後に緊急地震速報が出された。地点Dで主要動が始まるのは速報の何秒後か。</li>
+        <li>地点Cは地点Bより震源から遠いのに震度が同じだった。考えられる理由を書きなさい。</li>
+      </ol>
+    </div>
+    <details>
+      <summary>解答・解説</summary>
+      <div class="ans-body">
+        <div class="step"><b>(1) 2地点の差でとる</b>
+          <span class="eq">P波：(180－36) ÷ (30－06) ＝ 144 ÷ 24 ＝ 6 km/秒</span>
+          <span class="eq">S波：(180－36) ÷ (45－09) ＝ 144 ÷ 36 ＝ 4 km/秒</span></div>
+        <div class="step"><b>(2) A地点から逆算</b>
+          <span class="eq">36 ÷ 6 ＝ 6秒　→　9時30分06秒 － 6秒 ＝ 9時30分00秒</span>
+          他の3地点でも成り立つことを確認（72÷6＝12、120÷6＝20、180÷6＝30）。</div>
+        <div class="step"><b>(3) k を出す</b>
+          表からも読める：36km で T＝3秒、72km で T＝6秒 → <strong>k ＝ 12</strong>。
+          <span class="eq">D ＝ 12 × 8 ＝ 96 km</span></div>
+        <div class="step"><b>(4) 時間軸を発生0秒にそろえる</b>
+          <span class="eq">速報：6秒（P波到達）＋3秒 ＝ 発生から9秒後</span>
+          <span class="eq">D地点のS波：180 ÷ 4 ＝ 45秒後</span>
+          <span class="eq">45 － 9 ＝ 36秒後</span></div>
+        <div class="step"><b>(5) 地ばんを答える</b>
+          「地点Cのほうが<strong>やわらかい地ばん（うめ立て地や川が運んだ砂・どろが積もった平野）</strong>の上にあり、ゆれが大きくなったから。」</div>
+        <p class="final">答　(1) P波6km/秒・S波4km/秒　(2) 9時30分00秒　(3) 96km　(4) 36秒後　(5) 上記</p>
+      </div>
+    </details>
+  </div>
+  <div class="note"><p>この型は<strong>(1)(2)を落とすと全滅</strong>する連鎖問題です。表を見たら反射的に「差÷差で速さ」「1地点で逆算して発生時刻」「T列を作ってk」を3手続けて書き込む、という手の動きまで練習させてください。表の余白に T の列を自分で書き足せるかどうかで差がつきます。</p></div>
+
+  <h3 id="p9">PATTERN 9｜記述問題の型 <span class="chip c-freq">頻出</span> <span class="chip c-hard">難関</span></h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>問われ方</th><th>答案の骨格</th></tr></thead>
+    <tbody>
+      <tr><td>初期微動継続時間が震源距離に比例するのはなぜか</td><td>P波とS波は震源を同時に出発し速さが一定なので、進む距離が長いほど到着時刻の差が一定の割合で広がるから。</td></tr>
+      <tr><td>海溝型地震が津波を起こしやすいのはなぜか</td><td>海底のプレート境界で岩ばんが<strong>上下にずれ</strong>、その上の大量の海水が持ち上げられるから。</td></tr>
+      <tr><td>緊急地震速報が間に合わないことがあるのはなぜか</td><td>P波を感知して計算・発表するまでに時間がかかるため、震源に近い地点では発表前にS波が到達してしまうから。</td></tr>
+      <tr><td>Mが小さいのに被害が大きかったのはなぜか</td><td>震源が<strong>浅く</strong>、人口や建物が集中する地域の<strong>真下</strong>で起きたから。</td></tr>
+      <tr><td>震央から同じ距離なのに震度がちがうのはなぜか</td><td>地ばんのかたさがちがい、やわらかい地ばんではゆれが増幅されるから。</td></tr>
+      <tr><td>うめ立て地で被害が大きいのはなぜか</td><td>地下水を多くふくむ砂の地ばんで<strong>液状化</strong>が起こり、建物がかたむいたりしずんだりするから。</td></tr>
+      <tr><td>日本で地震が多いのはなぜか</td><td>4枚のプレートがぶつかり合う境界に位置し、海洋プレートが沈み込んでひずみがたまりやすいから。</td></tr>
+      <tr><td>高層ビルが遠くでも大きくゆれるのはなぜか</td><td>ゆっくりした<strong>長周期地震動</strong>が遠くまで伝わり、ビルのゆれやすい周期と合ってゆれが大きくなるから。</td></tr>
+      <tr><td>ハザードマップを見る意味は何か</td><td>自分の住む場所の危険の種類と程度、避難場所と経路を事前に知り、すぐ避難できるようにするため。</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note"><p>記述は「<strong>原因 → しくみ → 結果</strong>」の3ステップで書かせると型が安定します。字数が足りないときは<strong>しくみ</strong>を削らせず、結果を削らせるのがコツ。採点者が見ているのはしくみの部分です。</p></div>
+</section>
+
+<section id="c6">
+  <span class="chapno">CHAPTER 6</span>
+  <h2>時事 ― 2026年の地震から</h2>
+  <p>入試のリード文は「今年起きた地震」から書き起こされます。<strong>できごとの名前より、そこで使われた用語としくみ</strong>を押さえてください。</p>
+
+  <div class="card">
+    <h4>2026年4月20日　三陸沖の地震</h4>
+    <ul>
+      <li>16時52分、三陸沖の深さ約20kmで発生。<strong>マグニチュード7.7</strong>、最大震度5強（青森県階上町）。</li>
+      <li>太平洋プレートと陸のプレートの境界で起きた<strong>プレート間地震（逆断層型）</strong>。</li>
+      <li>津波を観測（岩手県久慈港0.8m、北海道浦河・青森県八戸港0.4mなど）。</li>
+      <li>同日19時30分、<strong>「北海道・三陸沖後発地震注意情報」</strong>が発表された。</li>
+    </ul>
+    <p><strong>後発地震注意情報とは</strong>：日本海溝・千島海溝ぞいでM7.0以上の地震が起きたとき、続けてより大きな地震（後発地震）が起こる可能性が<strong>ふだんより相対的に高まっている</strong>ことを知らせる情報。「必ず起こる」という予知ではなく、<strong>備えの再確認とすぐ逃げられる準備</strong>をよびかけるもの。</p>
+  </div>
+
+  <div class="card">
+    <h4>2026年6月25日　岩手県沖の地震</h4>
+    <ul>
+      <li>7時30分、岩手県沖の深さ約45kmで <strong>M7.2</strong>、青森県で<strong>最大震度6強</strong>。</li>
+      <li>長周期地震動階級2を観測。津波予報も発表された。</li>
+      <li>気象庁は「後発地震注意情報の発表には至らなかった」と説明 ― <strong>発表には基準がある</strong>ことがわかる例。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>あわせて確認しておきたい情報</h4>
+    <ul>
+      <li><strong>南海トラフ地震臨時情報</strong>（調査中／巨大地震注意／巨大地震警戒）：2024年8月、日向灘の地震を受けて初めて「巨大地震注意」が発表された。2025年8月に国の防災対応ガイドラインが改訂されている。</li>
+      <li><strong>能登半島地震</strong>（2024年1月1日、M7.6、最大震度7）：内陸〜沿岸の活断層による地震で、津波・液状化・<strong>海岸の隆起</strong>が同時に起きた総合的な題材。</li>
+      <li><strong>緊急地震速報／長周期地震動階級</strong>：しくみと限界がセットで問われる。</li>
+    </ul>
+  </div>
+  <div class="note"><p>時事は「知っているか」ではなく<strong>「単元の知識で説明できるか」</strong>が問われます。三陸沖＝プレート間・逆断層・津波、岩手県沖＝やや深い・震度6強・長周期、能登＝活断層・隆起・液状化、と<strong>1つの地震につきキーワード3つ</strong>で紐づけておくと、初見のリード文にも対応できます。</p></div>
+</section>
+
+<section id="c7">
+  <span class="chapno">CHAPTER 7</span>
+  <h2>総点検 ― 一問一答とミス集</h2>
+
+  <h3>7-1 一問一答30</h3>
+  <p><button class="toggle" id="tg" type="button">答えを表示する</button></p>
+  <div class="drill hide" id="drill">
+    <div><div class="qq">1. 地下でゆれが発生した場所は？</div><div class="aa">震源</div></div>
+    <div><div class="qq">2. 震源の真上の地表の点は？</div><div class="aa">震央</div></div>
+    <div><div class="qq">3. 初めの小さなゆれを何という？</div><div class="aa">初期微動</div></div>
+    <div><div class="qq">4. あとから来る大きなゆれは？</div><div class="aa">主要動</div></div>
+    <div><div class="qq">5. 初期微動を起こす波は？</div><div class="aa">P波（たて波）</div></div>
+    <div><div class="qq">6. 主要動を起こす波は？</div><div class="aa">S波（よこ波）</div></div>
+    <div><div class="qq">7. 液体中を伝わらないのはどちら？</div><div class="aa">S波</div></div>
+    <div><div class="qq">8. 初期微動継続時間は何に比例する？</div><div class="aa">震源距離</div></div>
+    <div><div class="qq">9. その比例の関係を表す式の名前は？</div><div class="aa">大森公式</div></div>
+    <div><div class="qq">10. 地震計でその場にとどまろうとする部分は？</div><div class="aa">おもり（慣性を利用）</div></div>
+    <div><div class="qq">11. ゆれの大きさを表す指標は？</div><div class="aa">震度</div></div>
+    <div><div class="qq">12. 気象庁震度階級は何階級？</div><div class="aa">10階級（0〜7、5と6に弱・強）</div></div>
+    <div><div class="qq">13. 地震の規模を表すものは？</div><div class="aa">マグニチュード（M）</div></div>
+    <div><div class="qq">14. Mが2大きいとエネルギーは約何倍？</div><div class="aa">約1000倍</div></div>
+    <div><div class="qq">15. 日本付近のプレートは何枚？</div><div class="aa">4枚</div></div>
+    <div><div class="qq">16. 東北地方がのっているプレートは？</div><div class="aa">北アメリカプレート</div></div>
+    <div><div class="qq">17. 南海トラフから沈み込む海洋プレートは？</div><div class="aa">フィリピン海プレート</div></div>
+    <div><div class="qq">18. 今後もずれる可能性のある断層は？</div><div class="aa">活断層</div></div>
+    <div><div class="qq">19. 両側からおされてできる断層は？</div><div class="aa">逆断層</div></div>
+    <div><div class="qq">20. 津波を起こしやすい地震のタイプは？</div><div class="aa">海溝型（プレート境界型）</div></div>
+    <div><div class="qq">21. 津波の速さは水深が深いほど？</div><div class="aa">速い</div></div>
+    <div><div class="qq">22. 砂の地ばんが液体のようになる現象は？</div><div class="aa">液状化現象</div></div>
+    <div><div class="qq">23. 液状化でうき上がるものの例は？</div><div class="aa">マンホール、地下の水道管</div></div>
+    <div><div class="qq">24. 緊急地震速報はどの波を検知して出す？</div><div class="aa">P波</div></div>
+    <div><div class="qq">25. 緊急地震速報が間に合わないのはどこ？</div><div class="aa">震源に近い場所</div></div>
+    <div><div class="qq">26. 高層ビルを長くゆらす波は？</div><div class="aa">長周期地震動</div></div>
+    <div><div class="qq">27. 災害の危険と避難場所を示した地図は？</div><div class="aa">ハザードマップ</div></div>
+    <div><div class="qq">28. 建物と地面を切りはなす地震対策は？</div><div class="aa">免震</div></div>
+    <div><div class="qq">29. 地震でくり返し隆起してできる階段状の地形は？</div><div class="aa">海岸段丘</div></div>
+    <div><div class="qq">30. 震源が深いのに遠方で震度が大きくなる現象は？</div><div class="aa">異常震域</div></div>
+  </div>
+
+  <h3>7-2 落としやすいポイント10</h3>
+  <ol>
+    <li><strong>震央距離と震源距離</strong>を混同する。初期微動継続時間から出るのは震源距離。</li>
+    <li><strong>震度とマグニチュード</strong>を入れかえる。「Mは1つの地震に1つ」。</li>
+    <li>発生時刻の計算で<strong>分をまたぐ繰り下がり</strong>をミスする。</li>
+    <li><strong>km/秒 と km/時</strong>の取りちがえ（津波は時速で出やすい）。</li>
+    <li>走時グラフで<strong>傾きを速さそのもの</strong>と勘違いする（傾きは速さの逆数）。</li>
+    <li>震度階級を<strong>8階級</strong>と答える（正しくは10階級）。</li>
+    <li>「P波が大きなゆれ」と逆に覚える。<strong>P＝小さい・S＝大きい</strong>。</li>
+    <li>液状化を「地ばんがかたくなる」と逆に書く。</li>
+    <li>津波を「引き波が必ず先」と決めつける。<strong>押し波が先のこともある</strong>。</li>
+    <li>作図問題でコンパスを使わず定規だけで済ませる。<strong>半径＝震源距離の弧</strong>が命。</li>
+  </ol>
+
+  <h3>7-3 直前3日チェックリスト</h3>
+  <div class="card">
+    <ul>
+      <li>速さが与えられたら、<strong>1kmあたりの時間差 → k</strong> を10秒で出せるか</li>
+      <li>表を見たら<strong>Tの列を自分で書き足す</strong>手が動くか</li>
+      <li>走時グラフを<strong>白紙から2直線</strong>で描けるか（原点を通す）</li>
+      <li>断面図の作図で<strong>半径＝震源距離</strong>の弧を引けるか</li>
+      <li>プレート4枚の名前と、海溝型／内陸型の対比表を口で言えるか</li>
+      <li>記述9パターンを「原因→しくみ→結果」で30〜50字にできるか</li>
+      <li>今年の地震を<strong>キーワード3つ</strong>で説明できるか</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>中学受験理科「地震」総復習ノート／震度階級・プレートの数値は気象庁・地震調査研究推進本部の公表資料にもとづく。2026年の地震データは地震調査委員会の評価および気象庁発表による。</p>
+    <p>例題の数値はすべて計算が整数になるよう設計してあります。実際の入試では四捨五入の指示に注意してください。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---- seismogram waveform ----
+  var el = document.getElementById('wave');
+  if (el) {
+    var s = 987654321;
+    var rnd = function(){ s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648 * 2 - 1; };
+    var pts = [], x0 = 48, x1 = 700, base = 150, pS = 180, sS = 330;
+    for (var x = x0; x <= x1; x += 1.1) {
+      var a = 0;
+      if (x > pS && x < sS) a = 8 * Math.exp(-(x - pS) / 300);
+      else if (x >= sS) a = 34 * Math.exp(-(x - sS) / 200) + 3;
+      var v = (Math.sin(x * 0.85) + 0.55 * Math.sin(x * 2.4 + 1) + 0.45 * rnd()) * a * 0.55;
+      pts.push(x.toFixed(1) + ',' + (base - v).toFixed(1));
+    }
+    el.setAttribute('points', pts.join(' '));
+  }
+
+  // ---- epicenter construction figure ----
+  var svg = document.getElementById('fig-epi');
+  if (svg) {
+    var NS = 'http://www.w3.org/2000/svg';
+    var cx = 352, cy = 176, k = 2.0, depth = 30;
+    var stations = [
+      { name: 'A', d: 40, ang: 202, col: 'var(--pwave)', lx: -10, ly: -14, an: 'end' },
+      { name: 'B', d: 72, ang: 28,  col: 'var(--swave)', lx: 12,  ly: 6,   an: 'start' },
+      { name: 'C', d: 16, ang: 108, col: 'var(--gold)',  lx: 12,  ly: 20,  an: 'start' }
+    ];
+    stations.forEach(function(st){
+      var r = st.ang * Math.PI / 180;
+      st.x = cx + st.d * k * Math.cos(r);
+      st.y = cy + st.d * k * Math.sin(r);
+      st.dist = Math.round(Math.sqrt(st.d * st.d + depth * depth));
+      st.R = st.dist * k;
+    });
+    function mk(tag, attrs, txt){
+      var e = document.createElementNS(NS, tag);
+      for (var a in attrs) e.setAttribute(a, attrs[a]);
+      if (txt !== undefined) e.textContent = txt;
+      svg.appendChild(e);
+      return e;
+    }
+    // circles
+    stations.forEach(function(st){
+      mk('circle', { cx: st.x, cy: st.y, r: st.R, fill: 'none', stroke: st.col,
+                     'stroke-width': 1.4, 'stroke-dasharray': '6 5', opacity: .8 });
+    });
+    // common chords: the line through the two intersection points of each pair of circles
+    function chord(p, q){
+      var dx = q.x - p.x, dy = q.y - p.y, L = Math.hypot(dx, dy);
+      var a = (L * L + p.R * p.R - q.R * q.R) / (2 * L);
+      var h = Math.sqrt(Math.max(p.R * p.R - a * a, 0));
+      var mx = p.x + a * dx / L, my = p.y + a * dy / L;
+      var ux = -dy / L, uy = dx / L;
+      var i1 = [mx + ux * h, my + uy * h], i2 = [mx - ux * h, my - uy * h];
+      var e = 0.18;
+      mk('line', { x1: i1[0] + (i1[0] - i2[0]) * e, y1: i1[1] + (i1[1] - i2[1]) * e,
+                   x2: i2[0] + (i2[0] - i1[0]) * e, y2: i2[1] + (i2[1] - i1[1]) * e,
+                   stroke: 'var(--ink)', 'stroke-width': 1.7 });
+      [i1, i2].forEach(function(pt){
+        mk('circle', { cx: pt[0], cy: pt[1], r: 3, fill: 'var(--ink)' });
+      });
+    }
+    chord(stations[0], stations[1]);
+    chord(stations[1], stations[2]);
+    chord(stations[2], stations[0]);
+    // stations
+    stations.forEach(function(st){
+      mk('circle', { cx: st.x, cy: st.y, r: 5, fill: st.col });
+      mk('text', { x: st.x + st.lx, y: st.y + st.ly, class: 'lbl-b', fill: st.col,
+                   'text-anchor': st.an }, '観測点' + st.name);
+      mk('text', { x: st.x + st.lx, y: st.y + st.ly + 16, class: 'lbl-s',
+                   'text-anchor': st.an }, '震源距離 ' + st.dist + 'km');
+    });
+    // epicentre
+    mk('circle', { cx: cx, cy: cy, r: 6, fill: 'var(--ink)' });
+    mk('text', { x: cx - 12, y: cy - 12, class: 'lbl-b', 'text-anchor': 'end' }, '震央');
+    mk('text', { x: 20, y: 24, class: 'lbl' }, '地図（真上から見た図）');
+    mk('text', { x: 20, y: 44, class: 'lbl-s' }, '● 2円の交点　―― 交点どうしを結んだ直線（3本）　● その交点が震央');
+  }
+
+  // ---- answer toggle ----
+  var btn = document.getElementById('tg'), drill = document.getElementById('drill');
+  if (btn && drill) {
+    btn.addEventListener('click', function(){
+      var hidden = drill.classList.toggle('hide');
+      btn.textContent = hidden ? '答えを表示する' : '答えをかくす';
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
