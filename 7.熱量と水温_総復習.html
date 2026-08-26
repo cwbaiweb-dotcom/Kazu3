@@ -1,0 +1,1941 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>熱と水温の総復習ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --paper:#EFF3F6;
+  --surface:#FFFFFF;
+  --surface-2:#E4EBF0;
+  --ink:#121A23;
+  --ink-2:#475764;
+  --ink-3:#7D8B98;
+  --line:#CFD9E1;
+  --line-soft:#E3EAEF;
+  --cold:#1A6AAE;
+  --cold-soft:#DCEBF7;
+  --hot:#BE3A20;
+  --hot-soft:#FBE3DD;
+  --warm:#B57A0B;
+  --warm-soft:#FAEFD4;
+  --ok:#25725A;
+  --ok-soft:#DDEEE7;
+  --shadow:0 1px 0 rgba(18,26,35,.04), 0 2px 10px rgba(18,26,35,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E151D;
+    --surface:#161F29;
+    --surface-2:#1E2935;
+    --ink:#E3EBF2;
+    --ink-2:#A4B3C0;
+    --ink-3:#75838F;
+    --line:#2A3743;
+    --line-soft:#222E3A;
+    --cold:#63AEE4;
+    --cold-soft:#152A3C;
+    --hot:#F0785C;
+    --hot-soft:#3A1D16;
+    --warm:#E5AE47;
+    --warm-soft:#372A11;
+    --ok:#63C3A2;
+    --ok-soft:#122C25;
+    --shadow:0 1px 0 rgba(0,0,0,.2), 0 2px 12px rgba(0,0,0,.28);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E151D;
+  --surface:#161F29;
+  --surface-2:#1E2935;
+  --ink:#E3EBF2;
+  --ink-2:#A4B3C0;
+  --ink-3:#75838F;
+  --line:#2A3743;
+  --line-soft:#222E3A;
+  --cold:#63AEE4;
+  --cold-soft:#152A3C;
+  --hot:#F0785C;
+  --hot-soft:#3A1D16;
+  --warm:#E5AE47;
+  --warm-soft:#372A11;
+  --ok:#63C3A2;
+  --ok-soft:#122C25;
+  --shadow:0 1px 0 rgba(0,0,0,.2), 0 2px 12px rgba(0,0,0,.28);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:16px;
+  line-height:1.9;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Shippori Mincho","Yu Mincho","Hiragino Mincho ProN",serif;text-wrap:balance;margin:0;line-height:1.45}
+p{margin:0}
+.mono,.n{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- shell ---------- */
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+.col{max-width:720px;margin:0 auto}
+main{padding-bottom:80px}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:8px 20px}
+.brand{font-family:"Shippori Mincho",serif;font-weight:700;font-size:14px;white-space:nowrap;letter-spacing:.04em}
+.brand span{color:var(--hot)}
+.navchips{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;flex:1}
+.navchips a{
+  flex:0 0 auto;font-size:12.5px;color:var(--ink-2);text-decoration:none;
+  padding:5px 9px;border-radius:2px;white-space:nowrap;
+}
+.navchips a:hover{background:var(--surface-2);color:var(--ink)}
+.navchips a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(--cold);outline-offset:2px}
+.btn{
+  flex:0 0 auto;font:inherit;font-size:12px;cursor:pointer;
+  background:var(--surface);color:var(--ink-2);
+  border:1px solid var(--line);border-radius:2px;padding:5px 10px;
+}
+.btn:hover{border-color:var(--cold);color:var(--cold)}
+
+/* ---------- hero ---------- */
+.hero{padding:56px 0 40px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.22em;color:var(--ink-3);font-weight:500}
+.hero h1{font-size:clamp(30px,5.4vw,46px);font-weight:800;margin:14px 0 0;letter-spacing:.01em}
+.hero h1 em{font-style:normal;color:var(--hot)}
+.hero .lead{margin-top:18px;color:var(--ink-2);font-size:15.5px}
+.scale{height:6px;border-radius:3px;margin:26px 0 0;
+  background:linear-gradient(90deg,var(--cold) 0%,#5FA8D8 22%,#D9D3C2 46%,var(--warm) 70%,var(--hot) 100%)}
+.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:6px}
+
+/* ---------- map ---------- */
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:30px}
+.map a{
+  display:block;text-decoration:none;color:inherit;background:var(--surface);
+  border:1px solid var(--line);border-top:2px solid var(--cold);
+  padding:13px 14px;box-shadow:var(--shadow);
+}
+.map a:hover{border-top-color:var(--hot)}
+.map .k{font-size:11px;letter-spacing:.12em;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.map .t{font-family:"Shippori Mincho",serif;font-weight:700;font-size:16px;margin-top:2px}
+.map .d{font-size:12.5px;color:var(--ink-2);line-height:1.7;margin-top:4px}
+
+/* ---------- sections ---------- */
+section{padding:54px 0 8px;scroll-margin-top:56px}
+.sec-head{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:30px}
+.sec-num{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+  color:var(--hot);font-weight:600;
+}
+.sec-head h2{font-size:clamp(22px,3.4vw,29px);font-weight:700;margin-top:6px}
+.sec-head .sub{color:var(--ink-2);font-size:14px;margin-top:8px}
+
+h3{font-size:19px;font-weight:700;margin:38px 0 14px;padding-left:11px;border-left:3px solid var(--cold)}
+h4{font-size:16px;font-weight:700;margin:26px 0 10px;color:var(--ink)}
+section p{margin:0 0 14px}
+.col > p:last-child{margin-bottom:0}
+
+ul,ol{margin:0 0 16px;padding-left:1.3em}
+li{margin:5px 0}
+li::marker{color:var(--ink-3)}
+
+strong{font-weight:700;color:var(--ink);
+  background:linear-gradient(transparent 62%, var(--warm-soft) 62%);padding:0 1px}
+:root[data-theme="dark"] strong,
+:root:not([data-theme="light"]) strong{}
+code,.k{font-family:"IBM Plex Mono",monospace;font-size:.92em}
+
+/* ---------- formula ---------- */
+.formula{
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--hot);
+  padding:16px 18px;margin:18px 0 22px;box-shadow:var(--shadow);
+}
+.formula .cap{font-size:11px;letter-spacing:.14em;color:var(--hot);font-weight:600;font-family:"IBM Plex Mono",monospace}
+.formula .f{font-family:"IBM Plex Mono",monospace;font-size:16.5px;margin-top:8px;line-height:1.8;color:var(--ink);overflow-x:auto}
+.formula .note{font-size:13px;color:var(--ink-2);margin-top:8px}
+
+/* ---------- callouts ---------- */
+.note-box{border:1px solid var(--line);border-left:3px solid var(--ink-3);background:var(--surface);padding:14px 16px;margin:18px 0;font-size:14.5px;box-shadow:var(--shadow)}
+.note-box .h{font-weight:700;font-size:13px;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.note-box .h::before{content:"";width:6px;height:6px;background:var(--ink-3);border-radius:50%}
+.nb-miss{border-left-color:var(--hot);background:var(--hot-soft)}
+.nb-miss .h{color:var(--hot)} .nb-miss .h::before{background:var(--hot)}
+.nb-key{border-left-color:var(--cold);background:var(--cold-soft)}
+.nb-key .h{color:var(--cold)} .nb-key .h::before{background:var(--cold)}
+.nb-hard{border-left-color:var(--warm);background:var(--warm-soft)}
+.nb-hard .h{color:var(--warm)} .nb-hard .h::before{background:var(--warm)}
+.note-box p{margin:0 0 8px} .note-box p:last-child{margin:0}
+.note-box ul{margin:6px 0 0}
+
+/* ---------- pattern card ---------- */
+.pat{background:var(--surface);border:1px solid var(--line);margin:30px 0;box-shadow:var(--shadow)}
+.pat-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line-soft);
+  background:linear-gradient(90deg,var(--cold-soft),transparent 70%)}
+.pat-n{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--cold)}
+.pat-h h4{margin:0;font-size:17.5px}
+.pat-body{padding:16px 18px 4px}
+.pat-body > *:last-child{margin-bottom:16px}
+.freq{margin-left:auto;font-size:11px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace;letter-spacing:.08em}
+
+/* ---------- example ---------- */
+.ex{border:1px solid var(--line);background:var(--surface);margin:20px 0;box-shadow:var(--shadow)}
+.ex-h{display:flex;align-items:center;gap:9px;padding:10px 16px;border-bottom:1px dashed var(--line)}
+.ex-tag{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.1em;color:var(--ink-2)}
+.lv{font-size:10.5px;padding:2px 7px;border-radius:2px;letter-spacing:.08em;font-weight:700}
+.lv-1{background:var(--ok-soft);color:var(--ok)}
+.lv-2{background:var(--cold-soft);color:var(--cold)}
+.lv-3{background:var(--hot-soft);color:var(--hot)}
+.src{margin-left:auto;font-size:11px;color:var(--ink-3)}
+.ex-q{padding:14px 16px 4px;font-size:15px}
+.ex-q p{margin:0 0 10px}
+.ex-q ol{margin:8px 0 12px}
+details.sol{border-top:1px solid var(--line-soft)}
+details.sol > summary{
+  list-style:none;cursor:pointer;padding:10px 16px;font-size:13px;font-weight:700;
+  color:var(--cold);display:flex;align-items:center;gap:8px;user-select:none;
+}
+details.sol > summary::-webkit-details-marker{display:none}
+details.sol > summary::before{content:"▸";font-size:11px;transition:transform .15s}
+details.sol[open] > summary::before{transform:rotate(90deg)}
+details.sol > summary:hover{background:var(--surface-2)}
+.sol-body{padding:4px 16px 16px;font-size:14.5px;background:var(--surface-2)}
+.sol-body p{margin:0 0 10px}
+.step{display:flex;gap:10px;margin:0 0 9px}
+.step .sn{flex:0 0 auto;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--ink-3);padding-top:4px;min-width:2.2em}
+.ans{display:inline-block;font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--hot);
+  border-bottom:2px solid var(--hot);padding:0 2px}
+
+/* ---------- figure ---------- */
+figure{margin:24px 0;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+figure .figin{padding:16px 14px 6px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;max-width:100%}
+figcaption{font-size:12.5px;color:var(--ink-2);padding:0 16px 13px;line-height:1.7}
+figcaption b{color:var(--ink);font-weight:700}
+
+/* svg theming */
+svg text{font-family:"Zen Kaku Gothic New",sans-serif;fill:var(--ink-2);font-size:12px}
+svg .tn{font-family:"IBM Plex Mono",monospace}
+svg .ti{fill:var(--ink);font-weight:700}
+svg .tc{fill:var(--cold)} svg .th{fill:var(--hot)} svg .tw{fill:var(--warm)}
+.sl{stroke:var(--line);fill:none;stroke-width:1}
+.si{stroke:var(--ink-2);fill:none;stroke-width:1.4}
+.sc{stroke:var(--cold);fill:none;stroke-width:2}
+.sh{stroke:var(--hot);fill:none;stroke-width:2}
+.sw{stroke:var(--warm);fill:none;stroke-width:2}
+.fc{fill:var(--cold)} .fh{fill:var(--hot)} .fw{fill:var(--warm)}
+.fcs{fill:var(--cold-soft)} .fhs{fill:var(--hot-soft)} .fws{fill:var(--warm-soft)}
+.fsurf{fill:var(--surface-2)}
+.dash{stroke-dasharray:4 3}
+
+/* ---------- table ---------- */
+.tw-scroll{overflow-x:auto;margin:18px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface);min-width:420px}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:700;font-size:13px;white-space:nowrap}
+td.n,th.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right}
+caption{caption-side:top;text-align:left;font-size:12.5px;color:var(--ink-2);padding-bottom:6px}
+
+/* checklist */
+.check{background:var(--surface);border:1px solid var(--line);padding:6px 18px;box-shadow:var(--shadow);margin:18px 0}
+.check label{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line-soft);font-size:14.5px;cursor:pointer}
+.check label:last-child{border-bottom:none}
+.check input{margin-top:7px;accent-color:var(--cold);flex:0 0 auto}
+.check input:checked + span{color:var(--ink-3);text-decoration:line-through}
+
+footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0 0;font-size:12.5px;color:var(--ink-3)}
+
+@media (max-width:640px){
+  body{font-size:15px}
+  .hero{padding:38px 0 30px}
+  .brand{display:none}
+  section{padding:40px 0 8px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- print ---------- */
+@media print{
+  :root{--paper:#fff;--surface:#fff;--surface-2:#f4f4f4;--ink:#000;--ink-2:#333;--ink-3:#666;
+        --line:#bbb;--line-soft:#ddd;--cold:#14507f;--hot:#8c2b18;--warm:#7a5307;
+        --cold-soft:#eef4fa;--hot-soft:#faeeeb;--warm-soft:#faf4e6;--ok:#1b5544;--ok-soft:#eef5f2;--shadow:none}
+  body{font-size:10.5pt;line-height:1.75;background:#fff}
+  .topbar,.btn{display:none!important}
+  .map a{break-inside:avoid}
+  section{padding-top:22px;break-before:page}
+  section:first-of-type{break-before:auto}
+  h3{break-after:avoid}
+  figure,.ex,.pat,.formula,.note-box,table{break-inside:avoid}
+  details.sol::details-content{content-visibility:visible!important;block-size:auto!important;opacity:1!important}
+  details.sol:not([open]) > *:not(summary){display:block}
+  details.sol > summary{color:var(--ink-2)}
+  details.sol > summary::before{content:"■ "}
+  a{color:inherit;text-decoration:none}
+  @page{margin:14mm 12mm}
+}
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">熱と水温<span>／</span>総復習</div>
+    <nav class="navchips">
+      <a href="#ch1">1 熱量の基礎</a>
+      <a href="#ch2">2 計算パターン</a>
+      <a href="#ch3">3 状態変化</a>
+      <a href="#ch4">4 伝わり方</a>
+      <a href="#ch5">5 膨張</a>
+      <a href="#ch6">6 電熱線</a>
+      <a href="#ch7">7 難関総合</a>
+      <a href="#ch8">8 総点検</a>
+    </nav>
+    <button class="btn" id="toggleAll" type="button">解答を全部開く</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+<header class="hero">
+  <div class="col">
+    <div class="eyebrow">中学受験理科 ／ 熱 総復習</div>
+    <h1>熱量と<em>水の温度</em>、<br>出題パターン全整理</h1>
+    <p class="lead">
+      「1gの水を1℃上げる熱＝1cal」という<b>たった一つの定義</b>から、混合水温・熱容量・氷のとけ残り・電熱線まで、
+      入試で問われる形はすべてつながっています。基礎の確認から難関校の複合問題まで、パターン別に図と例題でたどれるようにまとめました。
+    </p>
+    <div class="scale" aria-hidden="true"></div>
+    <div class="scale-labels"><span>0℃ 氷</span><span>4℃ 体積最小</span><span>100℃ 沸とう</span></div>
+
+    <div class="map">
+      <a href="#ch1"><div class="k">CH.1</div><div class="t">熱量の基礎</div><div class="d">温度と熱量のちがい／カロリー／熱量の保存</div></a>
+      <a href="#ch2"><div class="k">CH.2</div><div class="t">水温計算7パターン</div><div class="d">混合・加熱・熱容量・比熱・グラフ</div></a>
+      <a href="#ch3"><div class="k">CH.3</div><div class="t">状態変化と熱</div><div class="d">融解熱80／気化熱540／とけ残り判定</div></a>
+      <a href="#ch4"><div class="k">CH.4</div><div class="t">熱の伝わり方</div><div class="d">伝導・対流・放射と実験装置</div></a>
+      <a href="#ch5"><div class="k">CH.5</div><div class="t">ものの膨張</div><div class="d">金属・水・空気／バイメタル</div></a>
+      <a href="#ch6"><div class="k">CH.6</div><div class="t">電熱線の発熱</div><div class="d">太さ・長さ・直列並列と水温上昇</div></a>
+      <a href="#ch7"><div class="k">CH.7</div><div class="t">難関校の複合問題</div><div class="d">実験読み取り・作図・記述</div></a>
+      <a href="#ch8"><div class="k">CH.8</div><div class="t">総点検</div><div class="d">公式一覧／数値暗記／チェックリスト</div></a>
+    </div>
+  </div>
+</header>
+
+<section id="ch1">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 01</div>
+    <h2>熱量の基礎 ─ 温度と熱はちがうもの</h2>
+    <p class="sub">この章の3つの道具（カロリーの定義・熱量の保存・重さ×温度差）だけで、次章の計算はすべて解けます。</p>
+  </div>
+
+  <h3>1-1　温度は「熱さの度合い」、熱量は「熱の量」</h3>
+  <p>
+    お風呂のお湯（40℃・200kg）と、コップの熱いお茶（80℃・0.2kg）。<strong>温度が高いのはお茶</strong>ですが、
+    <strong>もっている熱の量が多いのはお風呂</strong>です。この2つを混同すると、熱の問題はほぼ確実に崩れます。
+  </p>
+  <ul>
+    <li><b>温度</b>＝熱の「こさ・高さ」。単位は℃。混ぜても足し算にはならない。</li>
+    <li><b>熱量</b>＝熱の「総量」。単位は cal（カロリー）。<b>足したり引いたりできる量</b>。</li>
+  </ul>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 250" role="img" aria-label="同じ60℃でも水の量が3倍なら熱量も3倍になることを示す図">
+    <!-- beaker A -->
+    <path class="si" d="M55 55 L55 170 L145 170 L145 55"/>
+    <rect class="fcs" x="56" y="140" width="88" height="29"/>
+    <line class="sc" x1="56" y1="140" x2="144" y2="140"/>
+    <!-- thermometer A -->
+    <rect class="sl" x="95" y="35" width="9" height="115" fill="var(--surface)"/>
+    <rect class="fh" x="97" y="110" width="5" height="38"/>
+    <circle class="fh" cx="99.5" cy="152" r="7"/>
+    <text class="ti" x="100" y="196" text-anchor="middle">水 100g</text>
+    <text class="th tn" x="100" y="215" text-anchor="middle" font-weight="700">60℃</text>
+
+    <!-- beaker B -->
+    <path class="si" d="M235 55 L235 170 L325 170 L325 55"/>
+    <rect class="fcs" x="236" y="82" width="88" height="87"/>
+    <line class="sc" x1="236" y1="82" x2="324" y2="82"/>
+    <rect class="sl" x="275" y="35" width="9" height="115" fill="var(--surface)"/>
+    <rect class="fh" x="277" y="110" width="5" height="38"/>
+    <circle class="fh" cx="279.5" cy="152" r="7"/>
+    <text class="ti" x="280" y="196" text-anchor="middle">水 300g</text>
+    <text class="th tn" x="280" y="215" text-anchor="middle" font-weight="700">60℃</text>
+
+    <text class="ti" x="190" y="30" text-anchor="middle">温度計は同じ目もり</text>
+    <line class="sl dash" x1="380" y1="20" x2="380" y2="230"/>
+
+    <!-- energy bars -->
+    <text class="ti" x="410" y="60">0℃を基準にもっている熱量</text>
+    <rect class="fh" x="410" y="80" width="60" height="22"/>
+    <text class="tn" x="480" y="96">6000 cal</text>
+    <text class="tn" x="410" y="122" font-size="11">100g × 60℃</text>
+
+    <rect class="fh" x="410" y="145" width="180" height="22"/>
+    <text class="tn" x="410" y="187">18000 cal　（100g × 60℃ × 3）</text>
+    <text class="th" x="410" y="215" font-weight="700">温度は同じ、熱量は3倍</text>
+  </svg>
+  </div>
+  <figcaption><b>図1</b>　温度が等しくても、水の量が3倍なら「もっている熱」は3倍。<b>熱量＝重さ×温度</b>という関係が、この図のたて×よこの面積にあたります。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+  <h3>1-2　カロリーの定義 ─ すべてはここから</h3>
+  <div class="formula">
+    <div class="cap">DEFINITION</div>
+    <div class="f">1 cal ＝ 水 1g の温度を 1℃ 上げるのに必要な熱量</div>
+    <div class="note">1kcal（1キロカロリー）＝ 1000cal。「1000g の水を 1℃ 上げる熱」と同じ意味です。</div>
+  </div>
+  <div class="formula">
+    <div class="cap">FORMULA 1</div>
+    <div class="f">熱量（cal） ＝ 水の重さ（g） × 上がった（下がった）温度（℃）</div>
+    <div class="note">かけるのは<b>温度そのものではなく「温度の差」</b>。ここが最大のミスポイントです。</div>
+  </div>
+
+  <div class="note-box nb-miss">
+    <div class="h">よくあるミス</div>
+    <p>「20℃の水100gがもつ熱量は 100×20＝2000cal」──これは<b>0℃を基準にしたときだけ</b>意味をもつ言い方です。
+    入試の計算で使うのはつねに<b>温度の差（変化量）</b>。「20℃ → 50℃」なら差は 30℃ です。</p>
+  </div>
+
+  <h3>1-3　熱の移動と「熱量の保存」</h3>
+  <p>熱は<strong>かならず高温のものから低温のものへ</strong>移動し、両方が同じ温度になったところで移動が止まります（この状態を熱平衡といいます）。
+  逃げる熱がないとき、次の式がつねに成り立ちます。</p>
+  <div class="formula">
+    <div class="cap">FORMULA 2 ─ 熱量の保存</div>
+    <div class="f">高温の物体が失った熱量 ＝ 低温の物体が得た熱量</div>
+    <div class="note">「＝でつなぐ」ことができるのが熱量（cal）。温度（℃）どうしを足したり引いたりして結んではいけません。</div>
+  </div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 210" role="img" aria-label="80度の水と20度の水を混ぜると熱が移動して同じ温度になる図">
+    <rect class="fhs" x="40" y="45" width="150" height="80" stroke="var(--hot)" stroke-width="1.5"/>
+    <text class="th tn" x="115" y="80" text-anchor="middle" font-size="20" font-weight="700">80℃</text>
+    <text x="115" y="105" text-anchor="middle">水 100g</text>
+    <text class="ti" x="115" y="35" text-anchor="middle">高温</text>
+
+    <rect class="fcs" x="290" y="45" width="150" height="80" stroke="var(--cold)" stroke-width="1.5"/>
+    <text class="tc tn" x="365" y="80" text-anchor="middle" font-size="20" font-weight="700">20℃</text>
+    <text x="365" y="105" text-anchor="middle">水 100g</text>
+    <text class="ti" x="365" y="35" text-anchor="middle">低温</text>
+
+    <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 z" fill="var(--hot)"/></marker></defs>
+    <line class="sh" x1="196" y1="70" x2="282" y2="70" marker-end="url(#ar)"/>
+    <text class="th" x="239" y="60" text-anchor="middle" font-size="11">熱</text>
+    <text class="tn" x="239" y="95" text-anchor="middle" font-size="12">1000 cal</text>
+
+    <text class="th" x="115" y="150" text-anchor="middle" font-size="12">失った熱</text>
+    <text class="th tn" x="115" y="168" text-anchor="middle">100 ×（80−30）</text>
+    <text class="th tn" x="115" y="186" text-anchor="middle" font-weight="700">＝ 5000 cal</text>
+
+    <text class="tc" x="365" y="150" text-anchor="middle" font-size="12">得た熱</text>
+    <text class="tc tn" x="365" y="168" text-anchor="middle">100 ×（30−20）… ✗</text>
+    <text class="tc tn" x="365" y="186" text-anchor="middle" font-weight="700">100 ×（50−20）＝ 3000</text>
+
+    <line class="sl dash" x1="470" y1="20" x2="470" y2="200"/>
+    <rect class="fws" x="500" y="45" width="120" height="80" stroke="var(--warm)" stroke-width="1.5"/>
+    <text class="tw tn" x="560" y="80" text-anchor="middle" font-size="20" font-weight="700">50℃</text>
+    <text x="560" y="105" text-anchor="middle">水 200g</text>
+    <text class="ti" x="560" y="35" text-anchor="middle">混ぜたあと</text>
+    <text class="tn" x="560" y="160" text-anchor="middle" font-size="11">失 100×30 ＝ 3000</text>
+    <text class="tn" x="560" y="178" text-anchor="middle" font-size="11">得 100×30 ＝ 3000</text>
+    <text class="tw" x="560" y="196" text-anchor="middle" font-size="11" font-weight="700">つり合う</text>
+  </svg>
+  </div>
+  <figcaption><b>図2</b>　熱は高温→低温へ一方通行。<b>失った熱量と得た熱量が等しくなる温度</b>が答えになります（この例では50℃）。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+  <h3>1-4　基本の3問で手を動かす</h3>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 01</span><span class="lv lv-1">基本</span><span class="src">熱量を求める</span></div>
+    <div class="ex-q"><p>20℃の水 250g を 68℃まで温めました。加えた熱量は何calですか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>温度の差を出す：68 − 20 ＝ 48℃</span></div>
+      <div class="step"><span class="sn">2</span><span>熱量＝重さ×温度差 ＝ 250 × 48</span></div>
+      <p>答え <span class="ans">12000 cal</span>（＝12kcal）</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 02</span><span class="lv lv-1">基本</span><span class="src">温度を求める</span></div>
+    <div class="ex-q"><p>15℃の水 400g に 14000cal の熱を加えました。水温は何℃になりますか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>上がる温度 ＝ 熱量 ÷ 重さ ＝ 14000 ÷ 400 ＝ 35℃</span></div>
+      <div class="step"><span class="sn">2</span><span>もとが15℃なので 15 ＋ 35</span></div>
+      <p>答え <span class="ans">50℃</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">※「35℃になる」と答えないこと。求まるのは<b>上がった分</b>です。</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 03</span><span class="lv lv-2">標準</span><span class="src">重さを求める</span></div>
+    <div class="ex-q"><p>ある量の水に 9000cal の熱を加えたところ、温度が 12℃上がりました。水は何gありましたか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>重さ ＝ 熱量 ÷ 温度差 ＝ 9000 ÷ 12</span></div>
+      <p>答え <span class="ans">750 g</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">熱量・重さ・温度差の3つは、いつでも「2つ分かれば残り1つが出る」関係です。</p>
+    </div></details>
+  </div>
+</div>
+</section>
+
+<section id="ch2">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 02</div>
+    <h2>水温計算の7パターン</h2>
+    <p class="sub">入試に出る水温の計算は、下の7つの型のどれかか、その組み合わせです。まず<b>型を見抜く</b>練習をしてください。</p>
+  </div>
+
+  <div class="note-box nb-key">
+    <div class="h">解く前の3ステップ（毎回これだけ）</div>
+    <ol style="margin:0">
+      <li><b>登場する物体を全部書き出す</b>（水・お湯・容器・金属・氷）</li>
+      <li>それぞれについて <b>「重さ × 温度差」</b> の式を作る</li>
+      <li><b>失った熱の合計 ＝ 得た熱の合計</b> でつなぐ</li>
+    </ol>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p01">
+  <div class="pat-h"><span class="pat-n">PATTERN 01</span><h4>2つの水を混ぜる（混合水温）</h4><span class="freq">最頻出</span></div>
+  <div class="pat-body">
+    <p>いちばん基本の型。答えは必ず<b>2つの温度のあいだ</b>に入り、<b>量の多い水の温度に近づき</b>ます。</p>
+    <div class="formula">
+      <div class="cap">FORMULA 3</div>
+      <div class="f">混合後の温度 ＝ (重さ① × 温度① ＋ 重さ② × 温度②) ÷ (重さ① ＋ 重さ②)</div>
+      <div class="note">いわゆる「加重平均」。ただし本番では、次のてんびん図のほうが速く正確です。</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 265" role="img" aria-label="混合水温をてんびんで求める図。支点が混合後の温度になる">
+    <text class="ti" x="20" y="24">てんびん法：温度の目もりの上に、水の重さをぶら下げる</text>
+    <!-- axis -->
+    <line class="si" x1="70" y1="120" x2="600" y2="120"/>
+    <line class="sl" x1="70" y1="114" x2="70" y2="126"/>
+    <line class="sl" x1="590" y1="114" x2="590" y2="126"/>
+    <text class="tc tn" x="70" y="108" text-anchor="middle" font-weight="700">20℃</text>
+    <text class="th tn" x="590" y="108" text-anchor="middle" font-weight="700">80℃</text>
+    <!-- fulcrum at 35C : x = 70 + (15/60)*520 = 200 -->
+    <path class="fh" d="M200 124 L188 152 L212 152 Z"/>
+    <line class="sh dash" x1="200" y1="60" x2="200" y2="124"/>
+    <text class="th tn" x="200" y="52" text-anchor="middle" font-size="15" font-weight="700">35℃</text>
+    <text class="th" x="200" y="172" text-anchor="middle" font-size="11">支点＝混合後の温度</text>
+    <!-- weights -->
+    <line class="sl" x1="70" y1="120" x2="70" y2="196"/>
+    <rect class="fcs" x="34" y="196" width="72" height="34" stroke="var(--cold)" stroke-width="1.5"/>
+    <text class="tc tn" x="70" y="219" text-anchor="middle" font-weight="700">300 g</text>
+    <line class="sl" x1="590" y1="120" x2="590" y2="196"/>
+    <rect class="fhs" x="554" y="196" width="72" height="34" stroke="var(--hot)" stroke-width="1.5"/>
+    <text class="th tn" x="590" y="219" text-anchor="middle" font-weight="700">100 g</text>
+    <!-- arms -->
+    <line class="sc" x1="70" y1="140" x2="200" y2="140"/>
+    <text class="tc tn" x="135" y="134" text-anchor="middle" font-size="11">15℃</text>
+    <line class="sh" x1="200" y1="140" x2="590" y2="140"/>
+    <text class="th tn" x="395" y="134" text-anchor="middle" font-size="11">45℃</text>
+    <text class="ti" x="330" y="255" text-anchor="middle">腕の長さの比 15 : 45 ＝ 1 : 3　⇔　重さの比 300 : 100 ＝ 3 : 1（逆比）</text>
+  </svg>
+  </div>
+  <figcaption><b>図3</b>　<b>重さの逆比で支点が決まる</b>のがてんびん法。重い（量の多い）水のほうに支点が寄ります。「20℃と80℃を3：1で分ける点」→ 差60℃を4等分して 20＋15＝35℃、と暗算できます。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 04</span><span class="lv lv-1">基本</span><span class="src">パターン01</span></div>
+    <div class="ex-q"><p>80℃の水 100g と 20℃の水 300g を混ぜました。何℃になりますか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">式</span><span>(100×80 ＋ 300×20) ÷ 400 ＝ (8000＋6000) ÷ 400</span></div>
+      <div class="step"><span class="sn">図</span><span>てんびんなら：重さ 100:300 ＝ 1:3 → 腕は 3:1 → 60℃を4等分し、20℃側から15℃分</span></div>
+      <p>答え <span class="ans">35℃</span></p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 05</span><span class="lv lv-2">標準</span><span class="src">逆算</span></div>
+    <div class="ex-q"><p>70℃の水 □g と 20℃の水 150g を混ぜたら 40℃になりました。□にあてはまる数を答えなさい。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>失った熱 ＝ □×(70−40) ＝ 30×□</span></div>
+      <div class="step"><span class="sn">2</span><span>得た熱 ＝ 150×(40−20) ＝ 3000</span></div>
+      <div class="step"><span class="sn">3</span><span>30×□ ＝ 3000</span></div>
+      <p>答え <span class="ans">100 g</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">てんびんなら：腕の比が 30:20 ＝ 3:2 なので、重さの比は 2:3。150g が「3」にあたるので「2」は100g。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p02">
+  <div class="pat-h"><span class="pat-n">PATTERN 02</span><h4>3つ以上の水／順番に混ぜる</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <p>3つ以上でも考え方は同じ。<b>（重さ×温度）を全部たして、重さの合計でわる</b>だけです。
+    「①と②を混ぜてから③を混ぜる」ように順に処理しても、まとめて処理しても<strong>結果は同じ</strong>になります（順番によらない）。この確認自体が設問になることもあります。</p>
+    <div class="formula">
+      <div class="cap">FORMULA 4</div>
+      <div class="f">T ＝ (m₁t₁ ＋ m₂t₂ ＋ m₃t₃ ＋ …) ÷ (m₁ ＋ m₂ ＋ m₃ ＋ …)</div>
+    </div>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 06</span><span class="lv lv-2">標準</span><span class="src">パターン02</span></div>
+    <div class="ex-q"><p>80℃の水100g、40℃の水200g、15℃の水200g を全部混ぜると何℃になりますか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>100×80 ＝ 8000　　200×40 ＝ 8000　　200×15 ＝ 3000</span></div>
+      <div class="step"><span class="sn">2</span><span>合計 19000 ÷ 合計の重さ 500</span></div>
+      <p>答え <span class="ans">38℃</span></p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p03">
+  <div class="pat-h"><span class="pat-n">PATTERN 03</span><h4>一定の熱源で加熱する（時間と温度）</h4><span class="freq">最頻出</span></div>
+  <div class="pat-body">
+    <p>ガスバーナーや電熱線が「毎分いつも同じ熱量」を出すとき、次の2つの関係が使えます。</p>
+    <ul>
+      <li>水の量が同じなら、<b>上がる温度は加熱時間に比例</b></li>
+      <li>加熱時間が同じなら、<b>上がる温度は水の量に反比例</b></li>
+    </ul>
+    <div class="formula">
+      <div class="cap">FORMULA 5</div>
+      <div class="f">毎分の熱量（cal/分） × 時間（分） ＝ 水の重さ（g） × 上がった温度（℃）</div>
+      <div class="note">まず「1分あたり何calか」を出してしまうのが最短ルート。</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 300" role="img" aria-label="同じ加熱器で水100gと200gを加熱したときの時間と温度のグラフ">
+    <!-- axes -->
+    <line class="si" x1="70" y1="250" x2="620" y2="250"/>
+    <line class="si" x1="70" y1="250" x2="70" y2="40"/>
+    <text class="ti" x="345" y="288" text-anchor="middle">加熱した時間（分）</text>
+    <text class="ti" x="18" y="140" transform="rotate(-90 18 140)" text-anchor="middle">水の温度（℃）</text>
+    <!-- grid -->
+    <g class="sl dash">
+      <line x1="70" y1="200" x2="620" y2="200"/><line x1="70" y1="150" x2="620" y2="150"/>
+      <line x1="70" y1="100" x2="620" y2="100"/><line x1="70" y1="50" x2="620" y2="50"/>
+      <line x1="180" y1="250" x2="180" y2="40"/><line x1="290" y1="250" x2="290" y2="40"/>
+      <line x1="400" y1="250" x2="400" y2="40"/><line x1="510" y1="250" x2="510" y2="40"/>
+      <line x1="620" y1="250" x2="620" y2="40"/>
+    </g>
+    <g class="tn" text-anchor="end">
+      <text x="62" y="255">20</text><text x="62" y="205">40</text><text x="62" y="155">60</text>
+      <text x="62" y="105">80</text><text x="62" y="55">100</text>
+    </g>
+    <g class="tn" text-anchor="middle">
+      <text x="70" y="268">0</text><text x="180" y="268">5</text><text x="290" y="268">10</text>
+      <text x="400" y="268">15</text><text x="510" y="268">20</text><text x="620" y="268">25</text>
+    </g>
+    <!-- 100g line: 4C/min -> 20C in 5min = 50px per 5min -->
+    <line class="sh" x1="70" y1="250" x2="510" y2="50"/>
+    <text class="th" x="470" y="42" text-anchor="middle" font-weight="700">水 100g</text>
+    <text class="th tn" x="470" y="26" text-anchor="middle" font-size="11">毎分 4℃</text>
+    <!-- 200g line: 2C/min -->
+    <line class="sc" x1="70" y1="250" x2="620" y2="125"/>
+    <text class="tc" x="575" y="112" text-anchor="middle" font-weight="700">水 200g</text>
+    <text class="tc tn" x="575" y="96" text-anchor="middle" font-size="11">毎分 2℃</text>
+    <text class="ti" x="90" y="72">水の量が2倍 → かたむきは半分</text>
+  </svg>
+  </div>
+  <figcaption><b>図4</b>　同じ熱源なら、グラフの<b>かたむき（毎分の温度上昇）が水の量に反比例</b>します。かたむきが半分＝水が2倍。グラフ問題ではまずここを読み取ります。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 07</span><span class="lv lv-2">標準</span><span class="src">パターン03</span></div>
+    <div class="ex-q"><p>ある加熱器で 20℃の水 150g を 15分加熱すると 50℃になりました。同じ加熱器で 20℃の水 250g を 20分加熱すると、水温は何℃になりますか。（熱はすべて水に伝わるものとします）</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>加えた熱量 ＝ 150 × (50−20) ＝ 4500 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>毎分の熱量 ＝ 4500 ÷ 15 ＝ 300 cal/分</span></div>
+      <div class="step"><span class="sn">3</span><span>20分では 300 × 20 ＝ 6000 cal</span></div>
+      <div class="step"><span class="sn">4</span><span>上がる温度 ＝ 6000 ÷ 250 ＝ 24℃</span></div>
+      <p>答え <span class="ans">44℃</span></p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p04">
+  <div class="pat-h"><span class="pat-n">PATTERN 04</span><h4>容器も温まる（熱容量・水〇g分）</h4><span class="freq">難関頻出</span></div>
+  <div class="pat-body">
+    <p>実際の実験では、熱を受け取るのは水だけではありません。<strong>ビーカーや金属容器も一緒に温まります</strong>。
+    このとき容器を「<b>水〇g分</b>」と言いかえてしまうのが中学入試の定番テクニックです。</p>
+    <div class="formula">
+      <div class="cap">FORMULA 6</div>
+      <div class="f">容器が受け取った熱量 ＝ （水〇g分）× 上がった温度</div>
+      <div class="note">「この容器は水50g分の熱を吸収する」＝「容器を1℃上げるのに50calいる」。以後は<b>水が50g増えたと考えて</b>ふつうに計算します。</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 230" role="img" aria-label="容器の熱容量を水40グラム分と置きかえて考える図">
+    <text class="ti" x="20" y="24">実際のようす</text>
+    <path class="si" d="M60 60 L60 175 L200 175 L200 60"/>
+    <rect class="fcs" x="62" y="95" width="136" height="79"/>
+    <line class="sc" x1="62" y1="95" x2="198" y2="95"/>
+    <text class="tc tn" x="130" y="145" text-anchor="middle" font-weight="700">水 100g</text>
+    <text x="130" y="200" text-anchor="middle" font-size="11">容器自身も温まる</text>
+    <path class="sw" d="M52 120 L40 120 M52 140 L40 140 M208 120 L220 120 M208 140 L220 140"/>
+    <text class="tw" x="130" y="50" text-anchor="middle" font-size="11">ガラスが熱をうばう</text>
+
+    <text x="250" y="125" font-size="26" class="ti">＝</text>
+
+    <text class="ti" x="310" y="24">計算するときの考え方</text>
+    <path class="sl dash" d="M350 60 L350 175 L490 175 L490 60"/>
+    <rect class="fcs" x="352" y="95" width="136" height="79"/>
+    <rect class="fws" x="352" y="60" width="136" height="35" stroke="var(--warm)" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text class="tw tn" x="420" y="83" text-anchor="middle" font-weight="700">＋ 水 40g 分</text>
+    <text class="tc tn" x="420" y="145" text-anchor="middle" font-weight="700">水 100g</text>
+    <text class="ti" x="420" y="200" text-anchor="middle">合計「水 140g」として計算</text>
+
+    <line class="sl dash" x1="530" y1="30" x2="530" y2="205"/>
+    <text class="th" x="550" y="80" font-weight="700">結果</text>
+    <text x="550" y="105" font-size="12">同じ熱を加えても</text>
+    <text x="550" y="126" font-size="12">温度は上がりにくい</text>
+    <text x="550" y="152" font-size="12">＝ 計算値より</text>
+    <text x="550" y="173" font-size="12">　 実測値は低め</text>
+  </svg>
+  </div>
+  <figcaption><b>図5</b>　容器の熱容量は「水〇g分」に置きかえる。<b>分母（水の重さ）が増える</b>ので、混合水温は水だけのときより高温側・低温側どちらから見ても<b>変化がにぶく</b>なります。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 08</span><span class="lv lv-3">難関</span><span class="src">パターン04</span></div>
+    <div class="ex-q">
+      <p>ある容器に 20℃の水 100g が入っています。ここに 80℃の水 100g を加えてよくかき混ぜたところ、全体の温度は 45℃になりました。容器の温度も水と同じように変化したものとします。</p>
+      <ol>
+        <li>この容器は水何g分の熱を吸収しますか。</li>
+        <li>同じ容器に 20℃の水 200g を入れ、80℃の水 200g を加えると何℃になりますか。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p><b>(1)</b></p>
+      <div class="step"><span class="sn">1</span><span>80℃の水が失った熱 ＝ 100 × (80−45) ＝ 3500 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>20℃の水が得た熱 ＝ 100 × (45−20) ＝ 2500 cal</span></div>
+      <div class="step"><span class="sn">3</span><span>差の 1000cal は容器が吸収。容器も 20℃→45℃（25℃上昇）</span></div>
+      <div class="step"><span class="sn">4</span><span>1000 ÷ 25 ＝ 40</span></div>
+      <p>答え <span class="ans">水 40g 分</span></p>
+      <p><b>(2)</b> 容器を「20℃の水40g」として合流させます。</p>
+      <div class="step"><span class="sn">1</span><span>低温側 ＝ 水200g ＋ 容器40g分 ＝ 240g（20℃）</span></div>
+      <div class="step"><span class="sn">2</span><span>(240×20 ＋ 200×80) ÷ 440 ＝ (4800＋16000) ÷ 440 ＝ 20800 ÷ 440</span></div>
+      <p>答え <span class="ans">約 47.3℃</span>（＝ 47.27…℃）</p>
+      <p style="color:var(--ink-2);font-size:13.5px">水の量が増えるほど、容器40g分の影響は相対的に小さくなり、答えは50℃に近づきます。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p05">
+  <div class="pat-h"><span class="pat-n">PATTERN 05</span><h4>金属を入れる（比熱・あたたまりやすさ）</h4><span class="freq">難関頻出</span></div>
+  <div class="pat-body">
+    <p>金属は水よりずっと<strong>あたたまりやすく、冷めやすい</strong>物質です。1gを1℃上げるのに必要な熱量を<b>比熱</b>といい、水は 1（＝定義そのもの）、金属は 0.1 前後しかありません。</p>
+    <div class="formula">
+      <div class="cap">FORMULA 7</div>
+      <div class="f">物体の熱量（cal） ＝ 重さ（g） × 比熱 × 温度差（℃）</div>
+      <div class="note">中学入試では「比熱」という言葉を使わず、<b>「同じ重さの水の〇倍の熱で1℃上がる」「1gを1℃上げるのに〇cal」</b>という形で問題文に必ず与えられます。覚える必要はありません。</div>
+    </div>
+    <div class="note-box nb-key">
+      <div class="h">最速の言いかえ</div>
+      <p><b>金属〇g × 比熱 ＝ 水△g分</b>。たとえば「比熱0.1の金属500g」は「水50g」とまったく同じふるまいをします。ここまで直せば、あとは<b>パターン01の混合水温</b>と同じ計算です。</p>
+    </div>
+    <div class="tw-scroll">
+    <table>
+      <caption>参考：おもな物質の比熱（1gを1℃上げるのに必要な熱量／cal）</caption>
+      <thead><tr><th>物質</th><th class="n">比熱</th><th>あたたまりやすさ</th></tr></thead>
+      <tbody>
+        <tr><td>水</td><td class="n">1.00</td><td>とてもあたたまりにくい（基準）</td></tr>
+        <tr><td>氷</td><td class="n">0.50</td><td>水の約2倍あたたまりやすい</td></tr>
+        <tr><td>アルミニウム</td><td class="n">0.21</td><td>金属の中では大きめ</td></tr>
+        <tr><td>鉄</td><td class="n">0.11</td><td>あたたまりやすい</td></tr>
+        <tr><td>銅</td><td class="n">0.09</td><td>あたたまりやすい</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-2)">※ 数値は問題文で与えられます。押さえるべきは「<b>水は特別にあたたまりにくい</b>」という事実のほう。海より砂浜が早く熱くなる、内陸の気温差が大きい、といった気象分野の説明にも直結します。</p>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 09</span><span class="lv lv-2">標準</span><span class="src">パターン05</span></div>
+    <div class="ex-q"><p>1gを1℃上げるのに 0.1cal の熱が必要な金属があります。100℃に熱したこの金属 500g を、20℃の水 450g の中に入れました。じゅうぶん時間がたったとき、全体の温度は何℃になりますか。熱は外に逃げないものとします。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>金属を水に言いかえる：500 × 0.1 ＝ <b>水50g分</b></span></div>
+      <div class="step"><span class="sn">2</span><span>「100℃の水50g」と「20℃の水450g」の混合と同じ</span></div>
+      <div class="step"><span class="sn">3</span><span>(50×100 ＋ 450×20) ÷ 500 ＝ (5000＋9000) ÷ 500</span></div>
+      <p>答え <span class="ans">28℃</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">金属のほうが重い（500g &gt; 450g）のに温度は水寄りになる──これが「水はあたたまりにくい」の意味です。</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 10</span><span class="lv lv-3">難関</span><span class="src">比熱の逆算</span></div>
+    <div class="ex-q"><p>100℃に熱した金属 200g を 20℃の水 300g に入れたところ、全体が 25℃になりました。この金属 1g を 1℃上げるのに必要な熱量は何calですか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>水が得た熱 ＝ 300 × (25−20) ＝ 1500 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>金属が失った熱 ＝ 200 × □ × (100−25) ＝ 15000 × □</span></div>
+      <div class="step"><span class="sn">3</span><span>15000 × □ ＝ 1500</span></div>
+      <p>答え <span class="ans">0.1 cal</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">別解：金属は「水□g分」なので、てんびんで 100℃と20℃を 5:75＝1:15 に分ける → 重さの比は 15:1 → 水300gの1/15＝20g分 → 200g で20g分だから 0.1。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p06">
+  <div class="pat-h"><span class="pat-n">PATTERN 06</span><h4>熱が逃げる（実験値と計算値のずれ）</h4><span class="freq">記述で出る</span></div>
+  <div class="pat-body">
+    <p>「計算では45℃になるはずなのに、実際は43℃だった。理由を書きなさい」──難関校の定番の記述です。答えの方向はいつも同じで、<strong>熱が水以外のものに移った</strong>ことを指摘します。</p>
+    <ul>
+      <li>容器（ビーカー・かき混ぜ棒・温度計）が熱を吸収した</li>
+      <li>まわりの空気に熱が逃げた（放熱）</li>
+      <li>水面から蒸発するときに熱をうばわれた</li>
+    </ul>
+    <h4 style="margin-top:18px">誤差を減らす実験の工夫（そのまま解答に使えます）</h4>
+    <ul>
+      <li>熱を通しにくい<b>発泡ポリスチレンの容器</b>を使う／二重にする</li>
+      <li><b>ふたをする</b>（蒸発と対流による放熱をおさえる）</li>
+      <li>手早くかき混ぜ、<b>温度が安定した瞬間の最高温度</b>を読む</li>
+      <li>室温との差を小さくする、実験前に容器を温めておく</li>
+    </ul>
+    <div class="note-box nb-miss">
+      <div class="h">向きを間違えない</div>
+      <p>「熱が逃げる」なら、<b>お湯の側からみた最終温度は計算値より必ず低く</b>なります。逆に「冷たい水に熱を加える実験で実測が計算より高い」ということは、ふつう起こりません。答えの向きを検算に使えます。</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="col">
+<div class="pat" id="p07">
+  <div class="pat-h"><span class="pat-n">PATTERN 07</span><h4>グラフから読み取る</h4><span class="freq">最頻出</span></div>
+  <div class="pat-body">
+    <p>時間と温度のグラフが出たら、読むところは3か所だけです。</p>
+    <ol>
+      <li><b>かたむき</b>＝毎分の温度上昇 →（水の量が分かれば）毎分の熱量が出る</li>
+      <li><b>折れ曲がる点</b>＝何かが起きた瞬間（氷がとけ終わった／沸とうが始まった／加熱をやめた）</li>
+      <li><b>平らな部分</b>＝<b>温度が変わらないのに熱は入り続けている</b>＝状態変化中（CH.3）</li>
+    </ol>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 11</span><span class="lv lv-2">標準</span><span class="src">パターン07（図4を使う）</span></div>
+    <div class="ex-q"><p>図4のグラフについて答えなさい。</p>
+      <ol>
+        <li>この加熱器は毎分何calの熱を出していますか。</li>
+        <li>同じ加熱器で 20℃の水 500g を加熱すると、40℃になるまでに何分かかりますか。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p><b>(1)</b></p>
+      <div class="step"><span class="sn">1</span><span>水100gのグラフは 5分で 20℃上昇（20℃→40℃）＝ 毎分4℃</span></div>
+      <div class="step"><span class="sn">2</span><span>毎分の熱量 ＝ 100 × 4</span></div>
+      <p>答え <span class="ans">400 cal/分</span>（水200gの線でも 200×2＝400 で一致します）</p>
+      <p><b>(2)</b></p>
+      <div class="step"><span class="sn">1</span><span>必要な熱量 ＝ 500 × (40−20) ＝ 10000 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>10000 ÷ 400</span></div>
+      <p>答え <span class="ans">25分</span></p>
+    </div></details>
+  </div>
+</div>
+</section>
+
+<section id="ch3">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 03</div>
+    <h2>状態変化と熱 ─ 温度が上がらない熱</h2>
+    <p class="sub">「熱を加えているのに温度が変わらない」区間の意味が分かると、難関校の氷の問題が一気に解けるようになります。</p>
+  </div>
+
+  <h3>3-1　状態変化の6つの名前</h3>
+  <div class="tw-scroll">
+  <table>
+    <thead><tr><th>変化</th><th>名前</th><th>熱</th><th>例</th></tr></thead>
+    <tbody>
+      <tr><td>固体 → 液体</td><td><b>融解</b>（ゆうかい）</td><td>熱を<b>吸収</b></td><td>氷がとける</td></tr>
+      <tr><td>液体 → 固体</td><td><b>凝固</b>（ぎょうこ）</td><td>熱を放出</td><td>水がこおる</td></tr>
+      <tr><td>液体 → 気体</td><td><b>気化</b>（蒸発・沸とう）</td><td>熱を<b>吸収</b></td><td>洗たく物がかわく</td></tr>
+      <tr><td>気体 → 液体</td><td><b>凝縮</b>（ぎょうしゅく）</td><td>熱を放出</td><td>湯気・くもり・つゆ</td></tr>
+      <tr><td>固体 → 気体</td><td><b>昇華</b></td><td>熱を吸収</td><td>ドライアイス・防虫剤</td></tr>
+      <tr><td>気体 → 固体</td><td>昇華（凝華）</td><td>熱を放出</td><td>霜（しも）・冷凍庫の霜</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note-box nb-key">
+    <div class="h">熱の向きの覚え方</div>
+    <p><b>ばらばらになる向き（固→液→気）は熱を吸収</b>、<b>まとまる向き（気→液→固）は熱を放出</b>。
+    汗や打ち水がすずしいのは気化が熱をうばうから、冬に湖のそばがあまり冷えこまないのは凝固が熱を出すから、と説明できます。</p>
+  </div>
+
+  <h3>3-2　融解熱と気化熱 ─ 覚えるべき2つの数</h3>
+  <div class="formula">
+    <div class="cap">MUST MEMORIZE</div>
+    <div class="f">0℃の氷 1g を 0℃の水にする熱量 ＝ <b>80 cal</b>（融解熱）<br>100℃の水 1g を 100℃の水蒸気にする熱量 ＝ <b>540 cal</b>（気化熱）</div>
+    <div class="note">80cal は「水1gを80℃上げる熱」と同じ、540cal は「水1gを540℃上げる熱」と同じ。<b>状態を変えるほうがはるかに大きな熱を必要とする</b>という感覚を持っておくこと。</div>
+  </div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 300" role="img" aria-label="マイナス20度の氷100グラムを加熱したときの熱量と温度のグラフ">
+    <line class="si" x1="70" y1="260" x2="620" y2="260"/>
+    <line class="si" x1="70" y1="260" x2="70" y2="50"/>
+    <text class="ti" x="345" y="292" text-anchor="middle">加えた熱量（cal）→</text>
+    <text class="ti" x="18" y="150" transform="rotate(-90 18 150)" text-anchor="middle">温度（℃）</text>
+    <!-- reference lines -->
+    <line class="sl dash" x1="70" y1="200" x2="620" y2="200"/>
+    <line class="sl dash" x1="70" y1="80" x2="620" y2="80"/>
+    <text class="tn" x="62" y="205" text-anchor="end">0</text>
+    <text class="tn" x="62" y="85" text-anchor="end">100</text>
+    <text class="tn" x="62" y="229" text-anchor="end">−20</text>
+    <!-- curve -->
+    <path class="sh" d="M70 224 L100 200 L190 200 L300 80 L500 80"/>
+    <!-- vertical drops -->
+    <g class="sl dash">
+      <line x1="100" y1="200" x2="100" y2="260"/><line x1="190" y1="200" x2="190" y2="260"/>
+      <line x1="300" y1="80" x2="300" y2="260"/><line x1="500" y1="80" x2="500" y2="260"/>
+    </g>
+    <!-- break mark on segment 4 -->
+    <path class="si" d="M392 76 L398 84 M404 76 L410 84" stroke-width="1.6"/>
+    <!-- segment labels -->
+    <text class="tn" x="85" y="276" text-anchor="middle" font-size="10">1000</text>
+    <text class="tn" x="145" y="276" text-anchor="middle" font-size="10">8000</text>
+    <text class="tn" x="245" y="276" text-anchor="middle" font-size="10">10000</text>
+    <text class="tn" x="400" y="276" text-anchor="middle" font-size="10">54000</text>
+    <text class="tc" x="85" y="192" text-anchor="middle" font-size="10.5">①氷</text>
+    <text class="tc" x="145" y="192" text-anchor="middle" font-size="10.5">②融解</text>
+    <text class="tc" x="245" y="150" text-anchor="middle" font-size="10.5">③水</text>
+    <text class="th" x="400" y="70" text-anchor="middle" font-size="10.5">④沸とう（気化）</text>
+    <!-- annotations -->
+    <rect class="fws" x="120" y="216" width="150" height="34" stroke="var(--warm)" stroke-width="1"/>
+    <text class="tw" x="195" y="238" text-anchor="middle" font-size="11">氷と水が混ざっている</text>
+    <text class="ti" x="330" y="120" font-size="11">熱は入り続けているのに</text>
+    <text class="ti" x="330" y="138" font-size="11">温度が上がらない ＝ 状態変化中</text>
+    <text class="ti" x="520" y="112" font-size="11">水蒸気</text>
+    <text class="ti" x="80" y="40" font-size="11">氷100g（−20℃）を加熱したとき　※④は軸を省略しています</text>
+  </svg>
+  </div>
+  <figcaption><b>図6</b>　4つの区間の熱量は ①100×0.5×20＝1000 ②100×80＝8000 ③100×100＝10000 ④100×540＝54000（cal）。
+  <b>平らな2か所が融点0℃と沸点100℃</b>で、ここでは温度が変わりません。④が飛び抜けて大きいことも記憶に残しておくこと。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+<div class="pat" id="p08">
+  <div class="pat-h"><span class="pat-n">PATTERN 08</span><h4>氷を入れて全部とける場合</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <p>「氷が全部とける」と決まっているなら、氷を<b>2段階</b>に分けて熱を数えるだけです。</p>
+    <div class="formula">
+      <div class="cap">STEP</div>
+      <div class="f">氷が受け取る熱 ＝ ①とかす熱（重さ×80） ＋ ②とけた水を T℃まで上げる熱（重さ×T）</div>
+      <div class="note">0℃より低い氷なら、その前に「③氷を0℃まで上げる熱（重さ×0.5×温度差）」が加わります。</div>
+    </div>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 12</span><span class="lv lv-1">基本</span><span class="src">パターン08</span></div>
+    <div class="ex-q"><p>40℃の水 200g に 0℃の氷 50g を入れました。氷はすべてとけました。全体は何℃になりますか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p>求める温度を T℃ とします。</p>
+      <div class="step"><span class="sn">失</span><span>40℃の水： 200 × (40 − T)</span></div>
+      <div class="step"><span class="sn">得</span><span>氷： とかす 50×80 ＝ 4000　＋　0℃の水50gを上げる 50×T</span></div>
+      <div class="step"><span class="sn">式</span><span>200(40−T) ＝ 4000 ＋ 50T　→　8000 − 200T ＝ 4000 ＋ 50T</span></div>
+      <div class="step"><span class="sn">解</span><span>4000 ＝ 250T</span></div>
+      <p>答え <span class="ans">16℃</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">検算：もし氷ではなく「0℃の水50g」なら (200×40)÷250 ＝ 32℃。氷はとかす熱4000cal（＝250gを16℃下げる分）を余分にうばうので、32−16＝16℃低くなっています。</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 13</span><span class="lv lv-2">標準</span><span class="src">氷が0℃より低い</span></div>
+    <div class="ex-q"><p>−20℃の氷 100g を、80℃の水 400g に入れました。氷はすべてとけたとして、全体の温度を求めなさい。氷の比熱は 0.5 とします。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>氷を0℃にする： 100 × 0.5 × 20 ＝ 1000 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>とかす： 100 × 80 ＝ 8000 cal</span></div>
+      <div class="step"><span class="sn">3</span><span>とけた水100gを T℃へ： 100 × T</span></div>
+      <div class="step"><span class="sn">4</span><span>400 × (80 − T) ＝ 1000 ＋ 8000 ＋ 100T</span></div>
+      <div class="step"><span class="sn">5</span><span>32000 − 400T ＝ 9000 ＋ 100T　→　23000 ＝ 500T</span></div>
+      <p>答え <span class="ans">46℃</span></p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p09">
+  <div class="pat-h"><span class="pat-n">PATTERN 09</span><h4>氷がとけ残るかどうかの判定</h4><span class="freq">難関の分かれ目</span></div>
+  <div class="pat-body">
+    <p>ここが最大の山場です。<strong>いきなり方程式を立ててはいけません。</strong>まず「とけ切るかどうか」を先に判定します。</p>
+    <div class="formula">
+      <div class="cap">JUDGE ─ 必ず先にこれ</div>
+      <div class="f">A ＝ 水が 0℃まで下がるときに出せる熱量（重さ × 温度）<br>B ＝ 氷を全部とかすのに必要な熱量（重さ × 80）</div>
+      <div class="note">
+        A &gt; B → 氷は全部とける。残った熱で 0℃より高い温度になる。<br>
+        A ＝ B → ちょうど全部とけて <b>0℃</b>。<br>
+        A &lt; B → <b>氷がとけ残り、答えは必ず 0℃</b>。とけた氷は A ÷ 80（g）。
+      </div>
+    </div>
+    <div class="note-box nb-miss">
+      <div class="h">ここで差がつく</div>
+      <p>とけ残るのに方程式を立てると、<b>マイナスの温度</b>や「氷なのに5℃」といった答えが出ます。
+      計算結果が0℃を下回ったら、それは<b>「とけ残っていた」というサイン</b>。答えを0℃に直し、とけた氷の量を答え直してください。</p>
+    </div>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 14</span><span class="lv lv-3">難関</span><span class="src">パターン09</span></div>
+    <div class="ex-q"><p>10℃の水 100g に 0℃の氷 50g を入れ、じゅうぶんに時間がたちました。</p>
+      <ol>
+        <li>全体の温度は何℃になりますか。</li>
+        <li>氷は何g残っていますか。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">判</span><span>A ＝ 水が0℃まで下がって出せる熱 ＝ 100 × 10 ＝ <b>1000 cal</b></span></div>
+      <div class="step"><span class="sn">判</span><span>B ＝ 氷50gを全部とかす熱 ＝ 50 × 80 ＝ <b>4000 cal</b></span></div>
+      <div class="step"><span class="sn">→</span><span>A &lt; B なので<b>とけ残る</b>。氷と水が共存 → 温度は 0℃</span></div>
+      <p><b>(1)</b> 答え <span class="ans">0℃</span></p>
+      <div class="step"><span class="sn">1</span><span>とけた氷 ＝ 1000 ÷ 80 ＝ 12.5 g</span></div>
+      <div class="step"><span class="sn">2</span><span>残り ＝ 50 − 12.5</span></div>
+      <p><b>(2)</b> 答え <span class="ans">37.5 g</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">このとき容器の中は「0℃の水 112.5g ＋ 0℃の氷 37.5g」。合計の重さ 150g は変わりません。</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 15</span><span class="lv lv-3">難関</span><span class="src">境目を求める</span></div>
+    <div class="ex-q"><p>20℃の水 200g に 0℃の氷を入れます。氷がちょうど全部とけて 0℃になるのは、氷を何g入れたときですか。また、それより多く入れるとどうなりますか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>水が0℃まで下がって出せる熱 ＝ 200 × 20 ＝ 4000 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>この熱でとける氷 ＝ 4000 ÷ 80</span></div>
+      <p>答え <span class="ans">50 g</span></p>
+      <p>これより多い氷を入れると、熱が足りず<b>とけ残ります</b>。そのときの温度はいくら氷を増やしても <b>0℃</b> のままで、とける量は 50g で変わりません。</p>
+      <p style="color:var(--ink-2);font-size:13.5px">「氷を2倍入れたら温度も半分に…」とはならない、という点が問われます。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p10">
+  <div class="pat-h"><span class="pat-n">PATTERN 10</span><h4>加熱グラフの計算と作図</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <p>図6のグラフを「毎分〇cal」の加熱に置きかえると、そのまま時間の問題になります。作図では<b>折れ曲がる時刻</b>を正確に出すことが採点のポイントです。</p>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 16</span><span class="lv lv-2">標準</span><span class="src">パターン10</span></div>
+    <div class="ex-q"><p>−20℃の氷 100g を、毎分 1000cal の熱を出す装置で加熱し続けます。氷の比熱は 0.5 とします。</p>
+      <ol>
+        <li>氷の温度が 0℃になるのは加熱開始から何分後ですか。</li>
+        <li>氷が全部とけ終わるのは何分後ですか。</li>
+        <li>水が 100℃に達するのは何分後ですか。</li>
+        <li>そのあと水を全部水蒸気にするには、さらに何分かかりますか。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>100×0.5×20 ＝ 1000 cal → 1000÷1000 ＝ <span class="ans">1分後</span></span></div>
+      <div class="step"><span class="sn">2</span><span>とかす熱 100×80 ＝ 8000 cal → 8分かかる → 1＋8 ＝ <span class="ans">9分後</span></span></div>
+      <div class="step"><span class="sn">3</span><span>0→100℃ は 100×100 ＝ 10000 cal → 10分 → 9＋10 ＝ <span class="ans">19分後</span></span></div>
+      <div class="step"><span class="sn">4</span><span>気化 100×540 ＝ 54000 cal → <span class="ans">さらに54分</span>（合計73分）</span></div>
+      <p style="color:var(--ink-2);font-size:13.5px">グラフに描くときは、1分・9分・19分・73分の4点で折れることを確認。<b>1〜9分と19〜73分が水平</b>になります。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p11">
+  <div class="pat-h"><span class="pat-n">PATTERN 11</span><h4>蒸発と沸とう／沸点と気圧／水の特別な性質</h4><span class="freq">知識＋記述</span></div>
+  <div class="pat-body">
+    <h4>蒸発と沸とうのちがい</h4>
+    <div class="tw-scroll">
+    <table>
+      <thead><tr><th></th><th>蒸発</th><th>沸とう</th></tr></thead>
+      <tbody>
+        <tr><th>起こる場所</th><td>水の<b>表面だけ</b></td><td>水の<b>内部からも</b>（あわが出る）</td></tr>
+        <tr><th>温度</th><td>どんな温度でも起こる</td><td>沸点（1気圧で100℃）でのみ</td></tr>
+        <tr><th>例</th><td>洗たく物・打ち水・汗</td><td>やかんの湯</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note-box nb-key">
+      <div class="h">あわ・湯気の正体</div>
+      <p>沸とうしている水の中の<b>大きなあわ＝水蒸気</b>（気体・目に見えない）。やかんの口から少しはなれて白く見える<b>湯気＝小さな水のつぶ</b>（液体）。
+      口のすぐそば（透明な部分）が水蒸気です。「白く見えるものは液体」と覚えます。</p>
+    </div>
+
+    <h4>沸点は気圧で変わる</h4>
+    <ul>
+      <li>気圧が<b>低い</b>と沸点は<b>下がる</b>（富士山頂 約0.64気圧で <b>約88℃</b>／エベレストでは約70℃）</li>
+      <li>山でごはんがうまく炊けないのはこのため。<b>圧力なべ</b>は逆に気圧を上げて沸点を120℃前後にし、早く煮える</li>
+      <li>沸とう中は熱を加え続けても温度が上がらない（＝気化に使われる）</li>
+    </ul>
+    <div class="note-box nb-hard">
+      <div class="h">実験の注意（記述で問われる）</div>
+      <p><b>沸とう石</b>を入れるのは、急に激しく沸とうする「突沸」を防いで液体が飛び散らないようにするため。
+      沸とう石の小さな穴から少しずつあわが出て、おだやかに沸とうします。</p>
+    </div>
+
+    <h4>水だけがもつ「変わった」性質</h4>
+    <ul>
+      <li>4℃で<b>体積が最も小さく、密度が最大</b>（1cm³＝1g）</li>
+      <li>0℃で氷になると<b>体積が約1.1倍にふえる</b>（重さは変わらない）→ <b>氷は水に浮く</b>、水道管が破裂する、凍らせたペットボトルがふくらむ</li>
+      <li>比熱がとても大きい → 海は昼夜の温度差が小さく、内陸は大きい</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 250" role="img" aria-label="水の温度と体積の関係。4度で体積が最小になり、氷になると体積が増える">
+    <line class="si" x1="90" y1="200" x2="600" y2="200"/>
+    <line class="si" x1="90" y1="200" x2="90" y2="40"/>
+    <text class="ti" x="345" y="232" text-anchor="middle">温度（℃）</text>
+    <text class="ti" x="30" y="120" transform="rotate(-90 30 120)" text-anchor="middle">同じ重さの体積</text>
+    <g class="tn" text-anchor="middle">
+      <text x="150" y="218">0</text><text x="200" y="218">4</text>
+      <text x="330" y="218">20</text><text x="560" y="218">100</text>
+    </g>
+    <line class="sl dash" x1="200" y1="200" x2="200" y2="60"/>
+    <!-- ice bar -->
+    <rect class="fcs" x="105" y="72" width="42" height="128" stroke="var(--cold)" stroke-width="1.5"/>
+    <text class="tc" x="126" y="62" text-anchor="middle" font-size="11" font-weight="700">氷</text>
+    <text class="tc tn" x="126" y="46" text-anchor="middle" font-size="10">約1.1倍</text>
+    <!-- water curve: min at 4C -->
+    <path class="sh" d="M150 150 Q175 160 200 160 Q280 158 330 145 Q450 118 560 78"/>
+    <circle class="fh" cx="200" cy="160" r="4"/>
+    <text class="th" x="215" y="182" font-size="11" font-weight="700">4℃で体積が最小（密度最大）</text>
+    <text class="ti" x="380" y="105" font-size="11">温度が上がると体積はふえる</text>
+    <text class="ti" x="150" y="128" font-size="11">0℃の水</text>
+    <line class="sl dash" x1="150" y1="150" x2="150" y2="200"/>
+  </svg>
+  </div>
+  <figcaption><b>図7</b>　水は 4℃で体積が最小。0℃で氷になるところで<b>体積が不連続に約1.1倍へジャンプ</b>します。だから氷は水に浮き、湖は表面からこおって底の生き物が生きのびられます。</figcaption>
+</figure>
+</div>
+</section>
+
+<section id="ch4">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 04</div>
+    <h2>熱の伝わり方 ─ 伝導・対流・放射</h2>
+    <p class="sub">計算ではなく<b>実験装置の読み取りと記述</b>で問われる分野。3つの区別と、それぞれの代表実験を装置の絵ごと覚えます。</p>
+  </div>
+
+  <div class="tw-scroll">
+  <table>
+    <thead><tr><th>伝わり方</th><th>しくみ</th><th>おもに起こる場所</th><th>身近な例</th></tr></thead>
+    <tbody>
+      <tr><td><b>伝導</b></td><td>物質を伝わって、熱いところから順に伝わる。物は動かない</td><td><b>固体</b>（とくに金属）</td><td>フライパン・スプーンの柄が熱くなる</td></tr>
+      <tr><td><b>対流</b></td><td>あたためられた部分が軽くなって上へ動き、全体が混ざる</td><td><b>液体・気体</b></td><td>みそ汁のうずまき・エアコン・風</td></tr>
+      <tr><td><b>放射</b></td><td>熱（赤外線）が空間を直接飛んでくる。<b>真空でも伝わる</b></td><td>物質がなくてもよい</td><td>太陽・たき火・ストーブの正面</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 250" role="img" aria-label="伝導・対流・放射の3つの熱の伝わり方を並べた図">
+    <defs>
+      <marker id="arh" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="var(--hot)"/></marker>
+      <marker id="arc" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="var(--cold)"/></marker>
+    </defs>
+    <!-- 伝導 -->
+    <text class="ti" x="105" y="26" text-anchor="middle" font-weight="700">伝導</text>
+    <rect class="fsurf" x="30" y="90" width="150" height="20" stroke="var(--ink-2)" stroke-width="1.4"/>
+    <rect class="fhs" x="30" y="90" width="55" height="20"/>
+    <path class="sh" d="M40 132 L40 118 M48 138 L48 118 M56 132 L56 118" stroke-width="2"/>
+    <text class="th" x="48" y="156" text-anchor="middle" font-size="11">加熱</text>
+    <g class="fh"><circle cx="95" cy="100" r="3"/><circle cx="118" cy="100" r="2.4"/><circle cx="141" cy="100" r="1.8"/><circle cx="164" cy="100" r="1.2"/></g>
+    <text x="105" y="72" text-anchor="middle" font-size="11">金属の棒</text>
+    <text x="105" y="192" text-anchor="middle" font-size="11">熱い所から順に</text>
+    <text x="105" y="210" text-anchor="middle" font-size="11">となりへ伝わる</text>
+
+    <line class="sl" x1="220" y1="20" x2="220" y2="230"/>
+
+    <!-- 対流 -->
+    <text class="ti" x="330" y="26" text-anchor="middle" font-weight="700">対流</text>
+    <path class="si" d="M268 50 L268 158 L392 158 L392 50"/>
+    <rect class="fcs" x="269" y="70" width="122" height="87"/>
+    <line class="sc" x1="269" y1="70" x2="391" y2="70"/>
+    <path class="sh" d="M288 148 L288 96 Q288 86 298 86 L348 86" marker-end="url(#arh)"/>
+    <path class="sh" d="M288 130 L288 120" marker-end="url(#arh)"/>
+    <path class="sc" d="M360 86 L366 86 Q376 86 376 96 L376 138 Q376 148 366 148 L306 148" marker-end="url(#arc)"/>
+    <path class="sh" d="M278 178 L278 164 M288 184 L288 164 M298 178 L298 164" stroke-width="2"/>
+    <text class="th" x="288" y="200" text-anchor="middle" font-size="11">下から加熱</text>
+    <text x="330" y="222" text-anchor="middle" font-size="11">あたたまった水が上へ、</text>
+    <text x="330" y="240" text-anchor="middle" font-size="11">冷たい水が下へ回る</text>
+
+    <line class="sl" x1="440" y1="20" x2="440" y2="230"/>
+
+    <!-- 放射 -->
+    <text class="ti" x="555" y="26" text-anchor="middle" font-weight="700">放射</text>
+    <circle class="fhs" cx="500" cy="105" r="26" stroke="var(--hot)" stroke-width="1.5"/>
+    <text class="th" x="500" y="110" text-anchor="middle" font-size="11">熱源</text>
+    <g class="sh"><path d="M532 90 L580 78"/><path d="M534 105 L584 105"/><path d="M532 120 L580 132"/></g>
+    <rect class="fsurf" x="592" y="70" width="18" height="70" stroke="var(--ink-2)" stroke-width="1.4"/>
+    <text x="555" y="180" text-anchor="middle" font-size="11">間に何もなくても</text>
+    <text x="555" y="198" text-anchor="middle" font-size="11">（真空でも）伝わる</text>
+    <text x="555" y="222" text-anchor="middle" font-size="11">黒い面ほど吸収しやすい</text>
+  </svg>
+  </div>
+  <figcaption><b>図8</b>　3つの伝わり方。<b>「物が動くかどうか」</b>が対流と伝導の分かれ目、<b>「間に物質が必要か」</b>が放射との分かれ目です。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+<div class="pat" id="p12">
+  <div class="pat-h"><span class="pat-n">PATTERN 12</span><h4>伝導 ─ 金属棒とろうの実験</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <p>金属の棒や板にろう（またはしめらせたマッチ・示温インク）をつけ、1か所を加熱して<b>とける順番</b>を答えさせる問題です。</p>
+    <div class="note-box nb-key">
+      <div class="h">判断のルールはただ1つ</div>
+      <p>とけるのは<b>「加熱点から金属を伝わっていく道のりが短い順」</b>。
+      棒がコの字に曲がっていても、<b>見た目の直線距離ではなく、金属をたどった長さ</b>で決まります。空気中をショートカットして伝わることはありません。</p>
+    </div>
+    <h4>熱の伝わりやすさ（伝導率）の順</h4>
+    <ul>
+      <li>金属どうし： <b>銀 &gt; 銅 &gt; 金 &gt; アルミニウム &gt; 鉄</b>（入試では <b>銅 &gt; アルミ &gt; 鉄</b> を押さえれば十分）</li>
+      <li>全体： <b>金属 ≫ 水 &gt; 空気</b>。空気は熱を非常に伝えにくく、これが<b>断熱</b>に使われます</li>
+    </ul>
+    <p>だから、なべの本体は銅やアルミ、<b>取っ手は木やプラスチック</b>。セーター・羽毛布団・二重窓・発泡ポリスチレンは、いずれも<strong>動かない空気を閉じこめて熱を伝わりにくくする</strong>しくみです。</p>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 17</span><span class="lv lv-2">標準</span><span class="src">パターン12</span></div>
+    <div class="ex-q"><p>同じ太さの銅の棒をコの字型に曲げ、下の図のように点Aを加熱しました。B・C・D の3点にろうをつけたところ、加熱点からたどった金属の長さは B が 6cm、C が 10cm、D が 4cm でした。ただし、直線きょりは C が最も短くなっています。ろうがとける順番を答えなさい。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>熱は金属の中だけを伝わる（伝導）。空気中を横切ることはない</span></div>
+      <div class="step"><span class="sn">2</span><span>金属をたどった長さの短い順： D(4) → B(6) → C(10)</span></div>
+      <p>答え <span class="ans">D → B → C</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">「直線きょりが短いCが先」と答えさせるのがこの問題のねらい。<b>ひっかけの定番</b>です。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p13">
+  <div class="pat-h"><span class="pat-n">PATTERN 13</span><h4>対流 ─ 水と空気のあたたまり方</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <p>あたためられた水や空気は<b>体積がふえて軽く（密度が小さく）なる</b>ので上へ動き、そこへ冷たいものが下から入りこみます。この循環が対流です。</p>
+    <h4>代表的な実験</h4>
+    <ul>
+      <li><b>示温インク（サーモインク）</b>を入れた水をビーカーの<b>下のはし</b>で熱する → 色の変化が<b>上へ、そして全体へ</b>広がる</li>
+      <li><b>おがくず・味噌</b>を入れて熱する → つぶが上下に回るようすが見える</li>
+      <li>試験管の<b>上のほう</b>を熱すると、上の水は沸とうしても<b>下は冷たいまま</b>（対流が起きないため）</li>
+      <li>線香のけむりを使って、部屋やろうそくのまわりの空気の流れを見る</li>
+    </ul>
+    <div class="note-box nb-hard">
+      <div class="h">記述の頻出テーマ：暖房と冷房の位置</div>
+      <p><b>暖房器具は部屋の低い所</b>に置く。あたたかい空気は軽くて上へ動くので、下から出せば部屋全体を対流でめぐる。
+      <b>エアコンの冷房は風向きを水平〜上向き</b>にする。冷たい空気は重くて下へ落ちるので、上から出せば全体が冷える。
+      さらに<b>サーキュレーターで空気をかき混ぜる</b>と、天井付近にたまった熱を下ろせて効率が上がります。</p>
+    </div>
+    <div class="note-box nb-miss">
+      <div class="h">上のはしを熱してはいけない</div>
+      <p>試験管の上部だけを加熱すると、あたたまった水が上にとどまり対流が起きません。
+      <b>下部を加熱すれば全体があたたまる</b>のは、伝導ではなく<b>対流</b>のおかげです（水は熱を伝えにくい物質であることに注意）。</p>
+    </div>
+  </div>
+</div>
+
+<div class="pat" id="p14">
+  <div class="pat-h"><span class="pat-n">PATTERN 14</span><h4>放射と、魔法びんの総合問題</h4><span class="freq">難関記述</span></div>
+  <div class="pat-body">
+    <p>放射は<b>間に物質がなくても伝わる</b>のが最大の特徴。太陽の熱が宇宙空間（真空）をこえて届くのはこのためです。</p>
+    <ul>
+      <li><b>黒くてざらざらした面</b>は熱を吸収しやすく、放出もしやすい</li>
+      <li><b>白や銀色でつるつるした面</b>は反射しやすく、吸収も放出もしにくい</li>
+      <li>だから夏の服は白っぽく、太陽熱温水器の集熱板は黒く、宇宙服や消防服は銀色</li>
+    </ul>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 18</span><span class="lv lv-3">難関</span><span class="src">3つを同時に問う</span></div>
+    <div class="ex-q"><p>魔法びん（保温ポット）は、内側と外側の2枚のガラスの間を真空にし、内側のガラスの表面に銀色のめっきをしてあります。ふたは発泡ポリスチレンでできています。この構造が、伝導・対流・放射のそれぞれをどのように防いでいるか説明しなさい。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">伝導</span><span>間が<b>真空</b>で熱を伝える物質がないため、伝導が起こらない。ふたの発泡ポリスチレンも空気を含み熱を伝えにくい。</span></div>
+      <div class="step"><span class="sn">対流</span><span>真空には動く空気がないので、<b>対流も起こらない</b>。ふたをすることで内部の空気が外へ流れ出るのも防いでいる。</span></div>
+      <div class="step"><span class="sn">放射</span><span>放射は真空でも伝わってしまうため、<b>銀色のめっきで熱（赤外線）を反射</b>し、内側にもどしている。</span></div>
+      <p style="color:var(--ink-2);font-size:13.5px">「真空だけでは放射が防げない → だから銀めっきが必要」という論理まで書けると満点答案になります。</p>
+    </div></details>
+  </div>
+</div>
+</section>
+
+<section id="ch5">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 05</div>
+    <h2>ものの膨張 ─ 金属・液体・気体</h2>
+    <p class="sub">温度が上がると体積がふえる。増え方の<b>大小関係</b>と、バイメタル・すきま・穴という3つの応用が問われます。</p>
+  </div>
+
+  <h3>5-1　膨張の大きさの順</h3>
+  <div class="formula">
+    <div class="cap">ORDER</div>
+    <div class="f">気体 ≫ 液体 &gt; 固体　／　固体（金属）は アルミニウム &gt; 銅 &gt; 鉄 &gt; ガラス</div>
+    <div class="note">同じ温度だけ上げたときの体積の増え方。気体は種類によらずほぼ同じ割合でふくらみますが、液体・固体は物質ごとに差があります。</div>
+  </div>
+  <div class="note-box nb-miss">
+    <div class="h">伝導の順と混同しない</div>
+    <p><b>熱の伝わりやすさ</b>は 銅 &gt; アルミ &gt; 鉄、<b>膨張のしやすさ</b>は アルミ &gt; 銅 &gt; 鉄。
+    銅とアルミの順が入れかわります。<b>「伝えるのは銅、のびるのはアルミ」</b>と語呂で分けて覚えてください。</p>
+  </div>
+
+  <h3>5-2　球と輪の実験・穴のあいた板</h3>
+  <p>金属の球がぎりぎり通る輪を用意し、<strong>球だけを熱すると通らなくなり</strong>、<strong>輪だけを熱すると余裕をもって通る</strong>ようになります。
+  ここで大切なのは、<strong>穴（あな）も一緒に大きくなる</strong>という事実です。</p>
+  <div class="note-box nb-key">
+    <div class="h">穴は「縮まない」</div>
+    <p>金属板にあいた穴を熱したとき、金属がふくらんで穴がふさがる…とはなりません。
+    <b>板全体が写真を拡大したように相似に大きくなる</b>ので、穴も同じ割合で大きくなります。ガラスびんの金属のふたをお湯につけると開けやすくなるのは、これと、金属のほうがガラスより膨張が大きいことの両方が理由です。</p>
+  </div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 300" role="img" aria-label="球と輪の実験、穴のあいた板の膨張、バイメタルの曲がり方の図">
+    <text class="ti" x="20" y="24">① 球と輪（輪は固定したまま、球だけを熱する）</text>
+    <circle class="fcs" cx="80" cy="90" r="25" stroke="var(--cold)" stroke-width="1.4"/>
+    <circle cx="80" cy="90" r="30" fill="none" stroke="var(--ink-3)" stroke-width="9"/>
+    <text x="80" y="146" text-anchor="middle" font-size="11">常温</text>
+    <text class="tc" x="80" y="164" text-anchor="middle" font-size="11" font-weight="700">ぎりぎり通る</text>
+    <text class="ti" x="150" y="95" font-size="16">→</text>
+    <circle class="fhs" cx="215" cy="90" r="30" stroke="var(--hot)" stroke-width="1.6"/>
+    <circle cx="215" cy="90" r="30" fill="none" stroke="var(--ink-3)" stroke-width="9" opacity="0.55"/>
+    <text class="th" x="215" y="146" text-anchor="middle" font-size="11">球を熱すると</text>
+    <text class="th" x="215" y="164" text-anchor="middle" font-size="11" font-weight="700">通らない</text>
+
+    <line class="sl" x1="290" y1="15" x2="290" y2="175"/>
+
+    <text class="ti" x="315" y="24">② 穴のあいた板</text>
+    <rect class="fsurf" x="320" y="50" width="80" height="70" stroke="var(--ink-2)" stroke-width="1.4"/>
+    <circle cx="360" cy="85" r="16" fill="var(--paper)" stroke="var(--ink-2)" stroke-width="1.2"/>
+    <text x="360" y="140" text-anchor="middle" font-size="11">加熱前</text>
+    <text class="ti" x="418" y="90" font-size="16">→</text>
+    <rect class="fhs" x="448" y="43" width="94" height="84" stroke="var(--hot)" stroke-width="1.6"/>
+    <circle cx="495" cy="85" r="19" fill="var(--paper)" stroke="var(--hot)" stroke-width="1.4"/>
+    <text class="th" x="495" y="147" text-anchor="middle" font-size="11" font-weight="700">板も穴も大きくなる</text>
+    <text class="ti" x="562" y="72" font-size="11">写真を拡大した</text>
+    <text class="ti" x="562" y="90" font-size="11">ように相似に</text>
+    <text class="ti" x="562" y="108" font-size="11">ふくらむ</text>
+
+    <line class="sl" x1="20" y1="186" x2="640" y2="186"/>
+
+    <text class="ti" x="20" y="212">③ バイメタル（アルミニウムと鉄をはり合わせた板）</text>
+    <rect class="fws" x="40" y="240" width="150" height="10" stroke="var(--warm)" stroke-width="1"/>
+    <rect class="fsurf" x="40" y="250" width="150" height="10" stroke="var(--ink-2)" stroke-width="1"/>
+    <text class="tw" x="198" y="248" font-size="11">アルミ（のびやすい）</text>
+    <text x="198" y="262" font-size="11">鉄（のびにくい）</text>
+    <text x="115" y="284" text-anchor="middle" font-size="11">常温：まっすぐ</text>
+
+    <path d="M382 262 Q450 224 518 262" fill="none" stroke="var(--warm)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M384 270 Q450 234 516 270" fill="none" stroke="var(--ink-3)" stroke-width="7" stroke-linecap="round"/>
+    <text class="th" x="450" y="216" text-anchor="middle" font-size="11" font-weight="700">熱すると鉄の側へ曲がる</text>
+    <text x="450" y="292" text-anchor="middle" font-size="11">のびやすいアルミが外側（山の側）になる</text>
+    <text class="tc" x="556" y="248" font-size="11">冷やすと</text>
+    <text class="tc" x="556" y="266" font-size="11">逆に曲がる</text>
+  </svg>
+  </div>
+  <figcaption><b>図9</b>　球と輪／穴のあいた板／バイメタル。バイメタルは<b>のびやすい金属が外側（曲がりの外周）</b>になる、と覚えれば向きを間違えません。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+<div class="pat" id="p15">
+  <div class="pat-h"><span class="pat-n">PATTERN 15</span><h4>バイメタルの向きと利用</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <div class="formula">
+      <div class="cap">RULE</div>
+      <div class="f">熱する → のびやすい金属が<b>外側</b>（＝のびにくい金属の側へ曲がる）<br>冷やす → 反対向きに曲がる</div>
+    </div>
+    <p><b>利用例</b>：こたつ・アイロン・電気ポットの<b>サーモスタット</b>（設定温度になると曲がって回路を切る）、電気ごたつの温度調節、火災報知器、点滅する電飾。
+    「温度の変化を<b>スイッチのオン・オフ</b>に変える部品」と説明できるようにしておきます。</p>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 19</span><span class="lv lv-2">標準</span><span class="src">パターン15</span></div>
+    <div class="ex-q"><p>鉄とアルミニウムをはり合わせたバイメタルの板を、アルミニウムが上になるように水平に置いて全体を熱しました。板はどのように曲がりますか。また、これを冷やすとどうなりますか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>アルミニウムのほうが鉄よりよくのびる</span></div>
+      <div class="step"><span class="sn">2</span><span>よくのびるほうが外側＝長い側になるので、<b>アルミが上（外側）の山なり</b>になる</span></div>
+      <p>答え <span class="ans">両はしが下がり、中央がもり上がるように（鉄の側へ）曲がる</span></p>
+      <p>冷やした場合はアルミのほうが大きく縮むので、<b>逆に中央がへこむよう（アルミの側へ）に曲がります</b>。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p16">
+  <div class="pat-h"><span class="pat-n">PATTERN 16</span><h4>のびの計算（レール・橋・電線）</h4><span class="freq">難関計算</span></div>
+  <div class="pat-body">
+    <p>「1m の鉄の棒は 1℃につき 0.012mm のびる」のように<b>数値が与えられて</b>計算させる形です。式はシンプルな比例。</p>
+    <div class="formula">
+      <div class="cap">FORMULA 8</div>
+      <div class="f">のび ＝ もとの長さ × 温度差 × （1m・1℃あたりののび）</div>
+    </div>
+    <p>身のまわりの対策：<b>線路のつなぎ目のすきま</b>、<b>橋の伸縮継ぎ手</b>、<b>電線を夏にたるませて張る</b>、鉄道橋のローラー支承。いずれも「夏にのびても壊れないように」という同じ理由です。</p>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 20</span><span class="lv lv-3">難関</span><span class="src">パターン16</span></div>
+    <div class="ex-q"><p>長さ 25m の鉄のレールを敷きます。鉄は 1m あたり温度が 1℃上がると 0.012mm のびます。冬の −5℃ から夏の 35℃ まで温度が変わるとすると、レールとレールの間には最低何mmのすきまが必要ですか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>温度差 ＝ 35 − (−5) ＝ 40℃</span></div>
+      <div class="step"><span class="sn">2</span><span>のび ＝ 25 × 40 × 0.012</span></div>
+      <p>答え <span class="ans">12 mm</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">マイナスの温度をふくむ温度差は、<b>数直線で数えて足す</b>のが安全（5＋35＝40）。ここでの引き算ミスが失点の大半です。</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 21</span><span class="lv lv-2">標準</span><span class="src">記述</span></div>
+    <div class="ex-q"><p>ガラスびんの金属のふたが固くて開かないとき、ふたの部分をお湯につけると開けやすくなります。その理由を説明しなさい。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p>解答例：<b>金属はガラスよりも熱による膨張が大きいため、お湯であたためると金属のふただけが大きくふくらみ、びんとの間にすきまができるから。</b></p>
+      <p style="color:var(--ink-2);font-size:13.5px">「熱くなるとやわらかくなるから」は誤り。<b>ふくらむ大きさのちがい</b>が理由です。「金属のほうが熱を伝えやすく、先にあたたまる」も補足として書けます。</p>
+    </div></details>
+  </div>
+</div>
+</section>
+
+<section id="ch6">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 06</div>
+    <h2>電熱線の発熱と水温</h2>
+    <p class="sub">電気分野と熱分野の橋わたし。難関校では「回路 → 発熱量 → 水温上昇」を続けて計算させます。</p>
+  </div>
+
+  <h3>6-1　発熱量のきまり</h3>
+  <div class="formula">
+    <div class="cap">FORMULA 9</div>
+    <div class="f">発熱量 ＝ 電流 × 電圧 × 時間　（電圧が一定なら、発熱量は<b>電流の大きさに比例</b>）</div>
+    <div class="note">そして発熱がすべて水に伝われば、<b>発熱量 ＝ 水の重さ × 上がった温度</b>。この2本の式をつなぐのが電熱線の問題です。</div>
+  </div>
+
+  <h3>6-2　太さ・長さと電流</h3>
+  <div class="tw-scroll">
+  <table>
+    <thead><tr><th>電熱線の変化</th><th>電流の流れやすさ</th><th>電流</th><th>1本での発熱量<br><span style="font-weight:400;font-size:12px">（電源の電圧が同じとき）</span></th></tr></thead>
+    <tbody>
+      <tr><td><b>太さ</b>を2倍にする</td><td>2倍流れやすい</td><td class="n">2倍</td><td class="n">2倍</td></tr>
+      <tr><td><b>長さ</b>を2倍にする</td><td>半分しか流れない</td><td class="n">1/2倍</td><td class="n">1/2倍</td></tr>
+      <tr><td>太さも長さも2倍</td><td>変わらない</td><td class="n">1倍</td><td class="n">1倍</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:14px;color:var(--ink-2)">水道管でたとえると、<b>太いほど水（電流）はたくさん流れ、長いほど流れにくい</b>。まったく同じ感覚で覚えられます。</p>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 300" role="img" aria-label="電熱線を直列につないだ場合と並列につないだ場合の発熱の大きさのちがい">
+    <text class="ti" x="20" y="24" font-weight="700">直列つなぎ ─ 流れる電流はどこも同じ</text>
+    <!-- series loop -->
+    <path class="si" d="M50 60 L295 60 L295 150 L265 150 M190 150 L140 150 M90 150 L50 150 L50 60"/>
+    <line class="si" x1="38" y1="98" x2="62" y2="98" stroke-width="3"/>
+    <line class="si" x1="43" y1="112" x2="57" y2="112"/>
+    <text class="ti" x="72" y="110" font-size="11">電源</text>
+    <rect class="fhs" x="90" y="138" width="50" height="24" stroke="var(--hot)" stroke-width="1.4"/>
+    <text class="th" x="115" y="155" text-anchor="middle" font-size="12" font-weight="700">A</text>
+    <text x="115" y="180" text-anchor="middle" font-size="11">10cm</text>
+    <rect class="fhs" x="190" y="138" width="75" height="24" stroke="var(--hot)" stroke-width="1.4"/>
+    <text class="th" x="227" y="155" text-anchor="middle" font-size="12" font-weight="700">B</text>
+    <text x="227" y="180" text-anchor="middle" font-size="11">20cm（長い）</text>
+    <!-- results -->
+    <path class="si" d="M92 206 L92 244 L138 244 L138 206"/>
+    <rect class="fcs" x="93" y="216" width="44" height="27"/>
+    <text x="115" y="262" text-anchor="middle" font-size="11">水100g</text>
+    <text class="th tn" x="115" y="234" text-anchor="middle" font-weight="700" font-size="12">+3℃</text>
+    <path class="si" d="M204 206 L204 244 L250 244 L250 206"/>
+    <rect class="fcs" x="205" y="216" width="44" height="27"/>
+    <text x="227" y="262" text-anchor="middle" font-size="11">水100g</text>
+    <text class="th tn" x="227" y="234" text-anchor="middle" font-weight="700" font-size="12">+6℃</text>
+    <text class="th" x="165" y="286" text-anchor="middle" font-size="11" font-weight="700">長いB が多く発熱　A : B ＝ 1 : 2</text>
+
+    <line class="sl" x1="330" y1="15" x2="330" y2="290"/>
+
+    <text class="ti" x="356" y="24" font-weight="700">並列つなぎ ─ かかる電圧が同じ</text>
+    <!-- parallel -->
+    <path class="si" d="M380 60 L620 60 M380 150 L620 150 M380 60 L380 90 M380 112 L380 150"/>
+    <line class="si" x1="368" y1="90" x2="392" y2="90" stroke-width="3"/>
+    <line class="si" x1="373" y1="104" x2="387" y2="104"/>
+    <text class="ti" x="398" y="110" font-size="11">電源</text>
+    <path class="si" d="M480 60 L480 93 M480 127 L480 150"/>
+    <rect class="fhs" x="462" y="93" width="36" height="34" stroke="var(--hot)" stroke-width="1.4"/>
+    <text class="th" x="480" y="115" text-anchor="middle" font-size="12" font-weight="700">A</text>
+    <text x="480" y="46" text-anchor="middle" font-size="11">10cm</text>
+    <path class="si" d="M590 60 L590 93 M590 127 L590 150"/>
+    <rect class="fhs" x="572" y="93" width="36" height="34" stroke="var(--hot)" stroke-width="1.4"/>
+    <text class="th" x="590" y="115" text-anchor="middle" font-size="12" font-weight="700">B</text>
+    <text x="590" y="46" text-anchor="middle" font-size="11">20cm（長い）</text>
+    <path class="si" d="M457 206 L457 244 L503 244 L503 206"/>
+    <rect class="fcs" x="458" y="216" width="44" height="27"/>
+    <text x="480" y="262" text-anchor="middle" font-size="11">水100g</text>
+    <text class="th tn" x="480" y="234" text-anchor="middle" font-weight="700" font-size="12">+12℃</text>
+    <path class="si" d="M567 206 L567 244 L613 244 L613 206"/>
+    <rect class="fcs" x="568" y="216" width="44" height="27"/>
+    <text x="590" y="262" text-anchor="middle" font-size="11">水100g</text>
+    <text class="th tn" x="590" y="234" text-anchor="middle" font-weight="700" font-size="12">+6℃</text>
+    <text class="th" x="500" y="286" text-anchor="middle" font-size="11" font-weight="700">短いA が多く発熱　A : B ＝ 2 : 1（全体の発熱は並列が大）</text>
+  </svg>
+  </div>
+  <figcaption><b>図10</b>　<b>直列は「長い・細い」ほうが熱く、並列は「短い・太い」ほうが熱い</b>。どちらか一方だけ覚えると必ず取りちがえるので、<b>直列＝電流が共通／並列＝電圧が共通</b>という理由とセットで覚えます。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+<div class="pat" id="p17">
+  <div class="pat-h"><span class="pat-n">PATTERN 17</span><h4>直列・並列と発熱の大小</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <div class="formula">
+      <div class="cap">RULE</div>
+      <div class="f">直列 → 電流が共通 → <b>長い（細い）電熱線ほど発熱が大きい</b><br>並列 → 電圧が共通 → <b>短い（太い）電熱線ほど発熱が大きい</b></div>
+    </div>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 22</span><span class="lv lv-2">標準</span><span class="src">パターン17</span></div>
+    <div class="ex-q"><p>材質と太さが同じで、長さが 10cm の電熱線A と 20cm の電熱線B があります。それぞれを 100g の水に入れて同じ時間電流を流しました。</p>
+      <ol>
+        <li>直列につないだとき、A と B の水の上がった温度の比を答えなさい。</li>
+        <li>並列につないだとき、その比を答えなさい。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p><b>(1) 直列</b></p>
+      <div class="step"><span class="sn">1</span><span>流れる電流は A・B で同じ</span></div>
+      <div class="step"><span class="sn">2</span><span>長いBのほうが電圧が大きくかかる（長さの比 1:2）</span></div>
+      <div class="step"><span class="sn">3</span><span>発熱量＝電流×電圧 なので A : B ＝ 1 : 2</span></div>
+      <p>答え <span class="ans">A : B ＝ 1 : 2</span></p>
+      <p><b>(2) 並列</b></p>
+      <div class="step"><span class="sn">1</span><span>かかる電圧は A・B で同じ</span></div>
+      <div class="step"><span class="sn">2</span><span>短いAのほうが2倍の電流が流れる</span></div>
+      <p>答え <span class="ans">A : B ＝ 2 : 1</span></p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p18">
+  <div class="pat-h"><span class="pat-n">PATTERN 18</span><h4>電熱線をとりかえて水温を比べる</h4><span class="freq">頻出</span></div>
+  <div class="pat-body">
+    <p>実験の条件（水の量・時間・電源）のうち<b>どれが同じでどれが変わったか</b>を表から読み取り、比で処理します。</p>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 23</span><span class="lv lv-2">標準</span><span class="src">パターン18</span></div>
+    <div class="ex-q"><p>ある電熱線を使い、20℃の水 100g を 5分間あたためたところ 30℃になりました。同じ電源のまま、次のように条件を変えたとき、5分後の水温はそれぞれ何℃になりますか。</p>
+      <ol>
+        <li>電熱線を、長さが同じで太さが2倍のものにかえる</li>
+        <li>電熱線はそのままで、水を 200g にする</li>
+        <li>電熱線を長さ2倍のものにかえ、水を 50g にする</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">基</span><span>もとの発熱量 ＝ 100 × 10 ＝ 1000 cal（5分間）</span></div>
+      <p><b>(1)</b> 太さ2倍 → 電流2倍 → 発熱量2倍 ＝ 2000cal → 上昇 2000÷100 ＝ 20℃</p>
+      <p>答え <span class="ans">40℃</span></p>
+      <p><b>(2)</b> 発熱量は 1000cal のまま、水が2倍 → 上昇 1000÷200 ＝ 5℃</p>
+      <p>答え <span class="ans">25℃</span></p>
+      <p><b>(3)</b> 長さ2倍 → 電流1/2 → 発熱量 500cal。水50g → 上昇 500÷50 ＝ 10℃</p>
+      <p>答え <span class="ans">30℃</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">(3) は「発熱が半分／水も半分」で結局もとと同じ、という気づきで検算できます。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<div class="pat" id="p19">
+  <div class="pat-h"><span class="pat-n">PATTERN 19</span><h4>回路全体の発熱と、水を1つにまとめる問題</h4><span class="freq">難関</span></div>
+  <div class="pat-body">
+    <p>2本の電熱線を<b>同じ水そうに入れる</b>と、水が受け取る熱は<b>2本の発熱量の合計</b>になります。直列より並列のほうが全体の発熱が大きい、という結論もここで確認できます。</p>
+  </div>
+</div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 24</span><span class="lv lv-3">難関</span><span class="src">パターン19</span></div>
+    <div class="ex-q"><p>電熱線A（長さ10cm）1本だけを電源につなぎ、水 200g に入れて 10分間電流を流すと、水温が 12℃上がりました。同じ電源を使い、Aと、長さが2倍の電熱線Bを<b>並列</b>につないで、両方とも同じ 200g の水に入れました。10分間で水温は何℃上がりますか。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <div class="step"><span class="sn">1</span><span>Aだけの発熱量 ＝ 200 × 12 ＝ 2400 cal（10分）</span></div>
+      <div class="step"><span class="sn">2</span><span>並列なのでAにかかる電圧は変わらず、Aの発熱量は 2400cal のまま</span></div>
+      <div class="step"><span class="sn">3</span><span>Bは長さ2倍 → 電流は半分 → 発熱量は 1200 cal</span></div>
+      <div class="step"><span class="sn">4</span><span>水が受け取る熱 ＝ 2400 ＋ 1200 ＝ 3600 cal</span></div>
+      <div class="step"><span class="sn">5</span><span>3600 ÷ 200</span></div>
+      <p>答え <span class="ans">18℃上がる</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">ポイントは「<b>並列につないでも、もとからあるAの条件は変わらない</b>」こと。直列につなぎかえた場合はAに流れる電流自体が減るので、Aの発熱も減ります。</p>
+    </div></details>
+  </div>
+</div>
+</section>
+
+<section id="ch7">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 07</div>
+    <h2>難関校の複合問題</h2>
+    <p class="sub">難関校の問題は、新しい知識ではなく<b>これまでのパターンの重ね合わせ</b>です。どのパターンが何個入っているかを見抜けば解けます。</p>
+  </div>
+
+  <div class="note-box nb-hard">
+    <div class="h">難関校の問題を分解する視点</div>
+    <ul>
+      <li>登場するものが<b>3つ以上</b>（水・お湯・容器・金属・氷）→ 表を書いて「重さ×温度差」を全部並べる</li>
+      <li><b>氷が出たら、まず「とけ切るか」を判定</b>してから式を立てる（例外なく）</li>
+      <li>グラフが出たら<b>かたむき・折れ点・平らな部分</b>の3か所だけを読む</li>
+      <li>電熱線が出たら<b>直列か並列か</b>を最初に確認して、電流と電圧のどちらが共通かを決める</li>
+      <li>最後に<b>答えの向き</b>を検算する（お湯より高い、氷があるのに0℃以外、などは即座に誤り）</li>
+    </ul>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 25</span><span class="lv lv-3">難関</span><span class="src">容器＋氷＋比熱の複合</span></div>
+    <div class="ex-q">
+      <p>水 100g 分の熱を吸収する容器に、60℃の水 300g が入っています。ここに −20℃の氷 100g を入れました。氷の比熱は 0.5 とし、熱は外に逃げないものとします。</p>
+      <ol>
+        <li>氷はすべてとけますか。理由とともに答えなさい。</li>
+        <li>じゅうぶん時間がたったあとの温度を求めなさい。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p><b>(1) 判定</b></p>
+      <div class="step"><span class="sn">A</span><span>熱を出す側（水300g＋容器100g分＝<b>400g分</b>）が 0℃まで下がって出せる熱 ＝ 400 × 60 ＝ <b>24000 cal</b></span></div>
+      <div class="step"><span class="sn">B</span><span>氷を0℃の水にするのに必要な熱 ＝ 100×0.5×20（＝1000） ＋ 100×80（＝8000） ＝ <b>9000 cal</b></span></div>
+      <p>答え <span class="ans">A &gt; B なので、氷はすべてとける</span></p>
+      <p><b>(2)</b> 求める温度を T℃ とします。</p>
+      <div class="step"><span class="sn">失</span><span>400 × (60 − T)</span></div>
+      <div class="step"><span class="sn">得</span><span>1000 ＋ 8000 ＋ 100 × T</span></div>
+      <div class="step"><span class="sn">式</span><span>24000 − 400T ＝ 9000 ＋ 100T　→　15000 ＝ 500T</span></div>
+      <p>答え <span class="ans">30℃</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">容器を忘れると 300(60−T)＝9000＋100T → T＝22.5℃ となり、大きくずれます。<b>「容器＝水〇g分」を最初に水の重さへ足しこむ</b>のが安全な手順です。</p>
+    </div></details>
+  </div>
+</div>
+
+<div class="col">
+<figure>
+  <div class="figin">
+  <svg viewBox="0 0 660 290" role="img" aria-label="氷を一定の熱量で加熱したときの時間と温度のグラフ（読み取り問題用）">
+    <line class="si" x1="80" y1="250" x2="620" y2="250"/>
+    <line class="si" x1="80" y1="250" x2="80" y2="45"/>
+    <text class="ti" x="350" y="282" text-anchor="middle">加熱した時間（分）</text>
+    <text class="ti" x="26" y="145" transform="rotate(-90 26 145)" text-anchor="middle">温度（℃）</text>
+    <g class="sl dash">
+      <line x1="80" y1="200" x2="620" y2="200"/><line x1="80" y1="70" x2="620" y2="70"/>
+      <line x1="106" y1="250" x2="106" y2="45"/><line x1="314" y1="250" x2="314" y2="45"/>
+      <line x1="574" y1="250" x2="574" y2="45"/>
+    </g>
+    <g class="tn" text-anchor="end">
+      <text x="72" y="205">0</text><text x="72" y="75">100</text><text x="72" y="234">−20</text>
+    </g>
+    <g class="tn" text-anchor="middle">
+      <text x="80" y="268">0</text><text x="106" y="268">2</text><text x="314" y="268">18</text><text x="574" y="268">38</text>
+    </g>
+    <path class="sh" d="M80 230 L106 200 L314 200 L574 70"/>
+    <circle class="fh" cx="106" cy="200" r="3.5"/><circle class="fh" cx="314" cy="200" r="3.5"/><circle class="fh" cx="574" cy="70" r="3.5"/>
+    <text class="tw" x="210" y="190" text-anchor="middle" font-size="11">氷がとけている（16分間）</text>
+    <text class="ti" x="120" y="150" font-size="11">氷を加熱</text>
+    <text class="ti" x="400" y="140" font-size="11">水を加熱（20分間で100℃へ）</text>
+    <text class="ti" x="90" y="35" font-size="11">一定の熱量で加熱し続けたときのようす</text>
+  </svg>
+  </div>
+  <figcaption><b>図11</b>　読み取るのは<b>折れ点の時刻</b>だけ。0〜2分＝氷の加熱、2〜18分＝融解、18〜38分＝水の加熱。各区間の熱量を「毎分〇cal×時間」でつなぎます。</figcaption>
+</figure>
+</div>
+
+<div class="col">
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 26</span><span class="lv lv-3">難関</span><span class="src">グラフの逆算</span></div>
+    <div class="ex-q"><p>図11 は、−20℃の氷を <b>毎分 500cal</b> の熱で加熱し続けたときの温度変化です。氷の比熱は 0.5 とします。</p>
+      <ol>
+        <li>グラフの平らな部分（2〜18分）に注目して、氷の重さを求めなさい。</li>
+        <li>0〜2分の区間、18〜38分の区間からも同じ重さになることを確かめなさい。</li>
+        <li>加熱を続けると、水が全部水蒸気になるのは加熱開始から何分後ですか。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p><b>(1)</b> 平らな部分は「氷がとけている」区間です。</p>
+      <div class="step"><span class="sn">1</span><span>この16分間に加えた熱 ＝ 500 × 16 ＝ 8000 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>氷1gをとかすのに80cal なので、8000 ÷ 80</span></div>
+      <p>答え <span class="ans">100 g</span></p>
+      <p><b>(2)</b></p>
+      <div class="step"><span class="sn">氷</span><span>0〜2分：500×2 ＝ 1000cal。□×0.5×20 ＝ 10×□ ＝ 1000 → □ ＝ 100g ✔</span></div>
+      <div class="step"><span class="sn">水</span><span>18〜38分：500×20 ＝ 10000cal。□×100 ＝ 10000 → □ ＝ 100g ✔</span></div>
+      <p>3つの区間すべてで 100g と出そろえば、読み取りは正しいと確認できます。</p>
+      <p><b>(3)</b></p>
+      <div class="step"><span class="sn">1</span><span>気化に必要な熱 ＝ 100 × 540 ＝ 54000 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>54000 ÷ 500 ＝ 108分</span></div>
+      <p>答え <span class="ans">38 ＋ 108 ＝ 146分後</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">区間の時間の比 2 : 16 : 20 が、必要な熱量の比 10 : 80 : 100（＝0.5×20 : 80 : 100）と一致していることが検算になります。</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 27</span><span class="lv lv-3">難関</span><span class="src">電熱線＋状態変化</span></div>
+    <div class="ex-q"><p>0℃の氷 200g を入れた容器に電熱線を入れ、毎分 800cal の熱を加え続けます。容器の熱容量と外への放熱は無視します。</p>
+      <ol>
+        <li>氷が全部とけるのは何分後ですか。</li>
+        <li>加熱開始から 30分後の容器の中のようすを、温度とふくまれるものの重さで説明しなさい。</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p><b>(1)</b></p>
+      <div class="step"><span class="sn">1</span><span>とかすのに必要な熱 ＝ 200 × 80 ＝ 16000 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>16000 ÷ 800</span></div>
+      <p>答え <span class="ans">20分後</span></p>
+      <p><b>(2)</b></p>
+      <div class="step"><span class="sn">1</span><span>20分でとけ終わり、そこから10分間ぶんの熱 ＝ 800 × 10 ＝ 8000 cal</span></div>
+      <div class="step"><span class="sn">2</span><span>上がる温度 ＝ 8000 ÷ 200 ＝ 40℃</span></div>
+      <p>答え <span class="ans">40℃の水が 200g（氷は残っていない）</span></p>
+      <p style="color:var(--ink-2);font-size:13.5px">もし「15分後」と問われたら、まだ融解中なので温度は<b>0℃</b>。とけた氷は 800×15÷80 ＝ 150g、残る氷 50g、水 150g となります。<b>時刻が20分より前か後かで答え方がまったく変わる</b>のが出題のねらいです。</p>
+    </div></details>
+  </div>
+
+  <div class="ex">
+    <div class="ex-h"><span class="ex-tag">例題 28</span><span class="lv lv-3">難関</span><span class="src">記述・他分野との融合</span></div>
+    <div class="ex-q"><p>よく晴れた日の海岸では、昼は海から陸へ（海風）、夜は陸から海へ（陸風）風がふきます。この理由を、水と陸のあたたまり方のちがいにふれて説明しなさい。</p></div>
+    <details class="sol"><summary>解答・解説</summary><div class="sol-body">
+      <p>解答例：<b>水は陸（砂や岩）よりもあたたまりにくく冷めにくいため、昼は陸のほうが先に高温になる。陸の上の空気があたためられて軽くなり上しょうすると、そこへ海の上の冷たい空気が流れこむので海風となる。夜は逆に陸のほうが早く冷えるため、海の上の空気のほうがあたたかくなって上しょうし、陸から海へ陸風がふく。</b></p>
+      <p style="color:var(--ink-2);font-size:13.5px">この記述に必要な要素は3つ。①<b>比熱のちがい</b>（水はあたたまりにくい）②<b>あたためられた空気は軽くなって上しょうする</b>（対流）③<b>そこへ空気が流れこむのが風</b>。3つ全部を書ききることが得点条件です。</p>
+      <p style="color:var(--ink-2);font-size:13.5px">同じ論理で「打ち水がすずしい理由（水が蒸発するときに気化熱をうばう）」「冬に内陸のほうが冷えこむ理由」「霜がおりる朝は晴れている理由（放射冷却）」も説明できます。</p>
+    </div></details>
+  </div>
+
+  <h3>7-1　記述問題の答え方の型</h3>
+  <div class="tw-scroll">
+  <table>
+    <thead><tr><th>問われ方</th><th>答えの骨組み</th></tr></thead>
+    <tbody>
+      <tr><td>実験値が計算値と合わない理由</td><td>「〜に熱が（逃げた／吸収された）ため」＋逃げ先を具体的に（容器・空気・蒸発）</td></tr>
+      <tr><td>すずしくなる／あたたかくなる理由</td><td>「〜が（蒸発／凝固）するときに熱を（うばう／出す）ため」</td></tr>
+      <tr><td>ある形・材質にする理由</td><td>「〜は熱を（伝えやすい／伝えにくい）ため」＋どう役立つか</td></tr>
+      <tr><td>すきま・たるみをつくる理由</td><td>「温度が上がると〜がのびる（体積がふえる）ため、こわれないように」</td></tr>
+      <tr><td>風・流れが生じる理由</td><td>「あたためられて軽くなり上しょうし、そこへ〜が流れこむため」</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:14px;color:var(--ink-2)">どの型でも、<b>「原因 → 熱の移動 → 結果」の3ステップ</b>で書けば減点されにくくなります。字数指定があるときは、原因と結果を必ず両方入れてください。</p>
+</div>
+</section>
+
+<section id="ch8">
+<div class="col">
+  <div class="sec-head">
+    <div class="sec-num">CHAPTER 08</div>
+    <h2>総点検 ─ 直前に見るページ</h2>
+    <p class="sub">試験の前日と当日の朝に、ここだけを見返してください。</p>
+  </div>
+
+  <h3>8-1　公式一覧</h3>
+  <div class="tw-scroll">
+  <table>
+    <thead><tr><th>場面</th><th>式</th></tr></thead>
+    <tbody>
+      <tr><td>水の熱量</td><td class="mono">熱量(cal) ＝ 重さ(g) × 温度差(℃)</td></tr>
+      <tr><td>水以外の物体</td><td class="mono">熱量(cal) ＝ 重さ(g) × 比熱 × 温度差(℃)</td></tr>
+      <tr><td>熱のやりとり</td><td class="mono">失った熱の合計 ＝ 得た熱の合計</td></tr>
+      <tr><td>混合水温</td><td class="mono">T ＝ (m₁t₁ ＋ m₂t₂ ＋ …) ÷ (m₁ ＋ m₂ ＋ …)</td></tr>
+      <tr><td>容器（熱容量）</td><td class="mono">容器の熱量 ＝ (水〇g分) × 温度差</td></tr>
+      <tr><td>氷をとかす</td><td class="mono">熱量 ＝ 重さ(g) × 80</td></tr>
+      <tr><td>水を水蒸気にする</td><td class="mono">熱量 ＝ 重さ(g) × 540</td></tr>
+      <tr><td>一定の熱源</td><td class="mono">毎分の熱量 × 時間 ＝ 重さ × 温度差</td></tr>
+      <tr><td>ものののび</td><td class="mono">のび ＝ 長さ × 温度差 × 1m1℃あたりののび</td></tr>
+      <tr><td>電熱線</td><td class="mono">発熱量 ＝ 電流 × 電圧 × 時間</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>8-2　覚えておく数値と順序</h3>
+  <div class="tw-scroll">
+  <table>
+    <thead><tr><th>項目</th><th>値・順序</th></tr></thead>
+    <tbody>
+      <tr><td>融解熱（氷 → 水）</td><td class="mono"><b>80 cal/g</b></td></tr>
+      <tr><td>気化熱（水 → 水蒸気）</td><td class="mono"><b>540 cal/g</b></td></tr>
+      <tr><td>氷の比熱</td><td class="mono">0.5（水の半分）</td></tr>
+      <tr><td>水の融点・沸点</td><td class="mono">0℃ / 100℃（1気圧）</td></tr>
+      <tr><td>水の密度が最大の温度</td><td class="mono">4℃</td></tr>
+      <tr><td>氷になったときの体積</td><td class="mono">約 1.1倍</td></tr>
+      <tr><td>富士山頂の沸点</td><td class="mono">約 88℃</td></tr>
+      <tr><td>熱の伝わりやすさ</td><td class="mono">銀 &gt; <b>銅 &gt; アルミ &gt; 鉄</b> ≫ 水 &gt; 空気</td></tr>
+      <tr><td>膨張のしやすさ（固体）</td><td class="mono"><b>アルミ &gt; 銅 &gt; 鉄</b> &gt; ガラス</td></tr>
+      <tr><td>膨張のしやすさ（状態）</td><td class="mono">気体 ≫ 液体 &gt; 固体</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>8-3　落としやすいポイント10</h3>
+  <div class="note-box nb-miss">
+    <div class="h">この10個で失点の8割が説明できます</div>
+    <ol style="margin:0">
+      <li>温度そのものをかけてしまう（かけるのは<b>温度差</b>）</li>
+      <li>「上がった温度」を答えて、<b>もとの温度を足し忘れる</b></li>
+      <li>氷の問題で<b>とけ切るか判定せず</b>に方程式を立てる</li>
+      <li>とけ残っているのに答えを0℃以外にする</li>
+      <li>0℃より低い氷で、<b>0℃まで上げる熱（比熱0.5）を忘れる</b></li>
+      <li>容器の熱容量（水〇g分）を足し忘れる</li>
+      <li>金属を「水〇g分」に直さずに、重さのまま混合の式に入れる</li>
+      <li>伝導の順番を<b>直線きょり</b>で判断する（正しくは金属をたどった長さ）</li>
+      <li>伝導の順（銅＞アルミ）と膨張の順（アルミ＞銅）を取りちがえる</li>
+      <li>直列と並列で、発熱が大きいほうを逆にする</li>
+    </ol>
+  </div>
+
+  <h3>8-4　出題パターン早見表</h3>
+  <div class="tw-scroll">
+  <table>
+    <thead><tr><th class="n">#</th><th>パターン</th><th>見分けるサイン</th><th>最初の一手</th></tr></thead>
+    <tbody>
+      <tr><td class="n">01</td><td>混合水温</td><td>2つの温度の水を混ぜる</td><td>てんびん図をかく</td></tr>
+      <tr><td class="n">02</td><td>3つ以上の混合</td><td>水が3種類以上</td><td>(重さ×温度)を全部たす</td></tr>
+      <tr><td class="n">03</td><td>一定の熱源で加熱</td><td>「毎分」「〇分間」</td><td>毎分何calかを先に出す</td></tr>
+      <tr><td class="n">04</td><td>容器の熱容量</td><td>「水〇g分」「容器も温まる」</td><td>水の重さに足しこむ</td></tr>
+      <tr><td class="n">05</td><td>金属・比熱</td><td>「1gを1℃上げるのに〇cal」</td><td>「水△g分」に言いかえる</td></tr>
+      <tr><td class="n">06</td><td>放熱・誤差</td><td>「実際は〜だった。理由は」</td><td>逃げ先を3つ挙げる</td></tr>
+      <tr><td class="n">07</td><td>グラフ読み取り</td><td>時間−温度のグラフ</td><td>かたむき・折れ点を読む</td></tr>
+      <tr><td class="n">08</td><td>氷（全部とける）</td><td>「氷はすべてとけた」</td><td>とかす熱＋上げる熱</td></tr>
+      <tr><td class="n">09</td><td>氷のとけ残り</td><td>とける条件が書かれていない</td><td>A と B を比べて判定</td></tr>
+      <tr><td class="n">10</td><td>加熱グラフの作図</td><td>「グラフをかきなさい」</td><td>折れる時刻を4つ計算</td></tr>
+      <tr><td class="n">11</td><td>蒸発・沸とう・水の性質</td><td>湯気／あわ／気圧／4℃</td><td>知識で即答</td></tr>
+      <tr><td class="n">12</td><td>伝導（ろうの実験）</td><td>金属棒・ろう・順番</td><td>金属をたどった長さ</td></tr>
+      <tr><td class="n">13</td><td>対流（水・空気）</td><td>示温インク／暖房の位置</td><td>あたたかいものは上へ</td></tr>
+      <tr><td class="n">14</td><td>放射・魔法びん</td><td>真空／銀色／黒い面</td><td>3つを分けて説明</td></tr>
+      <tr><td class="n">15</td><td>バイメタル</td><td>2種類の金属をはり合わせ</td><td>のびやすい金属が外側</td></tr>
+      <tr><td class="n">16</td><td>のびの計算</td><td>レール・橋・電線</td><td>長さ×温度差×係数</td></tr>
+      <tr><td class="n">17</td><td>直列・並列と発熱</td><td>電熱線が2本以上</td><td>電流と電圧のどちらが共通か</td></tr>
+      <tr><td class="n">18</td><td>電熱線のとりかえ</td><td>太さ・長さを変える表</td><td>電流の倍率を出す</td></tr>
+      <tr><td class="n">19</td><td>回路全体の発熱</td><td>同じ水そうに2本</td><td>発熱量を合計する</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>8-5　総復習チェックリスト</h3>
+  <div class="check">
+    <label><input type="checkbox"><span>1cal の定義を、式ではなく言葉で説明できる</span></label>
+    <label><input type="checkbox"><span>「温度」と「熱量」のちがいを、例を挙げて説明できる</span></label>
+    <label><input type="checkbox"><span>混合水温をてんびん図で暗算できる</span></label>
+    <label><input type="checkbox"><span>容器の熱容量を「水〇g分」として計算に組みこめる</span></label>
+    <label><input type="checkbox"><span>金属を「水△g分」に言いかえて混合の式に入れられる</span></label>
+    <label><input type="checkbox"><span>融解熱 80、気化熱 540、氷の比熱 0.5 が即答できる</span></label>
+    <label><input type="checkbox"><span>氷を入れる問題で、まず「とけ切るか」を判定する手順が身についている</span></label>
+    <label><input type="checkbox"><span>とけ残る場合の答え（0℃・とけた量）を出せる</span></label>
+    <label><input type="checkbox"><span>氷→水→水蒸気の加熱グラフを、熱量の比つきで自分でかける</span></label>
+    <label><input type="checkbox"><span>蒸発と沸とうのちがい、湯気とあわの正体を説明できる</span></label>
+    <label><input type="checkbox"><span>気圧と沸点の関係、圧力なべ・富士山の例を挙げられる</span></label>
+    <label><input type="checkbox"><span>伝導・対流・放射を、実験装置つきで区別できる</span></label>
+    <label><input type="checkbox"><span>金属をたどった長さで、ろうのとける順番を決められる</span></label>
+    <label><input type="checkbox"><span>暖房・冷房の位置と風向きの理由を書ける</span></label>
+    <label><input type="checkbox"><span>魔法びんの3つのしくみを、伝導・対流・放射に分けて書ける</span></label>
+    <label><input type="checkbox"><span>穴のあいた板を熱すると穴も広がることを説明できる</span></label>
+    <label><input type="checkbox"><span>バイメタルの曲がる向きを、理由つきで答えられる</span></label>
+    <label><input type="checkbox"><span>4℃で体積が最小、氷は約1.1倍という水の性質を言える</span></label>
+    <label><input type="checkbox"><span>電熱線の太さ・長さと電流の関係を表で言える</span></label>
+    <label><input type="checkbox"><span>直列と並列で発熱の大きいほうが逆になる理由を説明できる</span></label>
+    <label><input type="checkbox"><span>実験の誤差の理由と、それを減らす工夫を3つ書ける</span></label>
+    <label><input type="checkbox"><span>海風・陸風、打ち水、放射冷却を熱の言葉で説明できる</span></label>
+  </div>
+
+  <div class="note-box nb-key">
+    <div class="h">仕上げの使い方</div>
+    <p>1周目は例題の解答をすぐ開いて<b>解法の型</b>を写す。2周目は<b>「解答を全部閉じる」</b>にして、例題だけを自力で解く。
+    3周目は 8-4 の早見表だけを見て、<b>各パターンの「最初の一手」が口をついて出るか</b>を確認してください。</p>
+  </div>
+</div>
+</section>
+
+<div class="col">
+<footer>
+  <p>中学受験理科／熱と水の温度 総復習ノート ・ 例題28問／出題パターン19分類</p>
+  <p>比熱・膨張率などの数値は、実際の入試では問題文中に与えられます。値そのものより<b>大小関係と使い方</b>を確認してください。</p>
+</footer>
+</div>
+
+</main>
+
+<script>
+(function(){
+  // 印刷時はすべての解答を開き、印刷後にもとへもどす
+  var wasOpen = [];
+  function beforePrint(){
+    wasOpen = [];
+    document.querySelectorAll('details.sol').forEach(function(d,i){ wasOpen[i] = d.open; d.open = true; });
+  }
+  function afterPrint(){
+    document.querySelectorAll('details.sol').forEach(function(d,i){ d.open = !!wasOpen[i]; });
+  }
+  window.addEventListener('beforeprint', beforePrint);
+  window.addEventListener('afterprint', afterPrint);
+  if (window.matchMedia) {
+    var mq = window.matchMedia('print');
+    if (mq.addEventListener) mq.addEventListener('change', function(e){ e.matches ? beforePrint() : afterPrint(); });
+  }
+})();
+(function(){
+  var btn = document.getElementById('toggleAll');
+  if(!btn) return;
+  var open = false;
+  btn.addEventListener('click', function(){
+    open = !open;
+    document.querySelectorAll('details.sol').forEach(function(d){ d.open = open; });
+    btn.textContent = open ? '解答を全部閉じる' : '解答を全部開く';
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>気体の発生と過不足</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EDF0F6; --paper:#FFFFFF; --grid:#DCE3EF; --panel:#F6F8FC;
+  --ink:#1B2434; --ink2:#5A6580; --rule:#C8D2E2; --rule-soft:#E2E8F2;
+  --accent:#14508C; --accent-soft:#E2ECF8; --accent-line:#9CBEE2;
+  --mark:#BF3A28; --mark-soft:#FAE8E4; --mark-line:#E5A296;
+  --acid:#C1354A; --alkali:#2A6DB0; --neutral:#3B7F62;
+  --on-accent:#FFFFFF;
+  --shadow:0 1px 2px rgba(27,36,52,.06), 0 8px 24px -14px rgba(27,36,52,.28);
+  --fs-body:1.0625rem;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121722; --paper:#1A2130; --grid:#212939; --panel:#151C29;
+    --ink:#E3E8F2; --ink2:#98A4BA; --rule:#2E3A4E; --rule-soft:#252E3E;
+    --accent:#7FB2E8; --accent-soft:#1B2A3E; --accent-line:#3A5A80;
+    --mark:#F0917E; --mark-soft:#33221E; --mark-line:#7A4438;
+    --acid:#EE7A8B; --alkali:#7FB2E8; --neutral:#6FC79B;
+    --on-accent:#0F1620;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121722; --paper:#1A2130; --grid:#212939; --panel:#151C29;
+  --ink:#E3E8F2; --ink2:#98A4BA; --rule:#2E3A4E; --rule-soft:#252E3E;
+  --accent:#7FB2E8; --accent-soft:#1B2A3E; --accent-line:#3A5A80;
+  --mark:#F0917E; --mark-soft:#33221E; --mark-line:#7A4438;
+  --acid:#EE7A8B; --alkali:#7FB2E8; --neutral:#6FC79B;
+  --on-accent:#0F1620;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; color:var(--ink);
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),
+                   linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:26px 26px;
+  font-family:"Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic UI", system-ui, sans-serif;
+  font-size:var(--fs-body); line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, monospace; font-feature-settings:"tnum"}
+
+/* ---- shell ---- */
+.shell{max-width:1220px; margin:0 auto; padding:0 20px 96px}
+.masthead{
+  background:var(--paper); border:1px solid var(--rule);
+  border-radius:2px; box-shadow:var(--shadow);
+  margin:28px 0 26px; padding:34px 34px 30px; position:relative; overflow:hidden;
+}
+.masthead::before{
+  content:""; position:absolute; inset:0 auto 0 0; width:6px;
+  background:linear-gradient(180deg, var(--accent) 0 55%, var(--mark) 55% 100%);
+}
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace; font-size:.72rem; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--ink2); margin:0 0 10px;
+}
+h1{
+  font-family:"Shippori Mincho B1", "Yu Mincho", serif; font-weight:700;
+  font-size:clamp(1.9rem, 4.4vw, 2.9rem); line-height:1.28; margin:0 0 12px;
+  letter-spacing:.02em; text-wrap:balance;
+}
+.lede{margin:0; color:var(--ink2); max-width:62ch; font-size:1rem}
+.masthead-meta{
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;
+}
+.chip{
+  font-family:"IBM Plex Mono", monospace; font-size:.72rem; letter-spacing:.04em;
+  border:1px solid var(--rule); border-radius:999px; padding:4px 11px; color:var(--ink2);
+  background:var(--panel);
+}
+
+/* ---- layout ---- */
+.layout{display:grid; grid-template-columns:1fr; gap:28px}
+@media (min-width:1040px){ .layout{grid-template-columns:216px minmax(0,1fr); gap:40px} }
+
+nav.toc{align-self:start}
+@media (min-width:1040px){ nav.toc{position:sticky; top:20px; max-height:calc(100vh - 40px); overflow-y:auto} }
+nav.toc .toc-inner{
+  background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+  padding:18px 16px; box-shadow:var(--shadow);
+}
+nav.toc h2{
+  font-family:"IBM Plex Mono", monospace; font-size:.7rem; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink2); margin:0 0 12px; font-weight:600;
+}
+nav.toc ol{list-style:none; margin:0; padding:0}
+nav.toc li{margin:0}
+nav.toc a{
+  display:block; padding:5px 0 5px 12px; border-left:2px solid var(--rule-soft);
+  color:var(--ink); text-decoration:none; font-size:.86rem; line-height:1.5;
+}
+nav.toc a:hover{border-left-color:var(--accent); color:var(--accent)}
+nav.toc a.sub{padding-left:22px; font-size:.8rem; color:var(--ink2)}
+nav.toc .grp{margin-top:14px}
+
+main{min-width:0}
+
+/* ---- sections ---- */
+section.chapter{margin:0 0 52px; scroll-margin-top:16px}
+.chapter-head{display:flex; align-items:flex-start; gap:14px; margin:0 0 18px; padding-bottom:12px; border-bottom:2px solid var(--ink)}
+.chapter-num{
+  font-family:"IBM Plex Mono", monospace; font-size:.78rem; font-weight:600;
+  background:var(--ink); color:var(--bg); padding:3px 9px; border-radius:2px;
+  flex:none; margin-top:8px; letter-spacing:.06em;
+}
+.chapter-head h2{
+  font-family:"Shippori Mincho B1", "Yu Mincho", serif; font-weight:700;
+  font-size:clamp(1.35rem,3vw,1.75rem); margin:0; line-height:1.4; text-wrap:balance;
+}
+h3{
+  font-family:"Shippori Mincho B1","Yu Mincho",serif; font-weight:600;
+  font-size:1.18rem; margin:34px 0 12px; line-height:1.5;
+  padding-left:12px; border-left:4px solid var(--accent); text-wrap:balance;
+}
+h4{font-size:1rem; font-weight:700; margin:22px 0 8px; color:var(--ink)}
+p{margin:0 0 14px; max-width:66ch}
+ul,ol{margin:0 0 14px; padding-left:1.4em; max-width:66ch}
+li{margin:0 0 5px}
+strong{font-weight:700}
+.hl{background:linear-gradient(transparent 62%, var(--mark-soft) 62%); font-weight:700}
+.hl-b{background:linear-gradient(transparent 62%, var(--accent-soft) 62%); font-weight:700}
+code{font-family:"IBM Plex Mono",monospace; font-size:.9em; background:var(--panel); padding:1px 5px; border-radius:2px; border:1px solid var(--rule-soft)}
+a{color:var(--accent)}
+
+/* ---- cards / boxes ---- */
+.card{background:var(--paper); border:1px solid var(--rule); border-radius:2px; padding:22px 24px; box-shadow:var(--shadow); margin:0 0 20px}
+.box{border:1px solid var(--rule); border-left:4px solid var(--accent); background:var(--paper); padding:16px 20px; margin:18px 0; border-radius:2px}
+.box.warn{border-left-color:var(--mark)}
+.box.key{border-left-color:var(--ink); background:var(--panel)}
+.box-title{
+  font-family:"IBM Plex Mono",monospace; font-size:.72rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink2); margin:0 0 8px; font-weight:600;
+}
+.box p:last-child, .box ul:last-child, .box ol:last-child{margin-bottom:0}
+
+.pattern{
+  background:var(--paper); border:1px solid var(--rule); border-radius:2px;
+  box-shadow:var(--shadow); margin:0 0 26px; overflow:hidden; scroll-margin-top:16px;
+}
+.pattern > header{
+  display:flex; align-items:center; gap:12px; padding:14px 20px;
+  border-bottom:1px solid var(--rule); background:var(--panel);
+}
+.pattern .tag{
+  font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:.78rem;
+  color:var(--on-accent); background:var(--accent); padding:3px 9px; border-radius:2px; flex:none;
+}
+.pattern.hard .tag{background:var(--mark)}
+.pattern > header h3{
+  margin:0; padding:0; border:0; font-size:1.08rem; font-family:"Zen Kaku Gothic New",sans-serif; font-weight:700;
+}
+.pattern .body{padding:20px 24px 22px}
+.level{
+  margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:.68rem;
+  letter-spacing:.1em; color:var(--ink2); border:1px solid var(--rule); padding:2px 8px; border-radius:999px; flex:none;
+}
+.pattern.hard .level{color:var(--mark); border-color:var(--mark-line)}
+
+/* ---- tables ---- */
+.scroller{overflow-x:auto; margin:16px 0 20px; border:1px solid var(--rule); border-radius:2px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-size:.92rem; min-width:520px}
+th,td{padding:9px 12px; text-align:left; border-bottom:1px solid var(--rule-soft); vertical-align:top; line-height:1.65}
+thead th{
+  background:var(--panel); font-size:.76rem; letter-spacing:.06em; color:var(--ink2);
+  font-weight:700; border-bottom:2px solid var(--rule); white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+table.t-gas td:nth-child(2),table.t-gas td:nth-child(3),
+table.t-gas td:nth-child(5),table.t-gas td:nth-child(6),
+table.t-make td:nth-child(3){white-space:nowrap}
+td.num,th.num{font-family:"IBM Plex Mono",monospace; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+tbody th{font-weight:700; white-space:nowrap; background:var(--panel); border-right:1px solid var(--rule-soft)}
+.t-acid{color:var(--acid); font-weight:700}
+.t-alk{color:var(--alkali); font-weight:700}
+.t-neu{color:var(--neutral); font-weight:700}
+
+/* ---- figures ---- */
+figure{margin:22px 0; background:var(--paper); border:1px solid var(--rule); border-radius:2px; padding:18px 18px 14px; box-shadow:var(--shadow)}
+figure svg{display:block; width:100%; max-width:100%; height:auto; color:var(--ink)}
+figcaption{margin-top:12px; font-size:.85rem; color:var(--ink2); line-height:1.7; border-top:1px dashed var(--rule); padding-top:10px}
+.fig-scroll{overflow-x:auto}
+
+/* ---- q / a ---- */
+.q{border:1px solid var(--rule); border-radius:2px; background:var(--panel); padding:16px 20px; margin:18px 0 0}
+.q .q-label{font-family:"IBM Plex Mono",monospace; font-size:.72rem; letter-spacing:.14em; color:var(--mark); font-weight:600; margin:0 0 8px}
+details{margin:10px 0 0; border:1px solid var(--rule); border-radius:2px; background:var(--paper)}
+details[open]{border-color:var(--accent-line)}
+summary{
+  cursor:pointer; padding:11px 16px; font-weight:700; font-size:.92rem; list-style:none;
+  display:flex; align-items:center; gap:9px; color:var(--accent); user-select:none;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▶"; font-size:.68rem; transition:transform .18s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.answer{padding:4px 20px 18px; border-top:1px dashed var(--rule)}
+.answer p:first-child{margin-top:14px}
+.steps{counter-reset:st; list-style:none; padding-left:0}
+.steps li{position:relative; padding-left:34px; margin-bottom:10px}
+.steps li::before{
+  counter-increment:st; content:counter(st);
+  position:absolute; left:0; top:.28em; width:22px; height:22px; border-radius:50%;
+  background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-line);
+  font-family:"IBM Plex Mono",monospace; font-size:.74rem; font-weight:600;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+}
+.ans-final{
+  display:inline-block; font-weight:700; border-bottom:3px double var(--mark);
+  padding:0 2px;
+}
+
+/* ---- data strip ---- */
+.data-strip{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); margin:16px 0 4px}
+.data-cell{border:1px solid var(--rule); border-radius:2px; padding:11px 13px; background:var(--panel)}
+.data-cell .k{font-size:.8rem; color:var(--ink2); margin:0 0 2px}
+.data-cell .v{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:1.02rem; margin:0}
+
+.checklist{list-style:none; padding-left:0; max-width:none}
+.checklist li{display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px dashed var(--rule)}
+.checklist li::before{content:"□"; font-family:"IBM Plex Mono",monospace; color:var(--accent); font-size:1.1rem; line-height:1.5}
+.checklist li:last-child{border-bottom:0}
+
+footer.end{margin-top:44px; padding-top:20px; border-top:2px solid var(--ink); color:var(--ink2); font-size:.85rem}
+
+@media (prefers-reduced-motion: reduce){*{transition:none !important; animation:none !important}}
+@media print{
+  body{background:#fff}
+  nav.toc{display:none} .layout{grid-template-columns:1fr}
+  details{border:0} details > summary{display:none} .answer{border:0; padding-left:0}
+  .card,.pattern,figure{box-shadow:none; break-inside:avoid}
+}
+</style>
+
+</head>
+<body>
+<div class="shell">
+
+<header class="masthead">
+  <p class="eyebrow">中学受験理科 ／ 化学 総復習</p>
+  <h1>気体の発生と過不足</h1>
+  <p class="lede">気体の性質の暗記から、比例・過不足の計算、グラフの折れ点、そして難関校の複合問題まで。「何が余って何が使い切られるか」という一本の軸で、単元をまるごと通します。</p>
+  <div class="masthead-meta">
+    <span class="chip">基礎 → 難関</span>
+    <span class="chip">出題パターン 12</span>
+    <span class="chip">例題・演習 解説つき</span>
+    <span class="chip">図解 10</span>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="目次">
+  <div class="toc-inner">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#ch1">1. 気体の発生と性質</a></li>
+      <li><a href="#gas-make" class="sub">発生方法</a></li>
+      <li><a href="#gas-prop" class="sub">性質の総まとめ</a></li>
+      <li><a href="#gas-collect" class="sub">集め方の決め方</a></li>
+      <li><a href="#gas-lab" class="sub">装置と実験の注意</a></li>
+      <li class="grp"><a href="#ch2">2. 過不足の考え方</a></li>
+      <li><a href="#rule3" class="sub">3ステップ解法</a></li>
+      <li><a href="#graph" class="sub">グラフの折れ点</a></li>
+      <li><a href="#change" class="sub">条件を変えたとき</a></li>
+      <li class="grp"><a href="#ch3">3. 出題パターン12</a></li>
+      <li><a href="#p1" class="sub">P1–P4 基本形</a></li>
+      <li><a href="#p5" class="sub">P5–P8 標準</a></li>
+      <li><a href="#p9" class="sub">P9–P12 難関</a></li>
+      <li class="grp"><a href="#ch4">4. 仕上げ演習</a></li>
+      <li class="grp"><a href="#ch5">5. 直前チェック</a></li>
+    </ol>
+  </div>
+</nav>
+
+<main>
+<section class="chapter" id="ch1">
+  <div class="chapter-head">
+    <span class="chapter-num">CH 1</span>
+    <h2>気体の発生と性質 — 計算の前に、ここが土台</h2>
+  </div>
+
+  <p>過不足の計算問題は、必ず「何と何を反応させて、どの気体が出るか」から始まります。ここを曖昧にしたまま計算に入ると、<span class="hl">銅を塩酸に入れて水素を出してしまう</span>ような、取り返しのつかないミスが起きます。まず発生・性質・集め方を一枚の地図にしておきます。</p>
+
+  <h3 id="gas-make">1-1　つくり方（薬品の組み合わせ）</h3>
+  <p>問題文は薬品名でしか気体を教えてくれません。<strong>「この組み合わせ＝この気体」</strong>を反射で出せるようにします。</p>
+
+  <div class="scroller">
+  <table class="t-make">
+    <thead><tr><th>気体</th><th>つくり方（薬品の組み合わせ）</th><th>集め方</th><th>おさえどころ</th></tr></thead>
+    <tbody>
+      <tr><th>酸素</th><td>過酸化水素水（オキシドール）＋<strong>二酸化マンガン</strong></td><td>水上置換</td><td>二酸化マンガンは<span class="hl">触媒</span>。加熱しない</td></tr>
+      <tr><th>二酸化炭素</th><td>石灰石（大理石・貝がら・卵のから＝炭酸カルシウム）＋うすい塩酸<br>炭酸水素ナトリウム＋塩酸／炭酸水素ナトリウムを加熱</td><td>水上置換<br>下方置換</td><td>水に少しとけるので、どちらの集め方も可</td></tr>
+      <tr><th>水素</th><td>亜鉛・鉄・アルミニウム＋うすい塩酸（うすい硫酸でも可）<br>アルミニウム・亜鉛＋水酸化ナトリウム水溶液</td><td>水上置換</td><td><span class="hl">銅は塩酸に溶けない</span>＝水素は出ない</td></tr>
+      <tr><th>アンモニア</th><td>塩化アンモニウム＋水酸化カルシウム（消石灰）を混ぜて加熱<br>濃いアンモニア水を加熱</td><td>上方置換</td><td>上方置換になる代表格。加熱する固体反応</td></tr>
+      <tr><th>塩素</th><td>さらし粉＋塩酸</td><td>下方置換</td><td>黄緑色。漂白・殺菌のはたらき</td></tr>
+      <tr><th>塩化水素</th><td>濃い塩酸を加熱（食塩＋濃硫酸を加熱）</td><td>下方置換</td><td>水にとかすと塩酸そのもの</td></tr>
+      <tr><th>二酸化硫黄</th><td>硫黄を燃やす／亜硫酸ナトリウム＋塩酸</td><td>下方置換</td><td>火山ガス・大気汚染とセットで出る</td></tr>
+      <tr><th>硫化水素</th><td>硫化鉄＋塩酸</td><td>下方置換</td><td>たまごのくさったにおい。有毒</td></tr>
+      <tr><th>窒素</th><td>空気の約78％（発生実験はまれ）</td><td>水上置換</td><td>燃えず、ものも燃やさない</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="box warn">
+    <p class="box-title">出題者が仕掛けてくる分岐</p>
+    <ul>
+      <li><strong>塩酸＋石灰石</strong>は二酸化炭素、<strong>塩酸＋金属</strong>は水素。「塩酸」だけ見て決めない。</li>
+      <li>アルミニウムと亜鉛は<span class="hl">塩酸にも水酸化ナトリウム水溶液にも溶けて水素</span>を出す（両性）。鉄は塩酸だけ、銅はどちらにも溶けない。</li>
+      <li>二酸化マンガンは自分は変化しない。<span class="hl">増やしても酸素の発生量は変わらず、速くなるだけ</span>。</li>
+    </ul>
+  </div>
+
+  <h3 id="gas-prop">1-2　性質の総まとめ</h3>
+  <p>空気1Lの重さを<span class="mono">1.29g</span>とすると、これより重いか軽いかで集め方が決まります。数値まで覚える必要はありませんが、<strong>重い／軽いの並び</strong>は言えるようにしておきます。</p>
+
+  <div class="scroller">
+  <table class="t-gas">
+    <thead><tr><th>気体</th><th>色</th><th>におい</th><th class="num">1Lの重さ</th><th>水へのとけ方</th><th>水溶液</th><th>見分け方・特徴</th></tr></thead>
+    <tbody>
+      <tr><th>水素</th><td>無色</td><td>なし</td><td class="num">0.09 g</td><td>とけにくい</td><td>—</td><td>火を近づけると<strong>ポンと音</strong>、燃えて水ができる。最も軽い</td></tr>
+      <tr><th>アンモニア</th><td>無色</td><td>刺激臭</td><td class="num">0.77 g</td><td>非常によくとける</td><td class="t-alk">アルカリ性</td><td>赤リトマス→青。<strong>噴水実験</strong>。塩化水素と出会うと白い煙</td></tr>
+      <tr><th>窒素</th><td>無色</td><td>なし</td><td class="num">1.25 g</td><td>とけにくい</td><td>—</td><td>空気とほぼ同じ重さ。燃えず、ものも燃やさない</td></tr>
+      <tr><th>酸素</th><td>無色</td><td>なし</td><td class="num">1.43 g</td><td>とけにくい</td><td>—</td><td><strong>線香が炎を上げて燃える</strong>。自分は燃えない</td></tr>
+      <tr><th>硫化水素</th><td>無色</td><td>腐卵臭</td><td class="num">1.52 g</td><td>とける</td><td class="t-acid">酸性</td><td>温泉のにおい。有毒</td></tr>
+      <tr><th>塩化水素</th><td>無色</td><td>刺激臭</td><td class="num">1.63 g</td><td>非常によくとける</td><td class="t-acid">酸性</td><td>水溶液が塩酸。アンモニアと白い煙</td></tr>
+      <tr><th>二酸化炭素</th><td>無色</td><td>なし</td><td class="num">1.98 g</td><td>少しとける</td><td class="t-acid">酸性（炭酸水）</td><td><strong>石灰水を白くにごらせる</strong>。冷やすとドライアイス</td></tr>
+      <tr><th>二酸化硫黄</th><td>無色</td><td>刺激臭</td><td class="num">2.86 g</td><td>よくとける</td><td class="t-acid">酸性</td><td>漂白作用。火山ガス・酸性雨の原因</td></tr>
+      <tr><th>塩素</th><td class="t-neu">黄緑色</td><td>刺激臭</td><td class="num">3.00 g</td><td>とける</td><td class="t-acid">酸性</td><td>色つきの紙の色を消す（漂白）。殺菌。有毒</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="box key">
+    <p class="box-title">3つだけ覚えれば足りる</p>
+    <ul>
+      <li><strong>水にとけにくい</strong>＝水素・酸素・窒素（＋二酸化炭素は少しだけ）→ 水上置換</li>
+      <li><strong>空気より軽い</strong>＝水素・アンモニア → 集めるのはアンモニアだけ（水素は水にとけないので水上置換）</li>
+      <li>残りは全部「水にとけて空気より重い」→ 下方置換</li>
+    </ul>
+  </div>
+
+  <h3 id="gas-collect">1-3　集め方は2つの質問で決まる</h3>
+
+  <figure>
+    <svg viewBox="0 0 720 250" role="img" aria-label="集め方の判断フロー。水にとけにくければ水上置換、とけるなら空気より重いか軽いかで下方置換か上方置換に分かれる">
+      <defs>
+        <marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="14" y="98" width="150" height="54" rx="2" opacity=".85"/>
+        <rect x="252" y="20" width="176" height="52" rx="2"/>
+        <rect x="252" y="176" width="176" height="52" rx="2"/>
+        <rect x="510" y="20" width="196" height="52" rx="2"/>
+        <rect x="510" y="128" width="196" height="52" rx="2"/>
+        <rect x="510" y="196" width="196" height="52" rx="2"/>
+      </g>
+      <g stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#ar1)">
+        <path d="M164,125 H208 V46 H246"/>
+        <path d="M164,125 H208 V202 H246"/>
+        <path d="M428,46 H504"/>
+        <path d="M428,202 H468 V154 H504"/>
+        <path d="M428,202 H468 V222 H504"/>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="13" fill="currentColor">
+        <text x="89" y="120" text-anchor="middle" font-weight="700">その気体は</text>
+        <text x="89" y="139" text-anchor="middle" font-weight="700">水にとけるか？</text>
+        <text x="340" y="43" text-anchor="middle">とけにくい</text>
+        <text x="340" y="61" text-anchor="middle" font-size="11" opacity=".75">水素・酸素・窒素</text>
+        <text x="340" y="199" text-anchor="middle">とける</text>
+        <text x="340" y="217" text-anchor="middle" font-size="11" opacity=".75">→ 空気とくらべた重さは？</text>
+        <text x="608" y="41" text-anchor="middle" font-weight="700">水上置換</text>
+        <text x="608" y="60" text-anchor="middle" font-size="11" opacity=".75">体積が読める・空気が混じらない</text>
+        <text x="608" y="149" text-anchor="middle" font-weight="700">上方置換（軽い）</text>
+        <text x="608" y="168" text-anchor="middle" font-size="11" opacity=".75">アンモニアだけ</text>
+        <text x="608" y="217" text-anchor="middle" font-weight="700">下方置換（重い）</text>
+        <text x="608" y="236" text-anchor="middle" font-size="11" opacity=".75">二酸化炭素・塩化水素・塩素 など</text>
+      </g>
+    </svg>
+    <figcaption>集め方は「水にとけるか」→「空気より重いか」の二段階で必ず決まる。二酸化炭素だけは水に少ししかとけないため、水上置換と下方置換のどちらも正解になりうる。</figcaption>
+  </figure>
+
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 720 236" role="img" aria-label="水上置換・下方置換・上方置換の3つの集め方の装置図">
+      <defs>
+        <marker id="arB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g opacity=".26" fill="currentColor">
+        <rect x="24" y="150" width="180" height="44"/>
+        <rect x="79" y="105" width="56" height="66"/>
+        <rect x="291" y="118" width="56" height="53"/>
+        <rect x="535" y="45" width="56" height="52"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+        <!-- 水上置換 -->
+        <rect x="16" y="120" width="196" height="76" rx="2"/>
+        <path d="M78,44 h58 v128 h-58 z"/>
+        <path d="M24,150 H204"/>
+        <path d="M8,136 H44 V178 H108 V168"/>
+        <!-- 下方置換 -->
+        <path d="M290,44 h58 v128 h-58 z"/>
+        <path d="M319,20 V44"/>
+        <path d="M258,20 H319"/>
+        <path d="M319,44 V156"/>
+        <!-- 上方置換 -->
+        <path d="M534,44 h58 v128 h-58 z"/>
+        <path d="M563,20 V60"/>
+        <path d="M502,20 H563"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M107,132 v-24" marker-end="url(#arB)" opacity=".7"/>
+        <path d="M366,140 v26" marker-end="url(#arB)"/>
+        <path d="M610,96 v-26" marker-end="url(#arB)"/>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="13" fill="currentColor">
+        <text x="114" y="222" text-anchor="middle" font-weight="700">水上置換</text>
+        <text x="319" y="222" text-anchor="middle" font-weight="700">下方置換</text>
+        <text x="563" y="222" text-anchor="middle" font-weight="700">上方置換</text>
+        <text x="114" y="30" text-anchor="middle" font-size="11" opacity=".8">水を満たして逆さに</text>
+        <text x="390" y="150" font-size="11" opacity=".8">重い気体が</text>
+        <text x="390" y="166" font-size="11" opacity=".8">下にたまる</text>
+        <text x="634" y="82" font-size="11" opacity=".8">軽い気体が</text>
+        <text x="634" y="98" font-size="11" opacity=".8">上にたまる</text>
+        <text x="319" y="14" text-anchor="middle" font-size="11" opacity=".8">管を底まで入れる</text>
+        <text x="563" y="14" text-anchor="middle" font-size="11" opacity=".8">管は口の近くまで</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>下方置換は管を試験管の<strong>底</strong>まで、上方置換は<strong>口の近く</strong>まで入れる。入れる深さが逆だと、たまった気体を押し出してしまう。水上置換だけは、集まった気体の体積をそのまま読み取れる。</figcaption>
+  </figure>
+
+  <h3 id="gas-lab">1-4　装置と、実験の注意点</h3>
+
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 720 312" role="img" aria-label="三角フラスコとろうと管を使った気体発生装置と、水上置換で集める装置の図">
+      <defs>
+        <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <!-- 液体 -->
+      <g opacity=".26" fill="currentColor">
+        <path d="M91,182 H185 L200,224 H76 Z"/>
+        <rect x="424" y="196" width="252" height="60"/>
+        <rect x="527" y="176" width="62" height="60"/>
+      </g>
+      <!-- フラスコ -->
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+        <path d="M76,224 L120,120 V96 H156 V120 L200,224 Z"/>
+        <rect x="114" y="80" width="48" height="18" rx="2"/>
+        <!-- ろうと管 -->
+        <path d="M112,26 H146 L134,52 V206 H124 V52 Z"/>
+        <!-- ガラス管 -->
+        <path d="M152,88 V54 H468 V248 H556 V196"/>
+        <!-- 水そう -->
+        <rect x="418" y="170" width="264" height="88" rx="2"/>
+        <!-- メスシリンダー -->
+        <path d="M527,236 V102 h62 v134"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar2)" opacity=".8">
+        <path d="M558,186 V150"/>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="11" fill="currentColor" opacity=".8">
+        <text x="129" y="18" text-anchor="middle">うすい塩酸を入れる</text>
+        <text x="88" y="248" text-anchor="middle">石灰石・金属</text>
+      </g>
+      <!-- 注意ラベル -->
+      <g font-family="'Zen Kaku Gothic New',sans-serif" fill="currentColor">
+        <g stroke="currentColor" stroke-width="1.2" fill="none" opacity=".5" stroke-dasharray="3 3">
+          <path d="M129,208 V246 H134"/>
+          <path d="M310,54 V32"/>
+          <path d="M556,258 V272"/>
+        </g>
+        <text x="142" y="250" font-size="11.5">① ろうと管の先は<tspan font-weight="700">液の中</tspan>へ</text>
+        <text x="142" y="268" font-size="10.5" opacity=".75">液でふたをしないと、気体がろうと管から逃げる</text>
+        <text x="310" y="26" text-anchor="middle" font-size="11.5">② はじめに出る気体は<tspan font-weight="700">集めない</tspan>（装置内の空気）</text>
+        <text x="595" y="290" text-anchor="middle" font-size="11.5">③ 管の先はシリンダーの口の下へ</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>気体発生装置の三点。ろうと管の先を液面より上で止めると、発生した気体がろうと管を通って逃げ、集めた体積が実際より少なくなる。</figcaption>
+  </figure>
+
+  <h4>加熱して気体を発生させるときの追加ルール</h4>
+
+  <figure>
+    <svg viewBox="0 0 720 180" role="img" aria-label="固体を加熱するとき試験管の口を下げる理由と、火を消す前にガラス管を水から出す理由を示す図">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+        <g transform="rotate(-9 150 90)">
+          <path d="M64,72 h180 a18,18 0 0 1 0,36 h-180 z"/>
+          <path d="M64,72 v36"/>
+        </g>
+        <path d="M186,132 l-10,20 M206,128 l-10,20 M226,124 l-10,20"/>
+        <path d="M470,54 h58 v96 h-58 z"/>
+        <path d="M418,120 h242" opacity=".5"/>
+        <path d="M499,150 V96"/>
+      </g>
+      <g opacity=".26" fill="currentColor">
+        <rect x="418" y="120" width="242" height="40"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.7" marker-end="url(#ar2)">
+        <path d="M499,110 V64"/>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12" fill="currentColor">
+        <text x="154" y="34" text-anchor="middle" font-weight="700" font-size="13">④ 試験管の口を少し下げる</text>
+        <text x="154" y="52" text-anchor="middle" font-size="11" opacity=".78">発生した水が加熱部にもどると割れる</text>
+        <text x="516" y="34" text-anchor="start" font-weight="700" font-size="13">⑤ 火を消す前に管を水から出す</text>
+        <text x="516" y="52" text-anchor="start" font-size="11" opacity=".78">先に消すと水が逆流して割れる</text>
+        <text x="466" y="176" text-anchor="middle" font-size="11" opacity=".78">水そう</text>
+      </g>
+    </svg>
+    <figcaption>「割れる理由」を書かせる記述問題が定番。④は<strong>水が加熱部にもどる</strong>から、⑤は<strong>試験管の中の空気が冷えて縮み、水が吸い上げられる</strong>から。</figcaption>
+  </figure>
+
+  <h4>集めた気体を乾かす（乾燥剤の選び方）</h4>
+  <p>水上置換で集めた気体には水蒸気が混じります。「乾いた気体を得るには」と問われたら、<span class="hl-b">気体の性質と逆の性質をもつ乾燥剤は使えない</span>と考えます。</p>
+
+  <div class="scroller">
+  <table>
+    <thead><tr><th>乾燥剤</th><th>性質</th><th>使える気体</th><th>使えない気体（理由）</th></tr></thead>
+    <tbody>
+      <tr><th>塩化カルシウム</th><td class="t-neu">中性</td><td>ほとんどの気体</td><td>アンモニア（吸いこまれてしまう）</td></tr>
+      <tr><th>濃硫酸</th><td class="t-acid">酸性</td><td>酸素・水素・二酸化炭素・塩化水素など</td><td>アンモニア（アルカリ性なので反応する）</td></tr>
+      <tr><th>ソーダ石灰</th><td class="t-alk">アルカリ性</td><td>アンモニア</td><td>二酸化炭素・塩化水素・塩素・二酸化硫黄（酸性なので反応する）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="box warn">
+    <p class="box-title">つまずきやすい細部</p>
+    <ul>
+      <li>石灰水に二酸化炭素を<strong>通しすぎる</strong>と、いったん白くにごったあと再びとうめいになる（炭酸水素カルシウムに変わるため）。「白くにごり、さらに通すと消えた」は正しい記述。</li>
+      <li>水上置換で集めた気体の体積には、<strong>水蒸気の分</strong>が含まれる。</li>
+      <li>アンモニアの発生で使うのは<strong>水酸化カルシウム</strong>（消石灰）。水酸化ナトリウムではない、という引っかけがある。</li>
+    </ul>
+  </div>
+</section>
+<section class="chapter" id="ch2">
+  <div class="chapter-head">
+    <span class="chapter-num">CH 2</span>
+    <h2>過不足の考え方 — 「使い切られる方」が発生量を決める</h2>
+  </div>
+
+  <p>気体の計算問題は、突きつめると次の一文だけです。</p>
+
+  <div class="box key">
+    <p class="box-title">この単元のすべて</p>
+    <p style="font-size:1.08rem; margin:0"><span class="hl">先になくなる方（＝足りない方）の量だけで、発生する気体の量が決まる。</span>余った方は、いくら多くても発生量には関係しない。</p>
+  </div>
+
+  <h4>この教材で共通に使う実験値</h4>
+  <p>以下は、このページの例題・演習で共通して使う値です。実際の入試では必ず問題文中に与えられます。<strong>覚える必要はありません</strong>が、「1gあたり何cm³」という形で整理する習慣をつけてください。</p>
+
+  <div class="data-strip">
+    <div class="data-cell"><p class="k">石灰石（炭酸カルシウム）1g ＋ 塩酸</p><p class="v">二酸化炭素 240 cm³</p></div>
+    <div class="data-cell"><p class="k">アルミニウム 1g ＋ 塩酸</p><p class="v">水素 1200 cm³</p></div>
+    <div class="data-cell"><p class="k">アルミニウム 1g ＋ 水酸化ナトリウム水溶液</p><p class="v">水素 1200 cm³</p></div>
+    <div class="data-cell"><p class="k">鉄 1g ＋ 塩酸</p><p class="v">水素 400 cm³</p></div>
+    <div class="data-cell"><p class="k">亜鉛 1g ＋ 塩酸</p><p class="v">水素 300 cm³</p></div>
+    <div class="data-cell"><p class="k">銅 ＋ 塩酸／水酸化ナトリウム水溶液</p><p class="v">反応しない</p></div>
+  </div>
+
+  <h3 id="rule3">2-1　3ステップ解法</h3>
+
+  <ol class="steps">
+    <li><strong>「ちょうどの組み合わせ」をつかむ。</strong>　表やグラフから、過不足なく反応する量の組（例：塩酸40cm³と石灰石2g）を読み取る。ここが出発点で、これ以外の情報はすべてここからの比例。</li>
+    <li><strong>どちらが足りないかを判定する。</strong>　与えられた一方を基準に、相手が「必要な量」を計算し、実際にある量とくらべる。必要量より多ければその相手は<strong>余る</strong>。</li>
+    <li><strong>足りない方だけで比例計算する。</strong>　余る方の数字は計算に一切使わない。</li>
+  </ol>
+
+  <div class="box">
+    <p class="box-title">ステップ2の具体的なやり方</p>
+    <p style="margin-bottom:8px">「塩酸40cm³と石灰石2gがちょうど」のとき、<strong>塩酸50cm³と石灰石3g</strong>を混ぜたら？</p>
+    <ul style="margin-bottom:0">
+      <li>塩酸50cm³が溶かせる石灰石は　<span class="mono">2 × 50/40 = 2.5g</span>　→　実際は3gあるので<strong>石灰石が余る</strong></li>
+      <li>裏返して確認：石灰石3gに必要な塩酸は　<span class="mono">40 × 3/2 = 60cm³</span>　→　実際は50cm³しかないので<strong>塩酸が足りない</strong></li>
+      <li>よって<span class="hl">塩酸を基準に</span>計算する。塩酸1cm³あたり <span class="mono">480 ÷ 40 = 12cm³</span> の二酸化炭素だから、<span class="mono">12 × 50 = 600cm³</span></li>
+    </ul>
+  </div>
+
+  <p>どちらから確かめても同じ結論に着きます。<strong>片方だけで判定して終わりにせず、必ず裏返して一度確認する</strong>のが、この単元でいちばん効く事故防止策です。</p>
+
+  <h3 id="graph">2-2　グラフの折れ点がすべてを語る</h3>
+
+  <figure>
+    <svg viewBox="0 0 660 330" role="img" aria-label="石灰石2gに塩酸を加えたときのグラフ。40cm3までは比例して増え、480cm3で頭打ちになる折れ線">
+      <defs>
+        <marker id="axA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g stroke="currentColor" stroke-width="1" opacity=".18">
+        <path d="M167,40 V280 M253,40 V280 M340,40 V280 M427,40 V280 M513,40 V280 M600,40 V280"/>
+        <path d="M80,232 H600 M80,184 H600 M80,136 H600 M80,88 H600 M80,40 H600"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M80,30 V280 H614" marker-start="url(#axA)" marker-end="url(#axA)"/>
+      </g>
+      <g font-family="'IBM Plex Mono',monospace" font-size="11" fill="currentColor" opacity=".8">
+        <text x="80" y="298" text-anchor="middle">0</text>
+        <text x="167" y="298" text-anchor="middle">10</text>
+        <text x="253" y="298" text-anchor="middle">20</text>
+        <text x="340" y="298" text-anchor="middle">30</text>
+        <text x="427" y="298" text-anchor="middle">40</text>
+        <text x="513" y="298" text-anchor="middle">50</text>
+        <text x="600" y="298" text-anchor="middle">60</text>
+        <text x="72" y="284" text-anchor="end">0</text>
+        <text x="72" y="236" text-anchor="end">120</text>
+        <text x="72" y="188" text-anchor="end">240</text>
+        <text x="72" y="140" text-anchor="end">360</text>
+        <text x="72" y="92" text-anchor="end">480</text>
+        <text x="72" y="44" text-anchor="end">600</text>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12" fill="currentColor">
+        <text x="614" y="316" text-anchor="end">加えた塩酸の体積（cm³）</text>
+        <text x="80" y="20" text-anchor="start">発生した二酸化炭素（cm³）</text>
+      </g>
+      <path d="M80,280 L427,88 L600,88" fill="none" stroke-width="2.6" stroke-linejoin="round" style="stroke:var(--accent)"/>
+      <g stroke-dasharray="4 4" stroke-width="1.4" fill="none" style="stroke:var(--mark)">
+        <path d="M427,88 V280 M427,88 H80"/>
+      </g>
+      <circle cx="427" cy="88" r="6" style="fill:var(--mark)"/>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12">
+        <text x="440" y="60" font-weight="700" style="fill:var(--mark)">折れ点（40cm³, 480cm³）</text>
+        <text x="440" y="77" font-size="11" style="fill:var(--mark)">ちょうど過不足なく反応した点</text>
+        <text x="150" y="176" style="fill:var(--accent)" font-weight="700">斜め＝塩酸が足りない</text>
+        <text x="150" y="193" font-size="11" style="fill:var(--accent)">加えた塩酸が全部使われる → 比例</text>
+        <text x="470" y="120" font-size="12" font-weight="700">水平＝石灰石がなくなった</text>
+        <text x="470" y="137" font-size="11" opacity=".8">塩酸が余る → もう増えない</text>
+      </g>
+    </svg>
+    <figcaption>石灰石2gに、ある濃さの塩酸を加えていったときのグラフ。折れ点の座標さえ読めれば、「1cm³あたり12cm³」「石灰石1gあたり240cm³」という二つの比例定数が同時に手に入る。</figcaption>
+  </figure>
+
+  <div class="box">
+    <p class="box-title">グラフから読み取る3つの値</p>
+    <ul style="margin-bottom:0">
+      <li><strong>折れ点の横座標</strong>＝石灰石2gを溶かしきるのに必要な塩酸の量（40cm³）</li>
+      <li><strong>折れ点の縦座標</strong>＝石灰石2gから出る二酸化炭素の最大量（480cm³）＝<span class="hl">石灰石の量だけで決まる</span></li>
+      <li><strong>斜めの傾き</strong>＝塩酸1cm³あたりの発生量（12cm³）＝<span class="hl-b">塩酸の濃さだけで決まる</span></li>
+    </ul>
+  </div>
+
+  <h3 id="change">2-3　条件を変えたとき、グラフはどう動くか</h3>
+  <p>難関校が繰り返し問うのは、この「動かし方」です。<strong>高さ（最大量）を決めるのは固体の量、傾きを決めるのは液の濃さ</strong>——この二つが独立していることを、グラフの形で理解します。</p>
+
+  <figure>
+    <svg viewBox="0 0 660 330" role="img" aria-label="基準のグラフに対し、石灰石を2倍にすると折れ点が右上に伸び、塩酸の濃さを2倍にすると折れ点が左に寄って高さは変わらないことを示す比較グラフ">
+      <defs>
+        <marker id="axB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g stroke="currentColor" stroke-width="1" opacity=".18">
+        <path d="M184,40 V280 M288,40 V280 M392,40 V280 M496,40 V280 M600,40 V280"/>
+        <path d="M80,232 H600 M80,184 H600 M80,136 H600 M80,88 H600 M80,40 H600"/>
+      </g>
+      <path d="M80,30 V280 H614" fill="none" stroke="currentColor" stroke-width="1.6" marker-start="url(#axB)" marker-end="url(#axB)"/>
+      <g font-family="'IBM Plex Mono',monospace" font-size="11" fill="currentColor" opacity=".8">
+        <text x="80" y="298" text-anchor="middle">0</text>
+        <text x="184" y="298" text-anchor="middle">20</text>
+        <text x="288" y="298" text-anchor="middle">40</text>
+        <text x="392" y="298" text-anchor="middle">60</text>
+        <text x="496" y="298" text-anchor="middle">80</text>
+        <text x="600" y="298" text-anchor="middle">100</text>
+        <text x="72" y="284" text-anchor="end">0</text>
+        <text x="72" y="236" text-anchor="end">200</text>
+        <text x="72" y="188" text-anchor="end">400</text>
+        <text x="72" y="140" text-anchor="end">600</text>
+        <text x="72" y="92" text-anchor="end">800</text>
+        <text x="72" y="44" text-anchor="end">1000</text>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12" fill="currentColor">
+        <text x="614" y="316" text-anchor="end">加えた塩酸の体積（cm³）</text>
+        <text x="80" y="20">発生した二酸化炭素（cm³）</text>
+      </g>
+      <path d="M80,280 L288,165 L600,165" fill="none" stroke-width="2.6" stroke-linejoin="round" style="stroke:var(--accent)"/>
+      <path d="M80,280 L496,50 L600,50" fill="none" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="7 5" style="stroke:var(--mark)"/>
+      <path d="M80,280 L184,165 L600,165" fill="none" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="2 5" stroke-linecap="round" style="stroke:var(--neutral)"/>
+      <circle cx="288" cy="165" r="5" style="fill:var(--accent)"/>
+      <circle cx="496" cy="50" r="5" style="fill:var(--mark)"/>
+      <circle cx="184" cy="165" r="5" style="fill:var(--neutral)"/>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12">
+        <text x="300" y="200" style="fill:var(--accent)" font-weight="700">基準：石灰石2g・もとの塩酸</text>
+        <text x="300" y="216" font-size="11" style="fill:var(--accent)">折れ点(40, 480)</text>
+        <text x="330" y="42" style="fill:var(--mark)" font-weight="700">石灰石を2倍（4g）に</text>
+        <text x="330" y="58" font-size="11" style="fill:var(--mark)">折れ点(80, 960)：右へも上へも2倍</text>
+        <text x="96" y="120" style="fill:var(--neutral)" font-weight="700">塩酸の濃さを2倍に</text>
+        <text x="96" y="136" font-size="11" style="fill:var(--neutral)">折れ点(20, 480)：横は半分、高さは同じ</text>
+      </g>
+    </svg>
+    <figcaption>石灰石を増やすと折れ点は右上へ相似に伸びる。塩酸を濃くすると傾きだけが急になり、<strong>頭打ちの高さは変わらない</strong>。逆に「水でうすめて体積を2倍にした」場合は、傾きが半分になり折れ点が右へ2倍動くだけで、高さはやはり変わらない。</figcaption>
+  </figure>
+
+  <div class="box warn">
+    <p class="box-title">ここを間違える</p>
+    <ul style="margin-bottom:0">
+      <li>塩酸を濃くしても、<strong>石灰石が同じなら二酸化炭素の総量は増えない</strong>。増えるのは「速さ」と「少ない量で足りるようになること」だけ。</li>
+      <li>塩酸を水でうすめても、<strong>もともと塩酸が余っていたなら発生量は変わらない</strong>。</li>
+      <li>二酸化マンガンを増やしても酸素の量は変わらない（触媒）。オキシドールを増やせば増える。</li>
+    </ul>
+  </div>
+
+  <h3>2-4　「溶け残り」のグラフは、発生量のグラフの鏡</h3>
+
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 720 300" role="img" aria-label="塩酸40cm3に石灰石を増やしたときの、発生した二酸化炭素のグラフと溶け残った石灰石のグラフの対比">
+      <defs>
+        <marker id="axC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g stroke="currentColor" stroke-width="1" opacity=".18">
+        <path d="M128,40 V250 M195,40 V250 M263,40 V250 M330,40 V250"/>
+        <path d="M60,180 H330 M60,110 H330 M60,40 H330"/>
+        <path d="M468,40 V250 M535,40 V250 M603,40 V250 M670,40 V250"/>
+        <path d="M400,180 H670 M400,110 H670 M400,40 H670"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M60,32 V250 H342" marker-start="url(#axC)" marker-end="url(#axC)"/>
+        <path d="M400,32 V250 H682" marker-start="url(#axC)" marker-end="url(#axC)"/>
+      </g>
+      <path d="M60,250 L195,82 L330,82" fill="none" stroke-width="2.6" stroke-linejoin="round" style="stroke:var(--accent)"/>
+      <path d="M400,250 L535,250 L670,110" fill="none" stroke-width="2.6" stroke-linejoin="round" style="stroke:var(--mark)"/>
+      <circle cx="195" cy="82" r="5" style="fill:var(--accent)"/>
+      <circle cx="535" cy="250" r="5" style="fill:var(--mark)"/>
+      <g stroke-dasharray="4 4" stroke-width="1.2" fill="none">
+        <path d="M195,82 V250" opacity=".45" style="stroke:var(--accent)"/>
+        <path d="M535,250 V40" opacity=".45" style="stroke:var(--mark)"/>
+      </g>
+      <g font-family="'IBM Plex Mono',monospace" font-size="11" fill="currentColor" opacity=".8">
+        <text x="60" y="268" text-anchor="middle">0</text><text x="128" y="268" text-anchor="middle">1</text>
+        <text x="195" y="268" text-anchor="middle">2</text><text x="263" y="268" text-anchor="middle">3</text>
+        <text x="330" y="268" text-anchor="middle">4</text>
+        <text x="400" y="268" text-anchor="middle">0</text><text x="468" y="268" text-anchor="middle">1</text>
+        <text x="535" y="268" text-anchor="middle">2</text><text x="603" y="268" text-anchor="middle">3</text>
+        <text x="670" y="268" text-anchor="middle">4</text>
+        <text x="52" y="254" text-anchor="end">0</text><text x="52" y="184" text-anchor="end">200</text>
+        <text x="52" y="114" text-anchor="end">400</text><text x="52" y="44" text-anchor="end">600</text>
+        <text x="392" y="254" text-anchor="end">0</text><text x="392" y="184" text-anchor="end">1</text>
+        <text x="392" y="114" text-anchor="end">2</text><text x="392" y="44" text-anchor="end">3</text>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="11.5" fill="currentColor">
+        <text x="342" y="288" text-anchor="end">加えた石灰石（g）</text>
+        <text x="682" y="288" text-anchor="end">加えた石灰石（g）</text>
+        <text x="60" y="20" font-size="12" font-weight="700">発生した二酸化炭素（cm³）</text>
+        <text x="400" y="20" font-size="12" font-weight="700">溶け残った石灰石（g）</text>
+      </g>
+      <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="11">
+        <text x="205" y="66" style="fill:var(--accent)" font-weight="700">2gで頭打ち（480cm³）</text>
+        <text x="470" y="238" style="fill:var(--mark)" font-weight="700">2gまでは溶け残り0</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>同じ実験（塩酸40cm³に石灰石を増やす）を二つの目盛りで見たもの。<strong>折れ点の位置は必ず一致する</strong>。片方のグラフしか与えられなくても、もう一方は頭の中で描けるようにしておく。</figcaption>
+  </figure>
+</section>
+<section class="chapter" id="ch3">
+  <div class="chapter-head">
+    <span class="chapter-num">CH 3</span>
+    <h2>出題パターン12 — 見分け方と、そのときの手順</h2>
+  </div>
+
+  <p>入試で出る形は、次の12通りにほぼ収まります。<strong>P1〜P4が基本形、P5〜P8が標準、P9〜P12が難関校の主戦場</strong>です。各パターンは「見分け方 → 手順 → 例題」の順に並べてあるので、解答を開く前に必ず自分で手を動かしてください。</p>
+
+  <article class="pattern" id="p1">
+    <header><span class="tag">P1</span><h3>表から折れ点を読み取る</h3><span class="level">基礎</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>表の数値が、途中まで比例して増え、あるところから<strong>同じ数字が続く</strong>。</p>
+      <p><strong>手順：</strong>同じ数字が始まる直前が折れ点。そこから「液1cm³あたり」「固体1gあたり」の二つの比例定数を出す。</p>
+
+      <div class="q">
+        <p class="q-label">例題 P1</p>
+        <p>石灰石2gに、ある濃さの塩酸を体積を変えて加え、発生した二酸化炭素の体積を調べた。</p>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>塩酸（cm³）</th><th class="num">10</th><th class="num">20</th><th class="num">30</th><th class="num">40</th><th class="num">50</th><th class="num">60</th></tr></thead>
+            <tbody><tr><th>二酸化炭素（cm³）</th><td class="num">120</td><td class="num">240</td><td class="num">360</td><td class="num">480</td><td class="num">480</td><td class="num">480</td></tr></tbody>
+          </table>
+        </div>
+        <ol>
+          <li>石灰石2gを溶かしきるのに必要な塩酸は何cm³か。</li>
+          <li>この塩酸1cm³あたり、二酸化炭素は何cm³発生するか。</li>
+          <li>同じ塩酸50cm³に石灰石3gを入れると、二酸化炭素は何cm³発生するか。</li>
+          <li>そのとき、溶け残る石灰石は何gか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>40cm³をこえると発生量が480cm³で止まる＝石灰石がなくなった合図。よって<span class="ans-final">40cm³</span></li>
+          <li>480 ÷ 40 ＝ <span class="ans-final">12cm³</span>（グラフの傾きにあたる）</li>
+          <li>まず判定。塩酸50cm³が溶かせる石灰石は <span class="mono">2 × 50/40 ＝ 2.5g</span>。実際は3gあるので<strong>石灰石が余り、塩酸が足りない</strong>。したがって塩酸を基準に <span class="mono">12 × 50 ＝ </span><span class="ans-final">600cm³</span></li>
+          <li>溶けたのは2.5gだから、<span class="mono">3 − 2.5 ＝ </span><span class="ans-final">0.5g</span></li>
+        </ol>
+        <p>③で「石灰石3g × 240 ＝ 720cm³」としてしまうのが典型的な失点。<span class="hl">多い方の数字は使わない</span>。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p2">
+    <header><span class="tag">P2</span><h3>折れ点が表に載っていない</h3><span class="level">基礎〜標準</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>比例している行と、頭打ちの行はあるが、<strong>その境目の数値が表にない</strong>。</p>
+      <p><strong>手順：</strong>比例部分から「1cm³あたり」を出し、<strong>最大値 ÷ 1cm³あたり</strong>で折れ点の横座標を逆算する。</p>
+
+      <div class="q">
+        <p class="q-label">例題 P2</p>
+        <p>ある重さの鉄に、ある濃さの塩酸を加えて水素の体積を調べた。</p>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>塩酸（cm³）</th><th class="num">10</th><th class="num">20</th><th class="num">30</th><th class="num">40</th><th class="num">50</th></tr></thead>
+            <tbody><tr><th>水素（cm³）</th><td class="num">120</td><td class="num">240</td><td class="num">300</td><td class="num">300</td><td class="num">300</td></tr></tbody>
+          </table>
+        </div>
+        <ol>
+          <li>鉄がちょうど溶けきるのは、塩酸を何cm³加えたときか。</li>
+          <li>使った鉄は何gか。（鉄1gから水素400cm³）</li>
+          <li>この塩酸60cm³に鉄1.5gを入れると、水素は何cm³発生するか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>比例部分から塩酸1cm³あたり <span class="mono">120 ÷ 10 ＝ 12cm³</span>。最大は300cm³なので <span class="mono">300 ÷ 12 ＝ </span><span class="ans-final">25cm³</span>。表の20と30の<strong>あいだ</strong>に折れ点がある。</li>
+          <li><span class="mono">300 ÷ 400 ＝ </span><span class="ans-final">0.75g</span></li>
+          <li>鉄1.5gは0.75gの2倍だから、必要な塩酸も2倍の50cm³。実際は60cm³あるので<strong>塩酸が余り、鉄が足りない</strong>。よって <span class="mono">400 × 1.5 ＝ </span><span class="ans-final">600cm³</span></li>
+        </ol>
+        <p>30cm³ですでに頭打ちなのだから、折れ点は30cm³ではなく<strong>それ以下</strong>。「表の最後の増えた点」と「最初の止まった点」に安易に飛びつかないこと。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p3">
+    <header><span class="tag">P3</span><h3>溶け残りと、反応後の固体の重さ</h3><span class="level">標準</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>「溶け残った」「ろ過して乾かすと」「さらに塩酸を加えるには」といった言葉が出る。</p>
+      <p><strong>手順：</strong>まず<strong>液が溶かせる固体の量</strong>を出す。それを実際の固体量から引けば溶け残り。追加で必要な液は、溶け残りの分だけを比例計算。</p>
+
+      <div class="q">
+        <p class="q-label">例題 P3</p>
+        <p>ある濃さの塩酸50cm³は、石灰石2.5gとちょうど反応する（石灰石1gから二酸化炭素240cm³）。この塩酸50cm³に石灰石4gを入れた。</p>
+        <ol>
+          <li>発生する二酸化炭素は何cm³か。</li>
+          <li>溶け残る石灰石は何gか。</li>
+          <li>溶け残りをすべて溶かすには、同じ塩酸をあと何cm³加えればよいか。</li>
+          <li>③のあと、はじめから数えて発生した二酸化炭素の合計は何cm³か。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>塩酸50cm³が溶かせるのは2.5gまで。<span class="mono">2.5 × 240 ＝ </span><span class="ans-final">600cm³</span></li>
+          <li><span class="mono">4 − 2.5 ＝ </span><span class="ans-final">1.5g</span></li>
+          <li>石灰石2.5gに50cm³なら、1.5gには <span class="mono">50 × 1.5/2.5 ＝ </span><span class="ans-final">30cm³</span></li>
+          <li>石灰石4gがすべて溶けたので <span class="mono">4 × 240 ＝ </span><span class="ans-final">960cm³</span></li>
+        </ol>
+        <p>④は「600＋1.5×240＝960」と足しても同じ。<strong>最終的に溶けた固体の総量</strong>だけを見れば、途中経過を追わなくても答えが出る。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p4">
+    <header><span class="tag">P4</span><h3>濃さ・量を変えたときのグラフ</h3><span class="level">標準</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>「同じ濃さの塩酸を水でうすめて2倍の体積にした」「石灰石を2倍にした」「濃さが2倍の塩酸を使った」。</p>
+      <p><strong>手順：</strong><span class="hl-b">高さ（最大発生量）は固体の量で決まり、傾きは液の濃さで決まる</span>。この二つを別々に処理する。うすめても、とけている塩化水素の総量は変わらないので<strong>溶かせる固体の総量も変わらない</strong>。</p>
+
+      <div class="scroller">
+        <table>
+          <thead><tr><th>変えたこと</th><th>傾き</th><th>折れ点の位置</th><th>最大発生量</th></tr></thead>
+          <tbody>
+            <tr><th>固体を2倍に</th><td>変わらない</td><td>右へ2倍・上へ2倍</td><td class="t-acid">2倍</td></tr>
+            <tr><th>塩酸の濃さを2倍に</th><td class="t-acid">2倍（急）</td><td>横は 1/2</td><td>変わらない</td></tr>
+            <tr><th>塩酸を水でうすめ体積2倍に</th><td class="t-alk">1/2（ゆるい）</td><td>横は2倍</td><td>変わらない</td></tr>
+            <tr><th>塩酸の体積だけ増やす（濃さ同じ）</th><td>変わらない</td><td>変わらない</td><td>変わらない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="q">
+        <p class="q-label">例題 P4</p>
+        <p>塩酸A 40cm³は石灰石2gとちょうど反応し、二酸化炭素480cm³が発生する。塩酸Aと同じ体積の水を加えてうすめたものを塩酸Bとする。</p>
+        <ol>
+          <li>石灰石2gを溶かしきるのに必要な塩酸Bは何cm³か。またそのとき発生する二酸化炭素は何cm³か。</li>
+          <li>塩酸B 60cm³に石灰石2gを入れると、二酸化炭素は何cm³発生し、石灰石は何g溶け残るか。</li>
+          <li>塩酸A 100cm³に石灰石4gを入れると、二酸化炭素は何cm³発生するか。また塩酸は何cm³余るか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>Bは濃さが半分だから、同じ仕事をするのに体積は2倍必要。<span class="ans-final">80cm³</span>／発生量は石灰石の量で決まるので<span class="ans-final">480cm³</span>のまま。</li>
+          <li>B 60cm³＝A 30cm³ぶん。A 30cm³が溶かせる石灰石は <span class="mono">2 × 30/40 ＝ 1.5g</span> なので、二酸化炭素は <span class="mono">1.5 × 240 ＝ </span><span class="ans-final">360cm³</span>、溶け残りは <span class="mono">2 − 1.5 ＝ </span><span class="ans-final">0.5g</span></li>
+          <li>A 100cm³が溶かせるのは <span class="mono">2 × 100/40 ＝ 5g</span>。石灰石は4gしかないので、今度は<strong>石灰石が足りず塩酸が余る</strong>。<span class="mono">4 × 240 ＝ </span><span class="ans-final">960cm³</span><br>石灰石4gが使う塩酸は <span class="mono">40 × 4/2 ＝ 80cm³</span> なので、余りは <span class="mono">100 − 80 ＝ </span><span class="ans-final">20cm³</span></li>
+        </ol>
+        <p>①②は液が足りない側、③は<strong>固体が足りない側</strong>。同じ設定でも、数値しだいで足りない方は入れかわる。だから毎回「どちらが足りないか」から始める。</p>
+        <p>なお「うすめた液」は、<strong>もとの液の何cm³ぶんか</strong>に読みかえるのがいちばん速い。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p5">
+    <header><span class="tag">P5</span><h3>混合物 — 片方だけが反応する</h3><span class="level">標準</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>「アルミニウムと銅の混合物」「石灰石と食塩の混合物」のように、<strong>反応しないものが混ざっている</strong>。</p>
+      <p><strong>手順：</strong>発生した気体は<strong>反応した方だけ</strong>から出ている。気体の量 ÷（1gあたりの発生量）＝反応した物質の重さ。残りが反応しない物質。</p>
+
+      <div class="q">
+        <p class="q-label">例題 P5</p>
+        <p>アルミニウムと銅の混合物6gに、十分な量の塩酸を加えたところ、水素が3600cm³発生した。アルミニウム1gからは水素1200cm³が発生する。</p>
+        <ol>
+          <li>混合物にふくまれるアルミニウムは何gか。</li>
+          <li>この混合物にふくまれる銅の割合は何％か。</li>
+          <li>同じ混合物6gに、十分な量の水酸化ナトリウム水溶液を加えると、水素は何cm³発生するか。また溶け残る固体は何gか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>銅は塩酸に溶けないので、水素はすべてアルミニウムから。<span class="mono">3600 ÷ 1200 ＝ </span><span class="ans-final">3g</span></li>
+          <li>銅は <span class="mono">6 − 3 ＝ 3g</span>。<span class="mono">3 ÷ 6 ＝ </span><span class="ans-final">50％</span></li>
+          <li>アルミニウムは水酸化ナトリウム水溶液にも同じように溶けて水素を出す（1gあたり1200cm³）。よって<span class="ans-final">3600cm³</span>。銅は溶けないので溶け残りは<span class="ans-final">3g</span></li>
+        </ol>
+        <p>③がこのパターンの核心。<span class="hl">塩酸でも水酸化ナトリウム水溶液でも、アルミニウム1gから出る水素の量は同じ</span>という事実が、P7の土台になる。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p6">
+    <header><span class="tag">P6</span><h3>混合物 — 両方が反応する（つるかめ算）</h3><span class="level">標準〜難関</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>混ざっている2種類が<strong>どちらも気体を出す</strong>（アルミニウムと亜鉛、アルミニウムと鉄、石灰石と炭酸水素ナトリウムなど）。</p>
+      <p><strong>手順：</strong>つるかめ算そのもの。「全部が発生量の少ない方だったら」と仮定し、実際との差を、1gあたりの差で割る。</p>
+
+      <figure>
+        <svg viewBox="0 0 660 290" role="img" aria-label="アルミニウムと亜鉛の混合物5グラムから水素3300立方センチメートルが出ることを、面積図で表した図">
+          <g style="fill:var(--accent-soft); stroke:var(--accent)" stroke-width="1.6">
+            <rect x="80" y="50" width="200" height="200"/>
+          </g>
+          <g style="fill:var(--mark-soft); stroke:var(--mark)" stroke-width="1.6">
+            <rect x="280" y="200" width="300" height="50"/>
+          </g>
+          <g fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55" stroke-dasharray="4 4">
+            <path d="M80,200 H280"/>
+          </g>
+          <g fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M80,20 V250 H600"/>
+          </g>
+          <g font-family="'IBM Plex Mono',monospace" font-size="11" fill="currentColor" opacity=".85">
+            <text x="72" y="254" text-anchor="end">0</text>
+            <text x="72" y="204" text-anchor="end">300</text>
+            <text x="72" y="54" text-anchor="end">1200</text>
+            <text x="80" y="272" text-anchor="middle">0</text>
+            <text x="280" y="272" text-anchor="middle">2</text>
+            <text x="580" y="272" text-anchor="middle">5</text>
+          </g>
+          <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="11.5" fill="currentColor">
+            <text x="80" y="14">1gあたりの水素（cm³）</text>
+            <text x="600" y="288" text-anchor="end">混合物の重さ（g）</text>
+          </g>
+          <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12" font-weight="700">
+            <text x="180" y="130" text-anchor="middle" style="fill:var(--accent)">アルミニウム</text>
+            <text x="180" y="150" text-anchor="middle" font-size="11" style="fill:var(--accent)">1200 × 2g ＝ 2400</text>
+            <text x="430" y="230" text-anchor="middle" style="fill:var(--mark)">亜鉛　300 × 3g ＝ 900</text>
+          </g>
+          <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="11.5" fill="currentColor" opacity=".8">
+            <text x="600" y="180" text-anchor="end">全体の面積 ＝ 発生した水素 3300cm³</text>
+          </g>
+        </svg>
+        <figcaption>横に重さ、たてに「1gあたりの発生量」をとると、二つの長方形の面積の和が発生した水素の総量になる。解くときは逆に、まず全体を低い方（亜鉛の300）でならして 300×5＝1500cm³ とし、実際との差1800cm³を1gあたりの差900cm³で割って、アルミニウムの2gを求める。</figcaption>
+      </figure>
+
+      <div class="q">
+        <p class="q-label">例題 P6</p>
+        <p>アルミニウムと亜鉛の混合物5gに十分な量の塩酸を加えたところ、水素が3300cm³発生した。アルミニウム1gからは1200cm³、亜鉛1gからは300cm³の水素が発生する。</p>
+        <ol>
+          <li>アルミニウムと亜鉛はそれぞれ何gか。</li>
+          <li>この混合物5gに十分な量の水酸化ナトリウム水溶液を加えると、水素は何cm³発生するか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>5gが全部亜鉛なら <span class="mono">300 × 5 ＝ 1500cm³</span>。実際は3300cm³なので差は <span class="mono">1800cm³</span>。亜鉛1gをアルミニウム1gに置きかえるごとに <span class="mono">1200 − 300 ＝ 900cm³</span> 増えるから、アルミニウムは <span class="mono">1800 ÷ 900 ＝ </span><span class="ans-final">2g</span>、亜鉛は<span class="ans-final">3g</span>。<br><span style="opacity:.8">検算：1200×2 ＋ 300×3 ＝ 2400 ＋ 900 ＝ 3300 ✓</span></li>
+          <li>アルミニウムも亜鉛も水酸化ナトリウム水溶液に溶けるので、<strong>塩酸のときと同じ</strong><span class="ans-final">3300cm³</span></li>
+        </ol>
+        <p>②で「アルミニウムだけ」と早合点しやすい。<span class="hl">両性を示すのはアルミニウムと亜鉛の両方</span>。鉄・銅・マグネシウムは水酸化ナトリウム水溶液に溶けない。</p>
+      </div></details>
+    </div>
+  </article>
+  <article class="pattern" id="p7">
+    <header><span class="tag">P7</span><h3>両性金属 — 塩酸とアルカリ、2つの実験を比べる</h3><span class="level">難関</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>同じ混合物に対して<strong>塩酸の実験と水酸化ナトリウム水溶液の実験が両方</strong>与えられている。</p>
+      <p><strong>手順：</strong>水酸化ナトリウム水溶液の結果は<span class="hl">アルミニウム（と亜鉛）だけの情報</span>。ここから両性金属の重さを確定し、塩酸の結果との差でもう一方を出す。</p>
+
+      <div class="scroller">
+        <table>
+          <thead><tr><th>金属</th><th>うすい塩酸</th><th>水酸化ナトリウム水溶液</th><th>覚え方</th></tr></thead>
+          <tbody>
+            <tr><th>アルミニウム</th><td class="t-acid">溶ける（水素）</td><td class="t-alk">溶ける（水素）</td><td rowspan="2">両性＝どちらにも溶ける</td></tr>
+            <tr><th>亜鉛</th><td class="t-acid">溶ける（水素）</td><td class="t-alk">溶ける（水素）</td></tr>
+            <tr><th>鉄</th><td class="t-acid">溶ける（水素）</td><td>溶けない</td><td rowspan="2">酸にだけ／どちらにも溶けない</td></tr>
+            <tr><th>マグネシウム</th><td class="t-acid">溶ける（水素）</td><td>溶けない</td></tr>
+            <tr><th>銅</th><td>溶けない</td><td>溶けない</td><td>うすい酸には溶けない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="q">
+        <p class="q-label">例題 P7</p>
+        <p>アルミニウムと鉄の混合物5gがある。1gあたりの水素の発生量は、アルミニウムが塩酸でも水酸化ナトリウム水溶液でも1200cm³、鉄が塩酸で400cm³である。</p>
+        <ul>
+          <li>実験1：十分な量の塩酸を加えると、水素が3600cm³発生した。</li>
+          <li>実験2：別の同じ混合物5gに十分な量の水酸化ナトリウム水溶液を加えると、水素が2400cm³発生した。</li>
+        </ul>
+        <ol>
+          <li>アルミニウムと鉄はそれぞれ何gか。</li>
+          <li>実験2で溶け残った固体をろ過し、十分な量の塩酸を加えると水素は何cm³発生するか。</li>
+          <li>実験1と実験2の水素の量の差は、何によるものか説明せよ。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>実験2の2400cm³はアルミニウムだけから。<span class="mono">2400 ÷ 1200 ＝ </span><span class="ans-final">アルミニウム2g</span>、残りが<span class="ans-final">鉄3g</span>。<br><span style="opacity:.8">検算：1200×2 ＋ 400×3 ＝ 3600 ✓ 実験1と一致</span></li>
+          <li>溶け残りは鉄3g。<span class="mono">400 × 3 ＝ </span><span class="ans-final">1200cm³</span></li>
+          <li><span class="ans-final">鉄が水酸化ナトリウム水溶液には溶けないため</span>、実験2ではアルミニウムからの水素しか発生しないから。差の1200cm³は鉄3gから出るはずだった分にあたる。</li>
+        </ol>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p8">
+    <header><span class="tag">P8</span><h3>触媒 — 二酸化マンガンは何も減らない</h3><span class="level">標準</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>過酸化水素水（オキシドール）＋二酸化マンガンで酸素をつくる実験。</p>
+      <p><strong>手順：</strong>発生量を決めるのは<span class="hl">過酸化水素水の量だけ</span>。二酸化マンガンは反応を速めるだけで、自分は変化せず、重さも減らない。</p>
+
+      <figure>
+        <svg viewBox="0 0 660 300" role="img" aria-label="二酸化マンガンの量を増やすと酸素の発生は速くなるが、最終的な発生量は変わらないことを示す時間と発生量のグラフ">
+          <defs>
+            <marker id="axE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <g stroke="currentColor" stroke-width="1" opacity=".18">
+            <path d="M80,190 H600 M80,130 H600 M80,70 H600"/>
+          </g>
+          <path d="M80,20 V250 H614" fill="none" stroke="currentColor" stroke-width="1.6" marker-start="url(#axE)" marker-end="url(#axE)"/>
+          <path d="M80,250 C 150,120 210,84 340,76 L600,74" fill="none" stroke-width="2.4" stroke-linecap="round" style="stroke:var(--mark)"/>
+          <path d="M80,250 C 220,180 300,100 440,80 L600,74" fill="none" stroke-width="2.4" stroke-linecap="round" style="stroke:var(--accent)"/>
+          <path d="M80,74 H600" fill="none" stroke-width="1.3" stroke-dasharray="5 4" opacity=".7" style="stroke:var(--ink)"/>
+          <g font-family="'IBM Plex Mono',monospace" font-size="11" fill="currentColor" opacity=".85">
+            <text x="72" y="254" text-anchor="end">0</text>
+            <text x="72" y="194" text-anchor="end">80</text>
+            <text x="72" y="134" text-anchor="end">160</text>
+            <text x="72" y="78" text-anchor="end">240</text>
+          </g>
+          <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12" fill="currentColor">
+            <text x="80" y="14">発生した酸素（cm³）</text>
+            <text x="614" y="272" text-anchor="end">時間</text>
+            <text x="608" y="62" text-anchor="end" font-size="11" opacity=".85">どちらも 240cm³ で止まる</text>
+          </g>
+          <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12" font-weight="700">
+            <text x="250" y="106" style="fill:var(--mark)">二酸化マンガン 2g</text>
+            <text x="330" y="176" style="fill:var(--accent)">二酸化マンガン 1g</text>
+          </g>
+        </svg>
+        <figcaption>二酸化マンガンを増やすとグラフの立ち上がりだけが急になり、たどりつく高さは変わらない。「速さが変わるが総量は変わらない」——触媒のグラフはこの一点を問うために出される。</figcaption>
+      </figure>
+
+      <div class="q">
+        <p class="q-label">例題 P8</p>
+        <p>オキシドール20cm³に二酸化マンガン1gを加えると、酸素が240cm³発生して反応が終わった。</p>
+        <ol>
+          <li>二酸化マンガンを2gにすると、発生する酸素は何cm³か。</li>
+          <li>オキシドールを50cm³にして二酸化マンガン1gを加えると、酸素は何cm³発生するか。</li>
+          <li>はじめの実験（オキシドール20cm³＋二酸化マンガン1g）が終わったあと、ビーカーに残っている二酸化マンガンは何gか。</li>
+          <li>二酸化マンガンの代わりに、レバーやジャガイモを使っても酸素が発生する。これはなぜか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>過酸化水素水の量が同じなので<span class="ans-final">240cm³</span>（変わらない）</li>
+          <li><span class="mono">240 × 50/20 ＝ </span><span class="ans-final">600cm³</span></li>
+          <li>触媒は反応の前後で変化しないので、加えた<span class="ans-final">1g</span>がそのまま残る</li>
+          <li>レバーやジャガイモにふくまれる<span class="ans-final">カタラーゼという酵素が触媒としてはたらく</span>ため。</li>
+        </ol>
+        <p>③は「加えた二酸化マンガンの重さがそのまま残る」。<span class="hl">ろ過して乾かせば、また次の実験に使える</span>という設問も定番。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p9">
+    <header><span class="tag">P9</span><h3>質量保存 — 減った重さ＝出ていった気体</h3><span class="level">標準〜難関</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>「ビーカーごと重さをはかった」「反応後に全体の重さが◯gになった」「ふたをして密閉した」。</p>
+      <p><strong>手順：</strong>減った重さ＝空気中へ出ていった気体の重さ。密閉していれば<span class="hl">重さはまったく変わらない</span>。重さと体積の変換には、問題文の「1Lあたりの重さ」を使う。</p>
+
+      <div class="q">
+        <p class="q-label">例題 P9</p>
+        <p>ビーカーにうすい塩酸100gを入れ、石灰石2gを加えたところ、石灰石はすべて溶けた。反応が終わったあと、ビーカーの中身の重さをはかると101.04gだった。二酸化炭素1Lの重さは2gとする。</p>
+        <ol>
+          <li>発生した二酸化炭素は何gか。</li>
+          <li>発生した二酸化炭素は何cm³か。</li>
+          <li>石灰石1gあたり、二酸化炭素は何cm³発生するか。</li>
+          <li>同じ実験を、ふたをして密閉した容器で行うと、反応後の全体の重さはどうなるか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>反応前は <span class="mono">100 ＋ 2 ＝ 102g</span>。<span class="mono">102 − 101.04 ＝ </span><span class="ans-final">0.96g</span></li>
+          <li>1L（＝1000cm³）で2gだから <span class="mono">0.96 ÷ 2 × 1000 ＝ </span><span class="ans-final">480cm³</span></li>
+          <li><span class="mono">480 ÷ 2 ＝ </span><span class="ans-final">240cm³</span></li>
+          <li>気体が外に出ていかないので<span class="ans-final">102gのまま変わらない</span>（質量保存の法則）。ただし、ふたを開けたとたんに0.96g減る。</li>
+        </ol>
+        <p>「密閉→変わらない、開放→気体の分だけ減る」。スチールウールを燃やすと<strong>重くなる</strong>（結びついた酸素の分）のと対にして覚えると強い。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern" id="p10">
+    <header><span class="tag">P10</span><h3>混合気体を吸収させる</h3><span class="level">難関</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>2種類の固体から<strong>ちがう気体が同時に発生</strong>し、それを石灰水や水酸化ナトリウム水溶液に通す。</p>
+      <p><strong>手順：</strong>気体ごとに発生量を別々に出して合計する。石灰水（水酸化ナトリウム水溶液でも可）を通すと<strong>二酸化炭素だけが吸収され</strong>、残った体積が水素や酸素の量になる。</p>
+
+      <div class="q">
+        <p class="q-label">例題 P10</p>
+        <p>アルミニウム1gと石灰石1gを混ぜたものに、十分な量の塩酸を加えた。アルミニウム1gから水素1200cm³、石灰石1gから二酸化炭素240cm³が発生する。</p>
+        <ol>
+          <li>発生した気体は合計何cm³か。</li>
+          <li>この気体を十分な量の石灰水に通したあと、残る気体は何が何cm³か。</li>
+          <li>②で石灰水にできた白い沈殿は何gか。</li>
+          <li>石灰水に通しすぎると、白いにごりはどうなるか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li><span class="mono">1200 ＋ 240 ＝ </span><span class="ans-final">1440cm³</span></li>
+          <li>二酸化炭素だけが吸収されるので<span class="ans-final">水素が1200cm³</span></li>
+          <li>白い沈殿は炭酸カルシウム。もとの石灰石1gからできた二酸化炭素が、そのまま炭酸カルシウムにもどるので<span class="ans-final">1g</span></li>
+          <li><span class="ans-final">再びとうめいになる</span>（炭酸カルシウムが、水にとける炭酸水素カルシウムに変わるため）</li>
+        </ol>
+        <p>③の「石灰石1g → 二酸化炭素 → 炭酸カルシウム1g」という往復は、難関校が好んで問う関係。数値を追わなくても<strong>もとにもどる</strong>と気づけば一瞬で終わる。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern hard" id="p11">
+    <header><span class="tag">P11</span><h3>中和と気体発生の複合 — V字グラフ</h3><span class="level">難関</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>水酸化ナトリウム水溶液に塩酸を加えた混合液に、<strong>あとからアルミニウムを入れる</strong>。この単元の最難関にして最頻出。</p>
+      <p><strong>手順：</strong>アルミニウムを入れる前に、<span class="hl">混合液に何が余っているか</span>を確定する。</p>
+      <ul>
+        <li>塩酸が中和に必要な量より<strong>少ない</strong>　→　水酸化ナトリウムが余る　→　余ったアルカリがアルミと反応（塩酸を足すほど水素は<strong>減る</strong>）</li>
+        <li><strong>ちょうど中和</strong>　→　食塩水だけ　→　<span class="hl">水素は発生しない</span></li>
+        <li>塩酸が<strong>多い</strong>　→　塩酸が余る　→　余った酸がアルミと反応（塩酸を足すほど水素は<strong>増える</strong>）</li>
+      </ul>
+
+      <figure>
+        <svg viewBox="0 0 660 330" role="img" aria-label="水酸化ナトリウム水溶液に塩酸を加えた混合液にアルミニウムを入れたときの水素発生量のV字グラフと、鉄を入れたときのレ字グラフの比較">
+          <defs>
+            <marker id="axD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <g stroke="currentColor" stroke-width="1" opacity=".18">
+            <path d="M210,40 V280 M340,40 V280 M470,40 V280 M600,40 V280"/>
+            <path d="M80,220 H600 M80,160 H600 M80,100 H600 M80,40 H600"/>
+          </g>
+          <path d="M80,30 V280 H614" fill="none" stroke="currentColor" stroke-width="1.6" marker-start="url(#axD)" marker-end="url(#axD)"/>
+          <path d="M80,280 L340,280 L600,40" fill="none" stroke-width="3.4" stroke-linejoin="round" stroke-dasharray="8 6" style="stroke:var(--neutral)"/>
+          <path d="M80,120 L340,280 L600,40" fill="none" stroke-width="2.6" stroke-linejoin="round" style="stroke:var(--accent)"/>
+          <circle cx="340" cy="280" r="6" style="fill:var(--mark)"/>
+          <g stroke-dasharray="4 4" stroke-width="1.3" fill="none" style="stroke:var(--mark)">
+            <path d="M340,280 V44"/>
+          </g>
+          <g font-family="'IBM Plex Mono',monospace" font-size="11" fill="currentColor" opacity=".85">
+            <text x="80" y="298" text-anchor="middle">0</text>
+            <text x="210" y="298" text-anchor="middle">20</text>
+            <text x="340" y="298" text-anchor="middle">40</text>
+            <text x="470" y="298" text-anchor="middle">60</text>
+            <text x="600" y="298" text-anchor="middle">80</text>
+            <text x="72" y="284" text-anchor="end">0</text>
+            <text x="72" y="224" text-anchor="end">150</text>
+            <text x="72" y="164" text-anchor="end">300</text>
+            <text x="72" y="104" text-anchor="end">450</text>
+            <text x="72" y="44" text-anchor="end">600</text>
+          </g>
+          <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12" fill="currentColor">
+            <text x="80" y="20">発生した水素（cm³）</text>
+            <text x="614" y="316" text-anchor="end">加えた塩酸B の体積（cm³）</text>
+          </g>
+          <g font-family="'Zen Kaku Gothic New',sans-serif" font-size="12">
+            <text x="112" y="70" font-weight="700" style="fill:var(--accent)">アルミニウム</text>
+            <text x="112" y="88" font-size="11" style="fill:var(--accent)">余った水酸化ナトリウムと反応 → 塩酸を足すほど減る</text>
+            <text x="120" y="266" font-weight="700" style="fill:var(--neutral)">鉄なら 0 のまま</text>
+            <text x="470" y="150" font-size="11" font-weight="700" style="fill:var(--accent)">余った塩酸と反応</text>
+            <text x="352" y="42" font-weight="700" style="fill:var(--mark)">ちょうど中和（40cm³）</text>
+            <text x="352" y="59" font-size="11" style="fill:var(--mark)">水素は発生しない</text>
+          </g>
+        </svg>
+        <figcaption>アルミニウムはV字、鉄はレ字。谷の底（＝水素0）が中和点にぴったり重なることが、この問題のすべて。左右で傾きがちがうのは、水酸化ナトリウム水溶液1cm³と塩酸1cm³が出す水素の量がちがうため。</figcaption>
+      </figure>
+
+      <div class="q">
+        <p class="q-label">例題 P11</p>
+        <p>水酸化ナトリウム水溶液A 50cm³に、塩酸Bを体積を変えて加えて混ぜ、そこへ十分な量のアルミニウムを入れて、発生する水素の体積を調べた。A 50cm³とB 40cm³はちょうど中和する。Bを加えないとき（0cm³）に発生する水素は400cm³で、B 1cm³が余っていると水素は15cm³発生する。</p>
+        <ol>
+          <li>Bを20cm³加えたとき、水素は何cm³発生するか。</li>
+          <li>水素がまったく発生しないのは、Bを何cm³加えたときか。</li>
+          <li>Bを60cm³加えたとき、水素は何cm³発生するか。</li>
+          <li>水素が150cm³発生するのは、Bを何cm³加えたときか。すべて答えよ。</li>
+          <li>アルミニウムの代わりに十分な量の鉄を入れると、グラフはどうなるか。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>B 20cm³は、A <span class="mono">50 × 20/40 ＝ 25cm³</span> ぶんを中和する。残るAは <span class="mono">50 − 25 ＝ 25cm³</span>。A 50cm³で400cm³だから、<span class="mono">400 × 25/50 ＝ </span><span class="ans-final">200cm³</span><br><span style="opacity:.8">別解：B 1cm³ごとに水素は 400÷40 ＝ 10cm³ずつ減る。400 − 10×20 ＝ 200</span></li>
+          <li>ちょうど中和して食塩水だけになるとき。<span class="ans-final">40cm³</span></li>
+          <li>余ったBは <span class="mono">60 − 40 ＝ 20cm³</span>。<span class="mono">15 × 20 ＝ </span><span class="ans-final">300cm³</span></li>
+          <li>V字なので<strong>左右に1つずつ</strong>ある。<br>左側：<span class="mono">400 − 10×□ ＝ 150 → □ ＝ 25cm³</span><br>右側：<span class="mono">15 ×（□ − 40）＝ 150 → □ ＝ 50cm³</span><br>よって <span class="ans-final">25cm³ と 50cm³</span></li>
+          <li>鉄は水酸化ナトリウム水溶液に溶けないので、<span class="ans-final">40cm³までは水素が発生せず（0のまま）、40cm³をこえてから同じ傾きで増えるレ字型になる</span>。余った塩酸が発生量を決めているので、40cm³より右のグラフはアルミニウムのときとまったく同じ。</li>
+        </ol>
+        <p>④の「答えは2つ」を落とす受験生が非常に多い。<span class="hl">V字グラフで値を問われたら、まず谷の左右を疑う</span>。</p>
+      </div></details>
+    </div>
+  </article>
+
+  <article class="pattern hard" id="p12">
+    <header><span class="tag">P12</span><h3>炭酸水素ナトリウムの加熱分解＋塩酸（総合）</h3><span class="level">難関</span></header>
+    <div class="body">
+      <p><strong>見分け方：</strong>炭酸水素ナトリウム（重そう）を加熱する実験と、そこへ塩酸を加える実験が組み合わさる。</p>
+      <p><strong>おさえる知識：</strong>炭酸水素ナトリウムを加熱すると、<span class="hl">炭酸ナトリウム・水・二酸化炭素</span>の3つに分かれる。試験管の口を少し下げるのは、口についた水が加熱部にもどらないようにするため。水の確認には塩化コバルト紙（青→赤）。</p>
+
+      <div class="scroller">
+        <table>
+          <thead><tr><th>水溶液</th><th>性質</th><th>フェノールフタレイン</th><th>水へのとけ方</th></tr></thead>
+          <tbody>
+            <tr><th>炭酸水素ナトリウム</th><td class="t-alk">弱いアルカリ性</td><td>うすい赤色</td><td>とけにくい</td></tr>
+            <tr><th>炭酸ナトリウム</th><td class="t-alk">強いアルカリ性</td><td>こい赤色</td><td>よくとける</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="q">
+        <p class="q-label">例題 P12</p>
+        <p>次のことがわかっている。</p>
+        <ul>
+          <li>炭酸水素ナトリウム8.4gを<strong>完全に</strong>加熱すると、炭酸ナトリウム5.3gが残り、水0.9gと二酸化炭素2.2g（1120cm³）が発生する。</li>
+          <li>炭酸水素ナトリウム8.4gに十分な量の塩酸を加えると、二酸化炭素が2240cm³発生する。</li>
+          <li>炭酸ナトリウム5.3gに十分な量の塩酸を加えると、二酸化炭素が1120cm³発生する。</li>
+        </ul>
+        <p>炭酸水素ナトリウム16.8gを途中まで加熱してやめたところ、残った固体は13.7gだった。</p>
+        <ol>
+          <li>分解した炭酸水素ナトリウムは何gか。</li>
+          <li>このとき発生した二酸化炭素は何cm³か。</li>
+          <li>残った固体13.7gに十分な量の塩酸を加えると、二酸化炭素は何cm³発生するか。</li>
+          <li>はじめの16.8gに、加熱せずそのまま十分な量の塩酸を加えていたら、二酸化炭素は何cm³発生したか。②と③の合計とくらべよ。</li>
+        </ol>
+      </div>
+      <details><summary>解答と解説</summary><div class="answer">
+        <ol class="steps">
+          <li>炭酸水素ナトリウム8.4gが分解すると、固体は <span class="mono">8.4 → 5.3</span> と <span class="mono">3.1g</span> 減る。今回の減少は <span class="mono">16.8 − 13.7 ＝ 3.1g</span> なので、分解したのはちょうど<span class="ans-final">8.4g</span>（未分解は8.4g）</li>
+          <li>8.4gぶんの分解なので<span class="ans-final">1120cm³</span></li>
+          <li>残った13.7gの中身は、炭酸ナトリウム5.3g と 未分解の炭酸水素ナトリウム8.4g。<br><span class="mono">1120 ＋ 2240 ＝ </span><span class="ans-final">3360cm³</span></li>
+          <li>16.8gは8.4gの2倍だから <span class="mono">2240 × 2 ＝ </span><span class="ans-final">4480cm³</span>。②＋③＝<span class="mono">1120 ＋ 3360 ＝ 4480cm³</span> で<span class="ans-final">一致する</span>。</li>
+        </ol>
+        <p>④の一致は偶然ではありません。<span class="hl-b">炭酸水素ナトリウムにふくまれる炭素は、どの道すじをたどっても最後はすべて二酸化炭素になる</span>——途中で加熱しようがしまいが、出てくる二酸化炭素の総量は変わらない。この見方ができると、複雑に見える設定でも検算が一瞬で終わります。</p>
+      </div></details>
+    </div>
+  </article>
+</section>
+<section class="chapter" id="ch4">
+  <div class="chapter-head">
+    <span class="chapter-num">CH 4</span>
+    <h2>仕上げ演習 — 7問</h2>
+  </div>
+
+  <p>1〜5が基本〜標準、6・7が難関校レベルです。<strong>解答を開く前に必ず紙に書いて</strong>ください。数値は第2章の「共通に使う実験値」と同じものを使っています。</p>
+
+  <div class="q" style="background:var(--paper)">
+    <p class="q-label">演習 1 ／ 表から読み取る</p>
+    <p>ある濃さの塩酸を一定量とり、加える石灰石の重さを変えて、発生した二酸化炭素の体積を調べた。</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>石灰石（g）</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th><th class="num">5</th></tr></thead>
+        <tbody><tr><th>二酸化炭素（cm³）</th><td class="num">240</td><td class="num">480</td><td class="num">600</td><td class="num">600</td><td class="num">600</td></tr></tbody>
+      </table>
+    </div>
+    <ol>
+      <li>この塩酸が溶かすことのできる石灰石は何gか。</li>
+      <li>石灰石を3g加えたとき、溶け残るのは何gか。</li>
+      <li>この塩酸を<strong>体積が半分</strong>になるようにとり分け、石灰石2gを加えると二酸化炭素は何cm³発生するか。</li>
+      <li>この塩酸に<strong>同じ体積の水を加えてうすめ</strong>、石灰石4gを加えると二酸化炭素は何cm³発生するか。</li>
+    </ol>
+    <details><summary>解答と解説</summary><div class="answer">
+      <ol class="steps">
+        <li>600cm³で頭打ち。<span class="mono">600 ÷ 240 ＝ </span><span class="ans-final">2.5g</span></li>
+        <li><span class="mono">3 − 2.5 ＝ </span><span class="ans-final">0.5g</span></li>
+        <li>塩酸が半分なら溶かせる石灰石も半分の1.25g。石灰石は2gあるので塩酸が足りない。<span class="mono">1.25 × 240 ＝ </span><span class="ans-final">300cm³</span></li>
+        <li>水でうすめても、<strong>塩酸そのものの量は変わらない</strong>ので溶かせるのは2.5gのまま。<span class="mono">2.5 × 240 ＝ </span><span class="ans-final">600cm³</span></li>
+      </ol>
+      <p>③と④の対比がこの問題のねらい。<span class="hl">「とり分けて減らす」と「水を加えてうすめる」はまったく別物</span>。</p>
+    </div></details>
+  </div>
+
+  <div class="q" style="background:var(--paper)">
+    <p class="q-label">演習 2 ／ 濃さを変える</p>
+    <p>塩酸A 30cm³とアルミニウム0.5gはちょうど反応し、水素600cm³が発生する。</p>
+    <ol>
+      <li>アルミニウム1gを溶かしきるには、塩酸Aが何cm³必要か。</li>
+      <li>塩酸A 45cm³にアルミニウム1gを入れると、水素は何cm³発生し、アルミニウムは何g溶け残るか。</li>
+      <li>塩酸Aと同じ体積で<strong>濃さが2倍</strong>の塩酸Cを30cm³とり、アルミニウム1.5gを入れると、水素は何cm³発生し、何g溶け残るか。</li>
+    </ol>
+    <details><summary>解答と解説</summary><div class="answer">
+      <ol class="steps">
+        <li>0.5gに30cm³だから、1gには<span class="ans-final">60cm³</span></li>
+        <li>A 45cm³が溶かせるのは <span class="mono">0.5 × 45/30 ＝ 0.75g</span>。アルミニウムが余る。<span class="mono">1200 × 0.75 ＝ </span><span class="ans-final">900cm³</span>／溶け残り <span class="mono">1 − 0.75 ＝ </span><span class="ans-final">0.25g</span></li>
+        <li>C 30cm³ ＝ A 60cm³ぶん ＝ アルミニウム1gぶん。<span class="mono">1200 × 1 ＝ </span><span class="ans-final">1200cm³</span>／溶け残り <span class="mono">1.5 − 1 ＝ </span><span class="ans-final">0.5g</span></li>
+      </ol>
+      <p>「濃さ2倍の液◯cm³」は、いつでも<strong>「もとの液の2倍の体積」に読みかえる</strong>と、新しい比を作らずに済む。</p>
+    </div></details>
+  </div>
+
+  <div class="q" style="background:var(--paper)">
+    <p class="q-label">演習 3 ／ 混合物と両性金属</p>
+    <p>アルミニウムと鉄の混合物4gに、十分な量の塩酸を加えると水素が2800cm³発生した。（アルミニウム1g→1200cm³、鉄1g→400cm³）</p>
+    <ol>
+      <li>アルミニウムと鉄はそれぞれ何gか。</li>
+      <li>同じ混合物4gに十分な量の水酸化ナトリウム水溶液を加えると、水素は何cm³発生するか。</li>
+      <li>この混合物4gに銅1gを混ぜて5gにしたものに、十分な量の塩酸を加えると水素は何cm³発生するか。</li>
+    </ol>
+    <details><summary>解答と解説</summary><div class="answer">
+      <ol class="steps">
+        <li>全部鉄なら <span class="mono">400 × 4 ＝ 1600cm³</span>。差は <span class="mono">2800 − 1600 ＝ 1200cm³</span>。1gの置きかえで <span class="mono">1200 − 400 ＝ 800cm³</span> 増えるので、アルミニウムは <span class="mono">1200 ÷ 800 ＝ </span><span class="ans-final">1.5g</span>、鉄は<span class="ans-final">2.5g</span><br><span style="opacity:.8">検算：1200×1.5 ＋ 400×2.5 ＝ 1800 ＋ 1000 ＝ 2800 ✓</span></li>
+        <li>鉄は溶けないので、アルミニウム1.5gぶんだけ。<span class="mono">1200 × 1.5 ＝ </span><span class="ans-final">1800cm³</span></li>
+        <li>銅は塩酸に溶けないので<span class="ans-final">2800cm³</span>（変わらない）</li>
+      </ol>
+    </div></details>
+  </div>
+
+  <div class="q" style="background:var(--paper)">
+    <p class="q-label">演習 4 ／ 質量保存</p>
+    <p>石灰石と食塩の混合物5gを、ビーカーに入れた十分な量の塩酸に加えたところ、気体が発生し、ビーカー全体の重さは反応前より1.2g減った。二酸化炭素1Lの重さを2gとする。</p>
+    <ol>
+      <li>発生した二酸化炭素は何cm³か。</li>
+      <li>混合物にふくまれていた石灰石は何gか。</li>
+      <li>混合物にふくまれる食塩の割合は何％か。</li>
+      <li>この実験を密閉した容器の中で行うと、反応の前後で全体の重さはどうなるか。</li>
+    </ol>
+    <details><summary>解答と解説</summary><div class="answer">
+      <ol class="steps">
+        <li><span class="mono">1.2 ÷ 2 × 1000 ＝ </span><span class="ans-final">600cm³</span></li>
+        <li><span class="mono">600 ÷ 240 ＝ </span><span class="ans-final">2.5g</span></li>
+        <li>食塩は <span class="mono">5 − 2.5 ＝ 2.5g</span>。<span class="mono">2.5 ÷ 5 ＝ </span><span class="ans-final">50％</span></li>
+        <li>気体が外に出られないので<span class="ans-final">変わらない</span></li>
+      </ol>
+      <p>食塩は塩酸に加えても気体を出さない。「反応しないものが混ざっている」＝P5の形。</p>
+    </div></details>
+  </div>
+
+  <div class="q" style="background:var(--paper)">
+    <p class="q-label">演習 5 ／ 混合気体を吸収させる</p>
+    <p>アルミニウムと石灰石（炭酸カルシウム）の混合物3gに十分な量の塩酸を加えたところ、気体が合計2160cm³発生した。この気体を十分な量の石灰水に通すと、1800cm³の気体が残った。</p>
+    <ol>
+      <li>石灰水を通したあとに残った気体は何か。</li>
+      <li>混合物にふくまれるアルミニウムと石灰石はそれぞれ何gか。</li>
+      <li>石灰水にできた白い沈殿は何gか。</li>
+      <li>同じ混合物3gに十分な量の水酸化ナトリウム水溶液を加えると、気体は何が何cm³発生し、固体は何g溶け残るか。</li>
+    </ol>
+    <details><summary>解答と解説</summary><div class="answer">
+      <ol class="steps">
+        <li>石灰水に吸収されるのは二酸化炭素だけなので、残ったのは<span class="ans-final">水素</span>（1800cm³）</li>
+        <li>二酸化炭素は <span class="mono">2160 − 1800 ＝ 360cm³</span> → 石灰石は <span class="mono">360 ÷ 240 ＝ </span><span class="ans-final">1.5g</span>。水素1800cm³より アルミニウムは <span class="mono">1800 ÷ 1200 ＝ </span><span class="ans-final">1.5g</span>（合計3gと合う）</li>
+        <li>石灰石1gから出た二酸化炭素は、石灰水の中でもとの炭酸カルシウムにもどる。よって<span class="ans-final">1.5g</span></li>
+        <li>アルミニウムだけが溶けるので<span class="ans-final">水素が1800cm³</span>、石灰石は溶けないので<span class="ans-final">1.5g溶け残る</span></li>
+      </ol>
+      <p>「合計の体積」と「吸収後の体積」の差＝二酸化炭素。ここさえ押さえれば、あとはP5と同じ形に落ちる。</p>
+    </div></details>
+  </div>
+
+  <div class="q" style="background:var(--paper); border-left:4px solid var(--mark)">
+    <p class="q-label">演習 6 ／ 難関：中和との複合（V字）</p>
+    <p>水酸化ナトリウム水溶液A 60cm³と塩酸B 30cm³はちょうど中和する。A 60cm³に十分な量のアルミニウムを入れると水素が900cm³発生する。また、塩酸Bが1cm³余っていると、アルミニウムから水素が20cm³発生する。<br>A 60cm³にBを□cm³加えてよく混ぜ、そこへ十分な量のアルミニウムを入れた。</p>
+    <ol>
+      <li>□＝10 のとき、水素は何cm³発生するか。</li>
+      <li>水素がまったく発生しないのは□がいくつのときか。</li>
+      <li>□＝50 のとき、水素は何cm³発生するか。</li>
+      <li>水素が300cm³発生するのは□がいくつのときか。すべて答えよ。</li>
+      <li>アルミニウムの代わりに十分な量の銅を入れると、水素は何cm³発生するか。</li>
+    </ol>
+    <details><summary>解答と解説</summary><div class="answer">
+      <p>まず<strong>Bを1cm³加えるごとに水素が何cm³減るか</strong>を出す。□＝30で0になるので <span class="mono">900 ÷ 30 ＝ 30cm³</span> ずつ減る。</p>
+      <ol class="steps">
+        <li><span class="mono">900 − 30 × 10 ＝ </span><span class="ans-final">600cm³</span><br><span style="opacity:.8">別解：中和に使われたAは 60×10/30＝20cm³、余りA＝40cm³ → 900×40/60 ＝ 600</span></li>
+        <li>ちょうど中和する<span class="ans-final">30</span>（このとき液は食塩水だけ）</li>
+        <li>余ったBは <span class="mono">50 − 30 ＝ 20cm³</span>。<span class="mono">20 × 20 ＝ </span><span class="ans-final">400cm³</span></li>
+        <li>左側：<span class="mono">900 − 30×□ ＝ 300 → □ ＝ 20</span>／右側：<span class="mono">20 ×（□ − 30）＝ 300 → □ ＝ 45</span>。よって<span class="ans-final">20 と 45</span></li>
+        <li>銅は塩酸にも水酸化ナトリウム水溶液にも溶けないので<span class="ans-final">0cm³</span>（□がいくつでも発生しない）</li>
+      </ol>
+      <p>④で片方だけ答えて失点、⑤で「余った塩酸があるから出る」と早合点して失点。どちらも毎年どこかで出ます。</p>
+    </div></details>
+  </div>
+
+  <div class="q" style="background:var(--paper); border-left:4px solid var(--mark)">
+    <p class="q-label">演習 7 ／ 難関：加熱分解と塩酸の総合</p>
+    <p>次のことがわかっている。</p>
+    <ul>
+      <li>炭酸水素ナトリウム8.4gを完全に加熱すると、炭酸ナトリウム5.3g・水0.9g・二酸化炭素1120cm³ができる。</li>
+      <li>炭酸水素ナトリウム8.4g＋十分な塩酸 → 二酸化炭素2240cm³</li>
+      <li>炭酸ナトリウム5.3g＋十分な塩酸 → 二酸化炭素1120cm³</li>
+    </ul>
+    <p>炭酸水素ナトリウム12.6gを途中まで加熱してやめたところ、残った固体は11.05gだった。</p>
+    <ol>
+      <li>分解した炭酸水素ナトリウムは何gか。</li>
+      <li>加熱で発生した二酸化炭素は何cm³か。</li>
+      <li>残った固体11.05gに十分な量の塩酸を加えると、二酸化炭素は何cm³発生するか。</li>
+      <li>加熱せずに12.6gへ直接十分な量の塩酸を加えた場合と、②＋③をくらべるとどうなるか。</li>
+      <li>加熱中、試験管の口を少し下げておくのはなぜか。</li>
+    </ol>
+    <details><summary>解答と解説</summary><div class="answer">
+      <ol class="steps">
+        <li>8.4gが分解すると固体は3.1g減る。今回の減少は <span class="mono">12.6 − 11.05 ＝ 1.55g</span> で、これは3.1gの半分。よって分解したのは <span class="mono">8.4 ÷ 2 ＝ </span><span class="ans-final">4.2g</span>（未分解は8.4g）</li>
+        <li><span class="mono">1120 ÷ 2 ＝ </span><span class="ans-final">560cm³</span></li>
+        <li>残った固体の中身は 炭酸ナトリウム<span class="mono">2.65g</span> と 未分解の炭酸水素ナトリウム<span class="mono">8.4g</span>。<br><span class="mono">1120 ÷ 2 ＋ 2240 ＝ 560 ＋ 2240 ＝ </span><span class="ans-final">2800cm³</span></li>
+        <li>直接なら <span class="mono">2240 × 1.5 ＝ 3360cm³</span>。②＋③＝<span class="mono">560 ＋ 2800 ＝ 3360cm³</span> で<span class="ans-final">等しい</span>。とちゅうで加熱してもしなくても、最後に出る二酸化炭素の総量は変わらない。</li>
+        <li><span class="ans-final">発生した水が加熱している部分に流れこみ、試験管が割れるのを防ぐため。</span></li>
+      </ol>
+      <p>①で「11.05gが炭酸ナトリウムの重さ」と読み違えると全滅します。<span class="hl">残った固体は、できた炭酸ナトリウムと未分解の炭酸水素ナトリウムの混合物</span>——ここが最大の関門。</p>
+    </div></details>
+  </div>
+</section>
+
+<section class="chapter" id="ch5">
+  <div class="chapter-head">
+    <span class="chapter-num">CH 5</span>
+    <h2>直前チェック</h2>
+  </div>
+
+  <h3>知識のチェック</h3>
+  <div class="card">
+    <ul class="checklist">
+      <li>石灰石＋塩酸は二酸化炭素、金属＋塩酸は水素——薬品の組み合わせで気体を言い分けられる</li>
+      <li>酸素は「過酸化水素水＋二酸化マンガン」。二酸化マンガンは触媒で、増やしても総量は変わらない</li>
+      <li>アンモニアは「塩化アンモニウム＋水酸化カルシウム」を加熱。水酸化ナトリウムではない</li>
+      <li>水にとけにくいのは水素・酸素・窒素。だから水上置換</li>
+      <li>上方置換になるのはアンモニア。下方置換は二酸化炭素・塩化水素・塩素・二酸化硫黄</li>
+      <li>下方置換は管を底まで、上方置換は口の近くまで入れる</li>
+      <li>石灰水を白くにごらせるのは二酸化炭素。通しすぎるとにごりは消える</li>
+      <li>線香が炎を上げて燃える＝酸素、ポンと音＝水素</li>
+      <li>塩素は黄緑色で漂白作用。色つきの紙の色が消える</li>
+      <li>アンモニアと塩化水素が出会うと白い煙ができる</li>
+      <li>アルミニウムと亜鉛は、塩酸にも水酸化ナトリウム水溶液にも溶けて水素を出す</li>
+      <li>鉄・マグネシウムは塩酸だけ、銅はうすい酸にもアルカリにも溶けない</li>
+      <li>アンモニアの乾燥にはソーダ石灰。濃硫酸・塩化カルシウムは使えない</li>
+      <li>固体を加熱するときは試験管の口を少し下げる（水が加熱部にもどるのを防ぐ）</li>
+      <li>加熱をやめる前にガラス管を水から出す（水の逆流を防ぐ）</li>
+      <li>はじめに出てくる気体は集めない（装置内の空気が混じっている）</li>
+      <li>炭酸水素ナトリウムを加熱すると、炭酸ナトリウム・水・二酸化炭素になる</li>
+      <li>炭酸ナトリウム水溶液は強いアルカリ性（フェノールフタレインがこい赤）</li>
+    </ul>
+  </div>
+
+  <h3>解き方のチェック</h3>
+  <div class="card">
+    <ul class="checklist">
+      <li>「どちらが余るか」を、必ず<strong>両方向から</strong>確かめてから計算に入る</li>
+      <li>余った方の数字は、比例計算にいっさい使わない</li>
+      <li>グラフの折れ点＝ちょうど過不足なく反応する点。横座標と縦座標の両方に意味がある</li>
+      <li>最大発生量は固体の量で、傾きは液の濃さで決まる（この二つは独立）</li>
+      <li>液を水でうすめても、溶かせる固体の総量は変わらない</li>
+      <li>液を「とり分けて減らす」と「うすめる」は別物</li>
+      <li>混合物で片方が反応しないなら、気体の量から反応した方の重さが直接出る</li>
+      <li>混合物で両方反応するなら、つるかめ算（面積図）</li>
+      <li>水酸化ナトリウム水溶液の実験結果は、アルミニウム（と亜鉛）だけの情報</li>
+      <li>減った重さ＝出ていった気体の重さ。密閉すれば重さは変わらない</li>
+      <li>混合気体を石灰水に通したときの<strong>減った体積</strong>が二酸化炭素の量</li>
+      <li>V字グラフで値を問われたら、答えは<strong>谷の左右に2つ</strong>ないか疑う</li>
+      <li>V字の谷（水素0）は、必ず中和点と一致する</li>
+      <li>途中で加熱しようがしまいが、最後に出る二酸化炭素の総量は変わらない</li>
+      <li>答えを出したら、逆算して問題文の数値にもどるか検算する</li>
+    </ul>
+  </div>
+
+  <div class="box warn">
+    <p class="box-title">最後に、失点の四天王</p>
+    <ol style="margin-bottom:0">
+      <li><strong>余った方で計算してしまう</strong>（P1③の形）</li>
+      <li><strong>濃さを変えたら総量も増えると思ってしまう</strong>（P4）</li>
+      <li><strong>V字グラフで答えを1つしか書かない</strong>（P11④）</li>
+      <li><strong>加熱後に残った固体を、全部が変化したものだと思う</strong>（P12①）</li>
+    </ol>
+  </div>
+</section>
+
+<footer class="end">
+  <p>中学受験理科「気体の発生と過不足」総復習ノート。例題・演習の実験値は、計算しやすいように整えた値です。実際の入試では必ず問題文中に与えられるので、暗記ではなく「1gあたり何cm³」に直す手つきを身につけてください。</p>
+</footer>
+
+</main>
+</div>
+</div>
+
+</body>
+</html>

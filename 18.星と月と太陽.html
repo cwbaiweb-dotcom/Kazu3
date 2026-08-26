@@ -1,0 +1,1943 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>星と月と太陽の星図帖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+:root{
+  --ground:#EDF0F6;
+  --surface:#FFFFFF;
+  --surface2:#F5F8FC;
+  --line:#D2DAE7;
+  --line-soft:#E3E9F2;
+  --ink:#121B2A;
+  --ink2:#4E5C72;
+  --ink3:#78859A;
+  --gold:#8E6510;
+  --gold-b:#C4922A;
+  --gold-wash:#FBF3E0;
+  --blue:#1F5090;
+  --blue-wash:#E7EFF9;
+  --red:#9E3238;
+  --red-wash:#FAECEC;
+  --teal:#186B63;
+  --night:#0C1424;
+  --star:#F0E2B8;
+  --shadow:0 1px 2px rgba(18,27,42,.05), 0 8px 24px -14px rgba(18,27,42,.28);
+  --radius:3px;
+  --maxw:66rem;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0A1120;
+    --surface:#121C2C;
+    --surface2:#0E1728;
+    --line:#26344A;
+    --line-soft:#1C2839;
+    --ink:#E5EAF3;
+    --ink2:#9DAABF;
+    --ink3:#7A879C;
+    --gold:#E2B460;
+    --gold-b:#F0CB86;
+    --gold-wash:#241D0F;
+    --blue:#84AEE6;
+    --blue-wash:#111E31;
+    --red:#E38A8E;
+    --red-wash:#2A1618;
+    --teal:#5FC4B8;
+    --night:#060B16;
+    --star:#F4E9C6;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0A1120;
+  --surface:#121C2C;
+  --surface2:#0E1728;
+  --line:#26344A;
+  --line-soft:#1C2839;
+  --ink:#E5EAF3;
+  --ink2:#9DAABF;
+  --ink3:#7A879C;
+  --gold:#E2B460;
+  --gold-b:#F0CB86;
+  --gold-wash:#241D0F;
+  --blue:#84AEE6;
+  --blue-wash:#111E31;
+  --red:#E38A8E;
+  --red-wash:#2A1618;
+  --teal:#5FC4B8;
+  --night:#060B16;
+  --star:#F4E9C6;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"palt" 1;
+}
+h1,h2,h3,h4{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-weight:600;text-wrap:balance;line-height:1.4;margin:0}
+p{margin:0}
+a{color:var(--blue)}
+code,.mono,.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-feature-settings:normal}
+:focus-visible{outline:2px solid var(--gold-b);outline-offset:3px;border-radius:2px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+
+/* ---------- ヘッダー ---------- */
+.hero{
+  position:relative;
+  background:var(--night);
+  color:#E9EDF6;
+  overflow:hidden;
+  border-bottom:1px solid var(--line);
+}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:.85}
+.hero-in{position:relative;max-width:var(--maxw);margin:0 auto;padding:4.5rem 1.5rem 3rem;}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--star);opacity:.85;margin-bottom:1.1rem;
+}
+.hero h1{
+  font-size:clamp(2.1rem,6vw,3.5rem);font-weight:800;color:#FBFCFF;
+  letter-spacing:.02em;margin-bottom:.9rem;
+}
+.hero h1 .sm{display:block;font-size:.4em;font-weight:600;letter-spacing:.18em;color:var(--star);margin-bottom:.7rem}
+.hero p{max-width:36rem;color:#B9C5D9;font-size:.95rem}
+.hero-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.8rem}
+.hero-meta span{
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.1em;
+  border:1px solid rgba(240,226,184,.35);color:var(--star);
+  padding:.3rem .7rem;border-radius:99px;
+}
+
+/* ---------- レイアウト ---------- */
+.shell{max-width:var(--maxw);margin:0 auto;padding:0 1.5rem 6rem;display:block}
+@media(min-width:1080px){
+  .shell{max-width:78rem;display:grid;grid-template-columns:15rem minmax(0,1fr);gap:3.5rem;align-items:start}
+}
+.toc{display:none}
+@media(min-width:1080px){
+  .toc{
+    display:block;position:sticky;top:1.5rem;padding-top:2.5rem;
+    max-height:calc(100vh - 3rem);overflow-y:auto;
+  }
+}
+.toc-h{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.2em;color:var(--ink3);margin-bottom:.9rem}
+.toc a{
+  display:flex;gap:.6rem;align-items:baseline;text-decoration:none;color:var(--ink2);
+  font-size:.83rem;line-height:1.5;padding:.4rem 0 .4rem .7rem;
+  border-left:2px solid var(--line-soft);transition:color .2s,border-color .2s;
+}
+.toc a .n{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--ink3)}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--gold);border-left-color:var(--gold-b);font-weight:700}
+.toc a.on .n{color:var(--gold)}
+
+main{padding-top:2.5rem;min-width:0}
+
+/* ---------- セクション ---------- */
+section{scroll-margin-top:1.5rem;margin-bottom:4.5rem}
+.sec-head{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.6rem;padding-bottom:1rem;border-bottom:2px solid var(--ink)}
+.sec-num{
+  font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:600;letter-spacing:.1em;
+  color:var(--gold);border:1px solid var(--gold-b);border-radius:2px;
+  padding:.15rem .5rem;margin-top:.45rem;flex:none;
+}
+.sec-head h2{font-size:clamp(1.4rem,3.4vw,1.85rem);font-weight:800}
+.sec-head .sub{display:block;font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.16em;color:var(--ink3);font-weight:400;margin-top:.35rem}
+
+h3{font-size:1.12rem;margin:2.4rem 0 .9rem;padding-left:.7rem;border-left:4px solid var(--gold-b)}
+h4{font-size:.98rem;margin:1.5rem 0 .5rem;color:var(--ink)}
+
+.lead{color:var(--ink2);font-size:.95rem;margin-bottom:1.5rem}
+
+/* ---------- 部品 ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem 1.4rem;box-shadow:var(--shadow);margin:1.2rem 0}
+.card > *:first-child{margin-top:0}
+
+.key{background:var(--gold-wash);border:1px solid var(--gold-b);border-radius:var(--radius);padding:1rem 1.2rem;margin:1.2rem 0}
+.key .lbl{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.18em;color:var(--gold);display:block;margin-bottom:.4rem}
+.key strong{color:var(--ink)}
+
+.hard{background:var(--red-wash);border:1px solid var(--red);border-radius:var(--radius);padding:1rem 1.2rem;margin:1.2rem 0}
+.hard .lbl{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.18em;color:var(--red);display:block;margin-bottom:.4rem;font-weight:600}
+
+.note{border-left:3px solid var(--blue);background:var(--blue-wash);padding:.8rem 1rem;margin:1rem 0;font-size:.92rem;border-radius:0 var(--radius) var(--radius) 0}
+
+ul,ol{margin:.6rem 0;padding-left:1.3rem}
+li{margin:.3rem 0}
+ul.tight li,ol.tight li{margin:.1rem 0}
+li::marker{color:var(--gold)}
+
+.tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.64rem;letter-spacing:.1em;padding:.12rem .45rem;border-radius:2px;vertical-align:.12em;margin-left:.35rem}
+.tag.nan{background:var(--red);color:#fff}
+.tag.hin{background:var(--gold-b);color:#2A1D05}
+.tag.ki{background:var(--blue);color:#fff}
+
+/* ---------- 表 ---------- */
+.tw{overflow-x:auto;margin:1.2rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.87rem;min-width:32rem}
+th,td{padding:.55rem .75rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+thead th{background:var(--surface2);font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.05em;color:var(--ink2);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:hover{background:var(--surface2)}
+
+/* ---------- 図 ---------- */
+figure{margin:1.4rem 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow)}
+figure svg{display:block;width:100%;height:auto;max-width:100%}
+figcaption{font-size:.78rem;color:var(--ink3);margin-top:.7rem;line-height:1.6;font-family:"IBM Plex Mono",monospace;letter-spacing:.02em}
+.fig-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:760px){.fig-scroll svg{min-width:520px}}
+svg text{font-family:"Zen Kaku Gothic New",sans-serif}
+.s-line{stroke:var(--ink2)}
+.s-soft{stroke:var(--line)}
+.f-ink{fill:var(--ink)}
+.f-ink2{fill:var(--ink2)}
+.f-gold{fill:var(--gold)}
+.f-blue{fill:var(--blue)}
+.f-red{fill:var(--red)}
+
+/* ---------- タブ ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:1.2rem 0 .2rem}
+.tabs button{
+  font-family:"Zen Kaku Gothic New",sans-serif;font-size:.83rem;font-weight:500;
+  background:var(--surface);color:var(--ink2);border:1px solid var(--line);
+  padding:.4rem .95rem;border-radius:99px;cursor:pointer;transition:all .18s;
+}
+.tabs button:hover{border-color:var(--gold-b);color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink);font-weight:700}
+.panel[hidden]{display:none}
+
+/* ---------- 確認テスト ---------- */
+details.q{
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);
+  margin:.6rem 0;overflow:hidden;
+}
+details.q summary{
+  cursor:pointer;padding:.75rem 1rem .75rem 2.4rem;position:relative;
+  font-size:.92rem;font-weight:500;list-style:none;
+}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{
+  content:"Q";position:absolute;left:.9rem;top:.78rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;color:var(--gold);
+}
+details.q summary:hover{background:var(--surface2)}
+details.q[open] summary{background:var(--surface2);border-bottom:1px solid var(--line-soft)}
+details.q .a{padding:.85rem 1rem .95rem 2.4rem;font-size:.9rem;color:var(--ink2);position:relative}
+details.q .a::before{
+  content:"A";position:absolute;left:.9rem;top:.88rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;color:var(--blue);
+}
+details.q .a strong{color:var(--ink)}
+
+/* ---------- 出題パターン ---------- */
+.pat{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:var(--radius);background:var(--surface);padding:1.1rem 1.2rem;margin:1rem 0;box-shadow:var(--shadow)}
+.pat h4{margin:0 0 .5rem;font-family:"Shippori Mincho B1",serif;font-size:1rem;display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.pat h4 .pn{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--blue);border:1px solid var(--blue);padding:.05rem .35rem;border-radius:2px;flex:none}
+.pat ol{font-size:.9rem;margin:.5rem 0 0;padding-left:1.2rem}
+.pat .ex{font-size:.85rem;color:var(--ink3);margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line)}
+
+/* ---------- 月コントロール ---------- */
+.moonctl{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
+.moonctl button{
+  font-family:"Zen Kaku Gothic New",sans-serif;font-size:.78rem;
+  background:var(--surface2);border:1px solid var(--line);color:var(--ink2);
+  padding:.35rem .7rem;border-radius:2px;cursor:pointer;transition:all .18s;
+}
+.moonctl button:hover{border-color:var(--gold-b)}
+.moonctl button.on{background:var(--night);color:var(--star);border-color:var(--night)}
+.moonread{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.7rem;margin-top:1rem}
+.moonread div{background:var(--surface2);border:1px solid var(--line-soft);border-radius:2px;padding:.55rem .7rem}
+.moonread .k{font-family:"IBM Plex Mono",monospace;font-size:.62rem;letter-spacing:.14em;color:var(--ink3);display:block}
+.moonread .v{font-size:.95rem;font-weight:700;color:var(--ink)}
+
+/* ---------- チェックリスト ---------- */
+.check{list-style:none;padding:0;margin:1rem 0;columns:2;column-gap:1.6rem}
+@media(max-width:640px){.check{columns:1}}
+.check li{
+  break-inside:avoid;margin:0 0 .35rem;padding-left:1.5rem;position:relative;
+  font-size:.88rem;line-height:1.6;
+}
+.check li::before{
+  content:"";position:absolute;left:0;top:.5em;width:.7rem;height:.7rem;
+  border:1.5px solid var(--gold-b);border-radius:1px;
+}
+
+.grid2{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+
+.toplink{
+  display:inline-block;margin-top:.5rem;font-family:"IBM Plex Mono",monospace;
+  font-size:.7rem;letter-spacing:.1em;color:var(--ink3);text-decoration:none;
+}
+.toplink:hover{color:var(--gold)}
+
+footer{max-width:var(--maxw);margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px solid var(--line);color:var(--ink3);font-size:.8rem}
+
+@media print{
+  .toc,.hero canvas{display:none}
+  .panel[hidden]{display:block !important}
+  details.q{page-break-inside:avoid}
+  details.q .a{display:block !important}
+  body{background:#fff}
+  section{page-break-inside:auto}
+}
+</style></head><body>
+
+<header class="hero">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="hero-in">
+    <div class="eyebrow">Chugaku Juken / Rika &mdash; Astronomy</div>
+    <h1><span class="sm">中学受験理科　総復習</span>星と月と太陽の星図帖</h1>
+    <p>天体は「暗記」ではなく「位置関係の作図」で解く分野です。基礎原理 → 頻出パターン → 難関校の応用まで、８章ぶんの地図をここに置きました。図をタブで切り替えながら、手を動かして確かめてください。</p>
+    <div class="hero-meta">
+      <span>全８章</span><span>出題パターン 24</span><span>確認問題つき</span><span>難関校対応</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="toc" aria-label="目次">
+  <div class="toc-h">CONTENTS</div>
+  <a href="#s1"><span class="n">01</span><span>太陽の動き</span></a>
+  <a href="#s2"><span class="n">02</span><span>季節と気温</span></a>
+  <a href="#s3"><span class="n">03</span><span>星の動き</span></a>
+  <a href="#s4"><span class="n">04</span><span>星座と星の性質</span></a>
+  <a href="#s5"><span class="n">05</span><span>月</span></a>
+  <a href="#s6"><span class="n">06</span><span>日食と月食</span></a>
+  <a href="#s7"><span class="n">07</span><span>惑星と太陽系</span></a>
+  <a href="#s8"><span class="n">08</span><span>星座早見と作図</span></a>
+  <a href="#s9"><span class="n">09</span><span>出題パターン総覧</span></a>
+  <a href="#s10"><span class="n">10</span><span>直前チェック</span></a>
+</nav>
+
+<main>
+<section id="s1">
+  <div class="sec-head">
+    <div class="sec-num">01</div>
+    <h2>太陽の動き<span class="sub">THE SUN &mdash; 日周運動・南中高度・影</span></h2>
+  </div>
+  <p class="lead">天体分野の土台。ここでの「方位のとり方」と「南中高度の公式」が、あとの星・月・惑星すべてに効いてきます。まず<strong>天球</strong>という考え方を体に入れましょう。</p>
+
+  <h3>1-1　天球と方位の約束</h3>
+  <p>空を、自分を中心とした大きな球（<strong>天球</strong>）の内側だと考えます。中学受験の天球図には決まった描き方があります。</p>
+  <ul class="tight">
+    <li>手前（自分に近い側）が<strong>南</strong>、奥が<strong>北</strong>、左が<strong>東</strong>、右が<strong>西</strong>。</li>
+    <li>真上の点が<strong>天頂</strong>、地面との境の輪が<strong>地平線</strong>。</li>
+    <li><strong>高度</strong>＝地平線からの角度（0〜90度）。<strong>方位</strong>＝北や南からの角度。</li>
+    <li>天体が真南に来ることを<strong>南中</strong>といい、そのときの高度が<strong>南中高度</strong>。1日でいちばん高くなる瞬間です。</li>
+  </ul>
+  <div class="key">
+    <span class="lbl">MOST IMPORTANT</span>
+    太陽・月・星が東から西へ動いて見えるのは、<strong>地球が西から東へ自転している</strong>ためです。1日（24時間）で360度まわるので、<strong>1時間に15度</strong>、<strong>4分に1度</strong>。この数字は天体分野の全計算の入口です。
+  </div>
+
+  <h3>1-2　季節による太陽の道筋</h3>
+  <figure>
+    <div class="tabs" role="tablist" id="sunTabs">
+      <button role="tab" aria-selected="true" data-k="ge">夏至（6月21日ごろ）</button>
+      <button role="tab" aria-selected="false" data-k="eq">春分・秋分</button>
+      <button role="tab" aria-selected="false" data-k="to">冬至（12月22日ごろ）</button>
+    </div>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 640 420" role="img" aria-label="天球上の太陽の道筋を季節ごとに示した図">
+      <!-- 地平面 -->
+      <ellipse cx="320" cy="300" rx="270" ry="60" fill="var(--surface2)" stroke="var(--line)" stroke-width="1.5"/>
+      <!-- 天球ドーム -->
+      <path d="M 50 300 A 270 270 0 0 1 590 300" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+      <!-- 子午線 -->
+      <path d="M 320 360 Q 320 200 320 30" fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="320" y1="300" x2="320" y2="30" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 5"/>
+
+      <!-- 太陽の道筋（3本） -->
+      <path id="arc-to" d="M 86 330 Q 320 158 554 330" fill="none" stroke="var(--blue)" stroke-width="2.5" opacity="0.28"/>
+      <path id="arc-eq" d="M 50 300 Q 320 16 590 300" fill="none" stroke="var(--ink2)" stroke-width="2.5" opacity="0.28"/>
+      <path id="arc-ge" d="M 86 270 Q 320 -124 554 270" fill="none" stroke="var(--red)" stroke-width="2.5" opacity="0.28"/>
+
+      <!-- 観測者 -->
+      <circle cx="320" cy="300" r="4" fill="var(--ink)"/>
+      <line x1="320" y1="300" x2="320" y2="285" stroke="var(--ink)" stroke-width="2"/>
+
+      <!-- 情報 -->
+      <g>
+        <rect x="24" y="22" width="176" height="72" rx="2" fill="var(--surface2)" stroke="var(--line)"/>
+        <text x="38" y="44" class="f-ink3" font-size="10.5" font-family="IBM Plex Mono" letter-spacing="1.5">SOUTH ALTITUDE</text>
+        <text id="altTxt" x="38" y="72" class="f-gold" font-size="24" font-weight="700" font-family="IBM Plex Mono">78.4°</text>
+        <text id="altSub" x="112" y="72" class="f-ink2" font-size="11">北緯35度</text>
+      </g>
+
+      <!-- 太陽マーク -->
+      <g id="sunMark">
+        <circle cx="320" cy="73" r="13" fill="var(--gold-b)"/>
+        <circle cx="320" cy="73" r="19" fill="none" stroke="var(--gold-b)" stroke-width="1" opacity=".5"/>
+      </g>
+      <!-- 出没点 -->
+      <circle id="riseP" cx="86" cy="270" r="5" fill="var(--gold)"/>
+      <circle id="setP" cx="554" cy="270" r="5" fill="var(--gold)"/>
+
+      <!-- 方位ラベル -->
+      <text x="30" y="306" class="f-ink" font-size="17" font-weight="700">東</text>
+      <text x="598" y="306" class="f-ink" font-size="17" font-weight="700">西</text>
+      <text x="311" y="385" class="f-ink" font-size="17" font-weight="700">南</text>
+      <text x="311" y="234" class="f-ink2" font-size="15" font-weight="700">北</text>
+      <text x="300" y="22" class="f-ink2" font-size="13">天頂</text>
+      <text id="lblRise" x="40" y="255" class="f-ink2" font-size="12">日の出</text>
+      <text id="lblSet" x="520" y="255" class="f-ink2" font-size="12">日の入り</text>
+    </svg>
+    </div>
+    <figcaption id="sunCap">夏至：太陽は真東より北寄りから出て、真西より北寄りに沈む。南中高度は最も高く、昼が最も長い。</figcaption>
+  </figure>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>季節</th><th>日の出の方位</th><th>日の入りの方位</th><th class="num">南中高度（北緯35度）</th><th>昼の長さ</th><th>道筋の長さ</th></tr></thead>
+    <tbody>
+      <tr><td><strong>夏至</strong></td><td>真東より<strong>北</strong>寄り</td><td>真西より<strong>北</strong>寄り</td><td class="num">78.4度</td><td>最長（約14時間35分）</td><td>最も長い</td></tr>
+      <tr><td><strong>春分・秋分</strong></td><td><strong>真東</strong></td><td><strong>真西</strong></td><td class="num">55度</td><td>約12時間</td><td>中くらい</td></tr>
+      <tr><td><strong>冬至</strong></td><td>真東より<strong>南</strong>寄り</td><td>真西より<strong>南</strong>寄り</td><td class="num">31.6度</td><td>最短（約9時間45分）</td><td>最も短い</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>1-3　南中高度の公式</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 620 330" role="img" aria-label="地球の断面図から南中高度の公式を導く図">
+      <!-- 太陽光線 -->
+      <g stroke="var(--gold-b)" stroke-width="2">
+        <line x1="600" y1="60" x2="430" y2="60"/><line x1="600" y1="110" x2="430" y2="110"/>
+        <line x1="600" y1="165" x2="400" y2="165"/><line x1="600" y1="220" x2="430" y2="220"/>
+        <line x1="600" y1="270" x2="450" y2="270"/>
+      </g>
+      <g fill="var(--gold-b)">
+        <path d="M 430 60 l 10 -4 v 8 z"/><path d="M 430 110 l 10 -4 v 8 z"/>
+        <path d="M 400 165 l 10 -4 v 8 z"/><path d="M 430 220 l 10 -4 v 8 z"/><path d="M 450 270 l 10 -4 v 8 z"/>
+      </g>
+      <text x="530" y="30" class="f-gold" font-size="13" font-weight="700">太陽光（平行）</text>
+
+      <!-- 地球 -->
+      <circle cx="230" cy="165" r="120" fill="var(--surface2)" stroke="var(--ink2)" stroke-width="2"/>
+      <!-- 赤道 -->
+      <line x1="110" y1="165" x2="350" y2="165" stroke="var(--blue)" stroke-width="1.5" stroke-dasharray="6 4"/>
+      <text x="120" y="182" class="f-blue" font-size="12">赤道</text>
+      <!-- 地軸 -->
+      <line x1="230" y1="165" x2="230" y2="35" stroke="var(--ink2)" stroke-width="1.5"/>
+      <line x1="230" y1="165" x2="230" y2="295" stroke="var(--ink2)" stroke-width="1.5"/>
+      <text x="238" y="42" class="f-ink2" font-size="12">北極</text>
+
+      <!-- 観測点 P（北緯35度）-->
+      <line x1="230" y1="165" x2="328" y2="96" stroke="var(--red)" stroke-width="1.5"/>
+      <circle cx="328" cy="96" r="5" fill="var(--red)"/>
+      <text x="336" y="92" class="f-red" font-size="13" font-weight="700">P（北緯35度）</text>
+      <path d="M 285 165 A 55 55 0 0 0 268 126" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+      <text x="278" y="152" class="f-red" font-size="12" font-family="IBM Plex Mono">35°</text>
+
+      <!-- Pでの地平線（接線） -->
+      <line x1="270" y1="14" x2="392" y2="188" stroke="var(--ink)" stroke-width="2"/>
+      <text x="250" y="14" class="f-ink" font-size="12">Pの地平線</text>
+      <!-- 南中高度の角 -->
+      <path d="M 372 96 A 44 44 0 0 0 358 143" fill="none" stroke="var(--gold)" stroke-width="2"/>
+      <text x="368" y="130" class="f-gold" font-size="13" font-weight="700" font-family="IBM Plex Mono">h</text>
+      <text x="240" y="318" class="f-ink2" font-size="12">※図は春分・秋分（地軸の傾きを考えない状態）</text>
+    </svg>
+    </div>
+    <figcaption>地平線は地球の中心と観測点を結んだ線に垂直。だから「90度 − 緯度」が春分・秋分の南中高度になる。</figcaption>
+  </figure>
+
+  <div class="key">
+    <span class="lbl">FORMULA</span>
+    <strong>春分・秋分：南中高度 ＝ 90度 − 緯度</strong><br>
+    <strong>夏至：南中高度 ＝ 90度 − 緯度 ＋ 23.4度</strong><br>
+    <strong>冬至：南中高度 ＝ 90度 − 緯度 − 23.4度</strong><br>
+    <span style="font-size:.88rem;color:var(--ink2)">北緯35度なら順に 55度／78.4度／31.6度。<strong>夏至と冬至の差は必ず46.8度（23.4×2）</strong>で、これは緯度によらず一定です。</span>
+  </div>
+  <div class="note">
+    <strong>暗記より作図。</strong>公式を忘れても、「地平線は地球の半径に垂直」「太陽光は平行」の2つで必ず導けます。夏至は北極が太陽側に23.4度傾くぶんだけ、光が高くから当たると考えます。
+  </div>
+
+  <h3>1-4　透明半球の実験</h3>
+  <p>とうめい半球に太陽の位置を記録する実験は、作図・計算の定番です。</p>
+  <ul class="tight">
+    <li><strong>印のつけ方</strong>：サインペンの先の<strong>影が、半球の中心（〇印）に重なる</strong>位置に印をつける。</li>
+    <li><strong>印の間隔が等しい</strong>＝太陽は一定の速さで動いている＝地球が一定の速さで自転している証拠。</li>
+    <li><strong>日の出・日の入り</strong>＝記録した曲線を<strong>のばして地平面（ふち）と交わる点</strong>。</li>
+    <li><strong>南中</strong>＝曲線が子午線（北と南を結ぶ線）と交わる点。</li>
+  </ul>
+  <div class="pat">
+    <h4><span class="pn">計算</span>透明半球から日の出時刻を出す</h4>
+    <ol>
+      <li>1時間ごとの印の間隔（テープで測った長さ）を求める。例：<span class="mono">2.4cm／1時間</span></li>
+      <li>最初の印から、曲線をのばした地平面との交点までの長さを測る。例：<span class="mono">3.6cm</span></li>
+      <li><span class="mono">3.6 ÷ 2.4 ＝ 1.5時間 ＝ 1時間30分</span></li>
+      <li>最初の印の時刻（例：8時）から<strong>さかのぼって</strong>　→　日の出は<strong>6時30分</strong></li>
+    </ol>
+    <p class="ex">日の入りは最後の印から<strong>先へ進めて</strong>足す。ここで「引く／足す」を逆にするミスが最頻出。</p>
+  </div>
+
+  <h3>1-5　影の動き</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 620 260" role="img" aria-label="棒の影が一日でどう動くかを示す図">
+      <!-- 地面 -->
+      <rect x="20" y="30" width="580" height="200" fill="var(--surface2)" stroke="var(--line)"/>
+      <circle cx="310" cy="185" r="6" fill="var(--ink)"/>
+      <text x="300" y="215" class="f-ink" font-size="12" text-anchor="middle">棒</text>
+      <!-- 影 -->
+      <g stroke="var(--ink2)" stroke-width="2.5" stroke-linecap="round">
+        <line x1="310" y1="185" x2="150" y2="150"/>
+        <line x1="310" y1="185" x2="230" y2="95"/>
+        <line x1="310" y1="185" x2="310" y2="80"/>
+        <line x1="310" y1="185" x2="390" y2="95"/>
+        <line x1="310" y1="185" x2="470" y2="150"/>
+      </g>
+      <circle cx="310" cy="80" r="5" fill="var(--gold-b)"/>
+      <text x="120" y="145" class="f-ink2" font-size="12">6時ごろ（西向き・長い）</text>
+      <text x="196" y="88" class="f-ink2" font-size="12">9時</text>
+      <text x="285" y="70" class="f-gold" font-size="12" font-weight="700">正午（真北・最短）</text>
+      <text x="398" y="88" class="f-ink2" font-size="12">15時</text>
+      <text x="480" y="145" class="f-ink2" font-size="12">18時ごろ（東向き・長い）</text>
+      <!-- 方位 -->
+      <text x="310" y="48" class="f-ink" font-size="14" font-weight="700" text-anchor="middle">北</text>
+      <text x="40" y="192" class="f-ink" font-size="14" font-weight="700">西</text>
+      <text x="575" y="192" class="f-ink" font-size="14" font-weight="700">東</text>
+      <path d="M 190 168 A 150 110 0 0 1 430 168" fill="none" stroke="var(--gold-b)" stroke-width="1.2" stroke-dasharray="4 4"/>
+      <path d="M 430 168 l -2 -10 l 10 6 z" fill="var(--gold-b)"/>
+    </svg>
+    </div>
+    <figcaption>影は太陽と正反対。西 → 北 → 東と、時計回りに動く。南中のとき最も短く、真北を向く。</figcaption>
+  </figure>
+  <ul class="tight">
+    <li>影の向きは太陽の<strong>反対</strong>。太陽が東にあるとき影は西へのびる。</li>
+    <li>1日で最も短いのは<strong>南中のとき</strong>。1年で最も短い正午の影は<strong>夏至</strong>、最も長いのは<strong>冬至</strong>。</li>
+    <li><strong>日時計</strong>はこの影の動きを利用。棒（ノーモン）は<strong>地軸と平行</strong>＝北を向け、その土地の緯度と同じ角度に傾けると、目もりが等間隔になります。<span class="tag nan">難関</span></li>
+  </ul>
+
+  <h3>1-6　昼の長さと「ずれ」の話 <span class="tag nan">難関</span></h3>
+  <div class="hard">
+    <span class="lbl">FREQUENTLY MISSED</span>
+    <strong>日の出が最も早い日は夏至ではありません。</strong>日本では日の出が最も早いのは6月中旬（夏至の約1週間前）、日の入りが最も遅いのは6月末〜7月初め。冬も同様に、日の入りが最も早いのは12月上旬、日の出が最も遅いのは1月上旬です。<br>
+    <span style="font-size:.88rem">理由：地球の公転が楕円で速さが変わることと、地軸が傾いていることにより、「太陽が南中してから次に南中するまで」が24時間ちょうどではない日があるため（<strong>均時差</strong>）。夏至が最長なのはあくまで<strong>昼の長さ</strong>です。</span>
+  </div>
+
+  <h3>1-7　いろいろな緯度での太陽 <span class="tag nan">難関</span></h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>場所</th><th>太陽の通り道</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr><td><strong>北極点</strong></td><td>地平線とほぼ<strong>平行</strong>に一周する</td><td>夏至のころは沈まない（<strong>白夜</strong>）。高度は最高でも23.4度。冬は一日中夜（極夜）。</td></tr>
+      <tr><td><strong>赤道</strong></td><td>地平線に<strong>垂直</strong>に出入りする</td><td>春分・秋分は<strong>天頂（高度90度）</strong>を通る。昼夜は一年中ほぼ12時間ずつ。</td></tr>
+      <tr><td><strong>北緯23.4度（北回帰線）</strong></td><td>&mdash;</td><td><strong>夏至に南中高度90度</strong>。真上から照らされ、正午に影が消える。</td></tr>
+      <tr><td><strong>南半球（例：シドニー）</strong></td><td>東から出て<strong>北</strong>の空を通り西へ</td><td><strong>北中</strong>する。影は南へのび、反時計回りに動く。季節も日本と逆。</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>1-8　太陽そのもの</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>基本データ</h4>
+      <ul class="tight" style="font-size:.9rem">
+        <li>直径は地球の約<strong>109倍</strong>（約140万km）</li>
+        <li>地球からの距離 約<strong>1億5000万km</strong>（光で約8分20秒）</li>
+        <li>表面温度 約<strong>6000度</strong>、中心は約1600万度</li>
+        <li>自ら光る<strong>恒星</strong>。主成分は水素とヘリウム</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>表面のようす</h4>
+      <ul class="tight" style="font-size:.9rem">
+        <li><strong>黒点</strong>…約4000度で周囲より<strong>温度が低い</strong>から黒く見える</li>
+        <li><strong>コロナ</strong>…外側に広がる100万度以上のガス。皆既日食で見える</li>
+        <li><strong>プロミネンス（紅炎）</strong>…吹き上がる炎のようなガス</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hard">
+    <span class="lbl">記述で問われる2つ</span>
+    <strong>①黒点が動いて見える → 太陽が自転している証拠</strong>（約27〜30日で一周）。<br>
+    <strong>②黒点が周辺部で細長く（つぶれて）見える → 太陽が球形である証拠。</strong>
+  </div>
+
+  <h3>確認問題</h3>
+  <details class="q"><summary>北緯43度の札幌における、冬至の日の南中高度は何度か。</summary><div class="a">90 − 43 − 23.4 ＝ <strong>23.6度</strong></div></details>
+  <details class="q"><summary>ある地点の夏至の南中高度が82.4度だった。この地点の緯度は？</summary><div class="a">90 − 緯度 ＋ 23.4 ＝ 82.4　→　緯度 ＝ <strong>北緯31度</strong></div></details>
+  <details class="q"><summary>透明半球で、9時と10時の印の間が3cm、9時の印から曲線をのばした地平面との交点までが7.5cmだった。日の出の時刻は？</summary><div class="a">7.5 ÷ 3 ＝ 2.5時間 ＝ 2時間30分。9時から引いて <strong>6時30分</strong></div></details>
+  <details class="q"><summary>夏至の日、東京で棒を立てた。正午の影の向きと、その日の影の動く向きを答えよ。</summary><div class="a">向きは<strong>真北</strong>。影は<strong>西 → 北 → 東</strong>（時計回り）に動く。</div></details>
+  <details class="q"><summary>黒点が黒く見える理由を答えよ。</summary><div class="a">周囲（約6000度）より<strong>温度が低い</strong>（約4000度）から。<span style="color:var(--red)">「光っていない」「穴があいている」は誤り。</span></div></details>
+  <a class="toplink" href="#s1">▲ 章のはじめへ</a>
+</section>
+
+
+<section id="s2">
+  <div class="sec-head">
+    <div class="sec-num">02</div>
+    <h2>季節と気温<span class="sub">SEASONS &mdash; 地軸の傾き・公転・気温のずれ</span></h2>
+  </div>
+  <p class="lead">「なぜ夏は暑いのか」を、<strong>南中高度</strong>と<strong>昼の長さ</strong>の2本立てで説明できるようにします。記述問題の定番です。</p>
+
+  <h3>2-1　地軸の傾きと公転</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 660 400" role="img" aria-label="地球の公転と四季の位置関係を示す図">
+      <ellipse cx="330" cy="200" rx="250" ry="130" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <!-- 太陽 -->
+      <circle cx="330" cy="200" r="26" fill="var(--gold-b)"/>
+      <circle cx="330" cy="200" r="34" fill="none" stroke="var(--gold-b)" stroke-width="1" opacity=".45"/>
+      <text x="330" y="248" class="f-gold" font-size="13" font-weight="700" text-anchor="middle">太陽</text>
+
+      <!-- 地球4つ：g(cx,cy) 地軸は常に右に23.4度傾ける -->
+      <!-- 夏至（左） -->
+      <g transform="translate(80,200)">
+        <circle r="30" fill="var(--blue-wash)" stroke="var(--ink2)" stroke-width="1.5"/>
+        <line x1="-14.3" y1="-33" x2="14.3" y2="33" stroke="var(--red)" stroke-width="2"/>
+        <line x1="-33" y1="14.3" x2="33" y2="-14.3" stroke="var(--blue)" stroke-width="1" stroke-dasharray="3 3"/>
+        <circle cx="-12.6" cy="-29" r="3.5" fill="var(--red)"/>
+        <text x="0" y="-48" class="f-ink" font-size="13" font-weight="700" text-anchor="middle">夏至</text>
+        <text x="0" y="56" class="f-ink2" font-size="11" text-anchor="middle">北極が太陽側</text>
+      </g>
+      <!-- 秋分（上） -->
+      <g transform="translate(330,50)">
+        <circle r="30" fill="var(--surface2)" stroke="var(--ink2)" stroke-width="1.5"/>
+        <line x1="-14.3" y1="-33" x2="14.3" y2="33" stroke="var(--red)" stroke-width="2"/>
+        <circle cx="-12.6" cy="-29" r="3.5" fill="var(--red)"/>
+        <text x="0" y="-46" class="f-ink" font-size="13" font-weight="700" text-anchor="middle">秋分</text>
+      </g>
+      <!-- 冬至（右） -->
+      <g transform="translate(580,200)">
+        <circle r="30" fill="var(--surface2)" stroke="var(--ink2)" stroke-width="1.5"/>
+        <line x1="-14.3" y1="-33" x2="14.3" y2="33" stroke="var(--red)" stroke-width="2"/>
+        <line x1="-33" y1="14.3" x2="33" y2="-14.3" stroke="var(--blue)" stroke-width="1" stroke-dasharray="3 3"/>
+        <circle cx="-12.6" cy="-29" r="3.5" fill="var(--red)"/>
+        <text x="0" y="-48" class="f-ink" font-size="13" font-weight="700" text-anchor="middle">冬至</text>
+        <text x="0" y="56" class="f-ink2" font-size="11" text-anchor="middle">北極が太陽と反対</text>
+      </g>
+      <!-- 春分（下） -->
+      <g transform="translate(330,350)">
+        <circle r="30" fill="var(--surface2)" stroke="var(--ink2)" stroke-width="1.5"/>
+        <line x1="-14.3" y1="-33" x2="14.3" y2="33" stroke="var(--red)" stroke-width="2"/>
+        <circle cx="-12.6" cy="-29" r="3.5" fill="var(--red)"/>
+        <text x="0" y="46" class="f-ink" font-size="13" font-weight="700" text-anchor="middle">春分</text>
+      </g>
+      <!-- 公転の向き -->
+      <path d="M 210 316 l 14 6 l -13 8 z" fill="var(--ink2)"/>
+      <text x="150" y="330" class="f-ink2" font-size="12">公転の向き（反時計回り）</text>
+      <text x="86" y="150" class="f-red" font-size="11">地軸</text>
+    </svg>
+    </div>
+    <figcaption>地軸は公転面に立てた垂線に対して23.4度傾き、<strong>その向きを変えずに</strong>公転する。だから北極が太陽側になる時期（夏）と反対側になる時期（冬）ができる。</figcaption>
+  </figure>
+
+  <div class="key">
+    <span class="lbl">記述の型</span>
+    <strong>「夏が暑い理由を2つ」</strong>＝<br>
+    ① <strong>南中高度が高い</strong>ので、同じ面積の地面が受ける光の量（日光の量）が多いから。<br>
+    ② <strong>昼の長さが長い</strong>ので、地面があたためられる時間が長いから。<br>
+    <span style="font-size:.88rem;color:var(--ink2)">※「地球が太陽に近づくから」は<strong>誤り</strong>。むしろ日本の夏（7月）のほうが地球は太陽から遠い。</span>
+  </div>
+
+  <h3>2-2　気温が遅れて上がるしくみ</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 620 260" role="img" aria-label="南中高度と気温の年変化のずれを示すグラフ">
+      <line x1="60" y1="215" x2="590" y2="215" class="s-line" stroke-width="1.5"/>
+      <line x1="60" y1="25" x2="60" y2="215" class="s-line" stroke-width="1.5"/>
+      <g class="f-ink3" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">
+        <text x="82" y="232">1</text><text x="126" y="232">2</text><text x="170" y="232">3</text><text x="214" y="232">4</text>
+        <text x="258" y="232">5</text><text x="302" y="232">6</text><text x="346" y="232">7</text><text x="390" y="232">8</text>
+        <text x="434" y="232">9</text><text x="478" y="232">10</text><text x="522" y="232">11</text><text x="566" y="232">12</text>
+      </g>
+      <text x="325" y="252" class="f-ink2" font-size="11" text-anchor="middle">月</text>
+      <!-- 南中高度カーブ（6月がピーク） -->
+      <path d="M 82 185 C 150 175 240 90 302 55 C 364 90 456 175 566 190" fill="none" stroke="var(--gold-b)" stroke-width="2.5"/>
+      <!-- 気温カーブ（8月がピーク） -->
+      <path d="M 82 200 C 160 198 260 140 390 78 C 470 120 520 175 566 196" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+      <line x1="302" y1="55" x2="302" y2="215" stroke="var(--gold-b)" stroke-width="1" stroke-dasharray="3 3"/>
+      <line x1="390" y1="78" x2="390" y2="215" stroke="var(--red)" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle cx="302" cy="55" r="5" fill="var(--gold-b)"/><circle cx="390" cy="78" r="5" fill="var(--red)"/>
+      <text x="248" y="45" class="f-gold" font-size="12" font-weight="700">南中高度 最大（6月）</text>
+      <text x="400" y="66" class="f-red" font-size="12" font-weight="700">気温 最高（8月）</text>
+      <path d="M 306 130 L 386 130" stroke="var(--ink2)" stroke-width="1.5"/>
+      <path d="M 386 130 l -8 -4 v 8 z" fill="var(--ink2)"/>
+      <text x="346" y="124" class="f-ink2" font-size="11" text-anchor="middle">約1〜2か月のずれ</text>
+    </svg>
+    </div>
+    <figcaption>太陽が空気を直接あたためるのではなく、まず<strong>地面</strong>があたたまり、その地面が空気をあたためるため、ピークが遅れる。</figcaption>
+  </figure>
+  <ul class="tight">
+    <li><strong>1年</strong>：南中高度の最大は6月（夏至）だが、気温の最高は<strong>8月</strong>。最低は<strong>1〜2月</strong>（冬至は12月）。</li>
+    <li><strong>1日</strong>：南中は12時だが、気温の最高は<strong>午後2時ごろ</strong>。最低は<strong>日の出直前</strong>。</li>
+  </ul>
+
+  <h3>2-3　季節と見える星座</h3>
+  <p>地球から見て<strong>太陽と反対側</strong>にある星座が、その季節の真夜中に南の空に見えます。太陽と同じ方向の星座は昼間の空にあるので見えません。</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>季節</th><th>真夜中に南に見える星座</th><th>太陽の方向にあり見えない星座</th></tr></thead>
+    <tbody>
+      <tr><td>春</td><td>しし座・おとめ座</td><td>みずがめ座など</td></tr>
+      <tr><td>夏</td><td>さそり座・いて座</td><td>おうし座・オリオン座</td></tr>
+      <tr><td>秋</td><td>ペガスス座・みずがめ座</td><td>しし座</td></tr>
+      <tr><td>冬</td><td>オリオン座・おうし座</td><td>さそり座</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note"><strong>だから</strong>「オリオン座とさそり座は同時に見えない」「さそり座に追われたオリオンの神話」といった話につながります。<strong>季節が正反対の星座はセットで覚える</strong>と得です。</div>
+
+  <div class="hard">
+    <span class="lbl">思考型の問い</span>
+    <strong>「もし地軸が傾いていなかったら？」</strong>　→　南中高度は一年中変わらず（緯度35度なら常に55度）、昼と夜は一年中12時間ずつ、<strong>季節の変化がなくなる</strong>。<br>
+    <strong>「もし地軸の傾きが今より大きかったら？」</strong>　→　夏至の南中高度はさらに高く、冬至はさらに低くなり、<strong>季節による気温差が大きくなる</strong>。白夜の範囲も広がる。
+  </div>
+
+  <h3>確認問題</h3>
+  <details class="q"><summary>夏の気温が高い理由を、南中高度以外の観点から1つ書け。</summary><div class="a"><strong>昼の長さが長く、地面があたためられる時間が長いから。</strong></div></details>
+  <details class="q"><summary>1年で最も気温が高いのが8月になる理由を説明せよ。</summary><div class="a">太陽の光はまず<strong>地面</strong>をあたため、あたたまった地面が空気をあたためる。この間に時間がかかるため、南中高度が最大になる6月より<strong>1〜2か月おくれて</strong>気温が最高になる。</div></details>
+  <details class="q"><summary>真夜中に南の空にオリオン座が見えた。このときの季節と、太陽の方向にある星座は？</summary><div class="a">季節は<strong>冬</strong>。太陽の方向にあるのは<strong>さそり座</strong>。</div></details>
+  <a class="toplink" href="#s2">▲ 章のはじめへ</a>
+</section>
+<section id="s3">
+  <div class="sec-head">
+    <div class="sec-num">03</div>
+    <h2>星の動き<span class="sub">DIURNAL &amp; ANNUAL MOTION &mdash; 15度/時・30度/月</span></h2>
+  </div>
+  <p class="lead">星の問題は、結局<strong>「時間差 → 15度／時」</strong>と<strong>「日付差 → 30度／月（1度／日）」</strong>の2つの換算に尽きます。方位ごとの見え方を体で覚え、あとは角度計算に落としましょう。</p>
+
+  <h3>3-1　日周運動 ─ 方位ごとの見え方</h3>
+  <figure>
+    <div class="tabs" role="tablist" id="dirTabs">
+      <button role="tab" aria-selected="true" data-p="pE">東の空</button>
+      <button role="tab" aria-selected="false" data-p="pS">南の空</button>
+      <button role="tab" aria-selected="false" data-p="pW">西の空</button>
+      <button role="tab" aria-selected="false" data-p="pN">北の空</button>
+    </div>
+    <div class="fig-scroll">
+      <div class="panel" id="pE">
+        <svg viewBox="0 0 560 300" role="img" aria-label="東の空で星が右上がりにのぼる図">
+          <rect x="10" y="10" width="540" height="240" fill="var(--night)" rx="2"/>
+          <line x1="10" y1="250" x2="550" y2="250" class="s-line" stroke-width="2"/>
+          <text x="280" y="272" class="f-ink2" font-size="13" text-anchor="middle" font-weight="700">東の地平線</text>
+          <g stroke="var(--gold-b)" stroke-width="2" stroke-dasharray="5 4">
+            <line x1="110" y1="250" x2="221.9" y2="90.2"/>
+            <line x1="200" y1="250" x2="311.9" y2="90.2"/>
+          </g>
+          <path d="M 221.9 90.2 l -1.6 12.4 l 11.1 -6.5 z" fill="var(--gold-b)"/>
+          <path d="M 311.9 90.2 l -1.6 12.4 l 11.1 -6.5 z" fill="var(--gold-b)"/>
+          <g fill="var(--star)">
+            <circle cx="127.2" cy="225.4" r="4"/><circle cx="161.7" cy="176.3" r="4"/><circle cx="196.1" cy="127.1" r="4"/>
+            <circle cx="217.2" cy="225.4" r="3.5"/><circle cx="251.7" cy="176.3" r="3.5"/><circle cx="286.1" cy="127.1" r="3.5"/>
+          </g>
+          <path d="M 165 250 A 55 55 0 0 0 141.6 205" fill="none" stroke="var(--star)" stroke-width="1.5"/>
+          <text x="150" y="234" fill="var(--star)" font-size="12" font-weight="700" font-family="IBM Plex Mono">55°</text>
+          <text x="340" y="112" fill="var(--star)" font-size="14" font-weight="700">右上がりにのぼる</text>
+          <text x="340" y="152" fill="var(--star)" font-size="12" opacity=".85">地平線となす角</text>
+          <text x="340" y="172" fill="var(--star)" font-size="12" opacity=".85">＝ 90度 − その土地の緯度</text>
+          <text x="340" y="192" fill="var(--star)" font-size="12" opacity=".85">（北緯35度なら約55度）</text>
+        </svg>
+      </div>
+      <div class="panel" id="pS" hidden>
+        <svg viewBox="0 0 560 300" role="img" aria-label="南の空で星が左から右へ動く図">
+          <rect x="10" y="10" width="540" height="240" fill="var(--night)" rx="2"/>
+          <line x1="10" y1="250" x2="550" y2="250" class="s-line" stroke-width="2"/>
+          <text x="280" y="272" class="f-ink2" font-size="13" text-anchor="middle" font-weight="700">南の地平線</text>
+          <text x="40" y="272" class="f-ink2" font-size="12">東</text>
+          <text x="518" y="272" class="f-ink2" font-size="12">西</text>
+          <path d="M 40 240 Q 280 40 520 240" fill="none" stroke="var(--gold-b)" stroke-width="2" stroke-dasharray="6 4"/>
+          <path d="M 520 240 l -11 -5 l 3 12 z" fill="var(--gold-b)"/>
+          <g fill="var(--star)">
+            <circle cx="160" cy="118" r="4"/><circle cx="280" cy="80" r="5"/><circle cx="400" cy="118" r="4"/>
+            <circle cx="220" cy="150" r="3"/><circle cx="340" cy="150" r="3"/>
+          </g>
+          <line x1="280" y1="40" x2="280" y2="250" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <text x="288" y="60" fill="var(--red)" font-size="13" font-weight="700">南中（最も高い）</text>
+          <text x="330" y="205" fill="var(--star)" font-size="14" font-weight="700">左（東）から右（西）へ</text>
+        </svg>
+      </div>
+      <div class="panel" id="pW" hidden>
+        <svg viewBox="0 0 560 300" role="img" aria-label="西の空で星が右下がりに沈む図">
+          <rect x="10" y="10" width="540" height="240" fill="var(--night)" rx="2"/>
+          <line x1="10" y1="250" x2="550" y2="250" class="s-line" stroke-width="2"/>
+          <text x="280" y="272" class="f-ink2" font-size="13" text-anchor="middle" font-weight="700">西の地平線</text>
+          <g stroke="var(--gold-b)" stroke-width="2" stroke-dasharray="5 4">
+            <line x1="240" y1="80" x2="349.1" y2="235.6"/>
+            <line x1="330" y1="80" x2="439.1" y2="235.6"/>
+          </g>
+          <path d="M 349.1 235.6 l -11.5 -4.6 l 5.1 11.4 z" fill="var(--gold-b)"/>
+          <path d="M 439.1 235.6 l -11.5 -4.6 l 5.1 11.4 z" fill="var(--gold-b)"/>
+          <g fill="var(--star)">
+            <circle cx="257.2" cy="104.6" r="4"/><circle cx="291.7" cy="153.7" r="4"/><circle cx="326.1" cy="202.9" r="4"/>
+            <circle cx="347.2" cy="104.6" r="3.5"/><circle cx="381.7" cy="153.7" r="3.5"/><circle cx="416.1" cy="202.9" r="3.5"/>
+          </g>
+          <path d="M 294 250 A 55 55 0 0 1 317.4 205" fill="none" stroke="var(--star)" stroke-width="1.5"/>
+          <text x="300" y="234" fill="var(--star)" font-size="12" font-weight="700" font-family="IBM Plex Mono">55°</text>
+          <text x="40" y="120" fill="var(--star)" font-size="14" font-weight="700">右下がりに沈む</text>
+          <text x="40" y="152" fill="var(--star)" font-size="12" opacity=".85">東の空とちょうど対称。</text>
+          <text x="40" y="172" fill="var(--star)" font-size="12" opacity=".85">地平線となす角も約55度</text>
+        </svg>
+      </div>
+      <div class="panel" id="pN" hidden>
+        <svg viewBox="0 0 560 320" role="img" aria-label="北の空で星が北極星を中心に反時計回りする図">
+          <rect x="10" y="10" width="540" height="260" fill="var(--night)" rx="2"/>
+          <line x1="10" y1="270" x2="550" y2="270" class="s-line" stroke-width="2"/>
+          <text x="280" y="292" class="f-ink2" font-size="13" text-anchor="middle" font-weight="700">北の地平線</text>
+          <!-- 北極星 -->
+          <circle cx="280" cy="150" r="6" fill="var(--star)"/>
+          <circle cx="280" cy="150" r="12" fill="none" stroke="var(--star)" stroke-width="1" opacity=".6"/>
+          <text x="296" y="146" fill="var(--star)" font-size="13" font-weight="700">北極星（ほぼ動かない）</text>
+          <!-- 高度＝緯度 -->
+          <line x1="280" y1="270" x2="280" y2="150" stroke="var(--gold-b)" stroke-width="1" stroke-dasharray="3 3"/>
+          <path d="M 340 270 A 60 60 0 0 0 331 240" fill="none" stroke="var(--gold-b)" stroke-width="1.5"/>
+          <line x1="280" y1="270" x2="410" y2="209" stroke="var(--gold-b)" stroke-width="1.5"/>
+          <text x="345" y="262" class="f-gold" font-size="12" font-weight="700" font-family="IBM Plex Mono">35°</text>
+          <text x="352" y="230" fill="var(--star)" font-size="11">高度＝その土地の緯度</text>
+          <!-- 回転円 -->
+          <circle cx="280" cy="150" r="70" fill="none" stroke="var(--gold-b)" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/>
+          <circle cx="280" cy="150" r="110" fill="none" stroke="var(--gold-b)" stroke-width="1" stroke-dasharray="4 4" opacity=".5"/>
+          <path d="M 350 150 A 70 70 0 0 0 330 101" fill="none" stroke="var(--gold-b)" stroke-width="2.5"/>
+          <path d="M 330 101 l 12 1 l -6 -11 z" fill="var(--gold-b)"/>
+          <!-- 北斗七星（模式） -->
+          <g fill="var(--star)">
+            <circle cx="150" cy="110" r="4"/><circle cx="178" cy="96" r="4"/><circle cx="206" cy="94" r="4"/>
+            <circle cx="228" cy="108" r="4"/><circle cx="216" cy="132" r="4"/><circle cx="188" cy="140" r="4"/><circle cx="164" cy="134" r="4"/>
+          </g>
+          <polyline points="150,110 178,96 206,94 228,108 216,132 188,140 164,134" fill="none" stroke="var(--star)" stroke-width="1.2" opacity=".7"/>
+          <text x="120" y="80" fill="var(--star)" font-size="12">北斗七星</text>
+          <!-- カシオペヤ -->
+          <g fill="var(--star)">
+            <circle cx="380" cy="90" r="4"/><circle cx="404" cy="110" r="4"/><circle cx="428" cy="88" r="4"/>
+            <circle cx="452" cy="112" r="4"/><circle cx="476" cy="92" r="4"/>
+          </g>
+          <polyline points="380,90 404,110 428,88 452,112 476,92" fill="none" stroke="var(--star)" stroke-width="1.2" opacity=".7"/>
+          <text x="392" y="72" fill="var(--star)" font-size="12">カシオペヤ座</text>
+          <text x="60" y="200" fill="var(--star)" font-size="14" font-weight="700">反時計回りに1時間15度</text>
+        </svg>
+      </div>
+    </div>
+    <figcaption id="dirCap">東の空：星は右上がりにのぼる。地平線となす角は「90度 − その土地の緯度」。</figcaption>
+  </figure>
+
+  <div class="key">
+    <span class="lbl">CORE NUMBERS</span>
+    <strong>日周運動</strong>（地球の自転による）… 東 → 西へ　<strong>1時間に15度</strong>／<strong>1日で360度</strong><br>
+    <strong>年周運動</strong>（地球の公転による）… 東 → 西へ　<strong>1か月に30度</strong>／<strong>1日に約1度</strong><br>
+    同じ星が同じ位置に来る時刻は、<strong>1か月で2時間早くなる</strong>。1日では約4分早くなる。
+  </div>
+
+  <h3>3-2　年周運動</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 600 300" role="img" aria-label="同じ時刻に見える星の位置が1か月に30度西へずれることを示す図">
+      <rect x="10" y="10" width="580" height="230" fill="var(--night)" rx="2"/>
+      <line x1="10" y1="240" x2="590" y2="240" class="s-line" stroke-width="2"/>
+      <text x="300" y="262" class="f-ink2" font-size="13" text-anchor="middle" font-weight="700">南の空（毎日 午後8時に観察）</text>
+      <text x="40" y="262" class="f-ink2" font-size="12">東</text><text x="552" y="262" class="f-ink2" font-size="12">西</text>
+      <!-- オリオン座 3態 -->
+      <g>
+        <g fill="var(--star)" opacity=".55">
+          <circle cx="150" cy="90" r="4"/><circle cx="196" cy="140" r="4"/>
+          <circle cx="166" cy="112" r="3"/><circle cx="174" cy="118" r="3"/><circle cx="182" cy="124" r="3"/>
+        </g>
+        <text x="128" y="72" fill="var(--star)" font-size="12" opacity=".7">1月20日</text>
+      </g>
+      <g>
+        <g fill="var(--star)">
+          <circle cx="290" cy="90" r="4"/><circle cx="336" cy="140" r="4"/>
+          <circle cx="306" cy="112" r="3"/><circle cx="314" cy="118" r="3"/><circle cx="322" cy="124" r="3"/>
+        </g>
+        <text x="268" y="72" fill="var(--star)" font-size="12">2月20日</text>
+      </g>
+      <g>
+        <g fill="var(--star)" opacity=".55">
+          <circle cx="430" cy="90" r="4"/><circle cx="476" cy="140" r="4"/>
+          <circle cx="446" cy="112" r="3"/><circle cx="454" cy="118" r="3"/><circle cx="462" cy="124" r="3"/>
+        </g>
+        <text x="408" y="72" fill="var(--star)" font-size="12" opacity=".7">3月20日</text>
+      </g>
+      <path d="M 210 175 L 275 175" stroke="var(--gold-b)" stroke-width="2"/><path d="M 275 175 l -9 -4 v 8 z" fill="var(--gold-b)"/>
+      <path d="M 350 175 L 415 175" stroke="var(--gold-b)" stroke-width="2"/><path d="M 415 175 l -9 -4 v 8 z" fill="var(--gold-b)"/>
+      <text x="242" y="196" fill="var(--gold-b)" font-size="12" text-anchor="middle" font-weight="700">30度</text>
+      <text x="382" y="196" fill="var(--gold-b)" font-size="12" text-anchor="middle" font-weight="700">30度</text>
+      <text x="300" y="222" fill="var(--star)" font-size="13" text-anchor="middle">同じ時刻に見ると、1か月で30度ずつ西へ移動している</text>
+    </svg>
+    </div>
+    <figcaption>逆に「同じ位置」で見たいなら、1か月ごとに2時間ずつ早い時刻に観察すればよい。</figcaption>
+  </figure>
+
+  <div class="pat">
+    <h4><span class="pn">最頻出</span>時刻と日付から星の位置を求める</h4>
+    <ol>
+      <li><strong>時間差</strong>を出して <span class="mono">× 15度</span>（あとの時刻ほど西へ）</li>
+      <li><strong>日付差</strong>を出して <span class="mono">× 1度／日</span>（＝30度／月。あとの日付ほど西へ）</li>
+      <li>2つを<strong>足す</strong>（どちらも西向きなら加算、向きが逆なら差をとる）</li>
+    </ol>
+    <p class="ex">例：1月10日 午後9時に南中していた星は、2月10日 午後7時にはどこにあるか。<br>
+    日付差 ＋1か月 → 西へ30度／時間差 −2時間 → 東へ30度。<strong>差し引き0度でちょうど南中</strong>。</p>
+  </div>
+
+  <h3>3-3　北極星</h3>
+  <ul class="tight">
+    <li><strong>こぐま座</strong>の尾の先端の星。地軸の延長線上にあるため、ほぼ動かない。</li>
+    <li><strong>高度＝その土地の緯度</strong>。東京（北緯35度）では高度35度、北極点では天頂（90度）、赤道では地平線上（0度）。</li>
+    <li>探し方①：<strong>北斗七星</strong>（おおぐま座の一部）のひしゃくの先端2つの星を結び、その間隔の<strong>5倍</strong>のばす。</li>
+    <li>探し方②：<strong>カシオペヤ座</strong>のW字の外側2辺をのばして交わった点と、中央の星を結び、その間隔の<strong>5倍</strong>のばす。</li>
+    <li>北斗七星とカシオペヤ座は北極星をはさんで<strong>反対側</strong>にあるので、片方が低いときはもう片方が高い。</li>
+  </ul>
+
+  <h3>3-4　難関校の踏み込み <span class="tag nan">難関</span></h3>
+  <div class="hard">
+    <span class="lbl">1日は24時間ではない？</span>
+    地球が<strong>1回自転する</strong>のにかかる時間は<strong>23時間56分</strong>（恒星日）。ところが地球は公転もしているため、太陽が再び南中するまでには<strong>24時間</strong>（太陽日）かかります。<br>
+    この<strong>4分</strong>の差が、星が毎日4分ずつ早く南中する原因。4分 × 365日 ≒ 24時間 ＝ ちょうど1日ぶん、つまり<strong>1年で星は1周ぶん先まわりする</strong>ことになります。
+  </div>
+  <div class="hard">
+    <span class="lbl">経度と南中時刻</span>
+    経度が<strong>15度</strong>ちがうと、南中時刻は<strong>1時間</strong>ずれます（東にあるほど早い）。日本の標準時は東経135度（明石）が基準。<br>
+    例：東経140度の地点では、東経135度より <span class="mono">5 ÷ 15 × 60 ＝ 20分</span> 早く南中する。
+  </div>
+  <div class="hard">
+    <span class="lbl">緯度と星の見え方</span>
+    緯度が低いほど北極星の高度は低く、<strong>南の空の星がより多く見える</strong>。逆に緯度が高いほど、北極星のまわりを回るだけで沈まない星（<strong>周極星</strong>）が増える。<br>
+    <strong>周極星になる条件：北極星からの角度 &lt; その土地の緯度</strong>（＝北極星の高度）。北緯35度なら、北極星から35度以内の星は一年中沈まない。
+  </div>
+
+  <h3>確認問題</h3>
+  <details class="q"><summary>ある星が午後8時に東の空、地平線から30度の高さに見えた。この星が南中するのは何時か（南中高度は60度とする）。</summary><div class="a">東の空を55度の傾きでのぼるので、高度30度の位置から南中（真南）までは天球上で角度を追う。標準的な出題では「高度30度 → 南中まで◯度」を図から読み、15度で割る。たとえば60度動くなら <span class="mono">60 ÷ 15 ＝ 4時間</span> で<strong>午前0時</strong>。<br><em>ポイント：必ず「角度 ÷ 15」で時間に直す。</em></div></details>
+  <details class="q"><summary>10月15日の午後10時にある星が南中した。同じ星が午後8時に南中するのはいつごろか。</summary><div class="a">2時間早くなるのは1か月後。よって<strong>11月15日ごろ</strong>。</div></details>
+  <details class="q"><summary>北緯35度の地点で、北の空の星は1時間にどちら向きに何度動くか。</summary><div class="a">北極星を中心に<strong>反時計回りに15度</strong>。</div></details>
+  <details class="q"><summary>北極星の高度が20度の地点は、北緯何度か。またそこで沈まない星の条件は？</summary><div class="a"><strong>北緯20度</strong>。北極星から<strong>20度以内</strong>にある星は沈まない（周極星）。</div></details>
+  <a class="toplink" href="#s3">▲ 章のはじめへ</a>
+</section>
+
+
+<section id="s4">
+  <div class="sec-head">
+    <div class="sec-num">04</div>
+    <h2>星座と星の性質<span class="sub">CONSTELLATIONS &mdash; 明るさ・色・季節の星座</span></h2>
+  </div>
+  <p class="lead">ここは知識で点を取る章。ただし<strong>「色 → 表面温度」</strong>と<strong>「等級 → 明るさの比」</strong>は理屈で問われます。</p>
+
+  <h3>4-1　星の明るさ（等級）</h3>
+  <ul class="tight">
+    <li><strong>1等星は6等星の100倍</strong>の明るさ。等級が5つ違うと100倍。</li>
+    <li>したがって1等級ちがうと<strong>約2.5倍</strong>（2.5を5回かけると約100）。</li>
+    <li>等級の数字が<strong>小さいほど明るい</strong>。0等星、−1等星もある（シリウスは−1.5等）。</li>
+    <li>肉眼で見える限界はおよそ6等星。全天の1等星は<strong>21個</strong>。</li>
+  </ul>
+  <div class="note">見かけの明るさは「本当の明るさ」と「距離」で決まります。距離が2倍になると明るさは <span class="mono">1/4</span>（距離の2乗に反比例）。<span class="tag nan">難関</span></div>
+
+  <h3>4-2　星の色と表面温度</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 620 190" role="img" aria-label="星の色と表面温度の対応を示す帯">
+      <defs>
+        <linearGradient id="tempg" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#D8503C"/><stop offset="0.28" stop-color="#E39B4B"/>
+          <stop offset="0.5" stop-color="#EFD46B"/><stop offset="0.72" stop-color="#F2F3F0"/>
+          <stop offset="1" stop-color="#8FB6E8"/>
+        </linearGradient>
+      </defs>
+      <rect x="30" y="30" width="560" height="26" fill="url(#tempg)" rx="2"/>
+      <g class="f-ink" font-size="13" font-weight="700" text-anchor="middle">
+        <text x="72" y="76">赤</text><text x="188" y="76">オレンジ</text><text x="310" y="76">黄</text><text x="440" y="76">白</text><text x="560" y="76">青白</text>
+      </g>
+      <g class="f-ink2" font-size="11" text-anchor="middle" font-family="IBM Plex Mono">
+        <text x="72" y="96">約3000℃</text><text x="188" y="96">約4500℃</text><text x="310" y="96">約6000℃</text><text x="440" y="96">約10000℃</text><text x="560" y="96">11000℃〜</text>
+      </g>
+      <g class="f-ink2" font-size="11.5" text-anchor="middle">
+        <text x="72" y="124">ベテルギウス</text><text x="72" y="140">アンタレス</text><text x="72" y="156">アルデバラン</text>
+        <text x="188" y="124">アークトゥルス</text><text x="188" y="140">ポルックス</text>
+        <text x="310" y="124">太陽</text><text x="310" y="140">カペラ</text>
+        <text x="440" y="124">シリウス・ベガ</text><text x="440" y="140">デネブ・アルタイル</text><text x="440" y="156">スピカ・プロキオン</text>
+        <text x="560" y="124">リゲル</text>
+      </g>
+      <line x1="30" y1="16" x2="590" y2="16" stroke="var(--ink2)" stroke-width="1.5"/>
+      <path d="M 590 16 l -10 -4 v 8 z" fill="var(--ink2)"/>
+      <text x="300" y="12" class="f-ink2" font-size="11" text-anchor="middle">温度が高い →</text>
+    </svg>
+    </div>
+    <figcaption>覚え方は「赤・橙・黄・白・青白」の順に熱くなる。<strong>赤い星ほど低温</strong>という直感と逆の関係が狙われる。</figcaption>
+  </figure>
+
+  <h3>4-3　季節の星座</h3>
+  <figure>
+    <div class="tabs" role="tablist" id="conTabs">
+      <button role="tab" aria-selected="true" data-p="cWi">冬</button>
+      <button role="tab" aria-selected="false" data-p="cSp">春</button>
+      <button role="tab" aria-selected="false" data-p="cSu">夏</button>
+      <button role="tab" aria-selected="false" data-p="cAu">秋</button>
+    </div>
+    <div class="fig-scroll">
+      <div class="panel" id="cWi">
+        <svg viewBox="0 0 600 330" role="img" aria-label="冬の大三角と冬のダイヤモンドの図">
+          <rect x="10" y="10" width="580" height="310" fill="var(--night)" rx="2"/>
+          <!-- 冬のダイヤモンド -->
+          <polygon points="300,44 420,96 396,214 300,272 196,206 186,92" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-dasharray="5 4" opacity=".85"/>
+          <!-- 冬の大三角 -->
+          <polygon points="256,128 300,272 396,214" fill="none" stroke="var(--gold-b)" stroke-width="2"/>
+          <!-- オリオン座 -->
+          <polyline points="256,128 232,180 262,196 292,212 300,272" fill="none" stroke="var(--star)" stroke-width="1" opacity=".45"/>
+          <polyline points="256,128 292,212" fill="none" stroke="var(--star)" stroke-width="1" opacity=".25"/>
+          <g>
+            <circle cx="256" cy="128" r="7" fill="#D8503C"/><text x="204" y="120" fill="var(--star)" font-size="12">ベテルギウス</text><text x="212" y="134" fill="#E8836F" font-size="10">（赤）</text>
+            <circle cx="300" cy="272" r="7" fill="#F2F3F0"/><text x="252" y="292" fill="var(--star)" font-size="12">シリウス</text><text x="248" y="306" fill="#B9C5D9" font-size="10">おおいぬ座・全天一明るい</text>
+            <circle cx="396" cy="214" r="6" fill="#F5F0E4"/><text x="408" y="212" fill="var(--star)" font-size="12">プロキオン</text><text x="408" y="226" fill="#B9C5D9" font-size="10">こいぬ座</text>
+            <circle cx="292" cy="212" r="7" fill="#8FB6E8"/><text x="300" y="230" fill="var(--star)" font-size="12">リゲル（青白）</text>
+            <circle cx="232" cy="180" r="3.5" fill="var(--star)"/><circle cx="245" cy="187" r="3.5" fill="var(--star)"/><circle cx="258" cy="194" r="3.5" fill="var(--star)"/>
+            <text x="150" y="196" fill="var(--star)" font-size="11">三つ星</text>
+            <circle cx="196" cy="206" r="6" fill="#E3B04B"/><text x="120" y="228" fill="var(--star)" font-size="12">ポルックス</text><text x="128" y="242" fill="#B9C5D9" font-size="10">ふたご座</text>
+            <circle cx="186" cy="92" r="6" fill="#EFD46B"/><text x="112" y="86" fill="var(--star)" font-size="12">カペラ</text><text x="106" y="100" fill="#B9C5D9" font-size="10">ぎょしゃ座</text>
+            <circle cx="420" cy="96" r="6" fill="#E39B4B"/><text x="432" y="94" fill="var(--star)" font-size="12">アルデバラン</text><text x="432" y="108" fill="#B9C5D9" font-size="10">おうし座</text>
+          </g>
+          <text x="330" y="150" fill="var(--gold-b)" font-size="13" font-weight="700">冬の大三角</text>
+          <text x="440" y="270" fill="var(--blue)" font-size="12">冬のダイヤモンド（六角形）</text>
+          <text x="30" y="40" fill="var(--star)" font-size="14" font-weight="700">冬　オリオン座を中心に</text>
+        </svg>
+      </div>
+      <div class="panel" id="cSp" hidden>
+        <svg viewBox="0 0 600 330" role="img" aria-label="春の大曲線と春の大三角の図">
+          <rect x="10" y="10" width="580" height="310" fill="var(--night)" rx="2"/>
+          <!-- 北斗七星 -->
+          <polyline points="120,70 152,58 184,58 214,72 236,96 262,120 292,138" fill="none" stroke="var(--star)" stroke-width="1.2" opacity=".6"/>
+          <g fill="var(--star)">
+            <circle cx="120" cy="70" r="4"/><circle cx="152" cy="58" r="4"/><circle cx="184" cy="58" r="4"/>
+            <circle cx="214" cy="72" r="4"/><circle cx="236" cy="96" r="4"/><circle cx="262" cy="120" r="4"/><circle cx="292" cy="138" r="4"/>
+          </g>
+          <text x="106" y="48" fill="var(--star)" font-size="12">北斗七星（おおぐま座）</text>
+          <!-- 春の大曲線 -->
+          <path d="M 236 96 Q 300 150 350 196 Q 390 244 400 288" fill="none" stroke="var(--gold-b)" stroke-width="2.5"/>
+          <circle cx="350" cy="196" r="7" fill="#E39B4B"/>
+          <text x="362" y="192" fill="var(--star)" font-size="12">アークトゥルス</text><text x="362" y="206" fill="#B9C5D9" font-size="10">うしかい座・オレンジ</text>
+          <circle cx="400" cy="288" r="6.5" fill="#DCE7F5"/>
+          <text x="412" y="286" fill="var(--star)" font-size="12">スピカ</text><text x="412" y="300" fill="#B9C5D9" font-size="10">おとめ座・白</text>
+          <!-- 春の大三角 -->
+          <polygon points="350,196 400,288 240,250" fill="none" stroke="var(--blue)" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <circle cx="240" cy="250" r="6" fill="#F2F3F0"/>
+          <text x="150" y="268" fill="var(--star)" font-size="12">デネボラ</text><text x="150" y="282" fill="#B9C5D9" font-size="10">しし座</text>
+          <text x="200" y="150" fill="var(--gold-b)" font-size="13" font-weight="700">春の大曲線</text>
+          <text x="256" y="316" fill="var(--blue)" font-size="12">春の大三角</text>
+          <text x="30" y="40" fill="var(--star)" font-size="14" font-weight="700">春　ひしゃくの柄からカーブをたどる</text>
+        </svg>
+      </div>
+      <div class="panel" id="cSu" hidden>
+        <svg viewBox="0 0 600 330" role="img" aria-label="夏の大三角とさそり座の図">
+          <rect x="10" y="10" width="580" height="310" fill="var(--night)" rx="2"/>
+          <!-- 天の川 -->
+          <path d="M 200 20 Q 260 130 240 320" fill="none" stroke="var(--star)" stroke-width="46" opacity=".09"/>
+          <text x="112" y="60" fill="var(--star)" font-size="12" opacity=".6">天の川</text>
+          <polygon points="180,90 260,60 232,190" fill="none" stroke="var(--gold-b)" stroke-width="2"/>
+          <g>
+            <circle cx="180" cy="90" r="7" fill="#EFF4FA"/><text x="76" y="86" fill="var(--star)" font-size="12">ベガ（織姫）</text><text x="76" y="100" fill="#B9C5D9" font-size="10">こと座・白</text>
+            <circle cx="260" cy="60" r="6.5" fill="#F2F3F0"/><text x="272" y="58" fill="var(--star)" font-size="12">デネブ</text><text x="272" y="72" fill="#B9C5D9" font-size="10">はくちょう座・白</text>
+            <circle cx="232" cy="190" r="6.5" fill="#F2F3F0"/><text x="244" y="188" fill="var(--star)" font-size="12">アルタイル（彦星）</text><text x="244" y="202" fill="#B9C5D9" font-size="10">わし座・白</text>
+          </g>
+          <text x="286" y="132" fill="var(--gold-b)" font-size="13" font-weight="700">夏の大三角</text>
+          <text x="286" y="150" fill="#B9C5D9" font-size="11">3つとも白色の1等星</text>
+          <!-- さそり座 -->
+          <polyline points="380,236 412,244 442,254 470,270 490,290 476,306 452,300" fill="none" stroke="var(--star)" stroke-width="1.2" opacity=".55"/>
+          <g fill="var(--star)"><circle cx="380" cy="236" r="3.5"/><circle cx="442" cy="254" r="3.5"/><circle cx="470" cy="270" r="3.5"/><circle cx="490" cy="290" r="3.5"/><circle cx="452" cy="300" r="3.5"/></g>
+          <circle cx="412" cy="244" r="7" fill="#D8503C"/>
+          <text x="330" y="222" fill="var(--star)" font-size="12">アンタレス（赤）</text>
+          <text x="410" y="322" fill="var(--star)" font-size="12">さそり座 ─ 南の低い空</text>
+          <text x="30" y="40" fill="var(--star)" font-size="14" font-weight="700">夏　天の川をはさむ織姫と彦星</text>
+        </svg>
+      </div>
+      <div class="panel" id="cAu" hidden>
+        <svg viewBox="0 0 600 330" role="img" aria-label="秋のペガススの四辺形とカシオペヤ座の図">
+          <rect x="10" y="10" width="580" height="310" fill="var(--night)" rx="2"/>
+          <rect x="200" y="120" width="140" height="130" fill="none" stroke="var(--gold-b)" stroke-width="2"/>
+          <g fill="var(--star)"><circle cx="200" cy="120" r="5"/><circle cx="340" cy="120" r="5"/><circle cx="340" cy="250" r="5"/><circle cx="200" cy="250" r="5"/></g>
+          <text x="214" y="192" fill="var(--gold-b)" font-size="13" font-weight="700">ペガススの四辺形</text>
+          <text x="214" y="210" fill="#B9C5D9" font-size="11">秋の四辺形</text>
+          <polyline points="340,120 386,98 428,88" fill="none" stroke="var(--star)" stroke-width="1.2" opacity=".55"/>
+          <g fill="var(--star)"><circle cx="386" cy="98" r="4"/><circle cx="428" cy="88" r="4"/></g>
+          <text x="386" y="80" fill="var(--star)" font-size="11">アンドロメダ座</text>
+          <!-- カシオペヤ -->
+          <polyline points="440,190 466,214 492,188 518,214 544,188" fill="none" stroke="var(--star)" stroke-width="1.2" opacity=".6"/>
+          <g fill="var(--star)"><circle cx="440" cy="190" r="4"/><circle cx="466" cy="214" r="4"/><circle cx="492" cy="188" r="4"/><circle cx="518" cy="214" r="4"/><circle cx="544" cy="188" r="4"/></g>
+          <text x="442" y="240" fill="var(--star)" font-size="12">カシオペヤ座（W字）</text>
+          <circle cx="150" cy="290" r="6" fill="#EFF4FA"/>
+          <text x="60" y="312" fill="var(--star)" font-size="12">フォーマルハウト</text>
+          <text x="60" y="326" fill="#B9C5D9" font-size="10">みなみのうお座</text>
+          <text x="30" y="40" fill="var(--star)" font-size="14" font-weight="700">秋　1等星が少なく、四辺形が目印</text>
+        </svg>
+      </div>
+    </div>
+    <figcaption id="conCap">冬：オリオン座のベテルギウス・おおいぬ座のシリウス・こいぬ座のプロキオンで冬の大三角。さらに4星を加えて冬のダイヤモンド。</figcaption>
+  </figure>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>季節</th><th>目印の形</th><th>星（星座）</th><th>色</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3"><strong>春</strong></td><td rowspan="2">春の大曲線</td><td>アークトゥルス（うしかい座）</td><td>オレンジ</td></tr>
+      <tr><td>スピカ（おとめ座）</td><td>白</td></tr>
+      <tr><td>春の大三角</td><td>＋デネボラ（しし座）</td><td>白</td></tr>
+      <tr><td rowspan="3"><strong>夏</strong></td><td rowspan="3">夏の大三角</td><td>ベガ（こと座）＝織姫</td><td>白</td></tr>
+      <tr><td>アルタイル（わし座）＝彦星</td><td>白</td></tr>
+      <tr><td>デネブ（はくちょう座）</td><td>白</td></tr>
+      <tr><td><strong>夏</strong></td><td>S字</td><td>アンタレス（さそり座）</td><td>赤</td></tr>
+      <tr><td rowspan="2"><strong>秋</strong></td><td>ペガススの四辺形</td><td>&mdash;（1等星なし）</td><td>&mdash;</td></tr>
+      <tr><td>&mdash;</td><td>フォーマルハウト（みなみのうお座）</td><td>白</td></tr>
+      <tr><td rowspan="3"><strong>冬</strong></td><td rowspan="3">冬の大三角</td><td>ベテルギウス（オリオン座）</td><td>赤</td></tr>
+      <tr><td>シリウス（おおいぬ座）</td><td>白</td></tr>
+      <tr><td>プロキオン（こいぬ座）</td><td>黄白</td></tr>
+      <tr><td><strong>冬</strong></td><td>ダイヤモンド</td><td>＋リゲル・アルデバラン・カペラ・ポルックス</td><td>青白/橙/黄/橙</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="hard">
+    <span class="lbl">よく出る小ネタ</span>
+    ・<strong>オリオン座の三つ星は天の赤道上</strong>にあるので、ほぼ<strong>真東から出て真西に沈む</strong>。<br>
+    ・<strong>恒星はまたたく／惑星はまたたかない</strong>。恒星は点に見えるほど遠く、大気のゆらぎの影響を受けやすいため。<br>
+    ・星座を作る星どうしは、実際には<strong>地球からの距離がまったくちがう</strong>。たまたま同じ方向に見えているだけ。<br>
+    ・<strong>星座早見盤の星座の並びは何年たっても変わらない</strong>が、惑星は星座の間を動くので描かれていない。
+  </div>
+
+  <h3>確認問題</h3>
+  <details class="q"><summary>1等星は3等星の何倍の明るさか。</summary><div class="a">2等級ぶん明るいので <span class="mono">2.5 × 2.5 ≒ 6.3倍</span>（約6倍）。</div></details>
+  <details class="q"><summary>ベテルギウスとリゲルはどちらが表面温度が高いか。理由も。</summary><div class="a"><strong>リゲル</strong>。リゲルは青白色、ベテルギウスは赤色で、<strong>青白い星ほど表面温度が高い</strong>から。</div></details>
+  <details class="q"><summary>夏の大三角をつくる3つの星と星座を答えよ。</summary><div class="a">ベガ（こと座）・アルタイル（わし座）・デネブ（はくちょう座）。3つとも<strong>白色の1等星</strong>。</div></details>
+  <details class="q"><summary>北斗七星を使って北極星を見つける方法を説明せよ。</summary><div class="a">ひしゃくの先端の2つの星を結び、その間隔の<strong>5倍</strong>だけ、ひしゃくの口の向きにのばした先にある。</div></details>
+  <a class="toplink" href="#s4">▲ 章のはじめへ</a>
+</section>
+<section id="s5">
+  <div class="sec-head">
+    <div class="sec-num">05</div>
+    <h2>月<span class="sub">THE MOON &mdash; 満ち欠け・時刻・方位</span></h2>
+  </div>
+  <p class="lead">天体分野の最大の山。<strong>「形」「見える時刻」「見える方位」</strong>の3つが必ずセットで問われます。俯瞰図（真上から見た図）を自分で描けるようになれば、すべて解けます。</p>
+
+  <h3>5-1　満ち欠けのしくみ ─ 動かして確かめる</h3>
+  <figure>
+    <div class="moonctl" id="moonBtns"></div>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 700 420" role="img" aria-label="月の満ち欠けの俯瞰図と地球から見た形">
+      <!-- 太陽光 -->
+      <g stroke="var(--gold-b)" stroke-width="2">
+        <line x1="690" y1="66" x2="420" y2="66"/><line x1="690" y1="118" x2="420" y2="118"/>
+        <line x1="690" y1="170" x2="420" y2="170"/><line x1="690" y1="222" x2="420" y2="222"/>
+      </g>
+      <g fill="var(--gold-b)">
+        <path d="M 420 66 l 11 -4 v 8 z"/><path d="M 420 118 l 11 -4 v 8 z"/>
+        <path d="M 420 170 l 11 -4 v 8 z"/><path d="M 420 222 l 11 -4 v 8 z"/>
+      </g>
+      <text x="556" y="34" class="f-gold" font-size="13" font-weight="700" text-anchor="middle">太陽の光（右から平行に当たる）</text>
+
+      <!-- 公転軌道 -->
+      <circle cx="210" cy="210" r="130" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <!-- 地球 -->
+      <g>
+        <circle cx="210" cy="210" r="34" fill="var(--night)"/>
+        <path d="M 210 176 A 34 34 0 0 1 210 244 Z" fill="var(--blue)" opacity=".9"/>
+        <circle cx="210" cy="210" r="34" fill="none" stroke="var(--ink2)" stroke-width="1.5"/>
+        <text x="210" y="215" fill="#fff" font-size="12" font-weight="700" text-anchor="middle">地球</text>
+      </g>
+      <!-- 地球上の時刻 -->
+      <g class="f-ink3" font-size="10.5" font-family="IBM Plex Mono">
+        <text x="252" y="214">12時</text>
+        <text x="210" y="162" text-anchor="middle">18時</text>
+        <text x="168" y="214" text-anchor="end">0時</text>
+        <text x="210" y="272" text-anchor="middle">6時</text>
+      </g>
+      <path d="M 255 184 A 52 52 0 0 0 227.8 161.1" fill="none" stroke="var(--ink3)" stroke-width="1.6"/>
+      <path d="M 222 159 L 231 158 L 228 166 Z" fill="var(--ink3)"/>
+      <text x="264" y="196" class="f-ink3" font-size="10.5">自転</text>
+
+      <!-- 月8個（JSで生成） -->
+      <g id="moonOrbit"></g>
+
+      <!-- 公転の向き -->
+      <path d="M 82.8 237 A 130 130 0 0 0 102.2 282.7" fill="none" stroke="var(--ink2)" stroke-width="2.2"/>
+      <path d="M 106 288 L 97 284 L 105.2 278.2 Z" fill="var(--ink2)"/>
+      <text x="150" y="270" class="f-ink2" font-size="11" text-anchor="middle">公転の向き</text>
+
+      <!-- 地球から見た形 -->
+      <rect x="418" y="252" width="264" height="158" rx="3" fill="var(--night)" stroke="var(--line)"/>
+      <text x="550" y="278" fill="var(--star)" font-size="12" text-anchor="middle" font-family="IBM Plex Mono" letter-spacing="2">VIEW FROM EARTH</text>
+      <g transform="translate(550,336)">
+        <circle r="46" fill="#1B2436"/>
+        <path id="moonShape" d="" fill="#F2ECD9"/>
+        <circle r="46" fill="none" stroke="var(--line)" stroke-width="1"/>
+      </g>
+      <text id="moonName" x="550" y="400" fill="var(--star)" font-size="14" font-weight="700" text-anchor="middle">新月</text>
+    </svg>
+    </div>
+    <div class="moonread" id="moonRead"></div>
+    <figcaption>ボタンで月の位置を切り替えると、俯瞰図の位置と地球から見える形が連動します。<strong>太陽は必ず右</strong>、<strong>公転は反時計回り</strong>で図を描くのが約束。</figcaption>
+  </figure>
+
+  <div class="key">
+    <span class="lbl">最重要の対応表</span>
+    <strong>新月＝南中12時／上弦＝南中18時／満月＝南中0時／下弦＝南中6時。</strong><br>
+    <span style="font-size:.9rem">月の出＝南中の<strong>6時間前</strong>、月の入り＝南中の<strong>6時間後</strong>。この3点セットで、どの月でも時刻が出せます。</span>
+  </div>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>月の名前</th><th class="num">月齢</th><th>形</th><th class="num">月の出</th><th class="num">南中</th><th class="num">月の入り</th><th>よく見える時刻・方位</th></tr></thead>
+    <tbody>
+      <tr><td><strong>新月</strong></td><td class="num">0</td><td>見えない</td><td class="num">6時</td><td class="num">12時</td><td class="num">18時</td><td>見えない（太陽と同じ方向）</td></tr>
+      <tr><td><strong>三日月</strong></td><td class="num">3</td><td>右が細い</td><td class="num">9時</td><td class="num">15時</td><td class="num">21時</td><td>夕方・<strong>西</strong>の低い空</td></tr>
+      <tr><td><strong>上弦の月</strong></td><td class="num">7</td><td>右半分</td><td class="num">12時</td><td class="num">18時</td><td class="num">24時</td><td>日没ごろ<strong>南</strong>の空／真夜中に西へ沈む</td></tr>
+      <tr><td><strong>十三夜月</strong></td><td class="num">12</td><td>右がふくらむ</td><td class="num">16時</td><td class="num">22時</td><td class="num">4時</td><td>夜のはじめ〜明け方前</td></tr>
+      <tr><td><strong>満月</strong></td><td class="num">15</td><td>まん丸</td><td class="num">18時</td><td class="num">24時</td><td class="num">6時</td><td>日没に<strong>東</strong>から出て一晩中見える</td></tr>
+      <tr><td><strong>寝待月（十九夜）</strong></td><td class="num">18</td><td>左が少し欠ける</td><td class="num">21時</td><td class="num">3時</td><td class="num">9時</td><td>夜おそく〜明け方</td></tr>
+      <tr><td><strong>下弦の月</strong></td><td class="num">22</td><td>左半分</td><td class="num">24時</td><td class="num">6時</td><td class="num">12時</td><td>真夜中に東から出て、明け方<strong>南</strong>の空</td></tr>
+      <tr><td><strong>二十六夜月</strong></td><td class="num">26</td><td>左が細い</td><td class="num">3時</td><td class="num">9時</td><td class="num">15時</td><td>明け方・<strong>東</strong>の低い空</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>5-2　毎日おくれる50分</h3>
+  <ul class="tight">
+    <li>月は地球のまわりを<strong>約29.5日</strong>で一周（見かけ上）するので、1日に <span class="mono">360 ÷ 29.5 ≒ 12度</span> ずつ<strong>東</strong>へずれる。</li>
+    <li>星は1時間に15度動くので、12度ぶんの遅れは <span class="mono">12 ÷ 15 × 60 ＝ 48分 ≒ 約50分</span>。</li>
+    <li>だから<strong>月の出・南中・月の入りは毎日およそ50分ずつおそくなる</strong>。</li>
+  </ul>
+  <div class="hard">
+    <span class="lbl">記述頻出：27.3日と29.5日</span>
+    月が地球のまわりを1周する<strong>公転周期は27.3日</strong>ですが、<strong>満ち欠けの周期（朔望月）は29.5日</strong>です。<br>
+    理由：月が27.3日で1周する間に<strong>地球も太陽のまわりを約27度公転して動いてしまう</strong>ため、太陽・地球・月が再び同じ位置関係になるには、月はさらに約27度ぶん余分に回らなければならないから。
+  </div>
+
+  <h3>5-3　月そのもの</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>基本データ</h4>
+      <ul class="tight" style="font-size:.9rem">
+        <li>直径 約3500km ＝ 地球の約<strong>4分の1</strong></li>
+        <li>地球からの距離 約<strong>38万km</strong></li>
+        <li>重力は地球の約<strong>6分の1</strong></li>
+        <li>自ら光らず、太陽の光を<strong>反射</strong>している</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>表面と環境</h4>
+      <ul class="tight" style="font-size:.9rem">
+        <li><strong>クレーター</strong>…いん石の衝突あと。風化しないので残る</li>
+        <li><strong>海</strong>…黒っぽい平らな部分。水はない</li>
+        <li><strong>大気も水もない</strong>→ 昼約110度／夜約−170度と<strong>温度差が激しい</strong>、音が伝わらない、空は昼でも黒い</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hard">
+    <span class="lbl">難関テーマ</span>
+    <strong>①月はいつも同じ面を地球に向けている</strong>　→　<strong>自転周期と公転周期がどちらも27.3日で等しい</strong>から。「自転していない」は誤り。<br>
+    <strong>②月から地球を見ると</strong>　→　地球は空の<strong>ほぼ同じ位置に止まって</strong>見え、満ち欠けは月と<strong>ちょうど逆</strong>（地球から新月のとき、月からは「満地球」）。地球は月の約<strong>4倍</strong>の大きさに見える。<br>
+    <strong>③南半球で見る月</strong>　→　上下左右が逆さまに見えるので、上弦の月は<strong>左半分</strong>が光って見える。
+  </div>
+
+  <div class="pat">
+    <h4><span class="pn">計算</span>何日後にどんな月が見えるか</h4>
+    <ol>
+      <li>満ち欠けの周期は<strong>29.5日</strong>。日数を29.5で割った<strong>あまり</strong>を考える。</li>
+      <li>あまりの日数ぶんだけ月齢を進める（新月0 → 上弦7.4 → 満月14.8 → 下弦22.1）。</li>
+      <li>南中時刻は <span class="mono">12時 ＋ 月齢 × 約48分</span>。</li>
+    </ol>
+    <p class="ex">例：今日が満月。50日後の月は？　<span class="mono">50 − 29.5 ＝ 20.5日ぶん進む</span>。満月（月齢約15）＋20.5 ＝ 月齢35.5 → 29.5を引いて<strong>月齢6 ＝ 上弦の月に近い形</strong>。</p>
+  </div>
+
+  <h3>確認問題</h3>
+  <details class="q"><summary>夕方6時ごろ、南の空に見える月の形は？</summary><div class="a"><strong>上弦の月（右半分が光る半月）</strong>。上弦は18時に南中するため。</div></details>
+  <details class="q"><summary>明け方の東の低い空に、左側が細く光る月が見えた。この月の名前と、次に満月になるのは約何日後か。</summary><div class="a"><strong>二十六夜月（有明月）</strong>。月齢は約26なので、次の新月まで約3.5日、そこから満月まで約15日で、<strong>約18〜19日後</strong>。</div></details>
+  <details class="q"><summary>今日、午後8時に月が南中した。明日、月が南中するのはおよそ何時か。</summary><div class="a">約50分おくれるので<strong>午後8時50分ごろ</strong>。</div></details>
+  <details class="q"><summary>月の公転周期27.3日に対し、満ち欠けの周期が29.5日と長い理由を説明せよ。</summary><div class="a">月が1周する間に<strong>地球も太陽のまわりを公転して位置を変える</strong>ため、太陽・地球・月が同じ位置関係にもどるには、月がさらに余分に公転する必要があるから。</div></details>
+  <details class="q"><summary>月面に立つと、空はどのように見えるか。理由とともに答えよ。</summary><div class="a">月には<strong>大気がない</strong>ため光が散乱せず、<strong>昼間でも空は黒く、星が見える</strong>。</div></details>
+  <a class="toplink" href="#s5">▲ 章のはじめへ</a>
+</section>
+
+
+<section id="s6">
+  <div class="sec-head">
+    <div class="sec-num">06</div>
+    <h2>日食と月食<span class="sub">ECLIPSES &mdash; 並び方・欠ける向き・起こる条件</span></h2>
+  </div>
+  <p class="lead">「どちら側から欠けるか」で差がつきます。<strong>月は天球上を西から東へ動く</strong>という一点から、両方とも導けます。</p>
+
+  <h3>6-1　並び方</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 660 340" role="img" aria-label="日食と月食における太陽・地球・月の並び方">
+      <!-- 日食 -->
+      <text x="30" y="34" class="f-ink" font-size="14" font-weight="700">日食 ─ 太陽 － 月 － 地球（新月のとき）</text>
+      <circle cx="600" cy="90" r="30" fill="var(--gold-b)"/>
+      <text x="600" y="146" class="f-gold" font-size="12" font-weight="700" text-anchor="middle">太陽</text>
+      <!-- 影 -->
+      <path d="M 570 66 L 330 110 L 330 122 L 570 114 Z" fill="var(--ink2)" opacity=".22"/>
+      <circle cx="360" cy="102" r="13" fill="var(--ink)"/>
+      <text x="360" y="76" class="f-ink" font-size="12" text-anchor="middle">月</text>
+      <circle cx="150" cy="112" r="38" fill="var(--blue-wash)" stroke="var(--ink2)" stroke-width="1.5"/>
+      <text x="150" y="117" class="f-ink" font-size="12" font-weight="700" text-anchor="middle">地球</text>
+      <circle cx="188" cy="112" r="5" fill="var(--red)"/>
+      <text x="90" y="170" class="f-red" font-size="11">月の影が落ちた</text>
+      <text x="90" y="184" class="f-red" font-size="11">せまい地域だけで見える</text>
+
+      <line x1="30" y1="196" x2="630" y2="196" stroke="var(--line)" stroke-width="1"/>
+
+      <!-- 月食 -->
+      <text x="30" y="226" class="f-ink" font-size="14" font-weight="700">月食 ─ 太陽 － 地球 － 月（満月のとき）</text>
+      <circle cx="600" cy="282" r="30" fill="var(--gold-b)"/>
+      <text x="600" y="330" class="f-gold" font-size="12" font-weight="700" text-anchor="middle">太陽</text>
+      <circle cx="330" cy="282" r="38" fill="var(--blue-wash)" stroke="var(--ink2)" stroke-width="1.5"/>
+      <text x="330" y="287" class="f-ink" font-size="12" font-weight="700" text-anchor="middle">地球</text>
+      <path d="M 292 258 L 100 268 L 100 296 L 292 306 Z" fill="var(--ink2)" opacity=".28"/>
+      <text x="150" y="248" class="f-ink2" font-size="11">地球の影（本影）</text>
+      <circle cx="150" cy="282" r="13" fill="var(--red)" opacity=".75"/>
+      <text x="150" y="318" class="f-red" font-size="11" text-anchor="middle">赤銅色に見える</text>
+    </svg>
+    </div>
+    <figcaption>日食は<strong>新月</strong>のときだけ、月食は<strong>満月</strong>のときだけ起こる。</figcaption>
+  </figure>
+
+  <h3>6-2　欠ける向き</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 640 290" role="img" aria-label="日食は太陽の右から、月食は月の左から欠けることを示す図">
+      <rect x="10" y="10" width="300" height="270" rx="3" fill="var(--surface2)" stroke="var(--line)"/>
+      <text x="160" y="38" class="f-ink" font-size="13" font-weight="700" text-anchor="middle">日食：太陽の<tspan class="f-red">右（西）</tspan>から欠ける</text>
+      <g transform="translate(95,110)"><circle r="28" fill="var(--gold-b)"/><circle cx="43" cy="-5" r="28" fill="var(--night)"/></g>
+      <g transform="translate(240,110)"><circle r="28" fill="var(--gold-b)"/><circle cx="13" cy="-9" r="28" fill="var(--night)"/></g>
+      <text x="95" y="172" class="f-ink2" font-size="11.5" text-anchor="middle">① 欠け始め</text>
+      <text x="240" y="172" class="f-ink2" font-size="11.5" text-anchor="middle">② そのあと</text>
+      <line x1="44" y1="200" x2="276" y2="200" stroke="var(--line)" stroke-width="1.5"/>
+      <path d="M 44 200 l 9 -4 v 8 z" fill="var(--line)"/><path d="M 276 200 l -9 -4 v 8 z" fill="var(--line)"/>
+      <text x="36" y="204" class="f-ink2" font-size="12" text-anchor="end">東</text>
+      <text x="284" y="204" class="f-ink2" font-size="12">西</text>
+      <text x="160" y="238" class="f-ink2" font-size="11.5" text-anchor="middle">月は西から東へ（図では右から左へ）動き、</text>
+      <text x="160" y="256" class="f-ink2" font-size="11.5" text-anchor="middle">太陽の西側から入りこんでいくため</text>
+
+      <rect x="330" y="10" width="300" height="270" rx="3" fill="var(--surface2)" stroke="var(--line)"/>
+      <text x="480" y="38" class="f-ink" font-size="13" font-weight="700" text-anchor="middle">月食：月の<tspan class="f-blue">左（東）</tspan>から欠ける</text>
+      <g transform="translate(420,110)"><circle r="28" fill="#EDE6D2"/><circle cx="-43" cy="-5" r="28" fill="var(--ink2)" opacity=".85"/></g>
+      <g transform="translate(566,110)"><circle r="28" fill="#EDE6D2"/><circle cx="-13" cy="-9" r="28" fill="var(--ink2)" opacity=".85"/></g>
+      <text x="420" y="172" class="f-ink2" font-size="11.5" text-anchor="middle">① 欠け始め</text>
+      <text x="566" y="172" class="f-ink2" font-size="11.5" text-anchor="middle">② そのあと</text>
+      <line x1="364" y1="200" x2="596" y2="200" stroke="var(--line)" stroke-width="1.5"/>
+      <path d="M 364 200 l 9 -4 v 8 z" fill="var(--line)"/><path d="M 596 200 l -9 -4 v 8 z" fill="var(--line)"/>
+      <text x="356" y="204" class="f-ink2" font-size="12" text-anchor="end">東</text>
+      <text x="604" y="204" class="f-ink2" font-size="12">西</text>
+      <text x="480" y="238" class="f-ink2" font-size="11.5" text-anchor="middle">月は東へ進むので、進行方向の先頭＝</text>
+      <text x="480" y="256" class="f-ink2" font-size="11.5" text-anchor="middle">東側から地球の影に入っていくため</text>
+    </svg>
+    </div>
+    <figcaption>共通の理由は「月は天球上を西から東へ動く」。日食では<strong>月が太陽を追いこす</strong>、月食では<strong>月が影に突っこむ</strong>と考える。</figcaption>
+  </figure>
+
+  <h3>6-3　種類と特徴</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th></th><th>日食</th><th>月食</th></tr></thead>
+    <tbody>
+      <tr><td><strong>月の形</strong></td><td>新月</td><td>満月</td></tr>
+      <tr><td><strong>並び</strong></td><td>太陽－月－地球</td><td>太陽－地球－月</td></tr>
+      <tr><td><strong>欠け始め</strong></td><td>太陽の<strong>右（西）</strong>側</td><td>月の<strong>左（東）</strong>側</td></tr>
+      <tr><td><strong>種類</strong></td><td><strong>皆既</strong>／<strong>金環</strong>／部分</td><td><strong>皆既</strong>／部分（半影食）</td></tr>
+      <tr><td><strong>見える範囲</strong></td><td><strong>せまい</strong>（月の影が小さい）</td><td><strong>広い</strong>（夜の半球全体）</td></tr>
+      <tr><td><strong>時間</strong></td><td>短い（皆既は数分）</td><td>長い（1時間以上）</td></tr>
+      <tr><td><strong>特有の現象</strong></td><td>コロナ・プロミネンス・ダイヤモンドリング</td><td>赤銅色（赤黒い月）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="key">
+    <span class="lbl">なぜ毎月起きないのか</span>
+    月の公転面（白道）は、地球の公転面（黄道面）に対して<strong>約5度かたむいている</strong>ため、新月・満月になっても太陽・地球・月が<strong>一直線に並ばない</strong>ことが多いから。
+  </div>
+
+  <div class="hard">
+    <span class="lbl">金環日食のしくみ <span class="tag nan">難関</span></span>
+    月の公転軌道は完全な円ではなく<strong>だ円</strong>。月が地球から<strong>遠い</strong>ときは見かけの大きさが小さくなり、太陽を隠しきれずに<strong>まわりがリング状に残る</strong>＝金環日食。近いときは完全に隠して皆既日食になる。<br>
+    偶然にも「太陽の直径は月の約400倍、距離も約400倍」なので、地球からは<strong>ほぼ同じ大きさに見える</strong>。
+  </div>
+  <div class="hard">
+    <span class="lbl">皆既月食が赤いのはなぜ <span class="tag nan">難関</span></span>
+    地球の本影に完全に入っても真っ暗にならないのは、<strong>地球の大気で屈折した太陽光</strong>がわずかに月に届くから。青い光は大気で散乱されて届かず、<strong>赤い光だけが曲げられて届く</strong>ため赤銅色に見える。（夕焼けが赤いのと同じ理由）
+  </div>
+
+  <h3>確認問題</h3>
+  <details class="q"><summary>日食が起こるときの月の形と、太陽が欠け始める側を答えよ。</summary><div class="a"><strong>新月</strong>。太陽の<strong>右（西）側</strong>から欠け始める。</div></details>
+  <details class="q"><summary>日食も月食も毎月は起こらない。その理由を書け。</summary><div class="a">月の公転する面が地球の公転する面に対して<strong>約5度かたむいている</strong>ため、新月や満月でも3つの天体が一直線に並ばないことが多いから。</div></details>
+  <details class="q"><summary>月食のほうが日食より多くの人が観測できるのはなぜか。</summary><div class="a">月食は<strong>地球の影が月より大きく</strong>、<strong>夜になっている地域すべて</strong>から同じように見えるのに対し、日食は<strong>月の影が落ちたせまい地域</strong>でしか見えないから。</div></details>
+  <a class="toplink" href="#s6">▲ 章のはじめへ</a>
+</section>
+<section id="s7">
+  <div class="sec-head">
+    <div class="sec-num">07</div>
+    <h2>惑星と太陽系<span class="sub">PLANETS &mdash; 金星の満ち欠け・内惑星と外惑星</span></h2>
+  </div>
+  <p class="lead">難関校で最も差がつくのが<strong>金星</strong>。「いつ・どちらの空に・どんな形で見えるか」を、位置図から読み取れるようにします。</p>
+
+  <h3>7-1　太陽系の姿</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>グループ</th><th>惑星</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr><td><strong>地球型惑星</strong></td><td>水星・金星・地球・火星</td><td>小さい／岩石でできている／<strong>密度が大きい</strong>／衛星が少ない</td></tr>
+      <tr><td><strong>木星型惑星</strong></td><td>木星・土星・天王星・海王星</td><td>大きい／おもに気体／<strong>密度が小さい</strong>／衛星やリングが多い</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul class="tight">
+    <li>並び順は<strong>水・金・地・火・木・土・天・海</strong>。最大は<strong>木星</strong>、最も密度が小さいのは<strong>土星</strong>（水に浮く）。</li>
+    <li>惑星は自ら光らず、太陽の光を<strong>反射</strong>して光る。恒星とちがい<strong>またたかない</strong>。</li>
+    <li>星座の星（恒星）の間を動いていくので「惑う星」＝惑星。<strong>星座早見盤には描かれていない</strong>。</li>
+    <li><strong>内惑星</strong>＝地球より内側（水星・金星）／<strong>外惑星</strong>＝地球より外側（火星以遠）。</li>
+  </ul>
+
+  <h3>7-2　金星の見え方</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 620 500" role="img" aria-label="金星の位置と地球から見える形の関係">
+      <!-- 軌道 -->
+      <circle cx="250" cy="170" r="78" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <circle cx="250" cy="170" r="160" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <!-- 太陽 -->
+      <circle cx="250" cy="170" r="22" fill="var(--gold-b)"/>
+      <text x="250" y="176" fill="#3A2A08" font-size="11" font-weight="700" text-anchor="middle">太陽</text>
+      <!-- 地球 -->
+      <g transform="translate(250,330)">
+        <circle r="19" fill="var(--night)"/>
+        <path d="M 0 -19 A 19 19 0 0 1 0 19 Z" fill="var(--blue)" transform="rotate(-90)"/>
+        <circle r="19" fill="none" stroke="var(--ink2)" stroke-width="1.5"/>
+      </g>
+      <text x="250" y="368" class="f-ink" font-size="12" font-weight="700" text-anchor="middle">地球</text>
+      <!-- 金星（明るい側は必ず太陽側）-->
+      <g id="venusPts">
+        <g transform="translate(250,92)"><circle r="11" fill="var(--night)"/><path d="M 0 -11 A 11 11 0 0 1 0 11 Z" fill="#EFE3C4" transform="rotate(90)"/><circle r="11" fill="none" stroke="var(--ink2)"/></g>
+        <text x="250" y="72" class="f-ink" font-size="12" text-anchor="middle" font-weight="700">ア</text>
+        <g transform="translate(172,170)"><circle r="11" fill="var(--night)"/><path d="M 0 -11 A 11 11 0 0 1 0 11 Z" fill="#EFE3C4"/><circle r="11" fill="none" stroke="var(--ink2)"/></g>
+        <text x="146" y="166" class="f-ink" font-size="12" text-anchor="middle" font-weight="700">イ</text>
+        <g transform="translate(195,225)"><circle r="11" fill="var(--night)"/><path d="M 0 -11 A 11 11 0 0 1 0 11 Z" fill="#EFE3C4" transform="rotate(-45)"/><circle r="11" fill="none" stroke="var(--ink2)"/></g>
+        <text x="170" y="238" class="f-ink" font-size="12" text-anchor="middle" font-weight="700">ウ</text>
+        <g transform="translate(250,248)"><circle r="11" fill="var(--night)"/><path d="M 0 -11 A 11 11 0 0 1 0 11 Z" fill="#EFE3C4" transform="rotate(-90)"/><circle r="11" fill="none" stroke="var(--ink2)"/></g>
+        <text x="250" y="272" class="f-ink" font-size="12" text-anchor="middle" font-weight="700">エ</text>
+        <g transform="translate(328,170)"><circle r="11" fill="var(--night)"/><path d="M 0 -11 A 11 11 0 0 0 0 11 Z" fill="#EFE3C4"/><circle r="11" fill="none" stroke="var(--ink2)"/></g>
+        <text x="356" y="166" class="f-ink" font-size="12" text-anchor="middle" font-weight="700">オ</text>
+      </g>
+      <!-- 視線 -->
+      <g stroke="var(--blue)" stroke-width="1" stroke-dasharray="3 3" opacity=".7">
+        <line x1="250" y1="330" x2="172" y2="170"/><line x1="250" y1="330" x2="328" y2="170"/>
+      </g>
+      <text x="60" y="290" class="f-ink2" font-size="11">← 夕方の西の空</text>
+      <text x="404" y="290" class="f-ink2" font-size="11">明け方の東の空 →</text>
+      <text x="34" y="40" class="f-ink2" font-size="11.5">※ 太陽・金星・地球を北極側から見た図</text>
+
+      <!-- 見え方 -->
+      <line x1="20" y1="392" x2="600" y2="392" stroke="var(--line)"/>
+      <text x="30" y="416" class="f-ink" font-size="13" font-weight="700">地球から見える形（肉眼）</text>
+      <g transform="translate(90,462)">
+        <circle r="12" fill="#1B2436"/><circle r="12" fill="#EFE3C4"/><circle r="12" fill="none" stroke="var(--line)"/>
+        <text y="34" class="f-ink2" font-size="11" text-anchor="middle">ア 小さく丸い</text>
+        <text y="48" class="f-ink3" font-size="10" text-anchor="middle">太陽の向こう＝見えない</text>
+      </g>
+      <g transform="translate(215,462)">
+        <circle r="18" fill="#1B2436"/><path d="M 0 -18 A 18 18 0 0 1 0 18 Z" fill="#EFE3C4"/><circle r="18" fill="none" stroke="var(--line)"/>
+        <text y="40" class="f-ink2" font-size="11" text-anchor="middle">イ 半分（右が光る）</text>
+        <text y="54" class="f-gold" font-size="10" text-anchor="middle" font-weight="700">宵の明星</text>
+      </g>
+      <g transform="translate(345,462)">
+        <circle r="27" fill="#1B2436"/><path d="M 0 -27 A 27 27 0 0 1 0 27 A 13 27 0 0 0 0 -27 Z" fill="#EFE3C4"/><circle r="27" fill="none" stroke="var(--line)"/>
+        <text y="48" class="f-ink2" font-size="11" text-anchor="middle">ウ 大きく細い</text>
+        <text y="62" class="f-gold" font-size="10" text-anchor="middle" font-weight="700">宵の明星</text>
+      </g>
+      <g transform="translate(450,462)">
+        <circle r="30" fill="#1B2436"/><circle r="30" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <text y="48" class="f-ink2" font-size="11" text-anchor="middle">エ 見えない</text>
+      </g>
+      <g transform="translate(550,462)">
+        <circle r="18" fill="#1B2436"/><path d="M 0 -18 A 18 18 0 0 0 0 18 Z" fill="#EFE3C4"/><circle r="18" fill="none" stroke="var(--line)"/>
+        <text y="40" class="f-ink2" font-size="11" text-anchor="middle">オ 半分（左が光る）</text>
+        <text y="54" class="f-gold" font-size="10" text-anchor="middle" font-weight="700">明けの明星</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>地球に近いほど<strong>大きく・細く</strong>、遠いほど<strong>小さく・丸く</strong>見える。見かけの大きさは最大で約6倍もちがう。</figcaption>
+  </figure>
+
+  <div class="key">
+    <span class="lbl">金星の3原則</span>
+    ① <strong>真夜中には絶対に見えない</strong>（地球より内側にあり、太陽から離れられないため）。<br>
+    ② <strong>夕方の西の空</strong>に見えるのが<strong>宵の明星</strong>／<strong>明け方の東の空</strong>に見えるのが<strong>明けの明星</strong>。<br>
+    ③ 光っている側は<strong>必ず太陽のある方向</strong>。宵の明星は<strong>右</strong>が、明けの明星は<strong>左</strong>が光る（同じ時間帯の月の形と同じ向き）。
+  </div>
+  <div class="hard">
+    <span class="lbl">天体望遠鏡の逆像 <span class="tag nan">難関</span></span>
+    天体望遠鏡（屈折式）で見ると、像は<strong>上下左右が逆</strong>になります。したがって、肉眼で<strong>右</strong>が光って見える宵の明星は、望遠鏡の視野では<strong>左</strong>が光って見えます。<br>
+    問題文に「天体望遠鏡で観察したところ」とあったら、<strong>まず肉眼での形を考え、それを180度回転させる</strong>のが手順です。
+  </div>
+
+  <h3>7-3　外惑星と逆行 <span class="tag nan">難関</span></h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 600 260" role="img" aria-label="地球が外惑星を追いこすときに逆行が起こるしくみ">
+      <circle cx="120" cy="160" r="18" fill="var(--gold-b)"/><text x="120" y="196" class="f-gold" font-size="11" text-anchor="middle" font-weight="700">太陽</text>
+      <circle cx="120" cy="160" r="62" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>
+      <circle cx="120" cy="160" r="120" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>
+      <g fill="var(--blue)">
+        <circle cx="70" cy="123" r="7"/><circle cx="120" cy="98" r="7"/><circle cx="170" cy="123" r="7"/>
+      </g>
+      <g class="f-ink2" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">
+        <text x="58" y="112">1</text><text x="120" y="86">2</text><text x="182" y="112">3</text>
+      </g>
+      <text x="34" y="150" class="f-blue" font-size="11">地球</text>
+      <g fill="var(--red)">
+        <circle cx="76" cy="63" r="8"/><circle cx="120" cy="40" r="8"/><circle cx="164" cy="63" r="8"/>
+      </g>
+      <text x="176" y="42" class="f-red" font-size="11">火星</text>
+      <g stroke="var(--ink2)" stroke-width="1" stroke-dasharray="3 3">
+        <line x1="70" y1="123" x2="330" y2="40"/><line x1="120" y1="98" x2="400" y2="52"/><line x1="170" y1="123" x2="330" y2="86"/>
+      </g>
+      <rect x="320" y="20" width="260" height="110" rx="3" fill="var(--night)"/>
+      <g fill="var(--star)"><circle cx="356" cy="46" r="4"/><circle cx="420" cy="58" r="4"/><circle cx="392" cy="88" r="4"/></g>
+      <g class="mono" font-size="10" fill="var(--star)"><text x="346" y="36">1</text><text x="428" y="52">2</text><text x="400" y="104">3</text></g>
+      <path d="M 356 46 L 420 58 L 392 88" fill="none" stroke="var(--gold-b)" stroke-width="2"/>
+      <path d="M 392 88 l 8 -6 l 2 10 z" fill="var(--gold-b)"/>
+      <text x="450" y="90" fill="var(--star)" font-size="11">星座の中での見かけの動き</text>
+      <text x="450" y="106" fill="var(--star)" font-size="11">＝途中で向きが逆になる</text>
+      <text x="120" y="240" class="f-ink2" font-size="11.5">内側の地球のほうが速く公転するので、外惑星を追いこすとき、</text>
+      <text x="120" y="256" class="f-ink2" font-size="11.5">星座の中での動きが一時的に逆向き（<tspan class="f-red" font-weight="700">逆行</tspan>）に見える。</text>
+    </svg>
+    </div>
+    <figcaption>ふだんは西から東へ動く（順行）惑星が、一時的に東から西へ動いて見える現象を逆行という。</figcaption>
+  </figure>
+  <ul class="tight">
+    <li>外惑星は<strong>真夜中にも見える</strong>。太陽・地球・惑星が一直線に並ぶ<strong>衝</strong>のとき、地球に最も近く、<strong>一晩中見えて最も明るい</strong>。</li>
+    <li><strong>会合周期</strong>（同じ位置関係にもどるまで）は <span class="mono">1/S ＝ |1/P − 1/E|</span>（E＝地球の公転周期365日）。火星は約780日、金星は約584日。</li>
+  </ul>
+
+  <h3>確認問題</h3>
+  <details class="q"><summary>金星が真夜中に見えない理由を答えよ。</summary><div class="a">金星は<strong>地球より内側</strong>を公転しており、地球から見て太陽から大きく離れることがないため。真夜中は太陽と正反対の方向を向いており、そこに金星は来られないから。</div></details>
+  <details class="q"><summary>夕方の西の空に見えた金星を天体望遠鏡で観察した。どのような形に見えるか。</summary><div class="a">肉眼では<strong>右側</strong>が光って見えるが、天体望遠鏡では上下左右が逆になるので<strong>左側</strong>が光った形に見える。</div></details>
+  <details class="q"><summary>金星が地球に近づくと、見かけの形と大きさはどう変わるか。</summary><div class="a">見かけの大きさは<strong>大きく</strong>なり、形は<strong>細く</strong>（三日月形に）なる。</div></details>
+  <a class="toplink" href="#s7">▲ 章のはじめへ</a>
+</section>
+
+
+<section id="s8">
+  <div class="sec-head">
+    <div class="sec-num">08</div>
+    <h2>星座早見と作図<span class="sub">PLANISPHERE &mdash; 道具と手を動かす問題</span></h2>
+  </div>
+
+  <h3>8-1　星座早見盤</h3>
+  <figure>
+    <div class="fig-scroll">
+    <svg viewBox="0 0 560 340" role="img" aria-label="星座早見盤の模式図と方位の並び">
+      <circle cx="180" cy="170" r="140" fill="var(--night)" stroke="var(--ink2)" stroke-width="2"/>
+      <circle cx="180" cy="170" r="152" fill="none" stroke="var(--line)" stroke-width="10"/>
+      <circle cx="180" cy="170" r="5" fill="var(--star)"/>
+      <text x="192" y="166" fill="var(--star)" font-size="11">天頂</text>
+      <g fill="var(--star)" opacity=".8">
+        <circle cx="120" cy="90" r="3"/><circle cx="220" cy="80" r="3"/><circle cx="260" cy="140" r="3"/>
+        <circle cx="110" cy="220" r="3"/><circle cx="230" cy="240" r="3"/><circle cx="150" cy="130" r="3"/>
+        <circle cx="90" cy="160" r="3"/><circle cx="270" cy="200" r="3"/><circle cx="180" cy="270" r="3"/>
+      </g>
+      <g font-size="16" font-weight="700" text-anchor="middle">
+        <text x="180" y="330" class="f-ink">南</text>
+        <text x="180" y="26" class="f-ink">北</text>
+        <text x="24" y="176" class="f-red">西</text>
+        <text x="336" y="176" class="f-red">東</text>
+      </g>
+      <text x="180" y="300" fill="var(--star)" font-size="11" text-anchor="middle">（地平線）</text>
+      <rect x="370" y="60" width="170" height="200" rx="3" fill="var(--surface2)" stroke="var(--line)"/>
+      <text x="455" y="88" class="f-ink" font-size="13" font-weight="700" text-anchor="middle">使い方</text>
+      <text x="386" y="114" class="f-ink2" font-size="11.5">① 観察する日付の目もりと</text>
+      <text x="386" y="132" class="f-ink2" font-size="11.5">　 時刻の目もりを合わせる</text>
+      <text x="386" y="156" class="f-ink2" font-size="11.5">② 見たい方位を<tspan font-weight="700">下</tspan>にして</text>
+      <text x="386" y="174" class="f-ink2" font-size="11.5">　 頭の上にかざす</text>
+      <text x="386" y="198" class="f-ink2" font-size="11.5">③ 中心が天頂、へりが地平線</text>
+      <text x="386" y="228" class="f-red" font-size="11.5" font-weight="700">※ 東と西が実際と逆</text>
+      <text x="386" y="246" class="f-ink2" font-size="11.5">　 空を見上げて写すから</text>
+    </svg>
+    </div>
+    <figcaption>地図（上から見る）とちがい、星座早見盤は<strong>下から空を見上げた図</strong>。だから東西が左右逆に印刷されている。</figcaption>
+  </figure>
+
+  <h3>8-2　作図・読図の手順</h3>
+  <div class="pat">
+    <h4><span class="pn">作図</span>天球図に太陽の道筋をかき入れる</h4>
+    <ol>
+      <li>まず<strong>春分・秋分の道筋</strong>（真東 → 南中 → 真西）を基準にかく。</li>
+      <li>夏至は<strong>全体を北へずらして高く</strong>、冬至は<strong>南へずらして低く</strong>、春分の線と<strong>平行</strong>にかく。</li>
+      <li>3本の道筋は<strong>必ず平行</strong>。交わらない。</li>
+    </ol>
+  </div>
+  <div class="pat">
+    <h4><span class="pn">作図</span>月の位置と形をかき入れる</h4>
+    <ol>
+      <li>太陽を<strong>右</strong>に置き、地球を中心にした<strong>俯瞰図</strong>をかく。</li>
+      <li>地球に「12時（太陽側）・18時・0時・6時」の目盛りを反時計回りに入れる。</li>
+      <li>問われた<strong>時刻の観測者</strong>の位置に立ち、そこから見える方向に月があるか確かめる。</li>
+      <li>月の<strong>右半分（太陽側）が明るい</strong>ことを使って、地球から見える形を決める。</li>
+    </ol>
+    <p class="ex">「観測者の頭の向き＝真上（天頂）」「観測者から見て回転方向の前が東」を意識すると方位も決まります。</p>
+  </div>
+  <div class="pat">
+    <h4><span class="pn">読図</span>グラフから季節を判断する</h4>
+    <ol>
+      <li>南中高度が高い／昼が長い　→　<strong>夏</strong>。</li>
+      <li>日の出が真東より北寄り　→　<strong>春分〜秋分の間</strong>。</li>
+      <li>気温のグラフは、南中高度のグラフより<strong>1〜2か月おくれてピーク</strong>。</li>
+    </ol>
+  </div>
+  <a class="toplink" href="#s8">▲ 章のはじめへ</a>
+</section>
+
+
+<section id="s9">
+  <div class="sec-head">
+    <div class="sec-num">09</div>
+    <h2>出題パターン総覧<span class="sub">24 PATTERNS &mdash; 解き方の型</span></h2>
+  </div>
+  <p class="lead">入試で問われる形は、ほぼこの24通りに収まります。<strong>問題を見た瞬間にどの型かを判定</strong>できれば、あとは手順どおりです。</p>
+
+  <h3>A　太陽・季節</h3>
+  <div class="pat"><h4><span class="pn">01</span>南中高度の計算</h4><ol><li>季節を判定（春分秋分／夏至／冬至）</li><li><span class="mono">90 − 緯度（± 23.4）</span></li><li>逆算型は式を立てて緯度を求める</li></ol></div>
+  <div class="pat"><h4><span class="pn">02</span>透明半球からの時刻計算</h4><ol><li>1時間あたりの長さを出す</li><li>端までの長さ ÷ 1時間ぶん ＝ 時間</li><li>日の出は<strong>引く</strong>、日の入りは<strong>足す</strong></li></ol></div>
+  <div class="pat"><h4><span class="pn">03</span>日の出・日の入りの方位</h4><ol><li>夏至＝北寄り／春秋分＝真東西／冬至＝南寄り</li><li>「北寄り」の日は<strong>昼が12時間より長い</strong></li></ol></div>
+  <div class="pat"><h4><span class="pn">04</span>影の向き・長さ</h4><ol><li>太陽の反対側に影をかく</li><li>1日：西→北→東（時計回り）</li><li>1年：夏至に最短、冬至に最長</li></ol></div>
+  <div class="pat"><h4><span class="pn">05</span>気温グラフの読み取り</h4><ol><li>ピークが8月なら気温、6月なら南中高度</li><li>ずれの理由＝地面を通してあたたまるから</li></ol></div>
+  <div class="pat"><h4><span class="pn">06</span>緯度を変えた思考問題 <span class="tag nan">難関</span></h4><ol><li>赤道／北極／南半球のどれかを判定</li><li>南半球なら「北の空を通る・北中する」</li><li>北極なら「地平線と平行・白夜」</li></ol></div>
+  <div class="pat"><h4><span class="pn">07</span>太陽の黒点 <span class="tag hin">記述</span></h4><ol><li>黒い理由＝<strong>温度が低い</strong></li><li>移動する＝<strong>自転の証拠</strong></li><li>周辺でつぶれて見える＝<strong>球形の証拠</strong></li></ol></div>
+
+  <h3>B　星</h3>
+  <div class="pat"><h4><span class="pn">08</span>時刻から星の位置を出す</h4><ol><li>時間差 × <span class="mono">15度</span>（あとの時刻ほど西）</li><li>方位に応じて向きを決める（北の空は反時計回り）</li></ol></div>
+  <div class="pat"><h4><span class="pn">09</span>日付から星の位置を出す</h4><ol><li>日付差 × <span class="mono">1度／日</span>（＝30度／月、あとの日付ほど西）</li></ol></div>
+  <div class="pat"><h4><span class="pn">10</span>時刻と日付の複合</h4><ol><li>時間差ぶんと日付差ぶんをそれぞれ角度に直す</li><li>同じ向きなら足す、逆向きなら引く</li><li>「1か月後の2時間前は同じ位置」を検算に使う</li></ol></div>
+  <div class="pat"><h4><span class="pn">11</span>北極星の高度と緯度</h4><ol><li><strong>高度＝緯度</strong></li><li>周極星の条件＝北極星からの角度 &lt; 緯度</li></ol></div>
+  <div class="pat"><h4><span class="pn">12</span>星の色・温度・等級</h4><ol><li>赤→橙→黄→白→青白の順に高温</li><li>1等級差＝約2.5倍、5等級差＝100倍</li></ol></div>
+  <div class="pat"><h4><span class="pn">13</span>季節の星座の同定</h4><ol><li>並びの形（大三角・四辺形・W字・ひしゃく）で季節を決める</li><li>星名 → 星座 → 色 まで一気に答えられるように</li></ol></div>
+  <div class="pat"><h4><span class="pn">14</span>経度差・時差 <span class="tag nan">難関</span></h4><ol><li>経度15度＝1時間、1度＝4分</li><li>東にある地点ほど南中が<strong>早い</strong></li></ol></div>
+
+  <h3>C　月</h3>
+  <div class="pat"><h4><span class="pn">15</span>形から時刻・方位を答える</h4><ol><li>形 → 月齢 → <span class="mono">南中＝12時＋月齢×48分</span></li><li>月の出＝南中−6時間、月の入り＝南中＋6時間</li><li>「その時刻に空のどこか」を天球図で確認</li></ol></div>
+  <div class="pat"><h4><span class="pn">16</span>時刻と方位から形を答える</h4><ol><li>俯瞰図に観測者を置く</li><li>その方向にある月の位置を特定</li><li>太陽側（右）が光ることから形を決める</li></ol></div>
+  <div class="pat"><h4><span class="pn">17</span>何日後の月</h4><ol><li>日数 ÷ 29.5 のあまりを出す</li><li>月齢を進めて形を決める</li></ol></div>
+  <div class="pat"><h4><span class="pn">18</span>毎日50分おくれる計算</h4><ol><li><span class="mono">360 ÷ 29.5 ≒ 12度／日</span></li><li><span class="mono">12 ÷ 15 × 60 ＝ 48分</span></li></ol></div>
+  <div class="pat"><h4><span class="pn">19</span>27.3日と29.5日 <span class="tag hin">記述</span></h4><ol><li>公転する間に地球も動くから、と書く</li></ol></div>
+  <div class="pat"><h4><span class="pn">20</span>月面からの視点 <span class="tag nan">難関</span></h4><ol><li>地球の満ち欠けは月と<strong>逆</strong></li><li>地球は空に止まって見える（同じ面を向けているから）</li></ol></div>
+
+  <h3>D　日食・月食・惑星</h3>
+  <div class="pat"><h4><span class="pn">21</span>日食・月食の判定</h4><ol><li>並びを書く（太陽－月－地球 なら日食）</li><li>月の形（新月／満月）とセットで答える</li></ol></div>
+  <div class="pat"><h4><span class="pn">22</span>欠ける向き</h4><ol><li>月は西から東へ動く、が根拠</li><li>日食＝太陽の右（西）から／月食＝月の左（東）から</li></ol></div>
+  <div class="pat"><h4><span class="pn">23</span>金星の位置 → 見え方</h4><ol><li>位置が太陽の<strong>左</strong>（東側）なら宵の明星、<strong>右</strong>なら明けの明星</li><li>地球に近いほど大きく細い</li><li>光る側は太陽の方向。望遠鏡なら180度回転</li></ol></div>
+  <div class="pat"><h4><span class="pn">24</span>会合周期・逆行 <span class="tag nan">難関</span></h4><ol><li><span class="mono">1/S ＝ |1/P − 1/E|</span></li><li>逆行は「内側の地球が追いこすとき」</li></ol></div>
+  <a class="toplink" href="#s9">▲ 章のはじめへ</a>
+</section>
+
+
+<section id="s10">
+  <div class="sec-head">
+    <div class="sec-num">10</div>
+    <h2>直前チェック<span class="sub">FINAL CHECK &mdash; 数値と用語</span></h2>
+  </div>
+
+  <h3>10-1　覚えておく数値</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>項目</th><th class="num">数値</th><th>使いどころ</th></tr></thead>
+    <tbody>
+      <tr><td>星・太陽の日周運動</td><td class="num">15度／時間</td><td>時間 ↔ 角度の変換すべて</td></tr>
+      <tr><td>星の年周運動</td><td class="num">30度／月（1度／日）</td><td>日付がずれる問題</td></tr>
+      <tr><td>同じ位置に見える時刻のずれ</td><td class="num">2時間／月　4分／日</td><td>「何時に同じ位置か」</td></tr>
+      <tr><td>地軸の傾き</td><td class="num">23.4度</td><td>南中高度の公式</td></tr>
+      <tr><td>夏至と冬至の南中高度の差</td><td class="num">46.8度</td><td>緯度によらず一定</td></tr>
+      <tr><td>月の満ち欠けの周期</td><td class="num">29.5日</td><td>何日後の月</td></tr>
+      <tr><td>月の公転（自転）周期</td><td class="num">27.3日</td><td>同じ面を向ける理由</td></tr>
+      <tr><td>月の出のおくれ</td><td class="num">約50分／日</td><td>翌日の時刻</td></tr>
+      <tr><td>月の直径・距離・重力</td><td class="num">地球の1/4・38万km・1/6</td><td>知識問題</td></tr>
+      <tr><td>白道の傾き</td><td class="num">約5度</td><td>毎月食が起きない理由</td></tr>
+      <tr><td>太陽の表面温度／黒点</td><td class="num">約6000℃／約4000℃</td><td>記述</td></tr>
+      <tr><td>1等星と6等星の明るさ比</td><td class="num">100倍</td><td>等級の計算</td></tr>
+      <tr><td>経度と時差</td><td class="num">15度＝1時間</td><td>南中時刻の地域差</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>10-2　言えるか確認リスト</h3>
+  <ul class="check">
+    <li>天球図に東西南北を正しく書ける</li>
+    <li>夏至・春分秋分・冬至の道筋を平行にかける</li>
+    <li>南中高度の3つの式を言える</li>
+    <li>透明半球で日の出時刻を計算できる</li>
+    <li>影の動く向きを言える</li>
+    <li>夏が暑い理由を2つ言える</li>
+    <li>気温のピークが遅れる理由を説明できる</li>
+    <li>季節と見える星座の対応を言える</li>
+    <li>東・南・西・北の空の星の動きをかける</li>
+    <li>15度／時、30度／月を使い分けられる</li>
+    <li>北極星の高度＝緯度を使える</li>
+    <li>北極星の探し方を2通り説明できる</li>
+    <li>夏・冬の大三角の星名と星座を言える</li>
+    <li>星の色と温度の順を言える</li>
+    <li>1等星と6等星の明るさの比を言える</li>
+    <li>月の俯瞰図を自分でかける</li>
+    <li>上弦・満月・下弦の南中時刻を言える</li>
+    <li>月が毎日50分おくれる理由を計算できる</li>
+    <li>27.3日と29.5日の違いを説明できる</li>
+    <li>月面の環境（大気・水・温度差）を言える</li>
+    <li>日食・月食の並びを図でかける</li>
+    <li>日食・月食の欠ける向きと理由を言える</li>
+    <li>毎月食が起きない理由を説明できる</li>
+    <li>金環日食が起こるしくみを説明できる</li>
+    <li>金星が真夜中に見えない理由を言える</li>
+    <li>宵の明星・明けの明星の空と形を言える</li>
+    <li>望遠鏡の像が逆になることを使える</li>
+    <li>地球型惑星と木星型惑星を分けられる</li>
+    <li>星座早見盤で東西が逆な理由を言える</li>
+    <li>南半球での太陽・月の見え方を言える</li>
+  </ul>
+
+  <h3>10-3　まちがえやすいポイント10</h3>
+  <div class="card">
+    <ol style="font-size:.92rem">
+      <li>夏が暑いのは<strong>太陽に近づくからではない</strong>（南中高度と昼の長さ）。</li>
+      <li>黒点は<strong>温度が低い</strong>だけで、光っていないわけではない。</li>
+      <li>星の色は<strong>赤が低温、青白が高温</strong>（直感と逆）。</li>
+      <li>等級は<strong>数字が小さいほど明るい</strong>。</li>
+      <li>北の空の星は<strong>反時計回り</strong>（南の空は左→右）。</li>
+      <li>月は<strong>自転している</strong>（周期が公転と同じだから同じ面を向ける）。</li>
+      <li>日食は<strong>新月</strong>、月食は<strong>満月</strong>。逆にしない。</li>
+      <li>日食は太陽の<strong>右</strong>から、月食は月の<strong>左</strong>から欠ける。</li>
+      <li>金星は<strong>真夜中に見えない</strong>。外惑星は見える。</li>
+      <li>星座早見盤の<strong>東西は実際と逆</strong>。</li>
+    </ol>
+  </div>
+  <a class="toplink" href="#s10">▲ 章のはじめへ</a>
+</section>
+
+</main>
+</div>
+
+<footer>
+  中学受験理科・天体分野 総復習用／数値は日本（北緯35度前後）を基準にしています。
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- 星空キャンバス ---------- */
+  var cv = document.getElementById('sky');
+  if (cv) {
+    var ctx = cv.getContext('2d');
+    var stars = [];
+    function build(){
+      var r = cv.parentElement.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = Math.max(1, r.width * dpr);
+      cv.height = Math.max(1, r.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      stars = [];
+      var n = Math.round(r.width * r.height / 4200);
+      for (var i = 0; i < n; i++) {
+        stars.push({
+          x: Math.random() * r.width,
+          y: Math.random() * r.height,
+          r: Math.random() * 1.3 + 0.3,
+          a: Math.random() * 0.6 + 0.2,
+          w: r.width, h: r.height
+        });
+      }
+      draw();
+    }
+    function draw(){
+      if (!stars.length) return;
+      ctx.clearRect(0, 0, stars[0].w, stars[0].h);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(240,232,206,' + s.a + ')';
+        ctx.fill();
+      }
+    }
+    build();
+    var t;
+    window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(build, 200); });
+  }
+
+  /* ---------- 汎用タブ（パネル切替） ---------- */
+  function panelTabs(tabsId, capId, caps){
+    var wrap = document.getElementById(tabsId);
+    if (!wrap) return;
+    var btns = wrap.querySelectorAll('button');
+    wrap.addEventListener('click', function(e){
+      var b = e.target.closest('button');
+      if (!b) return;
+      for (var i = 0; i < btns.length; i++) {
+        var on = btns[i] === b;
+        btns[i].setAttribute('aria-selected', on ? 'true' : 'false');
+        var p = document.getElementById(btns[i].dataset.p);
+        if (p) p.hidden = !on;
+      }
+      var cap = document.getElementById(capId);
+      if (cap && caps[b.dataset.p]) cap.innerHTML = caps[b.dataset.p];
+    });
+  }
+
+  panelTabs('dirTabs', 'dirCap', {
+    pE: '東の空：星は<strong>右上がり</strong>にのぼる。地平線となす角は「90度 − その土地の緯度」。',
+    pS: '南の空：星は<strong>左（東）から右（西）</strong>へ動き、真南に来たとき（南中）に最も高くなる。',
+    pW: '西の空：星は<strong>右下がり</strong>に沈む。東の空とちょうど対称の動き。',
+    pN: '北の空：<strong>北極星を中心に反時計回り</strong>に1時間15度。北極星の高度はその土地の緯度と等しい。'
+  });
+
+  panelTabs('conTabs', 'conCap', {
+    cWi: '冬：オリオン座のベテルギウス・おおいぬ座のシリウス・こいぬ座のプロキオンで<strong>冬の大三角</strong>。さらに4星を加えて冬のダイヤモンド。',
+    cSp: '春：北斗七星の柄のカーブをのばして<strong>アークトゥルス → スピカ</strong>とたどるのが<strong>春の大曲線</strong>。デネボラを加えて春の大三角。',
+    cSu: '夏：<strong>ベガ・アルタイル・デネブ</strong>の白い1等星3つで夏の大三角。天の川をはさんで織姫（ベガ）と彦星（アルタイル）が向かい合う。',
+    cAu: '秋：1等星が少なく、<strong>ペガススの四辺形</strong>とカシオペヤ座のW字が目印。1等星はフォーマルハウトのみ。'
+  });
+
+  /* ---------- 太陽の道筋タブ ---------- */
+  var sunData = {
+    ge: { sun: [320, 73],  rise: [86, 270], set: [554, 270], alt: '78.4°',
+          cap: '<strong>夏至</strong>：太陽は真東より<strong>北寄り</strong>から出て、真西より<strong>北寄り</strong>に沈む。南中高度は最も高く、昼が最も長い。' },
+    eq: { sun: [320, 158], rise: [50, 300], set: [590, 300], alt: '55°',
+          cap: '<strong>春分・秋分</strong>：太陽は<strong>真東</strong>から出て<strong>真西</strong>に沈む。昼と夜がほぼ同じ長さになる。' },
+    to: { sun: [320, 244], rise: [86, 330], set: [554, 330], alt: '31.6°',
+          cap: '<strong>冬至</strong>：太陽は真東より<strong>南寄り</strong>から出て、真西より<strong>南寄り</strong>に沈む。南中高度は最も低く、昼が最も短い。' }
+  };
+  var sunTabs = document.getElementById('sunTabs');
+  if (sunTabs) {
+    var sBtns = sunTabs.querySelectorAll('button');
+    sunTabs.addEventListener('click', function(e){
+      var b = e.target.closest('button');
+      if (!b) return;
+      for (var i = 0; i < sBtns.length; i++) sBtns[i].setAttribute('aria-selected', sBtns[i] === b ? 'true' : 'false');
+      var k = b.dataset.k, d = sunData[k];
+      ['ge', 'eq', 'to'].forEach(function(kk){
+        var a = document.getElementById('arc-' + kk);
+        if (a) { a.setAttribute('opacity', kk === k ? '1' : '0.22'); a.setAttribute('stroke-width', kk === k ? '3.5' : '2.5'); }
+      });
+      var g = document.getElementById('sunMark');
+      g.setAttribute('transform', 'translate(' + (d.sun[0] - 320) + ',' + (d.sun[1] - 73) + ')');
+      var rp = document.getElementById('riseP'), sp = document.getElementById('setP');
+      rp.setAttribute('cx', d.rise[0]); rp.setAttribute('cy', d.rise[1]);
+      sp.setAttribute('cx', d.set[0]);  sp.setAttribute('cy', d.set[1]);
+      document.getElementById('lblRise').setAttribute('y', d.rise[1] - 15);
+      document.getElementById('lblSet').setAttribute('y', d.set[1] - 15);
+      document.getElementById('altTxt').textContent = d.alt;
+      document.getElementById('sunCap').innerHTML = d.cap;
+    });
+    document.getElementById('arc-ge').setAttribute('opacity', '1');
+    document.getElementById('arc-ge').setAttribute('stroke-width', '3.5');
+    document.getElementById('sunCap').innerHTML = sunData.ge.cap;
+  }
+
+  /* ---------- 月の満ち欠け ---------- */
+  var PH = [
+    { n: '新月',     age: 0,  agel: '0',  nan: '12時', out: '6時',  iri: '18時', mi: '見えない（太陽と同じ方向）' },
+    { n: '三日月',   age: 3,  agel: '約3',  nan: '15時', out: '9時',  iri: '21時', mi: '夕方・西の低い空' },
+    { n: '上弦の月', age: 7.4,agel: '約7',  nan: '18時', out: '12時', iri: '24時', mi: '日没ごろ南の空／真夜中に西へ沈む' },
+    { n: '十三夜月', age: 12, agel: '約12', nan: '22時', out: '16時', iri: '4時',  mi: '夜のはじめ〜明け方前' },
+    { n: '満月',     age: 14.8,agel: '約15',nan: '0時',  out: '18時', iri: '6時',  mi: '日没に東から出て一晩中' },
+    { n: '寝待月',   age: 18, agel: '約18', nan: '3時',  out: '21時', iri: '9時',  mi: '夜おそく〜明け方' },
+    { n: '下弦の月', age: 22.1,agel: '約22',nan: '6時',  out: '24時', iri: '12時', mi: '真夜中に東から出て、明け方 南の空' },
+    { n: '二十六夜', age: 26, agel: '約26', nan: '9時',  out: '3時',  iri: '15時', mi: '明け方・東の低い空' }
+  ];
+  var CX = 210, CY = 210, ORB = 130, MR = 15;
+
+  function phasePath(R, age){
+    var th = age / 29.5 * Math.PI * 2;
+    var c = Math.cos(th);
+    if (age < 0.3 || age > 29.2) return '';
+    var rx = Math.abs(R * c);
+    var waxing = th < Math.PI;
+    var outer = waxing ? 1 : 0;
+    var sweep = waxing ? (c > 0 ? 0 : 1) : (c > 0 ? 1 : 0);
+    return 'M 0 ' + (-R) + ' A ' + R + ' ' + R + ' 0 0 ' + outer + ' 0 ' + R +
+           ' A ' + rx.toFixed(2) + ' ' + R + ' 0 0 ' + sweep + ' 0 ' + (-R) + ' Z';
+  }
+
+  var orbit = document.getElementById('moonOrbit');
+  var btnWrap = document.getElementById('moonBtns');
+  if (orbit && btnWrap) {
+    var NS = 'http://www.w3.org/2000/svg';
+    PH.forEach(function(p, i){
+      var a = p.age / 29.5 * Math.PI * 2;
+      var x = CX + ORB * Math.cos(a), y = CY - ORB * Math.sin(a);
+      var g = document.createElementNS(NS, 'g');
+      g.setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ')');
+      g.setAttribute('data-i', i);
+      g.innerHTML =
+        '<circle r="' + MR + '" fill="#1B2436"></circle>' +
+        '<path d="M 0 ' + (-MR) + ' A ' + MR + ' ' + MR + ' 0 0 1 0 ' + MR + ' Z" fill="#EFE3C4"></path>' +
+        '<circle class="ring" r="' + MR + '" fill="none" stroke="var(--ink2)" stroke-width="1"></circle>';
+      orbit.appendChild(g);
+      var lx = CX + (ORB + 34) * Math.cos(a), ly = CY - (ORB + 34) * Math.sin(a);
+      var t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', lx.toFixed(1)); t.setAttribute('y', (ly + 4).toFixed(1));
+      t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', '11');
+      t.setAttribute('class', 'f-ink2'); t.textContent = p.n;
+      orbit.appendChild(t);
+
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = p.n; b.dataset.i = i;
+      btnWrap.appendChild(b);
+    });
+
+    var shape = document.getElementById('moonShape');
+    var nameEl = document.getElementById('moonName');
+    var readEl = document.getElementById('moonRead');
+
+    function selectMoon(i){
+      var p = PH[i];
+      shape.setAttribute('d', phasePath(46, p.age));
+      nameEl.textContent = p.n;
+      readEl.innerHTML =
+        '<div><span class="k">GETSUREI 月齢</span><span class="v">' + p.agel + '</span></div>' +
+        '<div><span class="k">MOONRISE 月の出</span><span class="v">' + p.out + '</span></div>' +
+        '<div><span class="k">NANCHU 南中</span><span class="v">' + p.nan + '</span></div>' +
+        '<div><span class="k">MOONSET 月の入り</span><span class="v">' + p.iri + '</span></div>' +
+        '<div style="grid-column:1/-1"><span class="k">WHEN &amp; WHERE 見え方</span><span class="v">' + p.mi + '</span></div>';
+      var gs = orbit.querySelectorAll('g');
+      for (var k = 0; k < gs.length; k++) {
+        var ring = gs[k].querySelector('.ring');
+        var on = String(k) === String(i);
+        ring.setAttribute('stroke', on ? 'var(--gold-b)' : 'var(--ink2)');
+        ring.setAttribute('stroke-width', on ? '3' : '1');
+        gs[k].setAttribute('opacity', on ? '1' : '0.62');
+      }
+      var bs = btnWrap.querySelectorAll('button');
+      for (var j = 0; j < bs.length; j++) bs[j].classList.toggle('on', String(j) === String(i));
+    }
+    btnWrap.addEventListener('click', function(e){
+      var b = e.target.closest('button');
+      if (b) selectMoon(b.dataset.i);
+    });
+    orbit.addEventListener('click', function(e){
+      var g = e.target.closest('g[data-i]');
+      if (g) selectMoon(g.dataset.i);
+    });
+    orbit.style.cursor = 'pointer';
+    selectMoon(4);
+  }
+
+  /* ---------- 目次スクロール連動 ---------- */
+  var links = document.querySelectorAll('.toc a');
+  if (links.length && 'IntersectionObserver' in window) {
+    var map = {};
+    for (var i = 0; i < links.length; i++) map[links[i].getAttribute('href').slice(1)] = links[i];
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) {
+          for (var k in map) map[k].classList.remove('on');
+          if (map[en.target.id]) map[en.target.id].classList.add('on');
+        }
+      });
+    }, { rootMargin: '-10% 0px -70% 0px' });
+    document.querySelectorAll('section[id]').forEach(function(s){ obs.observe(s); });
+  }
+})();
+</script>
+</body></html>

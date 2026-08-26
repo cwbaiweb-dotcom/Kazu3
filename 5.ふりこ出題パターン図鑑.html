@@ -1,0 +1,1809 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ふりこ出題パターン図鑑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+</head>
+<body>
+<style>
+:root{
+  --bg:#EEF1F5;
+  --surface:#FFFFFF;
+  --surface2:#F5F8FA;
+  --ink:#14202E;
+  --ink2:#4F6076;
+  --ink3:#7A8B9E;
+  --line:#D2DBE4;
+  --line-soft:#E4EAF0;
+  --brass:#8E6415;
+  --brass-fill:#F3E7CC;
+  --l1:#0E6A5E;  --l1-fill:#DCEFEB;
+  --l2:#26518F;  --l2-fill:#DEE7F5;
+  --l3:#93273A;  --l3-fill:#F6DFE3;
+  --warn:#9A4A05; --warn-fill:#FBEADA;
+  --shadow:0 1px 2px rgba(20,32,46,.05), 0 8px 24px -14px rgba(20,32,46,.28);
+  --grid:rgba(38,81,143,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D131B;
+    --surface:#151F2A;
+    --surface2:#1B2735;
+    --ink:#E3EAF2;
+    --ink2:#A0B1C4;
+    --ink3:#7A8B9E;
+    --line:#2A3846;
+    --line-soft:#212E3B;
+    --brass:#E3AE55;
+    --brass-fill:#3A2D14;
+    --l1:#45BFAC;  --l1-fill:#0E2E2A;
+    --l2:#78A5EC;  --l2-fill:#152740;
+    --l3:#EE7C92;  --l3-fill:#3A1820;
+    --warn:#E7A05C; --warn-fill:#39250F;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px -16px rgba(0,0,0,.7);
+    --grid:rgba(120,165,236,.11);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D131B;
+  --surface:#151F2A;
+  --surface2:#1B2735;
+  --ink:#E3EAF2;
+  --ink2:#A0B1C4;
+  --ink3:#7A8B9E;
+  --line:#2A3846;
+  --line-soft:#212E3B;
+  --brass:#E3AE55;
+  --brass-fill:#3A2D14;
+  --l1:#45BFAC;  --l1-fill:#0E2E2A;
+  --l2:#78A5EC;  --l2-fill:#152740;
+  --l3:#EE7C92;  --l3-fill:#3A1820;
+  --warn:#E7A05C; --warn-fill:#39250F;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px -16px rgba(0,0,0,.7);
+  --grid:rgba(120,165,236,.11);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.45}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+a{color:var(--l2)}
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:3px}
+
+/* ── hero ───────────────────────────── */
+.hero{
+  position:relative;
+  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0/28px 28px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/28px 28px,
+    var(--surface);
+  overflow:hidden;
+}
+.hero-in{
+  max-width:1180px;margin:0 auto;padding:56px 24px 44px;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:40px;align-items:center;
+}
+@media(max-width:880px){.hero-in{grid-template-columns:1fr;padding:40px 20px 32px;gap:24px}}
+.eyebrow{
+  font-size:12px;letter-spacing:.22em;text-transform:none;color:var(--brass);
+  font-weight:700;font-family:"IBM Plex Mono",monospace;margin-bottom:14px;
+}
+.hero h1{font-size:clamp(34px,6vw,58px);letter-spacing:.02em;margin-bottom:14px}
+.hero h1 .sub{display:block;font-size:.42em;letter-spacing:.12em;color:var(--ink2);font-weight:600;margin-top:12px}
+.lede{color:var(--ink2);max-width:34em;font-size:15.5px}
+.hero-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.stat{
+  border:1px solid var(--line);border-radius:2px;padding:7px 12px;background:var(--surface2);
+  font-size:12.5px;color:var(--ink2);
+}
+.stat b{font-family:"IBM Plex Mono",monospace;color:var(--ink);font-size:14px;margin-right:5px}
+
+.swing-fig{margin:0}
+.swing-fig figcaption{font-size:12px;color:var(--ink3);text-align:center;margin-top:6px;line-height:1.6}
+.pend{transform-box:view-box;animation:swing var(--T) ease-in-out infinite alternate}
+.p1{transform-origin:60px 18px;--T:.5s}
+.p2{transform-origin:150px 18px;--T:1s}
+.p3{transform-origin:240px 18px;--T:1.5s}
+@keyframes swing{from{transform:rotate(-17deg)}to{transform:rotate(17deg)}}
+@media(prefers-reduced-motion:reduce){.pend{animation:none;transform:rotate(11deg)}}
+
+/* ── shell ──────────────────────────── */
+.shell{max-width:1180px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:222px minmax(0,1fr);gap:44px;align-items:start}
+@media(max-width:1000px){.shell{grid-template-columns:1fr;gap:0;padding:0 20px 64px}}
+
+nav.toc{position:sticky;top:20px;padding-top:36px;font-size:13.5px}
+@media(max-width:1000px){nav.toc{position:static;padding:28px 0 0}}
+nav.toc h2{font-size:12px;font-family:"IBM Plex Mono",monospace;letter-spacing:.16em;color:var(--ink3);margin-bottom:12px;font-weight:600}
+nav.toc ol{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-direction:column;gap:1px}
+nav.toc a{display:flex;gap:8px;text-decoration:none;color:var(--ink2);padding:3px 6px;border-radius:3px;line-height:1.5}
+nav.toc a:hover{background:var(--surface2);color:var(--ink)}
+nav.toc a .n{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink3);padding-top:2px;min-width:1.4em}
+nav.toc .grp{font-size:11.5px;font-weight:700;letter-spacing:.1em;margin:14px 0 6px;padding-left:6px}
+nav.toc .g1{color:var(--l1)} nav.toc .g2{color:var(--l2)} nav.toc .g3{color:var(--l3)}
+
+main{padding-top:36px;min-width:0}
+
+/* ── generic blocks ─────────────────── */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow)}
+.section-head{margin:56px 0 22px;padding-bottom:10px;border-bottom:2px solid currentColor}
+.section-head:first-child{margin-top:0}
+.section-head .tag{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.18em;font-weight:600}
+.section-head h2{font-size:26px;color:var(--ink);margin-top:2px}
+.section-head p{margin:6px 0 0;font-size:14px;color:var(--ink2)}
+.s1{color:var(--l1)} .s2{color:var(--l2)} .s3{color:var(--l3)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:5px;box-shadow:var(--shadow);margin-bottom:26px;overflow:hidden}
+.card > .body{padding:4px 26px 24px;display:flex;flex-direction:column;gap:18px}
+@media(max-width:600px){.card > .body{padding:4px 16px 20px}}
+.card-head{display:flex;gap:14px;align-items:flex-start;padding:20px 26px 0}
+@media(max-width:600px){.card-head{padding:18px 16px 0;gap:10px}}
+.num{
+  font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;
+  min-width:34px;height:34px;display:grid;place-items:center;border-radius:2px;flex:none;
+  border:1px solid currentColor;
+}
+.n1{color:var(--l1);background:var(--l1-fill)}
+.n2{color:var(--l2);background:var(--l2-fill)}
+.n3{color:var(--l3);background:var(--l3-fill)}
+.card-head h3{font-size:19.5px;letter-spacing:.01em}
+.meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:7px}
+.chip{font-size:11px;font-family:"IBM Plex Mono",monospace;letter-spacing:.08em;padding:2px 8px;border-radius:2px;border:1px solid currentColor;font-weight:600}
+.c1{color:var(--l1);background:var(--l1-fill)}
+.c2{color:var(--l2);background:var(--l2-fill)}
+.c3{color:var(--l3);background:var(--l3-fill)}
+.freq{font-size:11.5px;color:var(--ink3);font-family:"IBM Plex Mono",monospace;letter-spacing:.05em}
+.freq b{color:var(--brass);letter-spacing:.12em}
+
+.lbl{
+  font-size:11.5px;font-family:"IBM Plex Mono",monospace;letter-spacing:.14em;font-weight:600;
+  color:var(--ink3);display:block;margin-bottom:6px;
+}
+.block > p, .block > ul, .block > ol{margin:0}
+.block ul,.block ol{padding-left:1.35em;display:flex;flex-direction:column;gap:5px}
+.block li::marker{color:var(--ink3)}
+
+.trigger{background:var(--surface2);border-left:3px solid var(--brass);padding:13px 16px;border-radius:0 3px 3px 0}
+.trigger ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-size:14.5px}
+.trigger li{padding-left:1.1em;position:relative;color:var(--ink)}
+.trigger li::before{content:"「";position:absolute;left:0;color:var(--brass)}
+.trigger li::after{content:"」";color:var(--brass)}
+
+.steps{counter-reset:st;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+.steps li{counter-increment:st;position:relative;padding-left:2.1em;font-size:15px}
+.steps li::before{
+  content:counter(st);position:absolute;left:0;top:.32em;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  width:1.5em;height:1.5em;display:grid;place-items:center;border-radius:50%;
+  background:var(--brass);color:var(--surface);
+}
+:root[data-theme="dark"] .steps li::before{color:#0D131B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .steps li::before{color:#0D131B}}
+
+.key{background:var(--brass-fill);border:1px solid var(--brass);border-radius:3px;padding:12px 15px;font-size:15px}
+.key b{color:var(--brass)}
+
+.warnbox{background:var(--warn-fill);border-left:3px solid var(--warn);padding:12px 16px;border-radius:0 3px 3px 0;font-size:14.5px}
+.warnbox .lbl{color:var(--warn)}
+
+.q{border:1px dashed var(--line);border-radius:4px;padding:16px 18px;background:var(--surface2);font-size:15px}
+.q .lbl{color:var(--ink2)}
+.q ol{padding-left:1.3em;margin:9px 0 0;display:flex;flex-direction:column;gap:6px}
+
+details.ans{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--surface)}
+details.ans>summary{
+  cursor:pointer;list-style:none;padding:11px 16px;font-size:13.5px;font-weight:700;
+  color:var(--ink2);background:var(--surface2);display:flex;align-items:center;gap:9px;
+  font-family:"IBM Plex Mono",monospace;letter-spacing:.08em;
+}
+details.ans>summary::-webkit-details-marker{display:none}
+details.ans>summary::before{content:"▶";font-size:9px;color:var(--brass);transition:transform .18s}
+details.ans[open]>summary::before{transform:rotate(90deg)}
+details.ans>summary:hover{color:var(--ink)}
+.ans-body{padding:16px 18px;font-size:14.8px;display:flex;flex-direction:column;gap:11px;border-top:1px solid var(--line-soft)}
+.ans-body p{margin:0}
+.ans-body .fin{font-weight:700;color:var(--brass);font-family:"IBM Plex Mono",monospace}
+
+figure{margin:0;background:var(--surface2);border:1px solid var(--line-soft);border-radius:4px;padding:16px 14px 12px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto;color:var(--ink)}
+figcaption{font-size:12.5px;color:var(--ink2);text-align:center;margin-top:10px;line-height:1.65;text-wrap:balance}
+
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:340px}
+th,td{border:1px solid var(--line);padding:7px 11px;text-align:center;font-variant-numeric:tabular-nums}
+th{background:var(--surface2);font-weight:700;color:var(--ink2);font-size:12.5px;white-space:nowrap}
+td.lft,th.lft{text-align:left}
+tbody tr:nth-child(even) td{background:var(--surface2)}
+
+.frm{
+  font-family:"IBM Plex Mono",monospace;font-size:14.5px;background:var(--surface2);
+  border:1px solid var(--line);border-radius:3px;padding:3px 8px;display:inline-block;white-space:nowrap;
+}
+mark{background:var(--brass-fill);color:var(--ink);padding:0 3px;border-radius:2px}
+
+.cheat{padding:22px 26px 26px;margin-bottom:34px}
+@media(max-width:600px){.cheat{padding:18px 16px 20px}}
+.cheat h2{font-size:20px;margin-bottom:4px}
+.cheat .lbl{margin-bottom:14px}
+.cheat ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.cheat b{color:var(--brass)}
+
+.check{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;font-size:15px}
+.check li{padding-left:1.9em;position:relative}
+.check li::before{
+  content:"";position:absolute;left:0;top:.42em;width:1.05em;height:1.05em;
+  border:1.5px solid var(--brass);border-radius:2px;
+}
+footer{border-top:1px solid var(--line);margin-top:20px;padding-top:20px;font-size:13px;color:var(--ink3)}
+</style>
+
+<header class="hero">
+  <div class="hero-in">
+    <div>
+      <div class="eyebrow">中学受験理科 ／ 力学 ／ 総復習</div>
+      <h1>ふりこ出題パターン図鑑<span class="sub">基礎 → 標準 → 難関 の 19 型</span></h1>
+      <p class="lede">ふりこは「覚える量は少ないのに差がつく」単元です。周期を決めるのは長さだけ ——
+        この一点さえ崩れなければ、あとは <em>どこで長さが変わるか</em> と <em>どこで速さ・高さに話がすり替わるか</em> を見抜くだけ。
+        出題される形を 19 パターンに整理し、それぞれ「見分け方 → 手順 → 例題 → 解答」でたどれるようにしました。</p>
+      <div class="hero-stats">
+        <span class="stat"><b>19</b>出題パターン</span>
+        <span class="stat"><b>10</b>イメージ図</span>
+        <span class="stat"><b>19</b>例題＋解説</span>
+        <span class="stat"><b>3</b>段階レベル表示</span>
+      </div>
+    </div>
+    <figure class="swing-fig">
+      <svg viewBox="0 0 300 210" role="img" aria-label="長さのちがう3本のふりこ。長さ25cm・100cm・225cmが、それぞれ1秒・2秒・3秒の周期でゆれている">
+        <line x1="24" y1="18" x2="276" y2="18" stroke="currentColor" stroke-width="2.5" opacity=".55"/>
+        <g class="pend p1">
+          <line x1="60" y1="18" x2="60" y2="63" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="60" cy="70" r="8" fill="var(--brass)"/>
+        </g>
+        <g class="pend p2">
+          <line x1="150" y1="18" x2="150" y2="123" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="150" cy="130" r="8" fill="var(--brass)"/>
+        </g>
+        <g class="pend p3">
+          <line x1="240" y1="18" x2="240" y2="183" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="240" cy="190" r="8" fill="var(--brass)"/>
+        </g>
+        <text x="60" y="94" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">25cm/1秒</text>
+        <text x="150" y="154" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">100cm/2秒</text>
+        <text x="240" y="207" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">225cm/3秒</text>
+      </svg>
+      <figcaption>長さが 1 : 4 : 9 なら、周期は 1 : 2 : 3。<br>おもりの重さも振れはばも無関係。</figcaption>
+    </figure>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="toc">
+  <h2>PATTERNS</h2>
+  <div class="grp g1">基礎 ─ しくみ</div>
+  <ol>
+    <li><a href="#p1"><span class="n mono">01</span>各部の名前と1往復</a></li>
+    <li><a href="#p2"><span class="n mono">02</span>周期を決めるもの／条件制御</a></li>
+    <li><a href="#p3"><span class="n mono">03</span>長さと周期の比の表</a></li>
+    <li><a href="#p4"><span class="n mono">04</span>10往復で測る理由</a></li>
+    <li><a href="#p5"><span class="n mono">05</span>速さ・高さ・力の変化</a></li>
+    <li><a href="#p6"><span class="n mono">06</span>振れはばが減っても周期は不変</a></li>
+  </ol>
+  <div class="grp g2">標準 ─ 定番の仕掛け</div>
+  <ol>
+    <li><a href="#p7"><span class="n mono">07</span>くぎを打ったふりこ①周期</a></li>
+    <li><a href="#p8"><span class="n mono">08</span>くぎを打ったふりこ②高さ</a></li>
+    <li><a href="#p9"><span class="n mono">09</span>ふりこの長さ＝支点〜重心</a></li>
+    <li><a href="#p10"><span class="n mono">10</span>高さと最下点の速さ</a></li>
+    <li><a href="#p11"><span class="n mono">11</span>衝突と木片の移動距離</a></li>
+    <li><a href="#p12"><span class="n mono">12</span>ふりこ時計の進み・遅れ</a></li>
+    <li><a href="#p13"><span class="n mono">13</span>共振（共鳴ふりこ）</a></li>
+  </ol>
+  <div class="grp g3">難関 ─ 差がつく型</div>
+  <ol>
+    <li><a href="#p14"><span class="n mono">14</span>グラフからの逆算</a></li>
+    <li><a href="#p15"><span class="n mono">15</span>複数ふりこ・最小公倍数</a></li>
+    <li><a href="#p16"><span class="n mono">16</span>糸が切れて飛び出す</a></li>
+    <li><a href="#p17"><span class="n mono">17</span>斜面・レールへの乗りかえ</a></li>
+    <li><a href="#p18"><span class="n mono">18</span>重力が変わる（月・上昇）</a></li>
+    <li><a href="#p19"><span class="n mono">19</span>実験計画・記述問題</a></li>
+  </ol>
+  <div class="grp" style="color:var(--brass)">まとめ</div>
+  <ol>
+    <li><a href="#tables"><span class="n mono">＋</span>暗記数値の早見表</a></li>
+    <li><a href="#miss"><span class="n mono">＋</span>失点チェックリスト</a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="panel cheat">
+  <span class="lbl">FIRST 8 ─ これだけは反射で出るように</span>
+  <ol>
+    <li><b>周期はふりこの長さだけで決まる。</b>おもりの重さ・振れはば・材質は関係なし。</li>
+    <li><b>長さ25cm＝1秒、100cm＝2秒、225cm＝3秒、400cm＝4秒。</b>長さが 4 倍で周期は 2 倍。<span class="frm">長さ＝25×周期×周期</span></li>
+    <li><b>ふりこの長さは「支点から<u>おもりの重心</u>まで」。</b>糸の長さではない。</li>
+    <li><b>最下点がいちばん速い</b>（位置エネルギー→運動エネルギー）。端はいちばん遅い（速さ 0）。</li>
+    <li><b>最下点の速さは「落とした高さ」だけで決まる</b>。高さ 4 倍で速さ 2 倍。</li>
+    <li><b>くぎを打ったふりこの周期＝（左半分の周期＋右半分の周期）÷2</b>。</li>
+    <li><b>ふりこは反対側で「もとと同じ高さ」まで上がる</b>（角度は同じとは限らない）。</li>
+    <li><b>時計が遅れる＝周期が長くなった＝ふりこが長くなった</b>。おもりを上げれば速く進む。</li>
+  </ol>
+</section>
+
+<div class="section-head s1">
+  <div class="tag">LEVEL 1 ─ 基礎</div>
+  <h2>しくみを言葉で言えるようにする</h2>
+  <p>ここが崩れると難関校の問題は手も足も出ません。「なぜそうなるか」を口で説明できる状態を目標に。</p>
+</div>
+
+<!-- ===== 01 ===== -->
+<article class="card" id="p1">
+  <div class="card-head">
+    <div class="num n1">01</div>
+    <div>
+      <h3>各部の名前と「1往復」の数え方</h3>
+      <div class="meta"><span class="chip c1">基礎</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>図の A の長さを何といいますか</li>
+        <li>ふりこが 1 往復するのは ア→イ→ウ→…のどこまでか</li>
+        <li>ふりこの長さとして正しいものを図から選べ</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 440 234" role="img" aria-label="ふりこの各部の名称図。支点、ふりこの長さ、振れはば、おもり、最下点、1往復の範囲を示す">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+          <marker id="arB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/>
+          </marker>
+        </defs>
+        <!-- ceiling -->
+        <line x1="110" y1="30" x2="330" y2="30" stroke="currentColor" stroke-width="2.5"/>
+        <g stroke="currentColor" stroke-width="1.2" opacity=".5">
+          <line x1="116" y1="30" x2="108" y2="22"/><line x1="136" y1="30" x2="128" y2="22"/>
+          <line x1="156" y1="30" x2="148" y2="22"/><line x1="176" y1="30" x2="168" y2="22"/>
+          <line x1="196" y1="30" x2="188" y2="22"/><line x1="216" y1="30" x2="208" y2="22"/>
+          <line x1="236" y1="30" x2="228" y2="22"/><line x1="256" y1="30" x2="248" y2="22"/>
+          <line x1="276" y1="30" x2="268" y2="22"/><line x1="296" y1="30" x2="288" y2="22"/>
+          <line x1="316" y1="30" x2="308" y2="22"/><line x1="336" y1="30" x2="328" y2="22"/>
+        </g>
+        <!-- pivot -->
+        <circle cx="220" cy="30" r="4" fill="var(--brass)"/>
+        <!-- vertical reference -->
+        <line x1="220" y1="30" x2="220" y2="196" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".45"/>
+        <!-- arc -->
+        <path d="M150,151 A140,140 0 0 0 290,151" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" opacity=".5"/>
+        <!-- extreme strings -->
+        <line x1="220" y1="30" x2="150" y2="151" stroke="currentColor" stroke-width="1" opacity=".4"/>
+        <line x1="220" y1="30" x2="290" y2="151" stroke="currentColor" stroke-width="1" opacity=".4"/>
+        <circle cx="150" cy="151" r="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <circle cx="290" cy="151" r="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <!-- main string + bob -->
+        <line x1="220" y1="30" x2="220" y2="162" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="220" cy="170" r="9" fill="var(--brass)"/>
+        <!-- length measure -->
+        <line x1="124" y1="30" x2="124" y2="170" stroke="var(--brass)" stroke-width="1.3" marker-start="url(#arB)" marker-end="url(#arB)"/>
+        <text x="116" y="96" text-anchor="end" font-size="12" fill="currentColor">ふりこの長さ</text>
+        <text x="116" y="112" text-anchor="end" font-size="10.5" fill="currentColor" opacity=".7">支点→おもりの重心</text>
+        <!-- amplitude -->
+        <line x1="150" y1="204" x2="220" y2="204" stroke="currentColor" stroke-width="1.1" marker-start="url(#ar)" marker-end="url(#ar)"/>
+        <text x="143" y="208" text-anchor="end" font-size="11.5" fill="currentColor">振れはば</text>
+        <!-- labels -->
+        <text x="228" y="24" font-size="12" fill="currentColor">支点</text>
+        <text x="236" y="174" font-size="12" fill="currentColor">おもり</text>
+        <text x="300" y="204" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".85">イ＝最下点（いちばん速い）</text>
+        <text x="150" y="138" text-anchor="middle" font-size="12" fill="currentColor">ア</text>
+        <text x="290" y="138" text-anchor="middle" font-size="12" fill="currentColor">ウ</text>
+        <text x="220" y="192" text-anchor="middle" font-size="12" fill="currentColor">イ</text>
+      </svg>
+      <figcaption><b>1往復＝ア→イ→ウ→イ→ア</b>（もとの位置に同じ向きで戻るまで）。ア→ウ は「半往復」で、これを 1 往復と数えるのが最多の失点。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li><b>周期</b>＝1 往復にかかる時間。<b>振れはば（振幅）</b>＝最下点から端までの左右の開き。</li>
+        <li><b>ふりこの長さ</b>＝支点からおもりの<u>重心</u>まで。糸だけの長さでも、支点からおもりの上端まででもない。</li>
+        <li>おもりが円ではなく細長い形なら、その真ん中（重心）までを測る。</li>
+      </ul>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>糸の長さ 48cm、直径 4cm の球のおもりをつるした。このふりこの長さは何 cm か。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>球の重心は中心。糸の下端から中心までは半径ぶんの 2cm。</p>
+      <p>48 ＋ 2 ＝ 50cm</p>
+      <p class="fin">答 50cm</p>
+    </div></details>
+
+    <div class="block warnbox">
+      <span class="lbl">ミスポイント</span>
+      <p>「直径 4cm」に引かれて 48＋4＝52cm としない。使うのは<u>半径</u>。</p>
+    </div>
+  </div>
+</article>
+
+<!-- ===== 02 ===== -->
+<article class="card" id="p2">
+  <div class="card-head">
+    <div class="num n1">02</div>
+    <div>
+      <h3>周期は何で決まるか／条件をそろえる実験</h3>
+      <div class="meta"><span class="chip c1">基礎</span><span class="freq">頻出度 <b>★★★★★</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>おもりの重さと周期の関係を調べるには、どの実験とどの実験をくらべればよいか</li>
+        <li>この結果からわかることを書きなさい</li>
+        <li>アとエをくらべても結論が出せない理由を説明しなさい</li>
+      </ul>
+    </div>
+
+    <div class="block key">
+      <b>結論：周期を変えるのは「ふりこの長さ」だけ。</b>おもりの重さ・振れはば・おもりの材質・糸の太さは周期を変えない。<br>
+      これを <b>ふりこの等時性</b>（ガリレオが発見）という。
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 460 252" role="img" aria-label="条件制御の図。アとイは長さだけが違い、アとウは重さだけが違う。イとウは2つの条件が同時に違うのでくらべられない">
+        <line x1="20" y1="24" x2="440" y2="24" stroke="currentColor" stroke-width="2.2" opacity=".6"/>
+        <!-- ア -->
+        <line x1="80" y1="24" x2="80" y2="112" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="80" cy="121" r="9" fill="var(--brass)"/>
+        <text x="80" y="150" text-anchor="middle" font-size="13" fill="currentColor" font-weight="700">ア</text>
+        <text x="80" y="167" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">100cm・10g</text>
+        <!-- イ -->
+        <line x1="230" y1="24" x2="230" y2="42" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="230" cy="51" r="9" fill="var(--brass)"/>
+        <text x="230" y="150" text-anchor="middle" font-size="13" fill="currentColor" font-weight="700">イ</text>
+        <text x="230" y="167" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">25cm・10g</text>
+        <!-- ウ -->
+        <line x1="380" y1="24" x2="380" y2="109" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="380" cy="121" r="12" fill="var(--brass)"/>
+        <text x="380" y="150" text-anchor="middle" font-size="13" fill="currentColor" font-weight="700">ウ</text>
+        <text x="380" y="167" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">100cm・30g</text>
+        <!-- bracket ア-イ -->
+        <path d="M80,182 L80,190 L230,190 L230,182" fill="none" stroke="var(--brass)" stroke-width="1.3"/>
+        <text x="155" y="205" text-anchor="middle" font-size="11.5" fill="var(--brass)">長さだけ違う → 長さの影響がわかる</text>
+        <!-- bracket ア-ウ -->
+        <path d="M80,216 L80,224 L380,224 L380,216" fill="none" stroke="var(--brass)" stroke-width="1.3"/>
+        <text x="230" y="239" text-anchor="middle" font-size="11.5" fill="var(--brass)">重さだけ違う → 重さの影響がわかる</text>
+        <!-- イ-ウ invalid -->
+        <text x="452" y="205" text-anchor="end" font-size="11.5" fill="currentColor" opacity=".65">イ↔ウ は 2 つ違う → ×</text>
+      </svg>
+      <figcaption>調べたい条件<u>だけ</u>を変え、他をそろえた 2 つを選ぶ（対照実験）。ア↔ウ は重さだけが違うので「重さの影響」がわかる。イ↔ウ は長さも重さも違うので何も言えない。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">解き方の手順</span>
+      <ol class="steps">
+        <li>問題文の「何を調べたいか」に線を引く（長さ／重さ／振れはば）。</li>
+        <li>表の中から、<u>その条件だけが違い、他がすべて同じ</u>組を探す。</li>
+        <li>2 つ以上の条件が違う組は「これでは調べられない」と切る。</li>
+      </ol>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <div class="tw"><table>
+        <thead><tr><th>実験</th><th>長さ(cm)</th><th>重さ(g)</th><th>振れはば(cm)</th><th>10往復(秒)</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>25</td><td>20</td><td>10</td><td>10.0</td></tr>
+          <tr><td>B</td><td>25</td><td>40</td><td>10</td><td>10.0</td></tr>
+          <tr><td>C</td><td>25</td><td>20</td><td>20</td><td>10.0</td></tr>
+          <tr><td>D</td><td>100</td><td>20</td><td>10</td><td>20.0</td></tr>
+          <tr><td>E</td><td>100</td><td>40</td><td>20</td><td>20.0</td></tr>
+        </tbody>
+      </table></div>
+      <ol>
+        <li>振れはばと周期の関係を調べるには、どの 2 つをくらべるか。</li>
+        <li>D と E をくらべても「重さは関係ない」と言い切れないのはなぜか。</li>
+      </ol>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 振れはばだけが違う組を探す。A と C（長さ 25・重さ 20 が共通、振れはばだけ 10→20）。</p>
+      <p class="fin">答 A と C</p>
+      <p>(2) D と E は重さ（20→40）だけでなく振れはば（10→20）も同時に変わっている。結果が同じでも、どちらの条件のせいかを区別できないため。</p>
+      <p class="fin">答 重さと振れはばの 2 つが同時に変わっており、条件が 1 つにしぼれていないから</p>
+    </div></details>
+
+    <div class="block warnbox">
+      <span class="lbl">記述のコツ</span>
+      <p>「〜以外の条件を同じにしていないから」だけでは弱い。<b>何と何が同時に変わっているかを具体的に書く</b>と満点になります。</p>
+    </div>
+  </div>
+</article>
+
+<!-- ===== 03 ===== -->
+<article class="card" id="p3">
+  <div class="card-head">
+    <div class="num n1">03</div>
+    <div>
+      <h3>長さと周期の関係（1 : 4 : 9 : 16 の表）</h3>
+      <div class="meta"><span class="chip c1">基礎</span><span class="freq">頻出度 <b>★★★★★</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>長さを 4 倍にすると周期は何倍になるか</li>
+        <li>周期を 2 倍にするには長さを何倍にすればよいか</li>
+        <li>1 往復 1.5 秒のふりこの長さは何 cm か</li>
+      </ul>
+    </div>
+
+    <div class="block key">
+      <b>長さ（cm）＝ 25 × 周期 × 周期</b><br>
+      逆に、<b>周期（秒）＝ √(長さ ÷ 25)</b>。表を丸暗記しておけば計算いらずで即答できます。
+    </div>
+
+    <div class="tw block">
+      <span class="lbl">暗記表</span>
+      <table>
+        <thead><tr><th class="lft">長さ</th><td class="mono">25cm</td><td class="mono">100cm</td><td class="mono">225cm</td><td class="mono">400cm</td><td class="mono">625cm</td><td class="mono">900cm</td></tr></thead>
+        <tbody>
+          <tr><th class="lft">周期</th><td class="mono">1秒</td><td class="mono">2秒</td><td class="mono">3秒</td><td class="mono">4秒</td><td class="mono">5秒</td><td class="mono">6秒</td></tr>
+          <tr><th class="lft">長さの比</th><td class="mono">1</td><td class="mono">4</td><td class="mono">9</td><td class="mono">16</td><td class="mono">25</td><td class="mono">36</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>長さが <mark>2 倍</mark>でも周期は 2 倍にならない（約 1.4 倍）。「比例していない」ことを問う出題が多い。</li>
+        <li>長さ 4 倍 → 周期 2 倍／長さ 9 倍 → 周期 3 倍。<b>長さの比は周期の比の 2 乗</b>。</li>
+        <li>半端な周期は 25×周期² で処理。例：1.5 秒 → 25×2.25 ＝ 56.25cm。</li>
+      </ul>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <ol>
+        <li>長さ 100cm のふりこの周期を 3 倍にしたい。長さを何 cm にすればよいか。</li>
+        <li>長さ 144cm のふりこの周期は、長さ 36cm のふりこの周期の何倍か。</li>
+      </ol>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 周期 3 倍 → 長さは 3×3＝9 倍。100×9＝900cm。</p>
+      <p class="fin">答 900cm</p>
+      <p>(2) 長さの比 144 : 36 ＝ 4 : 1。周期の比はその平方根で 2 : 1。</p>
+      <p class="fin">答 2倍</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 04 ===== -->
+<article class="card" id="p4">
+  <div class="card-head">
+    <div class="num n1">04</div>
+    <div>
+      <h3>なぜ「10 往復」を測るのか（測定の工夫）</h3>
+      <div class="meta"><span class="chip c1">基礎</span><span class="freq">頻出度 <b>★★★☆☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>1 往復ではなく 10 往復の時間を測るのはなぜか</li>
+        <li>同じ実験を 3 回行って平均をとるのはなぜか</li>
+        <li>ストップウォッチを押すのは、おもりがどの位置に来たときがよいか</li>
+      </ul>
+    </div>
+    <div class="block">
+      <span class="lbl">模範解答の型</span>
+      <ul>
+        <li><b>10 往復を測る理由：</b>1 往復では時間が短く、ストップウォッチを押すときのずれ（誤差）が結果に大きく影響してしまうから。10 で割れば誤差も 10 分の 1 になる。</li>
+        <li><b>平均をとる理由：</b>1 回の測定にふくまれる偶然のずれをならして、より正確な値を求めるため。</li>
+        <li><b>押す位置：</b>最下点。いちばん速く通過するので、行き過ぎ・止まる瞬間があいまいな端よりタイミングを取りやすいから。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>あるふりこで 10 往復の時間を 3 回測ったところ、15.1 秒・14.9 秒・15.0 秒だった。このふりこの周期と長さを求めなさい。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>平均 ＝ (15.1＋14.9＋15.0)÷3 ＝ 15.0 秒。周期 ＝ 15.0÷10 ＝ 1.5 秒。</p>
+      <p>長さ ＝ 25×1.5×1.5 ＝ 56.25cm。</p>
+      <p class="fin">答 周期 1.5秒／長さ 56.25cm</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 05 ===== -->
+<article class="card" id="p5">
+  <div class="card-head">
+    <div class="num n1">05</div>
+    <div>
+      <h3>ふりこ上の速さ・高さ・エネルギーの変化</h3>
+      <div class="meta"><span class="chip c1">基礎</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>おもりの速さが最大になるのはどこか</li>
+        <li>ア〜オのうち、おもりの速さが同じになる点をすべて選べ</li>
+        <li>位置エネルギーがいちばん大きいのはどこか</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 460 250" role="img" aria-label="ふりこの各点での速さとエネルギーの変化。端で速さゼロ・位置エネルギー最大、最下点で速さ最大・運動エネルギー最大">
+        <defs>
+          <marker id="ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/>
+          </marker>
+        </defs>
+        <line x1="60" y1="22" x2="400" y2="22" stroke="currentColor" stroke-width="2" opacity=".55"/>
+        <circle cx="230" cy="22" r="3.5" fill="var(--brass)"/>
+        <path d="M120,133 A140,140 0 0 0 340,133" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 4" opacity=".5"/>
+        <line x1="230" y1="22" x2="120" y2="133" stroke="currentColor" stroke-width="1" opacity=".35"/>
+        <line x1="230" y1="22" x2="340" y2="133" stroke="currentColor" stroke-width="1" opacity=".35"/>
+        <line x1="230" y1="22" x2="230" y2="162" stroke="currentColor" stroke-width="1" opacity=".35"/>
+        <line x1="100" y1="162" x2="370" y2="162" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" opacity=".45"/>
+        <!-- bobs -->
+        <circle cx="120" cy="133" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="175" cy="155" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="230" cy="162" r="9" fill="var(--brass)"/>
+        <circle cx="285" cy="155" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="340" cy="133" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <text x="120" y="118" text-anchor="middle" font-size="12" fill="currentColor">ア</text>
+        <text x="171" y="140" text-anchor="middle" font-size="12" fill="currentColor">イ</text>
+        <text x="230" y="145" text-anchor="middle" font-size="12" fill="currentColor">ウ</text>
+        <text x="289" y="140" text-anchor="middle" font-size="12" fill="currentColor">エ</text>
+        <text x="340" y="118" text-anchor="middle" font-size="12" fill="currentColor">オ</text>
+        <!-- height -->
+        <line x1="88" y1="133" x2="88" y2="162" stroke="var(--brass)" stroke-width="1.2" marker-start="url(#ar5)" marker-end="url(#ar5)"/>
+        <text x="82" y="152" text-anchor="end" font-size="11" fill="var(--brass)">高さ</text>
+        <!-- speed bars -->
+        <text x="60" y="192" font-size="11" fill="currentColor" opacity=".8">速さ</text>
+        <rect x="112" y="196" width="16" height="2" fill="currentColor" opacity=".35"/>
+        <rect x="167" y="182" width="16" height="16" fill="currentColor" opacity=".55"/>
+        <rect x="222" y="174" width="16" height="24" fill="var(--brass)"/>
+        <rect x="277" y="182" width="16" height="16" fill="currentColor" opacity=".55"/>
+        <rect x="332" y="196" width="16" height="2" fill="currentColor" opacity=".35"/>
+        <text x="120" y="214" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".8">0</text>
+        <text x="230" y="214" text-anchor="middle" font-size="10.5" fill="var(--brass)" font-weight="700">最大</text>
+        <text x="340" y="214" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".8">0</text>
+        <text x="230" y="238" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".85">高さが同じ点（ア・オ／イ・エ）は速さも同じ</text>
+      </svg>
+      <figcaption>位置エネルギー（高さ）と運動エネルギー（速さ）の合計は一定。高い所ほど遅く、最下点で最速。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>端（ア・オ）＝速さ 0・位置エネルギー最大。最下点（ウ）＝速さ最大・運動エネルギー最大。</li>
+        <li><b>速さは「そこまでに何 cm 下がったか」だけで決まる</b>。左右対称の点は速さが等しい。</li>
+        <li>おもりにはたらく力：重力（つねに真下）と糸の張力。<u>進む向きの力</u>は端で最大、最下点で 0。</li>
+        <li>糸の張力は<u>最下点で最大</u>（重力＋円運動ぶん）。難関校の選択肢で問われる。</li>
+      </ul>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>上の図で、おもりの速さについて正しいものをすべて選びなさい。<br>
+        ① イとエの速さは等しい　② アよりイのほうが速い　③ ウで進む向きの力が最大になる　④ アで位置エネルギーが最大</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>① 高さが同じ → 速さが同じ。正しい。</p>
+      <p>② ア（速さ 0）よりイのほうが下がっている → 速い。正しい。</p>
+      <p>③ 最下点では進む向きの力は 0。誤り（最大になるのは端）。</p>
+      <p>④ ア・オが最高点なので位置エネルギー最大。正しい。</p>
+      <p class="fin">答 ①・②・④</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 06 ===== -->
+<article class="card" id="p6">
+  <div class="card-head">
+    <div class="num n1">06</div>
+    <div>
+      <h3>振れはばが小さくなっても周期は変わらない</h3>
+      <div class="meta"><span class="chip c1">基礎</span><span class="freq">頻出度 <b>★★★☆☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>時間がたつと振れはばが小さくなるのはなぜか</li>
+        <li>振れはばが半分になったとき、周期はどうなるか</li>
+        <li>ふりこが時計に使われている理由を説明しなさい</li>
+      </ul>
+    </div>
+    <div class="block key">
+      空気の抵抗と支点の摩擦でエネルギーが失われ、<b>振れはば（＝上がる高さ）は少しずつ小さくなる</b>。
+      それでも<b>周期は変わらない</b>——だからふりこは時計に使える。
+    </div>
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>振れはばが小さくなる＝「移動する距離が短くなる」と「速さが遅くなる」が同時に起こるので、往復にかかる時間は変わらない。</li>
+        <li>真空中で行えば振れはばはほとんど減らない（空気抵抗がないため）。</li>
+        <li>ふりこ時計にはゼンマイやおもりがあり、失われたぶんのエネルギーを補って振れ続けさせている。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>ふりこをゆらし続けたところ、10 分後には振れはばが半分になっていた。このときの 1 往復の時間は、はじめとくらべてどうなっているか。理由も書きなさい。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p class="fin">答 変わらない</p>
+      <p>理由：ふりこの周期はふりこの長さだけで決まり、振れはばには関係しないから。（振れはばが小さいと動く距離は短くなるが、その分速さもおそくなるため往復の時間は同じ）</p>
+    </div></details>
+  </div>
+</article>
+
+<div class="section-head s2">
+  <div class="tag">LEVEL 2 ─ 標準</div>
+  <h2>「長さが変わる」仕掛けを見抜く</h2>
+  <p>中堅〜上位校の主戦場。くぎ・重心・時計・共振はどれも「実際のふりこの長さはいくつか」を問う変装です。</p>
+</div>
+
+<!-- ===== 07 ===== -->
+<article class="card" id="p7">
+  <div class="card-head">
+    <div class="num n2">07</div>
+    <div>
+      <h3>くぎを打ったふりこ①──周期を合成する</h3>
+      <div class="meta"><span class="chip c2">標準</span><span class="freq">頻出度 <b>★★★★★</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>支点の真下◯cm のところにくぎを打った。1 往復にかかる時間は</li>
+        <li>くぎがないときとくらべて周期は何秒短くなったか</li>
+        <li>周期を◯秒にするには、くぎを支点から何 cm の位置に打てばよいか</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 440 262" role="img" aria-label="くぎを打ったふりこ。左半分は長さ100センチ、くぎに引っかかった右半分は長さ25センチとなり、周期はそれぞれの半分の和になる">
+        <defs>
+          <marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/>
+          </marker>
+        </defs>
+        <line x1="110" y1="26" x2="330" y2="26" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="220" cy="26" r="4" fill="var(--brass)"/>
+        <text x="228" y="20" font-size="11.5" fill="currentColor">支点</text>
+        <line x1="220" y1="26" x2="220" y2="196" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".4"/>
+        <!-- nail -->
+        <circle cx="220" cy="146" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="230" y="143" font-size="11.5" fill="currentColor">くぎ</text>
+        <!-- left half -->
+        <line x1="220" y1="26" x2="140" y2="164.6" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="140" cy="164.6" r="8.5" fill="var(--brass)" opacity=".85"/>
+        <path d="M140,164.6 A160,160 0 0 0 220,186" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity=".65"/>
+        <!-- right half -->
+        <line x1="220" y1="26" x2="220" y2="146" stroke="currentColor" stroke-width="1.6" opacity=".85"/>
+        <line x1="220" y1="146" x2="254.6" y2="166" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="254.6" cy="166" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M220,186 A40,40 0 0 0 254.6,166" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity=".65"/>
+        <circle cx="220" cy="186" r="8.5" fill="none" stroke="currentColor" stroke-width="1" opacity=".4"/>
+        <!-- measures -->
+        <line x1="100" y1="26" x2="100" y2="186" stroke="var(--brass)" stroke-width="1.2" marker-start="url(#ar7)" marker-end="url(#ar7)"/>
+        <text x="93" y="108" text-anchor="end" font-size="11.5" fill="var(--brass)">100cm</text>
+        <line x1="340" y1="146" x2="340" y2="186" stroke="var(--brass)" stroke-width="1.2" marker-start="url(#ar7)" marker-end="url(#ar7)"/>
+        <text x="348" y="170" font-size="11.5" fill="var(--brass)">25cm</text>
+        <!-- captions -->
+        <text x="120" y="214" text-anchor="middle" font-size="12" fill="currentColor">左半分：長さ100cm</text>
+        <text x="120" y="231" text-anchor="middle" font-size="12" fill="currentColor" opacity=".8">周期2秒 → 半分で 1秒</text>
+        <text x="330" y="214" text-anchor="middle" font-size="12" fill="currentColor">右半分：長さ25cm</text>
+        <text x="330" y="231" text-anchor="middle" font-size="12" fill="currentColor" opacity=".8">周期1秒 → 半分で 0.5秒</text>
+        <text x="220" y="256" text-anchor="middle" font-size="13" fill="var(--brass)" font-weight="700">1往復 ＝ 1 ＋ 0.5 ＝ 1.5秒</text>
+      </svg>
+      <figcaption>くぎより上を通るときは長いふりこ、くぎに引っかかったあとは短いふりこ。<b>それぞれの周期の「半分」をたす</b>のがこの型の全て。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">解き方の手順</span>
+      <ol class="steps">
+        <li>左側のふりこの長さ（＝支点からおもりまで）で周期 T<sub>1</sub> を出す。</li>
+        <li>右側のふりこの長さ（＝<u>くぎ</u>からおもりまで）で周期 T<sub>2</sub> を出す。</li>
+        <li>1 往復 ＝ T<sub>1</sub>÷2 ＋ T<sub>2</sub>÷2。</li>
+      </ol>
+    </div>
+    <div class="block key">
+      <b>くぎからおもりまでの長さ ＝（もとの長さ）－（支点からくぎまでの長さ）</b>。ここを取り違える人がとても多い。
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>長さ 225cm のふりこの、支点の真下 125cm の位置にくぎを打った。<br>
+        (1) 1 往復にかかる時間は何秒か。<br>
+        (2) 1 往復を 2.0 秒にするには、くぎを支点の真下何 cm に打てばよいか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 左：225cm → 3 秒。右：225－125＝100cm → 2 秒。<br>1 往復 ＝ 3÷2 ＋ 2÷2 ＝ 1.5＋1 ＝ 2.5 秒。</p>
+      <p class="fin">答 2.5秒</p>
+      <p>(2) 左半分は 3÷2＝1.5 秒で固定。残りは 2.0－1.5＝0.5 秒 → 右半分の周期は 1.0 秒 → 右のふりこの長さは 25cm。<br>くぎの位置は 225－25＝200cm。</p>
+      <p class="fin">答 支点の真下 200cm</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 08 ===== -->
+<article class="card" id="p8">
+  <div class="card-head">
+    <div class="num n2">08</div>
+    <div>
+      <h3>くぎを打ったふりこ②──上がる高さと角度</h3>
+      <div class="meta"><span class="chip c2">標準</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>くぎに引っかかったあと、おもりはどの高さまで上がるか</li>
+        <li>振れる角度は、くぎがないときとくらべてどうなるか</li>
+        <li>くぎの位置を下げていくと、やがて糸はどうなるか</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 460 236" role="img" aria-label="くぎに引っかかったあとも、おもりは反対側で最初と同じ高さまで上がる。ただし振れる角度は大きくなる">
+        <line x1="130" y1="24" x2="340" y2="24" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="235" cy="24" r="4" fill="var(--brass)"/>
+        <circle cx="235" cy="134" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="226" y="130" text-anchor="end" font-size="11.5" fill="currentColor">くぎ</text>
+        <line x1="235" y1="24" x2="235" y2="184" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity=".4"/>
+        <!-- same height line -->
+        <line x1="100" y1="160" x2="400" y2="160" stroke="var(--brass)" stroke-width="1.2" stroke-dasharray="6 4"/>
+        <text x="404" y="164" font-size="11" fill="var(--brass)">同じ高さ</text>
+        <line x1="100" y1="184" x2="400" y2="184" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" opacity=".4"/>
+        <!-- left start -->
+        <line x1="235" y1="24" x2="150" y2="160" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="150" cy="160" r="8.5" fill="var(--brass)" opacity=".85"/>
+        <text x="140" y="146" text-anchor="end" font-size="11.5" fill="currentColor">はじめ</text>
+        <!-- right after nail -->
+        <line x1="235" y1="24" x2="235" y2="134" stroke="currentColor" stroke-width="1.6" opacity=".85"/>
+        <line x1="235" y1="134" x2="277" y2="160" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="277" cy="160" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <text x="290" y="152" font-size="11.5" fill="currentColor">あと</text>
+        <!-- angle arcs -->
+        <path d="M235,74 A50,50 0 0 0 205.6,64" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".7"/>
+        <text x="205" y="56" text-anchor="middle" font-size="11" fill="currentColor">小</text>
+        <path d="M235,164 A30,30 0 0 0 258,154" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".7"/>
+        <text x="258" y="180" text-anchor="middle" font-size="11" fill="currentColor">大</text>
+        <text x="230" y="216" text-anchor="middle" font-size="12" fill="currentColor">高さは同じ（エネルギー保存）／ふりこが短くなるぶん<tspan fill="var(--brass)" font-weight="700">角度は大きくなる</tspan></text>
+      </svg>
+      <figcaption>止まる高さは「はじめの高さ」で決まる。くぎ以降は短いふりこなので、同じ高さに達するには大きく振れる必要がある。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>おもりが止まる高さ＝<b>はじめに持ち上げた高さと同じ</b>（空気抵抗を無視するとき）。</li>
+        <li>ふりこが短くなる → 同じ高さに届くには<b>角度が大きくなる</b>。</li>
+        <li>くぎが低すぎて「短いふりこの長さ ＜ 必要な高さ」になると、おもりはくぎのまわりを 1 回転し、<b>糸がくぎに巻きついていく</b>。</li>
+        <li>速さは高さだけで決まるので、<b>最下点の速さはくぎがあってもなくても同じ</b>。</li>
+      </ul>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>長さ 100cm のふりこを、最下点より 20cm 高い位置から静かにはなした。支点の真下 60cm にくぎがある。<br>
+        (1) 反対側でおもりは最下点より何 cm 高いところまで上がるか。<br>
+        (2) 最下点でのおもりの速さは、くぎがない場合とくらべてどうか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) くぎがあっても失われるエネルギーはないので、上がる高さははじめと同じ。</p>
+      <p class="fin">答 20cm</p>
+      <p>(2) 最下点までの落下（下がった高さ）は 20cm で変わらないので、速さも変わらない。</p>
+      <p class="fin">答 同じ</p>
+    </div></details>
+
+    <div class="block warnbox">
+      <span class="lbl">ミスポイント</span>
+      <p>「ふりこが短くなったから高く上がる／低くしか上がらない」は誤り。<b>変わるのは角度であって高さではない。</b></p>
+    </div>
+  </div>
+</article>
+
+<!-- ===== 09 ===== -->
+<article class="card" id="p9">
+  <div class="card-head">
+    <div class="num n2">09</div>
+    <div>
+      <h3>ふりこの長さは「支点から重心まで」</h3>
+      <div class="meta"><span class="chip c2">標準</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>同じおもりを 2 個つないだら周期が少し長くなった。理由を書きなさい</li>
+        <li>重さは 2 倍なのに周期が変わったのはなぜか</li>
+        <li>細長い棒をつるしたときのふりこの長さはどこか</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 440 272" role="img" aria-label="おもりを1個から2個に増やすと重心が下がり、ふりこの長さが61センチから62センチに伸びるため周期がわずかに長くなる">
+        <defs>
+          <marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/>
+          </marker>
+        </defs>
+        <line x1="40" y1="24" x2="400" y2="24" stroke="currentColor" stroke-width="2.4"/>
+        <!-- A -->
+        <line x1="130" y1="24" x2="130" y2="150" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="118" y="150" width="24" height="26" rx="2" fill="var(--brass)" opacity=".85"/>
+        <line x1="110" y1="163" x2="152" y2="163" stroke="currentColor" stroke-width="1.1" stroke-dasharray="3 2"/>
+        <circle cx="130" cy="163" r="2.8" fill="currentColor"/>
+        <text x="157" y="167" font-size="11" fill="currentColor">重心</text>
+        <line x1="88" y1="24" x2="88" y2="163" stroke="var(--brass)" stroke-width="1.2" marker-start="url(#ar9)" marker-end="url(#ar9)"/>
+        <text x="81" y="98" text-anchor="end" font-size="12" fill="var(--brass)">61cm</text>
+        <!-- B -->
+        <line x1="310" y1="24" x2="310" y2="150" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="298" y="150" width="24" height="26" rx="2" fill="var(--brass)" opacity=".85"/>
+        <rect x="298" y="176" width="24" height="26" rx="2" fill="var(--brass)" opacity=".5"/>
+        <line x1="290" y1="176" x2="332" y2="176" stroke="currentColor" stroke-width="1.1" stroke-dasharray="3 2"/>
+        <circle cx="310" cy="176" r="2.8" fill="currentColor"/>
+        <text x="337" y="180" font-size="11" fill="currentColor">重心</text>
+        <line x1="268" y1="24" x2="268" y2="176" stroke="var(--brass)" stroke-width="1.2" marker-start="url(#ar9)" marker-end="url(#ar9)"/>
+        <text x="261" y="104" text-anchor="end" font-size="12" fill="var(--brass)">62cm</text>
+        <!-- labels -->
+        <text x="130" y="228" text-anchor="middle" font-size="12.5" fill="currentColor" font-weight="700">おもり1個</text>
+        <text x="130" y="246" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">糸60cm＋おもり(高さ2cm)</text>
+        <text x="310" y="228" text-anchor="middle" font-size="12.5" fill="currentColor" font-weight="700">おもり2個（重さ2倍）</text>
+        <text x="310" y="246" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">重心が1cm下がる</text>
+        <text x="220" y="266" text-anchor="middle" font-size="12" fill="var(--brass)" font-weight="700">長さ 61cm → 62cm ／ 周期はわずかに長くなる</text>
+      </svg>
+      <figcaption>重さが 2 倍になったから遅くなったのではない。<b>重心が下がって「ふりこの長さ」が伸びた</b>から。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>おもりを<u>縦に</u>つなぐ → 重心が下がる → 長くなる → 周期は長くなる。</li>
+        <li>おもりを<u>横に並べる</u>／同じ場所に重ねる → 重心は下がらない → 周期は変わらない。</li>
+        <li>一様な棒や板をつるすときは、その真ん中（重心）までを測る。</li>
+      </ul>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>糸の長さ 98cm に、高さ 4cm の円柱のおもりを 1 個つるすと周期はちょうど 2 秒だった。同じおもりをもう 1 個、下につないだ。<br>
+        (1) このときのふりこの長さは何 cm か。<br>
+        (2) 周期は 2 秒とくらべてどうなるか。理由もあわせて答えなさい。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 1 個のとき：98＋2＝100cm（周期 2 秒と一致）。2 個つなぐと全体の高さは 8cm、その重心は糸の下端から 4cm。98＋4＝102cm。</p>
+      <p class="fin">答 102cm</p>
+      <p>(2) ふりこの長さが 100cm → 102cm と長くなったので、周期はわずかに長くなる。</p>
+      <p class="fin">答 少し長くなる（重さが 2 倍になったからではなく、重心が下がってふりこの長さがのびたため）</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 10 ===== -->
+<article class="card" id="p10">
+  <div class="card-head">
+    <div class="num n2">10</div>
+    <div>
+      <h3>落とした高さと最下点の速さ</h3>
+      <div class="meta"><span class="chip c2">標準</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>表から、高さ 45cm のときの最下点の速さを求めよ</li>
+        <li>速さを 2 倍にするには高さを何倍にすればよいか</li>
+        <li>おもりの重さを変えると最下点の速さはどうなるか</li>
+      </ul>
+    </div>
+    <div class="block key">
+      <b>最下点の速さは「下がった高さ」だけで決まる。おもりの重さ・ふりこの長さは無関係。</b><br>
+      <b>高さが 4 倍 → 速さは 2 倍</b>（高さの比は速さの比の 2 乗）。
+    </div>
+    <div class="tw block">
+      <span class="lbl">実験データの典型値</span>
+      <table>
+        <thead><tr><th class="lft">下がった高さ</th><td class="mono">5cm</td><td class="mono">20cm</td><td class="mono">45cm</td><td class="mono">80cm</td><td class="mono">125cm</td></tr></thead>
+        <tbody>
+          <tr><th class="lft">最下点の速さ</th><td class="mono">秒速1m</td><td class="mono">秒速2m</td><td class="mono">秒速3m</td><td class="mono">秒速4m</td><td class="mono">秒速5m</td></tr>
+          <tr><th class="lft">高さの比</th><td class="mono">1</td><td class="mono">4</td><td class="mono">9</td><td class="mono">16</td><td class="mono">25</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>数の並び（5・20・45・80・125）は「長さと周期」の 1 : 4 : 9 : 16 とまったく同じ形。セットで覚える。</li>
+        <li>「振れはばが 2 倍」＝「下がる高さが 2 倍」ではないので、高さで与えられているか角度で与えられているかを必ず確認。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>上の表のふりこで、おもりを最下点より 180cm 高い位置からはなした。最下点での速さは秒速何 m か。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>5cm で秒速 1m。180÷5＝36 倍 → 速さは √36 ＝ 6 倍。</p>
+      <p class="fin">答 秒速6m</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 11 ===== -->
+<article class="card" id="p11">
+  <div class="card-head">
+    <div class="num n2">11</div>
+    <div>
+      <h3>衝突──木片が動く距離</h3>
+      <div class="meta"><span class="chip c2">標準</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>おもりの重さを 3 倍、高さを 2 倍にすると木片は何 cm 動くか</li>
+        <li>木片が 12cm 動くようにするには、高さを何 cm にすればよいか</li>
+        <li>表から、木片の動く距離は何と何に比例するといえるか</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 460 224" role="img" aria-label="ふりこのおもりを高さから放して木片に当てると、木片は水平面をすべって止まる。動く距離はおもりの重さと落とした高さの積に比例する">
+        <defs>
+          <marker id="ar11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/>
+          </marker>
+        </defs>
+        <line x1="70" y1="20" x2="310" y2="20" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="190" cy="20" r="4" fill="var(--brass)"/>
+        <!-- floor -->
+        <line x1="30" y1="160" x2="440" y2="160" stroke="currentColor" stroke-width="2"/>
+        <g stroke="currentColor" stroke-width="1" opacity=".4">
+          <line x1="36" y1="160" x2="28" y2="168"/><line x1="66" y1="160" x2="58" y2="168"/>
+          <line x1="96" y1="160" x2="88" y2="168"/><line x1="126" y1="160" x2="118" y2="168"/>
+          <line x1="156" y1="160" x2="148" y2="168"/><line x1="186" y1="160" x2="178" y2="168"/>
+          <line x1="216" y1="160" x2="208" y2="168"/><line x1="246" y1="160" x2="238" y2="168"/>
+          <line x1="276" y1="160" x2="268" y2="168"/><line x1="306" y1="160" x2="298" y2="168"/>
+          <line x1="336" y1="160" x2="328" y2="168"/><line x1="366" y1="160" x2="358" y2="168"/>
+          <line x1="396" y1="160" x2="388" y2="168"/><line x1="426" y1="160" x2="418" y2="168"/>
+        </g>
+        <!-- start position -->
+        <line x1="190" y1="20" x2="104" y2="112" stroke="currentColor" stroke-width="1.4" opacity=".65"/>
+        <circle cx="104" cy="112" r="9" fill="var(--brass)"/>
+        <path d="M104,112 A126,126 0 0 0 190,146" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 4" opacity=".6"/>
+        <line x1="190" y1="20" x2="190" y2="137" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="190" cy="146" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <!-- height measure -->
+        <line x1="70" y1="112" x2="70" y2="146" stroke="var(--brass)" stroke-width="1.2" marker-start="url(#ar11)" marker-end="url(#ar11)"/>
+        <text x="63" y="136" text-anchor="end" font-size="11.5" fill="var(--brass)">高さ</text>
+        <line x1="76" y1="146" x2="200" y2="146" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" opacity=".45"/>
+        <!-- block before / after -->
+        <rect x="206" y="132" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3" opacity=".55"/>
+        <rect x="322" y="132" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="336" y="124" text-anchor="middle" font-size="11" fill="currentColor">木片</text>
+        <line x1="240" y1="182" x2="318" y2="182" stroke="var(--brass)" stroke-width="1.3" marker-end="url(#ar11)"/>
+        <text x="280" y="202" text-anchor="middle" font-size="12" fill="var(--brass)">動いた距離</text>
+        <text x="396" y="202" text-anchor="middle" font-size="12" fill="currentColor">距離 ∝ 重さ × 高さ</text>
+      </svg>
+      <figcaption>衝突で木片にわたる運動エネルギーは、おもりの重さと落とした高さの<b>積</b>に比例する。ふりこの長さは関係しない。</figcaption>
+    </figure>
+
+    <div class="block key">
+      <b>木片の動く距離 ＝ 一定の数 × おもりの重さ × 落とした高さ</b><br>
+      「重さ 2 倍で距離 2 倍、高さ 3 倍で距離 3 倍、両方なら 6 倍」と<u>かけ算</u>で処理する。
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <div class="tw"><table>
+        <thead><tr><th>実験</th><th>おもりの重さ</th><th>高さ</th><th>木片の移動距離</th></tr></thead>
+        <tbody>
+          <tr><td>ア</td><td class="mono">10g</td><td class="mono">10cm</td><td class="mono">2cm</td></tr>
+          <tr><td>イ</td><td class="mono">20g</td><td class="mono">10cm</td><td class="mono">4cm</td></tr>
+          <tr><td>ウ</td><td class="mono">10g</td><td class="mono">20cm</td><td class="mono">4cm</td></tr>
+          <tr><td>エ</td><td class="mono">30g</td><td class="mono">30cm</td><td class="mono">?</td></tr>
+        </tbody>
+      </table></div>
+      <p>(1) エの移動距離を求めよ。　(2) 40g のおもりで木片を 24cm 動かすには高さを何 cm にすればよいか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>基準はア（10g・10cm → 2cm）。</p>
+      <p>(1) 重さ 3 倍、高さ 3 倍 → 距離は 3×3＝9 倍。2×9＝18cm。</p>
+      <p class="fin">答 18cm</p>
+      <p>(2) 距離を 24÷2＝12 倍にしたい。重さは 40÷10＝4 倍なので、高さは 12÷4＝3 倍。10×3＝30cm。</p>
+      <p class="fin">答 30cm</p>
+    </div></details>
+
+    <div class="block warnbox">
+      <span class="lbl">ミスポイント</span>
+      <p>速さは「高さの平方根」に比例するが、<b>木片の移動距離は高さそのものに比例</b>する。混同しないこと。</p>
+    </div>
+  </div>
+</article>
+
+<!-- ===== 12 ===== -->
+<article class="card" id="p12">
+  <div class="card-head">
+    <div class="num n2">12</div>
+    <div>
+      <h3>ふりこ時計の進み・遅れ</h3>
+      <div class="meta"><span class="chip c2">標準</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>夏になると時計が遅れるのはなぜか</li>
+        <li>1 日で◯分遅れた。ふりこの長さを何 cm にすればよいか</li>
+        <li>おもりの位置を調整するねじは、どちらに回せばよいか</li>
+      </ul>
+    </div>
+    <div class="block key">
+      <b>遅れる ⇔ 周期が長い ⇔ ふりこが長い。</b>直すには<b>おもりを上げる（ふりこを短くする）</b>。<br>
+      進む ⇔ 周期が短い ⇔ ふりこが短い。直すには<b>おもりを下げる</b>。
+    </div>
+    <div class="block">
+      <span class="lbl">解き方の手順</span>
+      <ol class="steps">
+        <li>1 日 ＝ 24×60×60 ＝ <span class="mono">86400 秒</span>。</li>
+        <li>実際の 1 日で振れる回数 ＝ 86400 ÷（実際の周期）。</li>
+        <li>時計が示す時間 ＝ 振れた回数 ×（正しい周期）。</li>
+        <li>ずれ ＝ 86400 －（時計の示す時間）。<br><span class="frm">ずれ＝86400×(周期のずれ÷実際の周期)</span> と一発でも出せる。</li>
+      </ol>
+    </div>
+    <div class="block">
+      <span class="lbl">理由の記述（頻出）</span>
+      <ul>
+        <li><b>夏に遅れる：</b>気温が上がって金属の棒がのび、ふりこが長くなって周期が長くなるから。</li>
+        <li><b>冬に進む：</b>棒がちぢんでふりこが短くなり、周期が短くなるから。</li>
+        <li><b>高い山の上で遅れる：</b>重力が小さくなり、おもりを引き戻す力が弱くなって周期が長くなるから。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>正しい周期が 1.5 秒のふりこ時計がある。ふりこがのびて周期が 1.6 秒になった。<br>
+        (1) 1 日で何時間何分遅れるか。　(2) もとに戻すには、ふりこの長さを何 cm 短くすればよいか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 実際の 1 日 86400 秒で振れる回数 ＝ 86400÷1.6 ＝ 54000 回。<br>
+        時計が示す時間 ＝ 54000×1.5 ＝ 81000 秒。<br>
+        遅れ ＝ 86400－81000 ＝ 5400 秒 ＝ 1 時間 30 分。</p>
+      <p class="fin">答 1時間30分</p>
+      <p>(2) 正しい長さ ＝ 25×1.5×1.5 ＝ 56.25cm。今の長さ ＝ 25×1.6×1.6 ＝ 64cm。<br>64－56.25 ＝ 7.75cm。</p>
+      <p class="fin">答 7.75cm 短くする（おもりを 7.75cm 上げる）</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 13 ===== -->
+<article class="card" id="p13">
+  <div class="card-head">
+    <div class="num n2">13</div>
+    <div>
+      <h3>共振（共鳴ふりこ）</h3>
+      <div class="meta"><span class="chip c2">標準</span><span class="freq">頻出度 <b>★★★☆☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>A をゆらしたとき、大きくゆれ始めるのはどれか</li>
+        <li>大きくゆれたふりこと A に共通することは何か</li>
+        <li>ブランコを大きくゆらすコツを、ふりこの性質を使って説明せよ</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 460 218" role="img" aria-label="1本の横棒に長さの違うふりこをつるした共振の実験。Aをゆらすと、Aと同じ長さのDだけが大きくゆれる">
+        <line x1="30" y1="34" x2="430" y2="34" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3" opacity=".5"/>
+        <line x1="40" y1="30" x2="420" y2="30" stroke="currentColor" stroke-width="4"/>
+        <line x1="40" y1="30" x2="40" y2="14" stroke="currentColor" stroke-width="2.4"/>
+        <line x1="420" y1="30" x2="420" y2="14" stroke="currentColor" stroke-width="2.4"/>
+        <!-- A: long, swinging (driver) -->
+        <line x1="90" y1="30" x2="118" y2="140" stroke="var(--brass)" stroke-width="1.8"/>
+        <circle cx="118" cy="140" r="9" fill="var(--brass)"/>
+        <path d="M62,140 A113,113 0 0 0 118,140" fill="none" stroke="var(--brass)" stroke-width="1.1" stroke-dasharray="4 3"/>
+        <text x="90" y="166" text-anchor="middle" font-size="12" fill="var(--brass)" font-weight="700">A</text>
+        <text x="90" y="183" text-anchor="middle" font-size="11" fill="var(--brass)">60cm・手でゆらす</text>
+        <!-- B short -->
+        <line x1="180" y1="30" x2="180" y2="82" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="180" cy="88" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <text x="180" y="112" text-anchor="middle" font-size="12" fill="currentColor">B</text>
+        <text x="180" y="128" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">20cm</text>
+        <!-- C mid -->
+        <line x1="250" y1="30" x2="250" y2="112" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="250" cy="118" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <text x="250" y="142" text-anchor="middle" font-size="12" fill="currentColor">C</text>
+        <text x="250" y="158" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">40cm</text>
+        <!-- D same as A: resonating -->
+        <line x1="330" y1="30" x2="358" y2="140" stroke="var(--brass)" stroke-width="1.8"/>
+        <circle cx="358" cy="140" r="9" fill="var(--brass)"/>
+        <path d="M302,140 A113,113 0 0 0 358,140" fill="none" stroke="var(--brass)" stroke-width="1.1" stroke-dasharray="4 3"/>
+        <text x="330" y="166" text-anchor="middle" font-size="12" fill="var(--brass)" font-weight="700">D</text>
+        <text x="330" y="183" text-anchor="middle" font-size="11" fill="var(--brass)">60cm・大きくゆれる</text>
+        <!-- E short -->
+        <line x1="400" y1="30" x2="400" y2="72" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="400" cy="78" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <text x="400" y="102" text-anchor="middle" font-size="12" fill="currentColor">E</text>
+        <text x="400" y="118" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">15cm</text>
+        <text x="230" y="210" text-anchor="middle" font-size="12" fill="currentColor">横棒を通して振動が伝わるが、<tspan fill="var(--brass)" font-weight="700">周期の等しいふりこだけ</tspan>がタイミングよく押され続ける</text>
+      </svg>
+      <figcaption>ゆれが大きくなるのは「同じ長さ＝同じ周期」のふりこだけ。重さが同じでも長さが違えば共振しない。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>共振の条件は<b>周期（＝長さ）が等しいこと</b>。重さ・材質は関係なし。</li>
+        <li>周期が合うと、毎回同じタイミングで押されるためエネルギーが少しずつたまり、振れはばが大きくなる。</li>
+        <li>身のまわりの例：ブランコを周期に合わせてこぐ／地震で固有周期の合う建物が大きくゆれる／音のうなり・共鳴。</li>
+      </ul>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>上の図で、A を静かにゆらし続けた。(1) 最も大きくゆれるのはどれか。(2) その理由を「周期」という語を使って説明しなさい。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p class="fin">(1) 答 D</p>
+      <p>(2) D は A とふりこの長さが等しく周期も等しいため、横棒から伝わる振動が毎回ゆれと同じタイミングではたらき、振れはばがしだいに大きくなるから。</p>
+    </div></details>
+  </div>
+</article>
+
+<div class="section-head s3">
+  <div class="tag">LEVEL 3 ─ 難関</div>
+  <h2>ふりこの外へ話が出ていく型</h2>
+  <p>難関校では「ふりこの知識」そのものより、<b>グラフ・整数の性質・落下運動・エネルギー</b>と組み合わせて出ます。何と何がくっついているかを見抜けば、使う道具は基礎と同じです。</p>
+</div>
+
+<!-- ===== 14 ===== -->
+<article class="card" id="p14">
+  <div class="card-head">
+    <div class="num n3">14</div>
+    <div>
+      <h3>グラフの読み取りと逆算</h3>
+      <div class="meta"><span class="chip c3">難関</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>長さと周期の関係を表すグラフとして正しいものを選べ</li>
+        <li>グラフから、周期が 2.5 秒になるふりこの長さを読み取れ</li>
+        <li>長さを横軸、周期×周期を縦軸にとるとどんなグラフになるか</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 440 232" role="img" aria-label="ふりこの長さと周期の関係グラフ。原点から立ち上がり、だんだんねかせる曲線になる。比例の直線にはならない">
+        <!-- axes -->
+        <line x1="60" y1="190" x2="415" y2="190" stroke="currentColor" stroke-width="1.6"/>
+        <line x1="60" y1="190" x2="60" y2="32" stroke="currentColor" stroke-width="1.6"/>
+        <!-- gridlines -->
+        <g stroke="currentColor" stroke-width=".8" opacity=".18">
+          <line x1="145" y1="190" x2="145" y2="40"/><line x1="230" y1="190" x2="230" y2="40"/>
+          <line x1="315" y1="190" x2="315" y2="40"/><line x1="400" y1="190" x2="400" y2="40"/>
+          <line x1="60" y1="152.5" x2="405" y2="152.5"/><line x1="60" y1="115" x2="405" y2="115"/>
+          <line x1="60" y1="77.5" x2="405" y2="77.5"/><line x1="60" y1="40" x2="405" y2="40"/>
+        </g>
+        <!-- proportional (wrong) line -->
+        <line x1="60" y1="190" x2="400" y2="40" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 4" opacity=".45"/>
+        <text x="352" y="86" font-size="11" fill="currentColor" opacity=".6">比例の直線</text>
+        <text x="352" y="100" font-size="11" fill="currentColor" opacity=".6">（にはならない）</text>
+        <!-- curve -->
+        <polyline points="60,190 81,152.5 102,137 145,115 188,98 251,77.5 315,60 400,40"
+          fill="none" stroke="var(--brass)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- key points -->
+        <g fill="var(--brass)">
+          <circle cx="81" cy="152.5" r="3.6"/><circle cx="145" cy="115" r="3.6"/>
+          <circle cx="251" cy="77.5" r="3.6"/><circle cx="400" cy="40" r="3.6"/>
+        </g>
+        <!-- read-off guide -->
+        <line x1="60" y1="96" x2="215" y2="96" stroke="currentColor" stroke-width="1.1" stroke-dasharray="3 3"/>
+        <line x1="215" y1="96" x2="215" y2="190" stroke="currentColor" stroke-width="1.1" stroke-dasharray="3 3"/>
+        <text x="224" y="115" font-size="11" fill="currentColor">2.5秒 → 156.25cm</text>
+        <!-- labels -->
+        <text x="145" y="206" text-anchor="middle" font-size="11" fill="currentColor">100</text>
+        <text x="230" y="206" text-anchor="middle" font-size="11" fill="currentColor">200</text>
+        <text x="315" y="206" text-anchor="middle" font-size="11" fill="currentColor">300</text>
+        <text x="400" y="206" text-anchor="middle" font-size="11" fill="currentColor">400</text>
+        <text x="415" y="222" text-anchor="end" font-size="11.5" fill="currentColor">ふりこの長さ（cm）</text>
+        <text x="52" y="156" text-anchor="end" font-size="11" fill="currentColor">1</text>
+        <text x="52" y="118" text-anchor="end" font-size="11" fill="currentColor">2</text>
+        <text x="52" y="81" text-anchor="end" font-size="11" fill="currentColor">3</text>
+        <text x="52" y="44" text-anchor="end" font-size="11" fill="currentColor">4</text>
+        <text x="30" y="28" font-size="11.5" fill="currentColor">周期（秒）</text>
+      </svg>
+      <figcaption>正しいのは<b>原点から出て、右へ行くほどねてくる曲線</b>。長さが増えるほど周期の増え方はにぶくなる。直線を選ばせるのが定番のひっかけ。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>長さ－周期は<b>曲線</b>。長さ－（周期×周期）にすると<b>原点を通る直線</b>になる。</li>
+        <li>「周期の 2 乗が長さに比例する」＝「長さの比の平方根が周期の比」。どちらの言い方でも出る。</li>
+        <li>グラフから読むときは、必ず暗記表（25／100／225／400）の 4 点で目盛りを確かめてから読む。</li>
+      </ul>
+    </div>
+
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>長さ 400cm のふりこの周期は 4 秒である。<br>
+        (1) 周期を 2.5 秒にするには長さを何 cm にすればよいか。<br>
+        (2) 横軸にふりこの長さ、縦軸に「周期×周期」をとると、グラフはどんな形になるか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 長さ ＝ 25×2.5×2.5 ＝ 156.25cm。（400cm の 4 秒を基準に、周期の比 2.5:4＝5:8 → 長さの比 25:64 → 400×25÷64＝156.25 でも同じ）</p>
+      <p class="fin">答 156.25cm</p>
+      <p>(2) 周期×周期 ＝ 長さ÷25 なので、両者は比例。</p>
+      <p class="fin">答 原点を通る右上がりの直線</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 15 ===== -->
+<article class="card" id="p15">
+  <div class="card-head">
+    <div class="num n3">15</div>
+    <div>
+      <h3>複数のふりこ──次にそろうのは何秒後か</h3>
+      <div class="meta"><span class="chip c3">難関</span><span class="freq">頻出度 <b>★★★☆☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>3 つのふりこを同時にはなした。次に 3 つが同時に手をはなした位置にもどるのは何秒後か</li>
+        <li>60 秒間に 3 つが同時にそろうのは何回か</li>
+        <li>A が 5 往復する間に B は 3 往復する。B の長さは A の何倍か</li>
+      </ul>
+    </div>
+    <div class="block key">
+      <b>「同時にそろう」＝ 周期の最小公倍数。</b>小数のままでは扱いにくいので、まず<b>10 倍・100 倍して整数にしてから</b>最小公倍数をとり、最後に戻す。
+    </div>
+    <div class="block">
+      <span class="lbl">解き方の手順</span>
+      <ol class="steps">
+        <li>各ふりこの長さから周期を出す（<span class="frm">長さ＝25×周期²</span> の逆）。</li>
+        <li>周期を整数比になおす（例 1.2・1.8・3.0 → 12・18・30）。</li>
+        <li>最小公倍数を求める（12・18・30 → 180）。</li>
+        <li>倍率を戻す（180 ÷ 10 ＝ 18 秒）。</li>
+      </ol>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>長さ 36cm・81cm・225cm の 3 つのふりこを、同じ位置から同時に静かにはなした。<br>
+        (1) それぞれの周期を求めよ。　(2) 次に 3 つがはじめの位置に同時にもどるのは何秒後か。<br>
+        (3) 1 分間のうちに 3 つがそろうのは何回か（はなした瞬間は数えない）。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 36÷25＝1.44 → 周期 1.2 秒。81÷25＝3.24 → 1.8 秒。225÷25＝9 → 3.0 秒。</p>
+      <p class="fin">答 1.2秒・1.8秒・3.0秒</p>
+      <p>(2) 10 倍して 12・18・30 の最小公倍数 ＝ 180。180÷10 ＝ 18 秒。<br>
+        検算：18÷1.2＝15 往復、18÷1.8＝10 往復、18÷3.0＝6 往復。すべて整数 ✓</p>
+      <p class="fin">答 18秒後</p>
+      <p>(3) 60÷18 ＝ 3 あまり 6 → 18・36・54 秒の 3 回。</p>
+      <p class="fin">答 3回</p>
+    </div></details>
+    <div class="block warnbox">
+      <span class="lbl">ミスポイント</span>
+      <p>「同時に<u>最下点</u>を通る」を聞かれた場合は、半周期（0.6・0.9・1.5 秒）どうしの最小公倍数になることがある。<b>問われているのが「もとの位置」か「最下点」か</b>を必ず確認。</p>
+    </div>
+  </div>
+</article>
+
+<!-- ===== 16 ===== -->
+<article class="card" id="p16">
+  <div class="card-head">
+    <div class="num n3">16</div>
+    <div>
+      <h3>最下点で糸が切れる──水平に飛び出す</h3>
+      <div class="meta"><span class="chip c3">難関</span><span class="freq">頻出度 <b>★★★☆☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>最下点で糸が切れた。おもりはどのような道すじで落ちるか</li>
+        <li>おもりが床に落ちる点は、最下点の真下から何 m はなれているか</li>
+        <li>糸が切れる位置を最下点ではなく端にすると、おもりはどう動くか</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 460 244" role="img" aria-label="最下点で糸が切れたおもりは、水平方向に飛び出しながら落下して放物線をえがき、床に落ちる">
+        <defs>
+          <marker id="ar16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/>
+          </marker>
+          <marker id="ar16b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <line x1="40" y1="18" x2="230" y2="18" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="140" cy="18" r="4" fill="var(--brass)"/>
+        <!-- swing -->
+        <line x1="140" y1="18" x2="72" y2="94" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+        <circle cx="72" cy="94" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".7"/>
+        <path d="M72,94 A102,102 0 0 0 140,120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 4" opacity=".55"/>
+        <line x1="140" y1="18" x2="140" y2="111" stroke="currentColor" stroke-width="1.4"/>
+        <text x="98" y="66" font-size="11" fill="currentColor" opacity=".8">高さ20cm</text>
+        <!-- cut mark -->
+        <line x1="132" y1="104" x2="148" y2="96" stroke="var(--l3)" stroke-width="2.2"/>
+        <text x="152" y="88" font-size="11.5" fill="var(--l3)">ここで糸が切れる</text>
+        <circle cx="140" cy="120" r="9" fill="var(--brass)"/>
+        <!-- velocity arrow -->
+        <line x1="152" y1="120" x2="196" y2="120" stroke="var(--brass)" stroke-width="2" marker-end="url(#ar16)"/>
+        <text x="178" y="108" text-anchor="middle" font-size="11" fill="var(--brass)">秒速2m</text>
+        <!-- parabola -->
+        <path d="M140,120 Q250,120 320,200" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4"/>
+        <circle cx="320" cy="200" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <!-- floor -->
+        <line x1="60" y1="207" x2="430" y2="207" stroke="currentColor" stroke-width="2"/>
+        <g stroke="currentColor" stroke-width="1" opacity=".4">
+          <line x1="66" y1="207" x2="58" y2="215"/><line x1="96" y1="207" x2="88" y2="215"/>
+          <line x1="126" y1="207" x2="118" y2="215"/><line x1="156" y1="207" x2="148" y2="215"/>
+          <line x1="186" y1="207" x2="178" y2="215"/><line x1="216" y1="207" x2="208" y2="215"/>
+          <line x1="246" y1="207" x2="238" y2="215"/><line x1="276" y1="207" x2="268" y2="215"/>
+          <line x1="306" y1="207" x2="298" y2="215"/><line x1="336" y1="207" x2="328" y2="215"/>
+          <line x1="366" y1="207" x2="358" y2="215"/><line x1="396" y1="207" x2="388" y2="215"/>
+        </g>
+        <!-- vertical drop measure -->
+        <line x1="140" y1="120" x2="140" y2="207" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
+        <line x1="398" y1="120" x2="398" y2="207" stroke="currentColor" stroke-width="1.2" marker-start="url(#ar16b)" marker-end="url(#ar16b)"/>
+        <text x="398" y="98" text-anchor="middle" font-size="11" fill="currentColor">125cm</text>
+        <text x="398" y="112" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".7">＝0.5秒で落下</text>
+        <!-- horizontal distance -->
+        <line x1="140" y1="228" x2="320" y2="228" stroke="var(--brass)" stroke-width="1.3" marker-start="url(#ar16)" marker-end="url(#ar16)"/>
+        <text x="230" y="243" text-anchor="middle" font-size="12" fill="var(--brass)">秒速2m × 0.5秒 ＝ 1m</text>
+      </svg>
+      <figcaption>切れたあとは「一定の速さで横に進む」と「落ちる」が同時に起こる。<b>横の距離は、落下にかかる時間だけで決まる</b>。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">解き方の手順</span>
+      <ol class="steps">
+        <li>下がった高さから、最下点の速さを出す（パターン10 の表）。</li>
+        <li>最下点から床までの高さから、落ちるのにかかる時間を出す。</li>
+        <li>横の距離 ＝ 速さ × 落下時間。</li>
+      </ol>
+    </div>
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>糸が切れた瞬間の速さの<b>向き</b>は、円の接線方向。最下点なら真横。</li>
+        <li><u>端</u>（速さ 0 の位置）で切れた場合は、そのまま<b>真下に落ちる</b>。ここが選択肢のひっかけ。</li>
+        <li>横に進む速さは落ちている間ずっと変わらない（空気抵抗を考えない）。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>最下点が床から 125cm の高さにあるふりこがある。おもりを最下点より 20cm 高い位置からはなすと、最下点での速さは秒速 2m だった。物体は静かにはなしてから 0.5 秒で 125cm 落下する。<br>
+        (1) 最下点で糸が切れたとき、おもりは最下点の真下から何 m はなれた床に落ちるか。<br>
+        (2) はなす高さを 80cm にすると、落ちる点は何 m はなれるか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 落下にかかる時間は 0.5 秒。横に進む距離 ＝ 2×0.5 ＝ 1m。</p>
+      <p class="fin">答 1m</p>
+      <p>(2) 高さ 20cm→80cm は 4 倍なので速さは 2 倍の秒速 4m。落下時間は高さ 125cm のままなので 0.5 秒。4×0.5 ＝ 2m。</p>
+      <p class="fin">答 2m</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 17 ===== -->
+<article class="card" id="p17">
+  <div class="card-head">
+    <div class="num n3">17</div>
+    <div>
+      <h3>斜面・レールへの乗りかえ（エネルギー保存）</h3>
+      <div class="meta"><span class="chip c3">難関</span><span class="freq">頻出度 <b>★★★☆☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>おもりはなめらかな斜面を何 cm の高さまでのぼるか</li>
+        <li>斜面の傾きを変えると、のぼる高さ・のぼる距離はどうなるか</li>
+        <li>ふりこと斜面で、最下点の速さをくらべよ</li>
+      </ul>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 460 222" role="img" aria-label="ふりこのおもりが最下点でなめらかな斜面に乗りかえると、はじめと同じ高さまでのぼる。斜面の傾きをゆるくすると進む距離は長くなるが、のぼる高さは変わらない">
+        <defs>
+          <marker id="ar17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/>
+          </marker>
+        </defs>
+        <line x1="60" y1="20" x2="240" y2="20" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="150" cy="20" r="4" fill="var(--brass)"/>
+        <!-- swing -->
+        <line x1="150" y1="20" x2="53" y2="110" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="53" cy="110" r="8.5" fill="var(--brass)"/>
+        <path d="M53,110 A132,132 0 0 0 150,152" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 4" opacity=".6"/>
+        <!-- ground and ramps -->
+        <line x1="40" y1="160" x2="250" y2="160" stroke="currentColor" stroke-width="2.2"/>
+        <line x1="250" y1="160" x2="330" y2="110" stroke="currentColor" stroke-width="2.2"/>
+        <line x1="250" y1="160" x2="420" y2="110" stroke="currentColor" stroke-width="1.8" stroke-dasharray="6 4" opacity=".6"/>
+        <!-- same-height line -->
+        <line x1="44" y1="110" x2="424" y2="110" stroke="var(--brass)" stroke-width="1.2" stroke-dasharray="6 4"/>
+        <text x="216" y="103" text-anchor="middle" font-size="11.5" fill="var(--brass)">同じ高さ</text>
+        <!-- bobs on ramps -->
+        <circle cx="330" cy="110" r="7.5" fill="none" stroke="currentColor" stroke-width="1.9"/>
+        <circle cx="420" cy="110" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2"/>
+        <!-- bob crossing the floor -->
+        <circle cx="176" cy="152" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <line x1="188" y1="152" x2="228" y2="152" stroke="var(--brass)" stroke-width="1.8" marker-end="url(#ar17)"/>
+        <!-- height measure -->
+        <line x1="38" y1="110" x2="38" y2="152" stroke="var(--brass)" stroke-width="1.2" marker-start="url(#ar17)" marker-end="url(#ar17)"/>
+        <text x="31" y="136" text-anchor="end" font-size="12" fill="var(--brass)">h</text>
+        <text x="240" y="192" text-anchor="middle" font-size="11.5" fill="currentColor">傾きをゆるくすると<tspan font-weight="700">のぼる距離</tspan>は長くなるが、</text>
+        <text x="240" y="210" text-anchor="middle" font-size="12" fill="var(--brass)" font-weight="700">のぼる高さ h は変わらない</text>
+      </svg>
+      <figcaption>ふりこも斜面も、なめらかなら「下がった高さ＝上がる高さ」。速さを決めるのはいつも<b>高さの差だけ</b>。</figcaption>
+    </figure>
+
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>摩擦・空気抵抗がなければ、経路の形（ふりこの円弧でも斜面の直線でも）に関係なく<b>もとの高さまで上がる</b>。</li>
+        <li>斜面がゆるい → 進む距離は長くなるが、達する高さは同じ。斜面が水平になると、いつまでも進み続ける（＝止まらない）。</li>
+        <li>摩擦がある場合は、失われたぶんだけ上がる高さが低くなる。「同じ高さまで上がらなかった理由」は摩擦・空気抵抗と書く。</li>
+        <li>逆向きの出題：斜面をすべり下りた球がふりこのおもりに当たる、という設定でも使う道具は同じ。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>長さ 100cm のふりこを、最下点より 45cm 高い位置から静かにはなした。最下点でおもりが糸から外れ、なめらかな斜面に乗った。<br>
+        (1) おもりは斜面を何 cm の高さまでのぼるか。<br>
+        (2) 斜面をゆるやかなものに取りかえると、のぼる高さと斜面上を進む距離はそれぞれどうなるか。<br>
+        (3) 最下点でのおもりの速さは、ふりこの長さを 400cm にすると変わるか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 下がった高さと同じ高さまでのぼる。</p>
+      <p class="fin">答 45cm</p>
+      <p>(2) のぼる高さは 45cm のまま変わらない。斜面がゆるいぶん、同じ高さに達するまでに進む距離は長くなる。</p>
+      <p class="fin">答 高さ…変わらない／距離…長くなる</p>
+      <p>(3) 速さを決めるのは下がった高さ（45cm）だけで、ふりこの長さは関係しない。</p>
+      <p class="fin">答 変わらない</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 18 ===== -->
+<article class="card" id="p18">
+  <div class="card-head">
+    <div class="num n3">18</div>
+    <div>
+      <h3>重力が変わる場所でのふりこ（月・エレベーター・宇宙）</h3>
+      <div class="meta"><span class="chip c3">難関</span><span class="freq">頻出度 <b>★★☆☆☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>同じふりこを月面に持っていくと周期はどうなるか</li>
+        <li>上向きに加速しているエレベーターの中では周期はどうなるか</li>
+        <li>無重力の宇宙ステーションの中でふりこをゆらすとどうなるか</li>
+      </ul>
+    </div>
+    <div class="block key">
+      <b>ふりこを動かしているのは重力。重力が弱いほどゆっくり戻る＝周期は長くなる。</b>
+    </div>
+    <div class="tw block">
+      <table>
+        <thead><tr><th class="lft">場所・状況</th><th class="lft">重力（見かけ）</th><th class="lft">周期</th></tr></thead>
+        <tbody>
+          <tr><td class="lft">月面（地球の約 1/6）</td><td class="lft">弱い</td><td class="lft">長くなる（約 2.4 倍）</td></tr>
+          <tr><td class="lft">高い山の上</td><td class="lft">わずかに弱い</td><td class="lft">わずかに長くなる（時計は遅れる）</td></tr>
+          <tr><td class="lft">上向きに加速するエレベーター</td><td class="lft">強くなる</td><td class="lft">短くなる</td></tr>
+          <tr><td class="lft">下向きに加速するエレベーター</td><td class="lft">弱くなる</td><td class="lft">長くなる</td></tr>
+          <tr><td class="lft">無重力（自由落下・宇宙）</td><td class="lft">0</td><td class="lft">ふりこは振れない（そのまま止まる）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="block">
+      <span class="lbl">押さえどころ</span>
+      <ul>
+        <li>「重さが変われば周期が変わるのでは？」への答え：<b>おもりが重いほど戻す力も大きくなるが、動かしにくさ（慣性）も同じだけ大きくなるので打ち消し合う</b>。だから重さは効かない。一方、重力そのものが変われば打ち消されないので周期が変わる。</li>
+        <li>ふりこ時計を月に持っていくと周期が長くなり、大きく<u>遅れる</u>。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>地球上で周期 2 秒のふりこ時計を月面に持っていった。月の重力は地球の約 1/6 で、このとき周期は約 4.9 秒になる。<br>
+        (1) この時計は 1 日でおよそどれくらい遅れるか。（1 日 ＝ 86400 秒）<br>
+        (2) 月面でも正しく動かすには、ふりこの長さを地球上の約何倍にすればよいか。</p>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 1 日 86400 秒で振れる回数 ＝ 86400÷4.9 ≒ 17632 回。時計が示す時間 ＝ 17632×2 ≒ 35265 秒 ≒ 9 時間 48 分。<br>
+        遅れ ＝ 86400－35265 ≒ 51135 秒 ≒ 14 時間 12 分。</p>
+      <p class="fin">答 約14時間（半日以上遅れる）</p>
+      <p>(2) 周期を 4.9 秒から 2 秒に戻すには、周期を 2/4.9 ≒ 0.41 倍にする。長さは周期の 2 乗に比例するので 0.41×0.41 ≒ 0.17 ≒ 1/6 倍。</p>
+      <p class="fin">答 約 1/6 倍（重力が 1/6 になったぶん、長さも 1/6 にすればつり合う）</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 19 ===== -->
+<article class="card" id="p19">
+  <div class="card-head">
+    <div class="num n3">19</div>
+    <div>
+      <h3>実験計画・考察の記述問題</h3>
+      <div class="meta"><span class="chip c3">難関</span><span class="freq">頻出度 <b>★★★★☆</b></span></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="block trigger">
+      <span class="lbl">こう聞かれる</span>
+      <ul>
+        <li>この仮説を確かめるには、どんな実験をすればよいか。方法を説明しなさい</li>
+        <li>結果が予想とずれた原因として考えられることを 2 つ書きなさい</li>
+        <li>この実験結果からいえること／いえないことを区別しなさい</li>
+      </ul>
+    </div>
+    <div class="block">
+      <span class="lbl">記述の骨組み（この順で書けば減点されにくい）</span>
+      <ol class="steps">
+        <li><b>変える条件</b>を 1 つだけ明示する。「ふりこの長さを 25cm・100cm・225cm と変える」</li>
+        <li><b>そろえる条件</b>を列挙する。「おもりの重さ・振れはば・糸の種類は同じにする」</li>
+        <li><b>測るもの</b>と<b>測り方</b>を書く。「10 往復の時間を 3 回測り、平均して 10 で割る」</li>
+        <li><b>予想される結果と結論の対応</b>を書く。「長さが長いほど周期が長くなれば、長さが周期に影響するといえる」</li>
+      </ol>
+    </div>
+    <div class="block">
+      <span class="lbl">「ずれた原因」の定番ストック</span>
+      <ul>
+        <li>空気の抵抗や支点の摩擦でエネルギーが失われた。</li>
+        <li>ストップウォッチを押すタイミングがずれた（人による誤差）。</li>
+        <li>ふりこの長さを、支点からおもりの重心までではなく糸の長さで測っていた。</li>
+        <li>振れはばを大きくしすぎたため、等時性が成り立たなくなった（振れ角が大きいと周期はわずかに長くなる）。</li>
+        <li>おもりが横にゆれたり回転したりして、平面内の往復になっていなかった。</li>
+      </ul>
+    </div>
+    <div class="q block">
+      <span class="lbl">例題</span>
+      <p>ある生徒が「ふりこの振れはばを非常に大きくすると、周期は長さだけでは決まらないのではないか」と考えた。<br>
+        (1) この考えを確かめる実験の方法を書きなさい。<br>
+        (2) 次の結果が得られた。この結果からいえることを書きなさい。</p>
+      <div class="tw"><table>
+        <thead><tr><th>振れ角</th><td class="mono">5°</td><td class="mono">10°</td><td class="mono">20°</td><td class="mono">45°</td><td class="mono">60°</td></tr></thead>
+        <tbody><tr><th>10往復(秒)</th><td class="mono">20.0</td><td class="mono">20.0</td><td class="mono">20.1</td><td class="mono">20.7</td><td class="mono">21.3</td></tr></tbody>
+      </table></div>
+    </div>
+    <details class="ans"><summary>解答・解説</summary><div class="ans-body">
+      <p>(1) 例：ふりこの長さ・おもりの重さ・糸の種類をすべて同じにしたまま、振れ角だけを 5°・10°・20°・45°・60° と変え、それぞれ 10 往復の時間を 3 回ずつ測って平均し、10 で割って周期を求める。</p>
+      <p>(2) 例：振れ角が 20° くらいまでは周期はほとんど変わらず、等時性が成り立つといえる。しかし 45°・60° と振れ角を大きくすると周期はわずかに長くなっており、振れはばが非常に大きい場合には等時性が成り立たなくなるといえる。</p>
+      <p class="fin">＊「等時性は<u>振れはばが小さいとき</u>に成り立つ」という条件つきの法則であることを書けると満点。</p>
+    </div></details>
+  </div>
+</article>
+
+<!-- ===== 早見表 ===== -->
+<div class="section-head" style="color:var(--brass)">
+  <div class="tag">APPENDIX</div>
+  <h2>試験直前の早見表</h2>
+  <p>ここだけ見返せば思い出せる、という形にまとめました。</p>
+</div>
+
+<section class="card" id="tables">
+  <div class="card-head">
+    <div class="num" style="color:var(--brass);background:var(--brass-fill)">＋</div>
+    <div><h3>暗記数値と公式</h3></div>
+  </div>
+  <div class="body">
+    <div class="tw block">
+      <span class="lbl">① 長さと周期</span>
+      <table>
+        <thead><tr><th class="lft">長さ(cm)</th><td class="mono">25</td><td class="mono">100</td><td class="mono">225</td><td class="mono">400</td><td class="mono">625</td><td class="mono">900</td></tr></thead>
+        <tbody><tr><th class="lft">周期(秒)</th><td class="mono">1</td><td class="mono">2</td><td class="mono">3</td><td class="mono">4</td><td class="mono">5</td><td class="mono">6</td></tr></tbody>
+      </table>
+      <p style="margin-top:8px;font-size:14px"><span class="frm">長さ ＝ 25 × 周期 × 周期</span></p>
+    </div>
+    <div class="tw block">
+      <span class="lbl">② 下がった高さと最下点の速さ</span>
+      <table>
+        <thead><tr><th class="lft">高さ(cm)</th><td class="mono">5</td><td class="mono">20</td><td class="mono">45</td><td class="mono">80</td><td class="mono">125</td><td class="mono">180</td></tr></thead>
+        <tbody><tr><th class="lft">速さ(秒速m)</th><td class="mono">1</td><td class="mono">2</td><td class="mono">3</td><td class="mono">4</td><td class="mono">5</td><td class="mono">6</td></tr></tbody>
+      </table>
+      <p style="margin-top:8px;font-size:14px"><span class="frm">高さ ＝ 5 × 速さ × 速さ</span></p>
+    </div>
+    <div class="block">
+      <span class="lbl">③ 「何に関係する / しない」早見</span>
+      <div class="tw"><table>
+        <thead><tr><th class="lft">調べたいもの</th><th class="lft">関係する</th><th class="lft">関係しない</th></tr></thead>
+        <tbody>
+          <tr><td class="lft">周期</td><td class="lft">ふりこの長さ、重力の大きさ</td><td class="lft">おもりの重さ、振れはば、糸の材質</td></tr>
+          <tr><td class="lft">最下点の速さ</td><td class="lft">下がった高さ</td><td class="lft">おもりの重さ、ふりこの長さ</td></tr>
+          <tr><td class="lft">上がる高さ</td><td class="lft">はじめの高さ</td><td class="lft">くぎの有無、ふりこの長さ</td></tr>
+          <tr><td class="lft">木片の動く距離</td><td class="lft">おもりの重さ × 高さ</td><td class="lft">ふりこの長さ</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="block key">
+      <b>くぎのふりこ：</b>1往復 ＝（左のふりこの周期）÷2 ＋（右のふりこの周期）÷2<br>
+      <b>時計のずれ：</b>1日 ＝ 86400秒 ／ ずれ ＝ 86400 ×（周期のずれ ÷ 実際の周期）<br>
+      <b>そろう時刻：</b>周期を整数になおして最小公倍数
+    </div>
+  </div>
+</section>
+
+<section class="card" id="miss">
+  <div class="card-head">
+    <div class="num" style="color:var(--brass);background:var(--brass-fill)">＋</div>
+    <div><h3>失点チェックリスト</h3></div>
+  </div>
+  <div class="body">
+    <ul class="check block">
+      <li>「1 往復」を半往復と数えていないか（ア→ウ は半往復）。</li>
+      <li>ふりこの長さを、支点から<u>重心</u>までで測ったか（球なら＋半径）。</li>
+      <li>長さを 2 倍にして周期を 2 倍と答えていないか（正しくは約 1.4 倍）。</li>
+      <li>くぎのふりこで、短いほうの長さを「もとの長さ－くぎまでの長さ」で出したか。</li>
+      <li>くぎがあっても<u>上がる高さは同じ</u>、変わるのは<u>角度</u>。逆にしていないか。</li>
+      <li>速さは高さの平方根に比例、木片の距離は高さに比例。取りちがえていないか。</li>
+      <li>時計の問題で 1 日を 86400 秒に直したか。「遅れる＝長い」の向きは合っているか。</li>
+      <li>条件制御の記述で、<u>変える条件</u>と<u>そろえる条件</u>の両方を書いたか。</li>
+      <li>「同時にそろう」問題で、聞かれているのが「もとの位置」か「最下点」かを確認したか。</li>
+      <li>最下点以外で糸が切れたときの向き（端なら真下）を答えられるか。</li>
+    </ul>
+    <div class="block warnbox">
+      <span class="lbl">最後に</span>
+      <p>迷ったら「<b>いま、ふりこの長さは何 cm か</b>」と「<b>いま、何 cm 下がったか</b>」の 2 つに戻る。ふりこの問題のほぼすべてが、この 2 つのどちらかを聞いています。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  中学受験理科・ふりこ 総復習／基礎 6 型・標準 7 型・難関 6 型。
+  周期の値は 25cm＝1 秒（重力加速度 9.8m/s²）を基準とした中学受験での標準的な近似値です。
+</footer>
+
+</main>
+</div>
+
+</body>
+</html>
