@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>湿度パターン図鑑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+</head>
+<body>
+<style>
+:root{
+  --paper:#eef4f4;
+  --surface:#ffffff;
+  --surface-2:#f6faf9;
+  --ink:#0d1a1e;
+  --ink-2:#2c4249;
+  --muted:#5c7076;
+  --rule:#cdddde;
+  --rule-soft:#e2ecec;
+  --accent:#0d6b78;
+  --accent-deep:#07454e;
+  --accent-wash:#e2f1f2;
+  --amber:#95600d;
+  --amber-wash:#f8eedb;
+  --plum:#6b3a69;
+  --plum-wash:#f2e7f1;
+  --shadow:0 1px 2px rgba(13,38,44,.06), 0 8px 24px -14px rgba(13,38,44,.30);
+  --maxw:1180px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0a1316;
+    --surface:#101d21;
+    --surface-2:#152429;
+    --ink:#e6f0f0;
+    --ink-2:#bed2d4;
+    --muted:#8ba4a8;
+    --rule:#263c42;
+    --rule-soft:#1b2e33;
+    --accent:#59bccb;
+    --accent-deep:#8fd8e3;
+    --accent-wash:#102f36;
+    --amber:#dfa94a;
+    --amber-wash:#2e2617;
+    --plum:#cd9bc9;
+    --plum-wash:#2b1e2b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0a1316;
+  --surface:#101d21;
+  --surface-2:#152429;
+  --ink:#e6f0f0;
+  --ink-2:#bed2d4;
+  --muted:#8ba4a8;
+  --rule:#263c42;
+  --rule-soft:#1b2e33;
+  --accent:#59bccb;
+  --accent-deep:#8fd8e3;
+  --accent-wash:#102f36;
+  --amber:#dfa94a;
+  --amber-wash:#2e2617;
+  --plum:#cd9bc9;
+  --plum-wash:#2b1e2b;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"palt" 1;
+}
+h1,h2,h3,h4{font-family:"Zen Old Mincho","Yu Mincho","Hiragino Mincho ProN",serif;font-weight:700;text-wrap:balance;line-height:1.4;margin:0}
+p{margin:0}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-feature-settings:normal}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+.masthead{
+  border-bottom:1px solid var(--rule);
+  background:
+    radial-gradient(120% 140% at 88% -30%, var(--accent-wash) 0%, transparent 58%),
+    var(--surface);
+}
+.masthead-in{max-width:var(--maxw);margin:0 auto;padding:56px 28px 40px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);display:flex;gap:14px;align-items:center;flex-wrap:wrap
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--rule);min-width:40px}
+h1{font-size:clamp(38px,6.2vw,62px);letter-spacing:.02em;font-weight:900}
+h1 .drop{color:var(--accent)}
+.lede{max-width:62ch;color:var(--ink-2);font-size:16.5px}
+.tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.tag{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;
+  border:1px solid var(--rule);padding:5px 11px;border-radius:2px;color:var(--muted);background:var(--surface-2)
+}
+
+/* ---------- layout ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px 96px;display:grid;grid-template-columns:224px minmax(0,1fr);gap:52px;align-items:start}
+@media (max-width:900px){.wrap{grid-template-columns:1fr;gap:0;padding:0 20px 72px}}
+
+.toc{position:sticky;top:24px;padding:32px 0;font-size:13.5px}
+@media (max-width:900px){
+  .toc{position:static;padding:24px 0 8px;border-bottom:1px solid var(--rule)}
+  .toc-list{display:flex;flex-wrap:wrap;gap:6px 14px}
+  .toc-h{margin-bottom:10px}
+}
+.toc-h{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+.toc-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc a{
+  display:block;padding:4px 0 4px 12px;color:var(--muted);text-decoration:none;
+  border-left:2px solid var(--rule-soft);transition:color .15s,border-color .15s
+}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--accent);border-left-color:var(--accent);font-weight:700}
+.toc-sub a{padding-left:26px;font-size:12.5px}
+
+main{padding:44px 0 0;min-width:0}
+section{scroll-margin-top:20px}
+.sec + .sec{margin-top:60px}
+.sec-head{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;border-bottom:1.5px solid var(--ink);margin-bottom:26px}
+.sec-no{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;color:var(--accent)}
+.sec-head h2{font-size:clamp(24px,3.4vw,31px)}
+.sec-head .sub{color:var(--muted);font-size:14px}
+
+h3.block{font-size:19px;margin:34px 0 12px;display:flex;align-items:baseline;gap:10px}
+h3.block::before{content:"";width:9px;height:9px;background:var(--accent);flex:none;transform:translateY(-1px)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.prose{max-width:66ch}
+
+/* ---------- pieces ---------- */
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:22px 24px;box-shadow:var(--shadow)}
+@media (max-width:560px){.card{padding:18px 16px}}
+
+.def{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 18px;align-items:baseline}
+@media (max-width:560px){.def{grid-template-columns:1fr;gap:2px 0}.def dt{margin-top:10px}}
+.def dt{font-weight:700;color:var(--accent-deep);white-space:nowrap;font-size:15px}
+.def dd{margin:0;color:var(--ink-2);font-size:15px}
+
+.formula{
+  background:var(--accent-wash);border:1px solid var(--rule);border-radius:4px;
+  padding:16px 20px;display:flex;flex-direction:column;gap:6px
+}
+.formula .fx{font-family:"IBM Plex Mono",monospace;font-size:15.5px;font-weight:600;color:var(--accent-deep);line-height:1.7;overflow-x:auto}
+.formula .note{font-size:13px;color:var(--muted)}
+
+.callout{border:1px solid var(--rule);border-radius:4px;padding:16px 20px;background:var(--surface-2);font-size:14.5px;color:var(--ink-2)}
+.callout .lbl{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;color:var(--muted)}
+.callout.warn{background:var(--amber-wash);border-color:var(--amber)}
+.callout.warn .lbl{color:var(--amber)}
+.callout.hard{background:var(--plum-wash);border-color:var(--plum)}
+.callout.hard .lbl{color:var(--plum)}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:center;border-bottom:1px solid var(--rule-soft);white-space:nowrap}
+thead th{background:var(--surface-2);font-weight:700;color:var(--accent-deep);font-size:12.5px;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:none}
+tbody th{background:var(--surface-2);font-weight:700;text-align:center}
+td.mono,th.mono{font-family:"IBM Plex Mono",monospace}
+caption{caption-side:bottom;padding:10px 12px;font-size:12.5px;color:var(--muted);text-align:left}
+
+ul.tight,ol.tight{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:7px}
+ul.tight li,ol.tight li{padding-left:2px}
+ul.tight::marker{color:var(--accent)}
+
+/* ---------- pattern cards ---------- */
+.pat{background:var(--surface);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);overflow:hidden}
+.pat + .pat{margin-top:16px}
+.pat-head{padding:18px 24px 14px;border-bottom:1px dashed var(--rule);display:flex;flex-direction:column;gap:9px}
+.pat-id{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pat-code{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--accent);background:var(--accent-wash);border:1px solid var(--rule);padding:2px 8px;border-radius:2px}
+.pat-head h4{font-size:18px;font-family:"Zen Old Mincho",serif}
+.pat-body{padding:18px 24px 22px;display:flex;flex-direction:column;gap:14px}
+@media (max-width:560px){.pat-head,.pat-body{padding-left:16px;padding-right:16px}}
+.lvl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.lvl.b{color:var(--accent)}
+.lvl.s{color:var(--amber)}
+.lvl.h{color:var(--plum)}
+.hint{font-size:14.5px;color:var(--ink-2)}
+.hint b{color:var(--accent-deep)}
+
+.q{border-left:3px solid var(--accent);background:var(--surface-2);padding:14px 18px;border-radius:0 4px 4px 0;font-size:15px}
+.q .qh{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.18em;color:var(--muted);display:block;margin-bottom:6px}
+
+details.sol{border:1px solid var(--rule);border-radius:4px;background:var(--surface-2)}
+details.sol > summary{
+  cursor:pointer;list-style:none;padding:11px 18px;font-size:13.5px;font-weight:700;color:var(--accent);
+  display:flex;align-items:center;gap:9px;user-select:none
+}
+details.sol > summary::-webkit-details-marker{display:none}
+details.sol > summary::before{content:"▸";font-size:11px;transition:transform .18s}
+details.sol[open] > summary::before{transform:rotate(90deg)}
+details.sol[open] > summary{border-bottom:1px solid var(--rule)}
+.sol-body{padding:16px 18px 18px;font-size:14.5px;display:flex;flex-direction:column;gap:11px;color:var(--ink-2)}
+.step{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.step .n{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--accent);border:1px solid var(--rule);width:22px;height:22px;display:grid;place-items:center;border-radius:2px;flex:none;margin-top:3px}
+.ans{font-weight:700;color:var(--ink);background:var(--accent-wash);border:1px solid var(--rule);padding:8px 14px;border-radius:3px;display:inline-block;font-size:15px}
+.calc{font-family:"IBM Plex Mono",monospace;font-size:13.5px;color:var(--accent-deep);background:var(--surface);border:1px solid var(--rule-soft);padding:7px 11px;border-radius:3px;overflow-x:auto;white-space:nowrap}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+button.ghost{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;
+  background:var(--surface);color:var(--accent);border:1px solid var(--rule);
+  padding:7px 14px;border-radius:3px;cursor:pointer;transition:background .15s
+}
+button.ghost:hover{background:var(--accent-wash)}
+
+/* ---------- lab ---------- */
+.lab{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:0;border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+@media (max-width:820px){.lab{grid-template-columns:1fr}}
+.lab-chart{padding:18px 18px 8px;min-width:0}
+.lab-panel{border-left:1px solid var(--rule);background:var(--surface-2);padding:20px;display:flex;flex-direction:column;gap:16px}
+@media (max-width:820px){.lab-panel{border-left:none;border-top:1px solid var(--rule)}}
+.ctl{display:flex;flex-direction:column;gap:5px}
+.ctl label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.ctl label b{color:var(--accent);font-weight:600}
+input[type=range]{width:100%;accent-color:var(--accent);height:20px}
+.readout{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:13.5px;border-top:1px solid var(--rule);padding-top:14px}
+.readout dt{color:var(--muted)}
+.readout dd{margin:0;font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.readout dd.hi{color:var(--accent)}
+svg .grid{stroke:var(--rule-soft);stroke-width:1}
+svg .axis{stroke:var(--rule);stroke-width:1.2}
+svg .curve{fill:none;stroke:var(--accent);stroke-width:2.2}
+svg .fill{fill:var(--accent);opacity:.10}
+svg .lead{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+svg .cond{fill:var(--amber);opacity:.28}
+svg text{fill:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:10px}
+svg .pt{fill:var(--surface);stroke:var(--accent);stroke-width:2.5}
+svg .pt2{fill:var(--amber);stroke:var(--surface);stroke-width:2}
+svg .lbl{fill:var(--ink);font-size:10.5px}
+
+/* ---------- checklist ---------- */
+.check{display:flex;flex-direction:column;gap:2px}
+.check label{display:flex;gap:11px;align-items:flex-start;padding:8px 10px;border-radius:3px;cursor:pointer;font-size:14.5px;transition:background .12s}
+.check label:hover{background:var(--surface-2)}
+.check input{margin-top:6px;accent-color:var(--accent);width:15px;height:15px;flex:none}
+.check input:checked + span{color:var(--muted);text-decoration:line-through}
+
+footer{border-top:1px solid var(--rule);margin-top:0;background:var(--surface)}
+.foot-in{max-width:var(--maxw);margin:0 auto;padding:28px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="eyebrow">中学受験理科 ／ 気象分野 ／ 総復習</div>
+    <h1>湿度<span class="drop">パターン</span>図鑑</h1>
+    <p class="lede">湿度は「飽和水蒸気量の表を読む」だけの単元ではありません。露点・結露・乾湿計・雲のでき方・フェーン現象まで、入試で問われる形はほぼ決まっています。基礎の言葉の整理から難関校の融合問題まで、出題パターン19本を例題つきで一気に復習できるようにまとめました。</p>
+    <div class="tagrow">
+      <span class="tag">基礎 7 パターン</span>
+      <span class="tag">標準・応用 5 パターン</span>
+      <span class="tag">難関 7 パターン</span>
+      <span class="tag">例題 19 問（解説つき）</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="目次">
+    <div class="toc-h">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#kiso">1. 基礎の整理</a></li>
+      <li><a href="#hyo">2. 数値表とグラフ</a></li>
+      <li><a href="#lab">3. 湿度ラボ</a></li>
+      <li><a href="#patA">4. 出題パターン A・基礎</a></li>
+      <li><a href="#patB">5. 出題パターン B・応用</a></li>
+      <li><a href="#patC">6. 出題パターン C・難関</a></li>
+      <li><a href="#kijutsu">7. 記述問題の型</a></li>
+      <li><a href="#miss">8. 失点ポイント集</a></li>
+      <li><a href="#check">9. 最終チェック</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1 ============ -->
+  <section id="kiso" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 01</div>
+      <h2>基礎の整理 ─ この6語で全問解ける</h2>
+      <div class="sub">言葉の意味があいまいなまま計算に入ると、難関校の問題文で必ず迷います。</div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <dl class="def">
+          <dt>水蒸気</dt>
+          <dd>水が気体になったもの。<b>目に見えない</b>。やかんの口から少しはなれて白く見える「湯気」は、冷えて液体の水のつぶにもどったもので水蒸気ではありません。（口のすぐ近くの透明な部分が水蒸気）</dd>
+          <dt>飽和水蒸気量</dt>
+          <dd>空気 1m³ が入れられる水蒸気の最大量〔g/m³〕。<b>気温だけで決まり、気温が高いほど大きい</b>。空気の量や湿度には関係しません。</dd>
+          <dt>湿度</dt>
+          <dd>その空気が「限界まであと何割か」を示す割合〔%〕。空気1m³ 中の水蒸気量が、その気温の飽和水蒸気量の何%にあたるか。</dd>
+          <dt>露点（ろてん）</dt>
+          <dd>空気を冷やしていって、ちょうど湿度100%になる温度。<b>そのときの水蒸気量だけで決まる</b>ので、露点がわかれば水蒸気量がわかり、逆も言えます。</dd>
+          <dt>結露</dt>
+          <dd>露点より低い温度まで冷やされ、入りきらなくなった水蒸気が水のつぶになること。冷たいコップの表面の水滴、朝の露、窓のくもりはすべてこれ。</dd>
+          <dt>乾湿計</dt>
+          <dd>乾球（ふつうの温度計）と湿球（球部をぬれたガーゼで包んだ温度計）を並べたもの。湿球からは水が蒸発し、そのとき<b>まわりから熱をうばう（気化熱）</b>ので湿球のほうが温度が低くなります。</dd>
+        </dl>
+      </div>
+
+      <h3 class="block">3つの基本式</h3>
+      <div class="formula">
+        <div class="fx">湿度〔%〕 ＝ 空気1m³中の水蒸気量 ÷ その気温の飽和水蒸気量 × 100</div>
+        <div class="fx">水蒸気量〔g/m³〕 ＝ 飽和水蒸気量 × 湿度 ÷ 100</div>
+        <div class="fx">結露量〔g/m³〕 ＝ もとの水蒸気量 − 冷やした後の温度の飽和水蒸気量</div>
+        <div class="note">部屋全体を問われたら、最後に <b>× 部屋の体積〔m³〕</b> を忘れずに。</div>
+      </div>
+
+      <div class="callout">
+        <span class="lbl">つながりの図</span>
+        <span class="mono">気温 → 飽和水蒸気量</span>／<span class="mono">水蒸気量 ＋ 気温 → 湿度</span>／<span class="mono">水蒸気量 → 露点</span>。
+        問題で与えられるのはこの4つ（気温・水蒸気量・湿度・露点）のうち2つで、残り2つを聞かれる、というのが湿度計算のほぼすべてです。<b>まず「1m³あたりの水蒸気量〔g〕」を求める</b>—これを最初の一手にすれば、どの型でも道が開けます。
+      </div>
+
+      <h3 class="block">湿球が下がる理由と乾湿計の使い方</h3>
+      <div class="card prose">
+        <ul class="tight">
+          <li>湿球のガーゼの水が蒸発するとき、まわりの熱（気化熱）をうばうので温度が下がる。</li>
+          <li>まわりの空気が<b>乾いているほど蒸発がさかん</b>＝ 差が大きい ＝ 湿度が低い。</li>
+          <li>湿度100%のときは蒸発が起こらず、<b>乾球と湿球の温度は同じ</b>（差0℃）。</li>
+          <li>読み方は「乾球の示す温度」の行と「乾球−湿球の差」の列が交わるところ。<b>気温＝乾球の温度</b>。</li>
+          <li>湿球に風を当てると蒸発が進み、より正確に測れる（通風乾湿計）。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2 ============ -->
+  <section id="hyo" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 02</div>
+      <h2>数値表とグラフの読み方</h2>
+      <div class="sub">数値は問題文に必ず与えられます。覚えるより「表のどこを見るか」を体に入れることが大事。</div>
+    </div>
+
+    <div class="stack">
+      <h3 class="block">飽和水蒸気量の表〔g/m³〕</h3>
+      <div class="tablewrap">
+        <table>
+          <caption>入試でよく使われる代表値。ゴシック体の 5℃ きざみだけでも頭に入れておくと、答えの見当がつけられます。</caption>
+          <thead>
+            <tr><th>気温〔℃〕</th><th>0</th><th>5</th><th>10</th><th>15</th><th>20</th><th>25</th><th>30</th><th>35</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>飽和水蒸気量</th><td class="mono">4.8</td><td class="mono">6.8</td><td class="mono">9.4</td><td class="mono">12.8</td><td class="mono">17.3</td><td class="mono">23.1</td><td class="mono">30.4</td><td class="mono">39.6</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="lbl">数値の性質を見る</span>
+        気温が 10℃ 上がると飽和水蒸気量はおよそ <b>2倍</b>（10℃→9.4、20℃→17.3、30℃→30.4）。増え方は一定ではなく、<b>高温になるほど急に増える</b>。グラフが右上がりに反り返るのはこのためで、難関校のグラフ問題はこの「反り」を利用してきます。
+      </div>
+
+      <h3 class="block">1℃きざみの表（露点を求めるとき用）</h3>
+      <div class="tablewrap">
+        <table id="fullTable">
+          <caption>露点を答えさせる問題では、計算した水蒸気量とぴったり一致する（またはいちばん近い）気温をこの表から探します。</caption>
+          <thead><tr><th>℃</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr></thead>
+          <tbody>
+            <tr><th>0℃台</th><td class="mono">4.8</td><td class="mono">5.2</td><td class="mono">5.6</td><td class="mono">6.0</td><td class="mono">6.4</td><td class="mono">6.8</td><td class="mono">7.3</td><td class="mono">7.8</td><td class="mono">8.3</td><td class="mono">8.8</td></tr>
+            <tr><th>10℃台</th><td class="mono">9.4</td><td class="mono">10.0</td><td class="mono">10.7</td><td class="mono">11.4</td><td class="mono">12.1</td><td class="mono">12.8</td><td class="mono">13.6</td><td class="mono">14.5</td><td class="mono">15.4</td><td class="mono">16.3</td></tr>
+            <tr><th>20℃台</th><td class="mono">17.3</td><td class="mono">18.3</td><td class="mono">19.4</td><td class="mono">20.6</td><td class="mono">21.8</td><td class="mono">23.1</td><td class="mono">24.4</td><td class="mono">25.8</td><td class="mono">27.2</td><td class="mono">28.8</td></tr>
+            <tr><th>30℃台</th><td class="mono">30.4</td><td class="mono">32.1</td><td class="mono">33.8</td><td class="mono">35.7</td><td class="mono">37.6</td><td class="mono">39.6</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="block">乾湿計用の湿度表〔%〕</h3>
+      <div class="tablewrap">
+        <table>
+          <caption>縦＝乾球の示す温度、横＝乾球と湿球の差。差が0のとき湿度100%になっているかを見れば、表の向きを取りちがえていないか確かめられます。</caption>
+          <thead><tr><th>乾球〔℃〕＼差〔℃〕</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+          <tbody>
+            <tr><th>30</th><td class="mono">100</td><td class="mono">92</td><td class="mono">85</td><td class="mono">78</td><td class="mono">72</td><td class="mono">65</td></tr>
+            <tr><th>25</th><td class="mono">100</td><td class="mono">92</td><td class="mono">84</td><td class="mono">76</td><td class="mono">68</td><td class="mono">61</td></tr>
+            <tr><th>20</th><td class="mono">100</td><td class="mono">91</td><td class="mono">81</td><td class="mono">72</td><td class="mono">64</td><td class="mono">55</td></tr>
+            <tr><th>15</th><td class="mono">100</td><td class="mono">89</td><td class="mono">78</td><td class="mono">68</td><td class="mono">58</td><td class="mono">48</td></tr>
+            <tr><th>10</th><td class="mono">100</td><td class="mono">88</td><td class="mono">76</td><td class="mono">65</td><td class="mono">53</td><td class="mono">42</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="block">グラフ上での「操作」の向き</h3>
+      <div class="card prose">
+        <p>横軸に気温、縦軸に水蒸気量をとったグラフ（＝飽和水蒸気量の曲線）では、空気の状態が1つの点で表せます。難関校はこの点を「動かす」問題を出します。</p>
+        <ul class="tight" style="margin-top:12px">
+          <li><b>冷やす</b>… 点が<b>真横に左へ</b>動く（水蒸気量は変わらない）。曲線にぶつかった温度が<b>露点</b>。それより左へは曲線に沿って下り、はみ出した分が結露。</li>
+          <li><b>あたためる</b>… 点が<b>真横に右へ</b>動く。水蒸気量は同じでも曲線から離れるので、<b>湿度は下がる</b>。</li>
+          <li><b>加湿する</b>… 点が<b>真上へ</b>動く。曲線に届いたら湿度100%、それ以上入れた分は結露。</li>
+          <li><b>曲線上の点</b>… 湿度100%（＝そこが露点）。曲線より上の点は存在しない。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3 ============ -->
+  <section id="lab" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 03</div>
+      <h2>湿度ラボ ─ 動かして確かめる</h2>
+      <div class="sub">気温・湿度・冷やす温度を動かすと、グラフ上で点がどう動き、どれだけ結露するかが見えます。</div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-chart">
+        <svg id="chart" viewBox="0 0 520 300" role="img" aria-label="飽和水蒸気量の曲線と現在の空気の状態を示すグラフ"></svg>
+      </div>
+      <div class="lab-panel">
+        <div class="ctl">
+          <label for="sT">気温 <b><span id="vT">20</span> ℃</b></label>
+          <input type="range" id="sT" min="0" max="35" step="1" value="20">
+        </div>
+        <div class="ctl">
+          <label for="sH">湿度 <b><span id="vH">70</span> %</b></label>
+          <input type="range" id="sH" min="10" max="100" step="5" value="70">
+        </div>
+        <div class="ctl">
+          <label for="sC">冷やした後の温度 <b><span id="vC">5</span> ℃</b></label>
+          <input type="range" id="sC" min="0" max="35" step="1" value="5">
+        </div>
+        <div class="ctl">
+          <label for="sV">部屋の体積 <b><span id="vV">50</span> m³</b></label>
+          <input type="range" id="sV" min="1" max="120" step="1" value="50">
+        </div>
+        <dl class="readout">
+          <dt>飽和水蒸気量</dt><dd id="oSat">17.3 g/m³</dd>
+          <dt>ふくまれる水蒸気</dt><dd id="oAct">12.1 g/m³</dd>
+          <dt>露点</dt><dd id="oDew" class="hi">14 ℃</dd>
+          <dt>結露量（1m³）</dt><dd id="oCon">5.3 g</dd>
+          <dt>部屋全体の結露量</dt><dd id="oTot">265 g</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:14px">
+      <span class="lbl">確かめてほしいこと</span>
+      湿度を固定したまま気温だけ上げると、水蒸気量も露点も上がる。逆に、気温だけ上げて水蒸気量を変えなければ湿度は下がる ── 冬に暖房で乾く理由がこれです。冷やす温度を露点より高くすると、結露量は0になります。
+    </div>
+  </section>
+
+  <!-- ============ 4 ============ -->
+  <section id="patA" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 04 ／ PATTERN A</div>
+      <h2>出題パターン A ─ 基礎（全校で出る7型）</h2>
+      <div class="sub">この7つは落とせません。答えを出すまでの手順を、数字を変えても同じ順でたどれるようにしておきます。</div>
+    </div>
+
+    <div class="toolbar">
+      <button class="ghost" type="button" data-all="open">解説をすべて開く</button>
+      <button class="ghost" type="button" data-all="close">すべて閉じる</button>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">A-1</span><span class="lvl b">基礎</span></div>
+        <h4>気温と水蒸気量から湿度を求める</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">いちばん素直な型。<b>「その気温の飽和水蒸気量」を表から読む → わり算 → ×100</b>。四捨五入の指示（小数第1位まで／整数で）を必ず確認します。</p>
+        <div class="q"><span class="qh">例題</span>気温20℃の空気1m³中に、水蒸気が12.1gふくまれている。この空気の湿度は何%か。整数で答えよ。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>表より、20℃の飽和水蒸気量は 17.3 g/m³。</span></div>
+            <div class="step"><span class="n">2</span><span class="calc">12.1 ÷ 17.3 × 100 = 69.94…</span></div>
+            <div class="step"><span class="n">3</span><span>小数第1位を四捨五入して整数に。</span></div>
+            <div><span class="ans">答 70%</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">A-2</span><span class="lvl b">基礎</span></div>
+        <h4>気温と湿度から水蒸気量を求める（逆算）</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">A-1の逆。<b>飽和水蒸気量 × 湿度 ÷ 100</b>。この値がその後のすべての設問の土台になるので、<b>途中で四捨五入しすぎない</b>のがコツです。</p>
+        <div class="q"><span class="qh">例題</span>気温25℃、湿度60%の空気1m³には、水蒸気が何gふくまれているか。小数第1位まで答えよ。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>25℃の飽和水蒸気量は 23.1 g/m³。</span></div>
+            <div class="step"><span class="n">2</span><span class="calc">23.1 × 60 ÷ 100 = 13.86</span></div>
+            <div><span class="ans">答 13.9 g</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">A-3</span><span class="lvl b">基礎</span></div>
+        <h4>露点を求める</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">手順は<b>「水蒸気量を出す → その値が飽和水蒸気量になる気温を表から探す」</b>の2段。ぴったりの値がないときは「およそ何℃」または「〜℃と〜℃の間」で答えます。</p>
+        <div class="q"><span class="qh">例題</span>気温20℃、湿度70%の空気がある。この空気の露点は何℃か。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span class="calc">17.3 × 0.7 = 12.11 g/m³</span></div>
+            <div class="step"><span class="n">2</span><span>1℃きざみの表で 12.1 g/m³ になるのは 14℃。</span></div>
+            <div class="step"><span class="n">3</span><span>つまり14℃まで冷やすとちょうど湿度100%になる。</span></div>
+            <div><span class="ans">答 14℃</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">A-4</span><span class="lvl b">基礎</span></div>
+        <h4>冷やしたときの結露量（1m³あたり）</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">冷やした後の温度が<b>露点より高ければ結露は0</b>。低ければ「もとの水蒸気量 − 冷やした後の温度の飽和水蒸気量」。<b>湿度の差を引き算するのではありません</b>。</p>
+        <div class="q"><span class="qh">例題</span>気温20℃、湿度70%の空気1m³を5℃まで冷やすと、水滴は何g出てくるか。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>もとの水蒸気量 <span class="calc">17.3 × 0.7 = 12.1 g</span></span></div>
+            <div class="step"><span class="n">2</span><span>露点は14℃。5℃はそれより低いので結露する。</span></div>
+            <div class="step"><span class="n">3</span><span>5℃の飽和水蒸気量は 6.8 g/m³ ＝ 入れておける限界。</span></div>
+            <div class="step"><span class="n">4</span><span class="calc">12.1 − 6.8 = 5.3 g</span></div>
+            <div><span class="ans">答 5.3 g</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">A-5</span><span class="lvl b">基礎</span><span class="lvl s">頻出</span></div>
+        <h4>部屋の体積をかける</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">最頻出の失点ポイント。<b>表の数値はすべて「1m³あたり」</b>。部屋・教室・実験室と出てきたら、たて×よこ×高さを計算して最後にかけます。単位（g／kg）の指定にも注意。</p>
+        <div class="q"><span class="qh">例題</span>たて6m、よこ5m、高さ2.5mの部屋がある。室温25℃、湿度60%のとき、(1)部屋の空気全体にふくまれる水蒸気は何gか。(2)室温を10℃まで下げると、水滴は何g出てくるか。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>部屋の体積 <span class="calc">6 × 5 × 2.5 = 75 m³</span></span></div>
+            <div class="step"><span class="n">2</span><span>(1) 1m³あたり <span class="calc">23.1 × 0.6 = 13.86 g</span> → <span class="calc">13.86 × 75 = 1039.5 g</span></span></div>
+            <div class="step"><span class="n">3</span><span>(2) 10℃で持てる量は <span class="calc">9.4 × 75 = 705 g</span></span></div>
+            <div class="step"><span class="n">4</span><span class="calc">1039.5 − 705 = 334.5 g</span></div>
+            <div><span class="ans">答 (1) 約1040 g　(2) 約335 g</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">A-6</span><span class="lvl b">基礎</span></div>
+        <h4>乾湿計の読み取り</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint"><b>気温＝乾球の温度</b>。まず差を計算し、湿度表を引く。そのあと「水蒸気量は？」「露点は？」と続くのが定番のつなげ方です。</p>
+        <div class="q"><span class="qh">例題</span>乾球が20℃、湿球が17℃を示している。(1)このときの湿度は何%か。(2)この空気1m³にふくまれる水蒸気は何gか。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>差は <span class="calc">20 − 17 = 3℃</span></span></div>
+            <div class="step"><span class="n">2</span><span>湿度表で「乾球20℃・差3℃」→ 72%</span></div>
+            <div class="step"><span class="n">3</span><span>気温は乾球の20℃なので <span class="calc">17.3 × 0.72 = 12.456 g</span></span></div>
+            <div><span class="ans">答 (1) 72%　(2) 約12.5 g</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">A-7</span><span class="lvl b">基礎</span></div>
+        <h4>1日の気温・湿度の変化グラフ</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">グラフから「どちらが気温でどちらが湿度か」「晴れか雨か」を答えさせる型。判断の軸は次の3つ。</p>
+        <ul class="tight">
+          <li><b>気温と湿度は上下が逆</b>になる（水蒸気量がほぼ一定なので、気温が上がると湿度が下がる）。</li>
+          <li>気温の最高は<b>14時ごろ</b>、最低は<b>日の出前</b>。湿度はその逆。</li>
+          <li><b>晴れの日</b>は気温の変化が大きく湿度の変化も大きい。<b>くもり・雨の日</b>は両方とも変化が小さく、湿度は高いまま。</li>
+        </ul>
+        <div class="q"><span class="qh">例題</span>晴れた日の記録で、明け方に湿度が100%近くになり、地面近くに霧が発生した。その理由を説明せよ。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <p>晴れた夜は地面の熱が空にどんどん逃げる（放射冷却）ため、明け方には気温が最も低くなる。空気中の水蒸気の量はあまり変わらないのに気温だけが下がるので湿度が上がり、露点に達した空気中の水蒸気が細かい水のつぶになって霧となる。</p>
+            <div><span class="ans">要点：気温が露点まで下がる ＋ 水蒸気量は変わらない</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5 ============ -->
+  <section id="patB" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 05 ／ PATTERN B</div>
+      <h2>出題パターン B ─ 応用（中堅〜上位校）</h2>
+      <div class="sub">空気の状態を「変化させる」型。変わるもの（気温）と変わらないもの（水蒸気量）を仕分けるのが要です。</div>
+    </div>
+
+    <div class="toolbar">
+      <button class="ghost" type="button" data-all="open">解説をすべて開く</button>
+      <button class="ghost" type="button" data-all="close">すべて閉じる</button>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">B-1</span><span class="lvl s">標準</span></div>
+        <h4>加湿する ─ 水を蒸発させたときの湿度</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">「部屋の水蒸気の総量〔g〕」で計算し、最後に1m³あたりに戻す。<b>飽和をこえたら残りは結露し、湿度は100%で止まる</b>という上限チェックを忘れないこと。</p>
+        <div class="q"><span class="qh">例題</span>体積20m³の部屋の空気は、気温20℃・湿度50%である。加湿器で水を蒸発させた。(1)100g蒸発させたときの湿度は何%か。(2)200g蒸発させると、湿度と結露量はどうなるか。（気温は20℃のまま）</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>はじめの水蒸気の総量 <span class="calc">17.3 × 0.5 × 20 = 173 g</span></span></div>
+            <div class="step"><span class="n">2</span><span>この部屋が持てる限界 <span class="calc">17.3 × 20 = 346 g</span></span></div>
+            <div class="step"><span class="n">3</span><span>(1) <span class="calc">(173 + 100) ÷ 20 = 13.65 g/m³</span> → <span class="calc">13.65 ÷ 17.3 × 100 = 78.9%</span></span></div>
+            <div class="step"><span class="n">4</span><span>(2) <span class="calc">173 + 200 = 373 g</span> は限界346gをこえる。こえた分 <span class="calc">373 − 346 = 27 g</span> は水滴になる。</span></div>
+            <div><span class="ans">答 (1) 約79%　(2) 湿度100%、結露27g</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">B-2</span><span class="lvl s">標準</span></div>
+        <h4>あたためたときの湿度（暖房で乾く理由）</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint"><b>水蒸気量はそのまま、分母の飽和水蒸気量だけが大きくなる</b>ので湿度が下がる。理科の記述でもよく問われるテーマです。</p>
+        <div class="q"><span class="qh">例題</span>気温10℃、湿度80%の空気を、水蒸気を出し入れせずに25℃まであたためた。湿度は何%になるか。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span class="calc">9.4 × 0.8 = 7.52 g/m³</span></div>
+            <div class="step"><span class="n">2</span><span>25℃の飽和水蒸気量は 23.1 g/m³。</span></div>
+            <div class="step"><span class="n">3</span><span class="calc">7.52 ÷ 23.1 × 100 = 32.55…</span></div>
+            <div><span class="ans">答 約33%（露点は10℃のまま変わらない）</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">B-3</span><span class="lvl s">標準</span></div>
+        <h4>コップの実験で露点をはかる</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">「金属のコップに水を入れ、氷水を少しずつ加えてかき混ぜ、表面がくもり始めた温度」＝<b>露点</b>。実験の注意点もセットで問われます。</p>
+        <ul class="tight">
+          <li><b>金属製</b>のコップを使う理由 … 熱が伝わりやすく、水温＝コップの表面の温度とみなせるから。</li>
+          <li><b>かき混ぜる</b>理由 … 水全体の温度を均一にし、正しい温度を測るため。</li>
+          <li><b>ゆっくり冷やす</b>理由 … くもり始める瞬間の温度を見のがさないため。</li>
+          <li>くもりは<b>コップの外側</b>につく（まわりの空気中の水蒸気が冷やされたもの）。</li>
+        </ul>
+        <div class="q"><span class="qh">例題</span>室温20℃の部屋で実験したところ、水温が13℃になったときコップの表面がくもり始めた。この部屋の湿度は何%か。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>露点13℃ → 空気1m³中の水蒸気量は 13℃の飽和水蒸気量に等しく 11.4 g。</span></div>
+            <div class="step"><span class="n">2</span><span class="calc">11.4 ÷ 17.3 × 100 = 65.89…</span></div>
+            <div><span class="ans">答 約66%</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">B-4</span><span class="lvl s">応用</span></div>
+        <h4>換気 ─ 外の空気を取りこんであたためる</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">「冬の乾燥」を数量で説明させる型。<b>外気の水蒸気量を出す → 室温での湿度を出す → 目標湿度まで何g加湿が必要か</b>、と3段で聞かれます。</p>
+        <div class="q"><span class="qh">例題</span>気温0℃・湿度60%の外の空気を、体積50m³の部屋に取りこんで20℃まであたためた。(1)室内の湿度は何%になるか。(2)湿度を50%にするには、あと何gの水を蒸発させればよいか。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>外気の水蒸気量 <span class="calc">4.8 × 0.6 = 2.88 g/m³</span>（あたためても変わらない）</span></div>
+            <div class="step"><span class="n">2</span><span>(1) <span class="calc">2.88 ÷ 17.3 × 100 = 16.6…</span></span></div>
+            <div class="step"><span class="n">3</span><span>(2) 湿度50%に必要な量 <span class="calc">17.3 × 0.5 = 8.65 g/m³</span></span></div>
+            <div class="step"><span class="n">4</span><span class="calc">(8.65 − 2.88) × 50 = 288.5 g</span></div>
+            <div><span class="ans">答 (1) 約17%　(2) 約289 g</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">B-5</span><span class="lvl s">標準</span></div>
+        <h4>蒸発の速さ ─ 洗濯物・打ち水</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">計算ではなく<b>条件の比較</b>で問われます。蒸発が速くなる条件は次の3つ。実験の対照条件（1つだけ変える）として出題されることも多い型です。</p>
+        <ul class="tight">
+          <li><b>気温が高い</b>（水の分子が動きやすい／飽和水蒸気量が大きく、まだ余裕がある）</li>
+          <li><b>湿度が低い</b>（空気に水蒸気を受け入れる余地が大きい）</li>
+          <li><b>風がある</b>（表面近くにたまった湿った空気が入れかわり、まわりが常に乾いた状態に保たれる）</li>
+          <li>おまけに<b>表面積が広い</b>ほど速い（洗濯物を広げて干す理由）</li>
+        </ul>
+        <div class="q"><span class="qh">例題</span>夏の暑い日に道路に打ち水をすると涼しくなる。その理由を説明せよ。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <p>まいた水が蒸発して水蒸気になるとき、地面やまわりの空気から熱（気化熱）をうばうため、地面や空気の温度が下がるから。</p>
+            <div><span class="ans">キーワード：蒸発するときにまわりの熱をうばう</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6 ============ -->
+  <section id="patC" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 06 ／ PATTERN C</div>
+      <h2>出題パターン C ─ 難関校</h2>
+      <div class="sub">湿度が「雲・山・気圧・熱」とつながる領域。ここが合否を分けます。</div>
+    </div>
+
+    <div class="callout hard">
+      <span class="lbl">難関校の前提知識</span>
+      空気は上昇すると、まわりの気圧が下がるため<b>膨張し、そのとき温度が下がります</b>（断熱膨張）。逆に下降すると圧縮されて温度が上がります。この温度変化の割合が次の2つ。
+      <div class="formula" style="margin-top:10px;background:var(--surface);">
+        <div class="fx">雲ができていないとき（乾いた空気）… 100m につき 1℃ 下がる</div>
+        <div class="fx">雲ができているとき（湿った空気）… 100m につき 0.5℃ 下がる</div>
+        <div class="note">雲ができている間は、水蒸気が水にもどるときに熱を出す（凝結熱）ため、下がり方がゆるやかになります。</div>
+      </div>
+    </div>
+
+    <div class="toolbar" style="margin-top:20px">
+      <button class="ghost" type="button" data-all="open">解説をすべて開く</button>
+      <button class="ghost" type="button" data-all="close">すべて閉じる</button>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">C-1</span><span class="lvl h">難関</span></div>
+        <h4>雲ができ始める高さ（雲底の高度）</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">上昇する空気が<b>露点まで下がった高さ</b>で雲ができ始めます。<b>（地上の気温 − 露点）× 100 m</b> が基本形。</p>
+        <div class="q"><span class="qh">例題</span>地上の気温が28℃、露点が16℃の空気のかたまりが上昇していく。雲ができ始めるのは地上から何mの高さか。（100mにつき1℃下がるものとする）</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>雲ができ始めるのは気温が露点16℃になったとき。</span></div>
+            <div class="step"><span class="n">2</span><span>下げるべき温度は <span class="calc">28 − 16 = 12℃</span></span></div>
+            <div class="step"><span class="n">3</span><span class="calc">12 ÷ 1 × 100 = 1200 m</span></div>
+            <div><span class="ans">答 1200 m</span></div>
+            <div class="callout hard" style="margin-top:6px">
+              <span class="lbl">発展</span>上昇すると空気が膨張して1m³あたりの水蒸気量が減るため、実際は<b>露点も100mにつき約0.2℃下がります</b>。この条件が問題文にある場合は、差が100mあたり <span class="mono">1 − 0.2 = 0.8℃</span> ずつ縮まると考えて <span class="mono">12 ÷ 0.8 × 100 = 1500 m</span>。<b>どちらで解くかは必ず問題文の指示に従ってください。</b>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">C-2</span><span class="lvl h">難関</span><span class="lvl s">頻出</span></div>
+        <h4>フェーン現象（山越えの気温）</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">上りは「雲ができるまで1℃／できてから0.5℃」、<b>下りは雨を降らせて乾いているので、ずっと1℃</b>。この非対称が、風下で高温・乾燥になる理由です。図に高さと温度を書きこみながら進めます。</p>
+        <div class="q"><span class="qh">例題</span>標高1800mの山がある。風上のふもと（標高0m）で気温24℃だった空気が山を上り、標高800mから山頂まで雲ができて雨を降らせた。雲は山頂で消え、風下側は雲のないまま下りた。(1)山頂の気温、(2)風下のふもとの気温を求めよ。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>0m→800m（雲なし）：<span class="calc">800 ÷ 100 × 1 = 8℃下がる → 24 − 8 = 16℃</span></span></div>
+            <div class="step"><span class="n">2</span><span>800m→1800m（雲あり）：<span class="calc">1000 ÷ 100 × 0.5 = 5℃下がる → 16 − 5 = 11℃</span></span></div>
+            <div class="step"><span class="n">3</span><span>(2) 1800m→0m（雲なし）：<span class="calc">1800 ÷ 100 × 1 = 18℃上がる → 11 + 18 = 29℃</span></span></div>
+            <div><span class="ans">答 (1) 11℃　(2) 29℃</span></div>
+            <p>風上より5℃高く、しかも山で雨として水蒸気を落としてきたため、<b>高温で乾いた風</b>になります。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">C-3</span><span class="lvl h">難関</span></div>
+        <h4>飽和水蒸気量曲線グラフの読み取り・作図</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">数値表のかわりに曲線グラフだけが与えられ、点の移動や大小比較を答えさせる型。<b>「横移動＝温度変化」「縦移動＝加湿・除湿」「曲線＝湿度100%」</b>の3原則で処理します。</p>
+        <div class="q"><span class="qh">例題</span>飽和水蒸気量の曲線グラフ（SECTION 03のものと同じ形）上に、A（気温30℃・水蒸気量12.1g/m³）とB（気温15℃・水蒸気量10.0g/m³）の空気がある。(1)湿度が高いのはどちらか。(2)露点が高いのはどちらか。(3)両方を5℃まで冷やしたとき、水滴が多く出るのはどちらか。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>(1) A：<span class="calc">12.1 ÷ 30.4 = 39.8%</span>／B：<span class="calc">10.0 ÷ 12.8 = 78.1%</span> → <b>B</b>。曲線に近い点ほど湿度が高い、と見てもよい。</span></div>
+            <div class="step"><span class="n">2</span><span>(2) 露点は水蒸気量だけで決まる。12.1 &gt; 10.0 なので <b>A</b>（A＝14℃、B＝11℃）。</span></div>
+            <div class="step"><span class="n">3</span><span>(3) 5℃の飽和水蒸気量6.8を引く：A は <span class="calc">12.1 − 6.8 = 5.3 g</span>、B は <span class="calc">10.0 − 6.8 = 3.2 g</span> → <b>A</b>。</span></div>
+            <div><span class="ans">答 (1) B　(2) A　(3) A</span></div>
+            <p><b>湿度が高い空気ほど水滴が多く出る、とはかぎらない</b>——ここを問うのが難関校の狙いです。結露量を決めるのは湿度ではなく水蒸気量。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">C-4</span><span class="lvl h">難関</span></div>
+        <h4>密閉容器・蒸発量の実験考察</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">「ふたをした容器の中の水は、ある量まで減ると減らなくなる」型。<b>蒸発する量と、水にもどる量がつり合って見かけ上止まる</b>＝飽和、という説明ができるかが分かれ目です。</p>
+        <div class="q"><span class="qh">例題</span>体積2m³の密閉容器に、気温20℃・湿度40%の空気と、水を入れた皿を置いた。じゅうぶんに時間がたつと、皿の水は何g減っているか。（気温は20℃のまま、水は十分にあるものとする）</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>じゅうぶん時間がたつと容器内は湿度100%（飽和）で止まる。</span></div>
+            <div class="step"><span class="n">2</span><span>はじめの水蒸気 <span class="calc">17.3 × 0.4 × 2 = 13.84 g</span></span></div>
+            <div class="step"><span class="n">3</span><span>飽和したときの水蒸気 <span class="calc">17.3 × 2 = 34.6 g</span></span></div>
+            <div class="step"><span class="n">4</span><span class="calc">34.6 − 13.84 = 20.76 g</span></div>
+            <div><span class="ans">答 約20.8 g</span></div>
+            <p>「なぜ途中で減らなくなるのか」と問われたら ── <b>水面から出ていく水の粒と、空気中から水面にもどる粒の数がつり合うから</b>。容器を温めれば飽和水蒸気量が増えるので、水はまた減り始めます。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">C-5</span><span class="lvl h">難関</span></div>
+        <h4>露・霜・霧・雲・もやの区別</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">すべて「露点まで冷えて水蒸気が水（氷）になった」現象。<b>どこで・何になったか</b>で名前が変わります。用語を選ばせる小問で確実に取りたい部分。</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>名前</th><th>できる場所</th><th>すがた</th><th>ポイント</th></tr></thead>
+            <tbody>
+              <tr><td>露</td><td>地面・草の表面</td><td>水</td><td>晴れた夜の放射冷却で気温が露点以下に</td></tr>
+              <tr><td>霜</td><td>地面・草の表面</td><td>氷</td><td>0℃以下。水蒸気が直接氷になる</td></tr>
+              <tr><td>霧</td><td>地表付近の空気中</td><td>小さな水てき</td><td>視界1km未満。もやはこれより薄いもの</td></tr>
+              <tr><td>雲</td><td>上空</td><td>小さな水てき・氷のつぶ</td><td>空気が上昇して膨張し冷えてできる</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="q"><span class="qh">例題</span>「雲は上昇した空気が冷えてできる」のに対し、「霧は空気が上昇しなくてもできる」。霧ができるしくみを、雲との違いがわかるように説明せよ。</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <p>雲は、空気が上昇してまわりの気圧が下がることで膨張し、温度が下がって露点に達してできる。一方、霧は地表付近の空気が地面からの放射冷却などで直接冷やされて露点に達し、水蒸気が水てきになったもので、空気の上昇や膨張は必要ない。</p>
+            <div><span class="ans">対比の軸：上昇・膨張による冷却 か、地面に冷やされる冷却 か</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">C-6</span><span class="lvl h">難関</span></div>
+        <h4>熱量との融合（気化熱・凝結熱）</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">湿度が「熱」の単元と結びつく型。<b>蒸発＝熱をうばう／凝結＝熱を出す</b>を数量で扱わせます。水1gが蒸発するのに必要な熱は問題文で与えられます（約540カロリー）。</p>
+        <div class="q"><span class="qh">例題</span>水1gが蒸発するとき、まわりから540カロリーの熱をうばうものとする。20℃の水100gのうち5gが蒸発したとき、残った水から熱がうばわれたとすると、残りの水の温度は何℃になるか。（水1gを1℃上げるのに1カロリー必要）</div>
+        <details class="sol"><summary>解説を見る</summary>
+          <div class="sol-body">
+            <div class="step"><span class="n">1</span><span>うばわれた熱 <span class="calc">540 × 5 = 2700 カロリー</span></span></div>
+            <div class="step"><span class="n">2</span><span>残った水は <span class="calc">100 − 5 = 95 g</span></span></div>
+            <div class="step"><span class="n">3</span><span class="calc">2700 ÷ 95 = 28.4℃ 下がる</span></div>
+            <div class="step"><span class="n">4</span><span>20 − 28.4 は0℃を下回るので、実際には途中で0℃に達して<b>こおり始める</b>と答える。</span></div>
+            <div><span class="ans">答 0℃（一部が氷になる）</span></div>
+            <p>計算結果がありえない値になったときは、<b>状態変化で止まる</b>ことを疑う。難関校が好む仕掛けです。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pat">
+      <div class="pat-head">
+        <div class="pat-id"><span class="pat-code">C-7</span><span class="lvl h">難関</span></div>
+        <h4>季節・気候との融合（日本の気候／都市の気候）</h4>
+      </div>
+      <div class="pat-body">
+        <p class="hint">数値ではなく、<b>湿度のしくみで気候を説明させる</b>型。次の4本を語れるようにしておきます。</p>
+        <ul class="tight">
+          <li><b>冬に乾燥する</b> … 大陸からの冷たい空気は水蒸気量が少なく、それを暖房であたためるとさらに湿度が下がる（B-2・B-4がそのまま記述に）。</li>
+          <li><b>日本海側の冬の大雪</b> … 大陸からの乾いた季節風が日本海で水蒸気を受け取り、山にぶつかって上昇し雪を降らせる。山をこえた太平洋側は乾いた晴天（からっ風）。</li>
+          <li><b>梅雨・夏の蒸し暑さ</b> … 南の海上からの暖かく湿った空気（水蒸気量そのものが多い）が流れこむため。</li>
+          <li><b>都市が暑い</b> … アスファルトやコンクリートが多く、地面から水が蒸発しにくいので、気化熱で温度が下がる働きが弱い（ヒートアイランド／打ち水はこの逆手）。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7 ============ -->
+  <section id="kijutsu" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 07</div>
+      <h2>記述問題の型 ─ 使い回せる言い方</h2>
+      <div class="sub">難関校の湿度の記述は、ほぼ次の5問の言いかえです。太字のキーワードを必ず入れて書きます。</div>
+    </div>
+
+    <div class="stack">
+      <div class="pat"><div class="pat-body">
+        <div class="q"><span class="qh">問1</span>湿球のほうが乾球より温度が低くなるのはなぜか。</div>
+        <details class="sol"><summary>模範解答</summary><div class="sol-body">
+          <p>湿球を包むガーゼの水が<b>蒸発するときにまわりから熱（気化熱）をうばう</b>ため、湿球の温度が下がるから。</p>
+        </div></details>
+      </div></div>
+
+      <div class="pat"><div class="pat-body">
+        <div class="q"><span class="qh">問2</span>冬に室内の湿度が下がるのはなぜか。「水蒸気」の語を使って説明せよ。</div>
+        <details class="sol"><summary>模範解答</summary><div class="sol-body">
+          <p>冬の外の空気は気温が低く、<b>ふくむことのできる水蒸気の量（飽和水蒸気量）が小さい</b>ので、もともと水蒸気が少ない。その空気を室内であたためても<b>水蒸気の量は変わらないのに飽和水蒸気量だけが大きくなる</b>ため、湿度が下がるから。</p>
+        </div></details>
+      </div></div>
+
+      <div class="pat"><div class="pat-body">
+        <div class="q"><span class="qh">問3</span>冷たい飲み物を入れたコップの表面に水滴がつくのはなぜか。</div>
+        <details class="sol"><summary>模範解答</summary><div class="sol-body">
+          <p>コップにふれたまわりの空気が冷やされて<b>露点よりも低い温度</b>になり、<b>ふくみきれなくなった空気中の水蒸気が水にもどって</b>コップの表面についたから。</p>
+          <div class="callout warn"><span class="lbl">よくある誤答</span>「コップの中の水がしみ出した」「中の水が蒸発してついた」は誤り。水滴は<b>まわりの空気の水蒸気</b>から生じます。</div>
+        </div></details>
+      </div></div>
+
+      <div class="pat"><div class="pat-body">
+        <div class="q"><span class="qh">問4</span>山をこえた風が、風上より高温で乾燥するのはなぜか。</div>
+        <details class="sol"><summary>模範解答</summary><div class="sol-body">
+          <p>空気が山を上るとき、雲ができてからは<b>水蒸気が水にもどるときに出す熱</b>のため温度の下がり方が小さく（100mにつき0.5℃）、また雨として水蒸気を失う。山をこえた後は雲のない乾いた空気として<b>100mにつき1℃の割合で温度が上がりながら</b>下りるため、風上より気温が高く湿度の低い風になる。</p>
+        </div></details>
+      </div></div>
+
+      <div class="pat"><div class="pat-body">
+        <div class="q"><span class="qh">問5</span>洗濯物が、晴れて風のある日によく乾くのはなぜか。</div>
+        <details class="sol"><summary>模範解答</summary><div class="sol-body">
+          <p>晴れの日は気温が高く<b>湿度が低い</b>ので空気がまだ多くの水蒸気をふくむことができ、蒸発がさかんになる。さらに風があると、洗濯物のまわりにたまった<b>湿った空気が入れかわって</b>つねに乾いた空気がふれるため、蒸発がいっそう進むから。</p>
+        </div></details>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ 8 ============ -->
+  <section id="miss" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 08</div>
+      <h2>失点ポイント集</h2>
+      <div class="sub">模試で実際に多い間違いを、原因ごとに並べました。</div>
+    </div>
+
+    <div class="stack">
+      <div class="callout warn"><span class="lbl">計算の型</span>
+        <ul class="tight">
+          <li><b>体積のかけ忘れ</b>。表の値はすべて1m³あたり。「部屋」「室内」「実験室」の語が出たらまず体積を計算する。</li>
+          <li><b>結露量を湿度の差で計算してしまう</b>。正しくは「水蒸気量 − 冷やした後の飽和水蒸気量」。%の引き算に意味はない。</li>
+          <li><b>途中で四捨五入</b>。露点を求める前に丸めると、表のどの気温にも合わなくなる。丸めるのは最後だけ。</li>
+          <li><b>露点より高い温度まで冷やしただけ</b>なのに結露量を計算する。まず露点と比べて「結露するか」を判定する。</li>
+        </ul>
+      </div>
+      <div class="callout warn"><span class="lbl">言葉・考え方</span>
+        <ul class="tight">
+          <li><b>湯気＝水蒸気</b>としてしまう。湯気は液体の水のつぶ、水蒸気は目に見えない気体。</li>
+          <li><b>飽和水蒸気量が湿度で変わる</b>と思ってしまう。飽和水蒸気量は気温だけで決まる。</li>
+          <li><b>湿度が同じなら水蒸気量も同じ</b>と思ってしまう。気温がちがえば水蒸気量はまったくちがう（20℃50%＝8.65g、30℃50%＝15.2g）。</li>
+          <li><b>湿度が高いほど水滴が多く出る</b>と決めつける。結露量を決めるのは水蒸気量（＝露点）。C-3を見直すこと。</li>
+          <li><b>露点が気温によって変わる</b>と思ってしまう。露点は水蒸気量だけで決まるので、あたためても冷やしても（結露しない限り）変わらない。</li>
+        </ul>
+      </div>
+      <div class="callout warn"><span class="lbl">読み取り</span>
+        <ul class="tight">
+          <li><b>乾湿計で湿球の温度を気温にしてしまう</b>。気温は必ず乾球。</li>
+          <li><b>湿度表の縦横の取りちがえ</b>。差0℃の列が100%になっているかで確認できる。</li>
+          <li><b>問題独自の条件を無視する</b>。特に雲の高さは「露点も下がる／下がらない」で答えが変わる。問題文の指示が絶対。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 9 ============ -->
+  <section id="check" class="sec">
+    <div class="sec-head">
+      <div class="sec-no">SECTION 09</div>
+      <h2>最終チェック</h2>
+      <div class="sub">説明できたらチェック。全部つけば、この単元の入試問題はひととおり戦えます。</div>
+    </div>
+
+    <div class="card">
+      <div class="check" id="checklist">
+        <label><input type="checkbox" data-k="c1"><span>水蒸気と湯気のちがいを説明できる</span></label>
+        <label><input type="checkbox" data-k="c2"><span>飽和水蒸気量が何で決まるか答えられる</span></label>
+        <label><input type="checkbox" data-k="c3"><span>湿度・水蒸気量・露点のうち2つから残りを求められる</span></label>
+        <label><input type="checkbox" data-k="c4"><span>結露量の式を、湿度の引き算と混同せずに書ける</span></label>
+        <label><input type="checkbox" data-k="c5"><span>部屋の体積をかける場面を見落とさない</span></label>
+        <label><input type="checkbox" data-k="c6"><span>乾湿計で湿球が下がる理由を気化熱で説明できる</span></label>
+        <label><input type="checkbox" data-k="c7"><span>湿度表を、乾球の温度と差から正しく引ける</span></label>
+        <label><input type="checkbox" data-k="c8"><span>1日の気温と湿度のグラフを、晴れ・雨で見分けられる</span></label>
+        <label><input type="checkbox" data-k="c9"><span>暖房で乾く理由を数量で説明できる</span></label>
+        <label><input type="checkbox" data-k="c10"><span>加湿しすぎたときに湿度が100%で止まることを説明できる</span></label>
+        <label><input type="checkbox" data-k="c11"><span>コップの実験で、金属製・かき混ぜる・ゆっくり冷やす理由が言える</span></label>
+        <label><input type="checkbox" data-k="c12"><span>グラフ上で「冷やす・あたためる・加湿する」の点の動きを図示できる</span></label>
+        <label><input type="checkbox" data-k="c13"><span>雲ができ始める高さを計算できる</span></label>
+        <label><input type="checkbox" data-k="c14"><span>フェーン現象で、上りと下りの割合のちがいを説明できる</span></label>
+        <label><input type="checkbox" data-k="c15"><span>露・霜・霧・雲を区別して答えられる</span></label>
+        <label><input type="checkbox" data-k="c16"><span>密閉容器で水が減らなくなる理由を説明できる</span></label>
+      </div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-in">
+    <span>湿度パターン図鑑 ／ 中学受験理科 気象分野 総復習</span>
+    <span class="mono">数値は代表的な教材の値です。入試では問題文の表を優先してください。</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var SAT = [4.8,5.2,5.6,6.0,6.4,6.8,7.3,7.8,8.3,8.8,
+             9.4,10.0,10.7,11.4,12.1,12.8,13.6,14.5,15.4,16.3,
+             17.3,18.3,19.4,20.6,21.8,23.1,24.4,25.8,27.2,28.8,
+             30.4,32.1,33.8,35.7,37.6,39.6];
+
+  /* ---- 解説の一括開閉 ---- */
+  document.querySelectorAll("button[data-all]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var sec = btn.closest("section");
+      if(!sec) return;
+      var open = btn.getAttribute("data-all") === "open";
+      sec.querySelectorAll("details.sol").forEach(function(d){ d.open = open; });
+    });
+  });
+
+  /* ---- 目次のハイライト ---- */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".toc a"));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute("href").slice(1)] = a; });
+  if("IntersectionObserver" in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(a){ a.classList.remove("on"); });
+          if(map[e.target.id]) map[e.target.id].classList.add("on");
+        }
+      });
+    }, {rootMargin:"-10% 0px -75% 0px", threshold:0});
+    document.querySelectorAll("section.sec").forEach(function(s){ obs.observe(s); });
+  }
+
+  /* ---- チェックリスト（この端末にだけ残ります） ---- */
+  var boxes = document.querySelectorAll("#checklist input[type=checkbox]");
+  boxes.forEach(function(b){
+    var key = "hum-" + b.getAttribute("data-k");
+    try{ if(localStorage.getItem(key) === "1") b.checked = true; }catch(err){}
+    b.addEventListener("change", function(){
+      try{ localStorage.setItem(key, b.checked ? "1" : "0"); }catch(err){}
+    });
+  });
+
+  /* ---- 湿度ラボ ---- */
+  var svg = document.getElementById("chart");
+  var sT = document.getElementById("sT"), sH = document.getElementById("sH"),
+      sC = document.getElementById("sC"), sV = document.getElementById("sV");
+  if(!svg || !sT) return;
+
+  var W = 520, H = 300, L = 46, R = 14, TP = 16, BT = 34;
+  var PW = W - L - R, PH = H - TP - BT;
+  var XMAX = 35, YMAX = 42;
+  function px(t){ return L + t / XMAX * PW; }
+  function py(g){ return TP + PH - g / YMAX * PH; }
+  function el(name, attrs, text){
+    var n = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for(var k in attrs){ n.setAttribute(k, attrs[k]); }
+    if(text !== undefined) n.textContent = text;
+    return n;
+  }
+  function dewPoint(g){
+    if(g <= SAT[0]) return 0;
+    for(var i = 0; i < SAT.length - 1; i++){
+      if(g >= SAT[i] && g <= SAT[i+1]){
+        return i + (g - SAT[i]) / (SAT[i+1] - SAT[i]);
+      }
+    }
+    return 35;
+  }
+
+  function draw(){
+    var T = +sT.value, Hd = +sH.value, C = +sC.value, V = +sV.value;
+    var sat = SAT[T];
+    var act = sat * Hd / 100;
+    var dew = dewPoint(act);
+    var satC = SAT[C];
+    var con = Math.max(0, act - satC);
+
+    document.getElementById("vT").textContent = T;
+    document.getElementById("vH").textContent = Hd;
+    document.getElementById("vC").textContent = C;
+    document.getElementById("vV").textContent = V;
+    document.getElementById("oSat").textContent = sat.toFixed(1) + " g/m³";
+    document.getElementById("oAct").textContent = act.toFixed(1) + " g/m³";
+    document.getElementById("oDew").textContent = dew.toFixed(1) + " ℃";
+    var con1 = Math.round(con * 10) / 10;
+    document.getElementById("oCon").textContent = con1.toFixed(1) + " g";
+    document.getElementById("oTot").textContent = Math.round(con1 * V * 10) / 10 + " g";
+
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var i;
+    for(i = 0; i <= YMAX; i += 10){
+      svg.appendChild(el("line", {"class":"grid", x1:L, y1:py(i), x2:L+PW, y2:py(i)}));
+      svg.appendChild(el("text", {x:L-8, y:py(i)+3.5, "text-anchor":"end"}, String(i)));
+    }
+    for(i = 0; i <= XMAX; i += 5){
+      svg.appendChild(el("line", {"class":"grid", x1:px(i), y1:TP, x2:px(i), y2:TP+PH}));
+      svg.appendChild(el("text", {x:px(i), y:TP+PH+16, "text-anchor":"middle"}, String(i)));
+    }
+    svg.appendChild(el("line", {"class":"axis", x1:L, y1:TP+PH, x2:L+PW, y2:TP+PH}));
+    svg.appendChild(el("line", {"class":"axis", x1:L, y1:TP, x2:L, y2:TP+PH}));
+    svg.appendChild(el("text", {x:L+PW, y:TP+PH+30, "text-anchor":"end"}, "気温 (℃)"));
+    svg.appendChild(el("text", {x:L-38, y:TP+8, "text-anchor":"start"}, "g/m³"));
+
+    var pts = [], area = [];
+    for(i = 0; i <= 35; i++){ pts.push(px(i) + "," + py(SAT[i])); }
+    area = pts.slice();
+    area.push(px(35) + "," + py(0));
+    area.push(px(0) + "," + py(0));
+    svg.appendChild(el("polygon", {"class":"fill", points:area.join(" ")}));
+    svg.appendChild(el("polyline", {"class":"curve", points:pts.join(" ")}));
+
+    /* 冷却でたどる道すじ */
+    svg.appendChild(el("line", {"class":"lead", x1:px(T), y1:py(act), x2:px(Math.min(T,dew)), y2:py(act)}));
+    if(con > 0){
+      var path = [];
+      for(i = Math.ceil(C); i <= Math.floor(dew); i++){ path.push(px(i) + "," + py(SAT[i])); }
+      path.push(px(dew) + "," + py(act));
+      path.push(px(C) + "," + py(act));
+      path.push(px(C) + "," + py(satC));
+      if(path.length > 3) svg.appendChild(el("polygon", {"class":"cond", points:path.join(" ")}));
+      svg.appendChild(el("line", {"class":"lead", x1:px(C), y1:py(act), x2:px(C), y2:py(satC)}));
+      svg.appendChild(el("circle", {"class":"pt2", cx:px(C), cy:py(satC), r:4}));
+    }
+    svg.appendChild(el("circle", {"class":"pt", cx:px(T), cy:py(act), r:5}));
+    svg.appendChild(el("text", {"class":"lbl", x:px(T)+9, y:py(act)-7},
+      "この空気 " + T + "℃ / " + act.toFixed(1) + "g"));
+    svg.appendChild(el("circle", {"class":"pt", cx:px(dew), cy:py(act), r:3.5}));
+    svg.appendChild(el("text", {"class":"lbl", x:px(dew)-6, y:py(act)+16, "text-anchor":"end"},
+      "露点 " + dew.toFixed(1) + "℃"));
+  }
+
+  [sT, sH, sC, sV].forEach(function(s){ s.addEventListener("input", draw); });
+  draw();
+  if(window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if(mq.addEventListener) mq.addEventListener("change", draw);
+  }
+})();
+</script>
+
+</body>
+</html>
