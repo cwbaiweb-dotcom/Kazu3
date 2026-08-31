@@ -1,0 +1,1647 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>音の総復習マニュアル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ground:#F1F4F4;
+  --surface:#FFFFFF;
+  --surface2:#E6ECEC;
+  --ink:#12262B;
+  --ink2:#3C555B;
+  --muted:#6B8187;
+  --line:#C8D4D5;
+  --line2:#DFE7E7;
+  --accent:#0E7C86;
+  --accent-soft:#DCEEF0;
+  --brass:#8F6210;
+  --brass-soft:#F6E9CE;
+  --danger:#A0392A;
+  --danger-soft:#F7E3DF;
+  --shadow:0 1px 2px rgba(18,38,43,.06), 0 8px 24px -16px rgba(18,38,43,.30);
+  --disp:"Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans:"Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  --mono:"Roboto Mono", ui-monospace, "SFMono-Regular", monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1A1D;
+    --surface:#152528;
+    --surface2:#1D3236;
+    --ink:#E3EDEE;
+    --ink2:#B3C6C9;
+    --muted:#88A0A4;
+    --line:#2C4247;
+    --line2:#223438;
+    --accent:#4CC7D2;
+    --accent-soft:#123A3F;
+    --brass:#DCAC55;
+    --brass-soft:#33280F;
+    --danger:#E38773;
+    --danger-soft:#3A211B;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1A1D;
+  --surface:#152528;
+  --surface2:#1D3236;
+  --ink:#E3EDEE;
+  --ink2:#B3C6C9;
+  --muted:#88A0A4;
+  --line:#2C4247;
+  --line2:#223438;
+  --accent:#4CC7D2;
+  --accent-soft:#123A3F;
+  --brass:#DCAC55;
+  --brass-soft:#33280F;
+  --danger:#E38773;
+  --danger-soft:#3A211B;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15.5px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+/* ---------- shell ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:14px;
+  padding:9px 18px;
+  background:color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .mark{font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:.14em}
+.topbar .sub{font-size:11.5px;color:var(--muted);letter-spacing:.1em}
+.topbar .spacer{flex:1}
+.topbar .chip{
+  font-family:var(--mono);font-size:11.5px;font-weight:500;
+  padding:3px 9px;border:1px solid var(--line);border-radius:999px;color:var(--ink2);
+  white-space:nowrap;
+}
+@media (max-width:640px){.topbar .sub,.topbar .chip{display:none}}
+
+.shell{max-width:1180px;margin:0 auto;padding:0 18px 90px;display:block}
+@media (min-width:1080px){
+  .shell{display:grid;grid-template-columns:212px minmax(0,1fr);gap:44px;align-items:start}
+  .hero{grid-column:1/-1}
+}
+
+/* ---------- index ---------- */
+.index{display:none}
+@media (min-width:1080px){
+  .index{
+    display:block;position:sticky;top:64px;
+    font-size:12.5px;line-height:1.6;
+    max-height:calc(100vh - 90px);overflow-y:auto;
+    padding-right:4px;
+  }
+  .index h4{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+    color:var(--muted);margin:20px 0 7px;font-weight:500;text-transform:uppercase;
+  }
+  .index h4:first-child{margin-top:0}
+  .index a{display:block;padding:2.5px 0;color:var(--ink2);text-decoration:none;border-left:2px solid transparent;padding-left:9px}
+  .index a:hover{color:var(--accent);border-left-color:var(--accent)}
+}
+
+/* ---------- hero ---------- */
+.hero{padding:56px 0 30px;border-bottom:1px solid var(--line)}
+.hero .eyebrow{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;color:var(--accent);
+  text-transform:uppercase;margin-bottom:14px;
+}
+.hero h1{
+  font-family:var(--disp);font-weight:900;
+  font-size:clamp(38px,7.5vw,68px);line-height:1.12;margin:0 0 4px;
+  letter-spacing:.04em;text-wrap:balance;
+}
+.hero h1 .thin{font-weight:500;font-size:.44em;letter-spacing:.1em;display:block;margin-top:10px;color:var(--ink2)}
+.hero p.lede{max-width:60ch;color:var(--ink2);margin:20px 0 26px;font-size:16px}
+.wave{margin:26px 0 24px;color:var(--accent)}
+.wave svg{width:100%;height:auto;display:block}
+.statrow{display:flex;flex-wrap:wrap;gap:10px}
+.stat{
+  background:var(--surface);border:1px solid var(--line2);border-radius:9px;
+  padding:9px 14px;min-width:120px;
+}
+.stat b{display:block;font-family:var(--mono);font-size:19px;font-weight:700;color:var(--accent);line-height:1.3}
+.stat span{font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+
+/* ---------- structure ---------- */
+.part{margin:74px 0 0}
+.part-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:8px}
+.part-head .n{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700}
+.part-head h2{font-family:var(--disp);font-weight:900;font-size:27px;margin:0;letter-spacing:.06em}
+.part-note{color:var(--muted);font-size:13px;margin:0 0 30px}
+
+section{scroll-margin-top:64px}
+h3{
+  font-family:var(--disp);font-weight:700;font-size:21px;
+  margin:44px 0 12px;letter-spacing:.03em;line-height:1.4;
+  display:flex;align-items:baseline;gap:11px;
+}
+h3 .tag{
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;
+  color:var(--accent);background:var(--accent-soft);
+  padding:3px 8px;border-radius:5px;flex:none;
+}
+h4{font-family:var(--sans);font-weight:700;font-size:15px;margin:26px 0 8px;letter-spacing:.02em}
+p{margin:0 0 14px;max-width:66ch}
+ul,ol{margin:0 0 16px;padding-left:1.3em;max-width:66ch}
+li{margin:4px 0}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.k{color:var(--accent);font-weight:700}
+.kb{color:var(--brass);font-weight:700}
+.num{font-family:var(--mono);font-weight:500;font-variant-numeric:tabular-nums}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line2);border-radius:12px;
+  padding:20px 22px;margin:20px 0;box-shadow:var(--shadow);
+}
+.card > :last-child{margin-bottom:0}
+.rule{
+  background:var(--accent-soft);border:1px solid transparent;border-radius:10px;
+  padding:15px 18px;margin:18px 0;
+}
+.rule .label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--accent);
+  font-weight:700;display:block;margin-bottom:5px;
+}
+.rule p:last-child,.rule ul:last-child{margin-bottom:0}
+.trap{
+  background:var(--danger-soft);border-radius:10px;padding:15px 18px;margin:18px 0;
+}
+.trap .label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--danger);
+  font-weight:700;display:block;margin-bottom:5px;
+}
+.trap p:last-child,.trap ul:last-child{margin-bottom:0}
+.hard{
+  background:var(--brass-soft);border-radius:10px;padding:15px 18px;margin:18px 0;
+}
+.hard .label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--brass);
+  font-weight:700;display:block;margin-bottom:5px;
+}
+.hard p:last-child,.hard ul:last-child,.hard ol:last-child{margin-bottom:0}
+
+/* ---------- figures ---------- */
+figure{margin:22px 0;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:16px 14px 12px;overflow-x:auto}
+figure svg{max-width:100%;height:auto;display:block;margin:0 auto;color:var(--ink2)}
+figcaption{
+  font-size:12.5px;color:var(--muted);text-align:center;margin-top:11px;
+  padding-top:9px;border-top:1px solid var(--line2);line-height:1.6;
+}
+svg .s{fill:none;stroke:currentColor;stroke-width:1.5}
+svg .sw{fill:var(--surface);stroke:currentColor;stroke-width:1.5}
+svg .sf{fill:var(--surface2);stroke:currentColor;stroke-width:1.5}
+svg .a{fill:none;stroke:var(--accent);stroke-width:2}
+svg .af{fill:var(--accent)}
+svg .b{fill:none;stroke:var(--brass);stroke-width:2}
+svg .bf{fill:var(--brass)}
+svg .thin{stroke-width:1}
+svg .dash{stroke-dasharray:5 4}
+svg .dot{fill:currentColor}
+svg text{font-family:var(--sans);font-size:12.5px;fill:currentColor}
+svg .lbl{font-size:11px;fill:var(--muted)}
+svg .mono{font-family:var(--mono);font-size:11.5px}
+svg .key{fill:var(--accent);font-weight:700}
+svg .keyb{fill:var(--brass);font-weight:700}
+svg .big{font-size:14px;font-weight:700}
+
+/* ---------- table ---------- */
+.tw{overflow-x:auto;margin:20px 0;border:1px solid var(--line2);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:420px}
+th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--line2)}
+th{background:var(--surface2);font-weight:700;font-size:12.5px;letter-spacing:.04em;color:var(--ink)}
+tr:last-child td{border-bottom:none}
+td.n,th.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+
+/* ---------- pattern ---------- */
+.pat{margin:34px 0 0;border-top:1px solid var(--line);padding-top:26px}
+.pat-head{display:flex;align-items:flex-start;gap:13px;flex-wrap:wrap;margin-bottom:6px}
+.pid{
+  font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.06em;
+  background:var(--ink);color:var(--ground);padding:4px 10px;border-radius:6px;flex:none;margin-top:3px;
+}
+.pat-head h3{margin:0;flex:1;min-width:200px}
+.freq{font-family:var(--mono);font-size:12px;color:var(--brass);letter-spacing:.12em;margin-top:6px;flex:none;white-space:nowrap}
+.tell{
+  font-size:13.5px;color:var(--ink2);border-left:3px solid var(--accent);
+  padding:2px 0 2px 13px;margin:0 0 16px;max-width:64ch;
+}
+.tell b{color:var(--accent)}
+
+/* ---------- worked example ---------- */
+.ex{border:1px solid var(--line);border-radius:11px;margin:18px 0;overflow:hidden;background:var(--surface)}
+.ex > .q{padding:15px 18px;background:var(--surface2)}
+.ex > .q .label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;font-weight:700;
+  color:var(--ink2);display:block;margin-bottom:5px;
+}
+.ex > .q p{margin:0;font-size:14.5px}
+.ex details{border-top:1px solid var(--line2)}
+.ex summary{
+  cursor:pointer;padding:11px 18px;font-size:13px;font-weight:700;color:var(--accent);
+  list-style:none;user-select:none;
+}
+.ex summary::-webkit-details-marker{display:none}
+.ex summary::before{content:"▸ ";font-size:11px}
+.ex details[open] summary::before{content:"▾ "}
+.ex summary:hover{background:var(--accent-soft)}
+.ex .ans{padding:2px 18px 16px;font-size:14px}
+.ex .ans p{margin:0 0 10px}
+.ex .ans p:last-child{margin-bottom:0}
+.ex .ans .final{
+  font-family:var(--mono);font-weight:700;color:var(--accent);font-size:15px;
+  border-top:1px dashed var(--line);padding-top:10px;margin-top:12px;
+}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--surface2);border-radius:7px;padding:9px 13px;margin:9px 0;overflow-x:auto;white-space:nowrap}
+
+/* ---------- checklist ---------- */
+.check{list-style:none;padding:0;max-width:none}
+.check li{
+  display:block;position:relative;padding:9px 0 9px 27px;border-bottom:1px solid var(--line2);
+  margin:0;font-size:14.5px;
+}
+.check li:last-child{border-bottom:none}
+.check li::before{
+  content:"";position:absolute;left:0;top:14px;width:15px;height:15px;
+  border:1.5px solid var(--muted);border-radius:3.5px;
+}
+.grid2{display:grid;gap:18px;grid-template-columns:1fr}
+@media (min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+
+footer{margin-top:70px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+
+@media print{
+  .topbar,.index{display:none}
+  .shell{display:block;max-width:none}
+  .ex details{display:block}
+  .ex .ans{display:block!important}
+  details summary{display:none}
+  details > *{display:block!important}
+  .pat,section{break-inside:avoid}
+  body{background:#fff;color:#000;font-size:11pt}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="mark">音</span>
+  <span class="sub">中学受験理科・総復習</span>
+  <span class="spacer"></span>
+  <span class="chip">V = 340 m/s</span>
+  <span class="chip">出題パターン 14</span>
+</header>
+
+<div class="shell">
+
+  <div class="hero">
+    <div class="eyebrow">Sound / 中学受験理科 総復習マニュアル</div>
+    <h1>音<span class="thin">基礎の整理と、出題パターンの全地図</span></h1>
+    <p class="lede">音の単元は、覚えることは驚くほど少ないのに、点差が大きく開きます。理由は単純で、<strong>知識ではなく「状況の読み替え」で解く単元</strong>だからです。このページは、①最小限の知識、②入試で出る 14 の状況設定、③難関校の発展処理、④直前チェック の順に並べた総復習用マニュアルです。</p>
+
+    <div class="wave" aria-hidden="true">
+      <svg viewBox="0 0 1100 60" preserveAspectRatio="none" style="height:56px">
+        <path d="M0 30 Q 12 30 18 30 T 36 30 T 54 30" fill="none" stroke="currentColor" stroke-width="0"/>
+        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          d="M0,30 C15,30 15,4 30,4 C45,4 45,56 60,56 C75,56 75,4 90,4 C105,4 105,56 120,56 C135,56 135,6 150,6 C165,6 165,54 180,54 C195,54 195,8 210,8 C225,8 225,52 240,52 C255,52 255,10 270,10 C285,10 285,50 300,50 C315,50 315,12 330,12 C345,12 345,48 360,48 C375,48 375,14 390,14 C405,14 405,46 420,46 C435,46 435,16 450,16 C465,16 465,44 480,44 C495,44 495,18 510,18 C525,18 525,42 540,42 C555,42 555,20 570,20 C585,20 585,40 600,40 C615,40 615,22 630,22 C645,22 645,38 660,38 C675,38 675,23 690,23 C705,23 705,37 720,37 C735,37 735,24 750,24 C765,24 765,36 780,36 C795,36 795,25 810,25 C825,25 825,35 840,35 C855,35 855,26 870,26 C885,26 885,34 900,34 C915,34 915,27 930,27 C945,27 945,33 960,33 C975,33 975,28 990,28 C1005,28 1005,32 1020,32 C1035,32 1035,29 1050,29 C1065,29 1065,31 1080,31 C1090,31 1095,30 1100,30"/>
+      </svg>
+    </div>
+
+    <div class="statrow">
+      <div class="stat"><b>340</b><span>m/s ＝ 空気中の音速(15℃)</span></div>
+      <div class="stat"><b>3</b><span>音の三要素</span></div>
+      <div class="stat"><b>14</b><span>入試の出題パターン</span></div>
+      <div class="stat"><b>÷2</b><span>反射問題の合言葉</span></div>
+    </div>
+  </div>
+
+  <nav class="index" aria-label="目次">
+    <h4>第1部 基礎</h4>
+    <a href="#s1">1 音の正体</a>
+    <a href="#s2">2 伝えるもの</a>
+    <a href="#s3">3 音の速さ</a>
+    <a href="#s4">4 音の三要素</a>
+    <a href="#s5">5 高さを決めるもの</a>
+    <h4>第2部 パターン</h4>
+    <a href="#p1">P1 真空・伝わり方</a>
+    <a href="#p2">P2 光と音の時間差</a>
+    <a href="#p3">P3 やまびこ基本</a>
+    <a href="#p4">P4 音速の測定実験</a>
+    <a href="#p5">P5 動きながらの反射</a>
+    <a href="#p6">P6 2つのかべ</a>
+    <a href="#p7">P7 水中・地中</a>
+    <a href="#p8">P8 弦の計算</a>
+    <a href="#p9">P9 条件制御の表</a>
+    <a href="#p10">P10 気柱・試験管</a>
+    <a href="#p11">P11 波形の読み取り</a>
+    <a href="#p12">P12 共鳴</a>
+    <a href="#p13">P13 汽笛の長さ</a>
+    <a href="#p14">P14 グラフ読解</a>
+    <h4>第3部 難関</h4>
+    <a href="#a1">A1 気温と音速</a>
+    <a href="#a2">A2 風の影響</a>
+    <a href="#a3">A3 音源と観測者</a>
+    <a href="#a4">A4 高さの変化</a>
+    <a href="#a5">A5 倍振動</a>
+    <a href="#a6">A6 実験の考察</a>
+    <a href="#a7">A7 融合問題</a>
+    <h4>第4部 総まとめ</h4>
+    <a href="#trap">ひっかけ 10</a>
+    <a href="#chk">暗記チェック</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ PART 1 ============ -->
+  <div class="part">
+    <div class="part-head"><span class="n">第 1 部</span><h2>基礎知識の整理</h2></div>
+    <p class="part-note">ここを 15 分で言えるようになれば、あとは全部「あてはめ」です。</p>
+
+    <section id="s1">
+      <h3><span class="tag">1</span>音の正体 ― 振動と疎密波</h3>
+      <p>音は<strong>物が振動することで生まれます</strong>。振動する物を<span class="k">音源(発音体)</span>といいます。音源が空気を押すと、そこだけ空気が<span class="k">こみあった部分(密)</span>になり、戻るときに<span class="k">まばらな部分(疎)</span>ができます。この <strong>疎と密がくり返し前へ伝わっていくもの</strong>が音です。</p>
+
+      <figure>
+        <svg viewBox="0 0 640 200" role="img" aria-label="おんさの振動が空気の密な部分と疎な部分を作り、それが右へ伝わっていく様子">
+          <defs>
+            <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+            <marker id="m1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+          <!-- tuning fork -->
+          <path class="s" d="M40,55 L40,110 M70,55 L70,110 M40,110 Q55,128 70,110 M55,124 L55,160 M40,160 L70,160"/>
+          <path class="a" d="M32,62 Q28,82 32,102 M78,62 Q82,82 78,102"/>
+          <text class="lbl" x="55" y="180" text-anchor="middle">おんさ(音源)</text>
+          <text class="key" x="55" y="45" text-anchor="middle" font-size="11">振動</text>
+          <!-- density dots -->
+          <g class="dot">
+            <g id="dcol"></g>
+          </g>
+          <g>
+            <!-- dense clusters at x=130,250,370,490 ; sparse between -->
+            <g class="dot">
+              <circle cx="126" cy="70" r="2.6"/><circle cx="134" cy="86" r="2.6"/><circle cx="128" cy="102" r="2.6"/><circle cx="138" cy="66" r="2.6"/><circle cx="122" cy="92" r="2.6"/><circle cx="140" cy="98" r="2.6"/><circle cx="131" cy="78" r="2.6"/><circle cx="144" cy="82" r="2.6"/>
+              <circle cx="180" cy="74" r="2.6"/><circle cx="205" cy="96" r="2.6"/><circle cx="192" cy="60" r="2.6"/><circle cx="215" cy="70" r="2.6"/>
+              <circle cx="246" cy="70" r="2.6"/><circle cx="254" cy="86" r="2.6"/><circle cx="248" cy="102" r="2.6"/><circle cx="258" cy="66" r="2.6"/><circle cx="242" cy="92" r="2.6"/><circle cx="260" cy="98" r="2.6"/><circle cx="251" cy="78" r="2.6"/><circle cx="264" cy="82" r="2.6"/>
+              <circle cx="300" cy="74" r="2.6"/><circle cx="325" cy="96" r="2.6"/><circle cx="312" cy="60" r="2.6"/><circle cx="335" cy="70" r="2.6"/>
+              <circle cx="366" cy="70" r="2.6"/><circle cx="374" cy="86" r="2.6"/><circle cx="368" cy="102" r="2.6"/><circle cx="378" cy="66" r="2.6"/><circle cx="362" cy="92" r="2.6"/><circle cx="380" cy="98" r="2.6"/><circle cx="371" cy="78" r="2.6"/><circle cx="384" cy="82" r="2.6"/>
+              <circle cx="420" cy="74" r="2.6"/><circle cx="445" cy="96" r="2.6"/><circle cx="432" cy="60" r="2.6"/><circle cx="455" cy="70" r="2.6"/>
+              <circle cx="486" cy="70" r="2.6"/><circle cx="494" cy="86" r="2.6"/><circle cx="488" cy="102" r="2.6"/><circle cx="498" cy="66" r="2.6"/><circle cx="482" cy="92" r="2.6"/><circle cx="500" cy="98" r="2.6"/><circle cx="491" cy="78" r="2.6"/><circle cx="504" cy="82" r="2.6"/>
+              <circle cx="540" cy="74" r="2.6"/><circle cx="565" cy="96" r="2.6"/><circle cx="552" cy="60" r="2.6"/><circle cx="575" cy="70" r="2.6"/>
+            </g>
+          </g>
+          <text class="key" x="133" y="130" text-anchor="middle" font-size="11">密</text>
+          <text class="lbl" x="196" y="130" text-anchor="middle">疎</text>
+          <text class="key" x="253" y="130" text-anchor="middle" font-size="11">密</text>
+          <text class="lbl" x="316" y="130" text-anchor="middle">疎</text>
+          <text class="key" x="373" y="130" text-anchor="middle" font-size="11">密</text>
+          <text class="lbl" x="436" y="130" text-anchor="middle">疎</text>
+          <text class="key" x="493" y="130" text-anchor="middle" font-size="11">密</text>
+          <line class="a" x1="120" y1="152" x2="600" y2="152" marker-end="url(#m1a)"/>
+          <text class="key" x="360" y="172" text-anchor="middle" font-size="11.5">音の進む向き(空気そのものは前に進まない)</text>
+        </svg>
+        <figcaption>図1 ― 音は「疎」と「密」が次々と伝わる波(縦波・疎密波)。空気の粒は前後にゆれるだけで、遠くまで運ばれるのは"ゆれ"だけ。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">押さえる 3 点</span>
+        <ul>
+          <li>音が出ている物は<strong>必ず振動している</strong>(振動を止めれば音も止まる)。</li>
+          <li>おんさを鳴らして水面につけると<strong>水しぶきが飛ぶ</strong>＝振動している証拠。</li>
+          <li>音は<strong>縦波(疎密波)</strong>。教科書の波の絵は、疎密の度合いをグラフにしたもの。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="s2">
+      <h3><span class="tag">2</span>音を伝えるもの ― 真空だけは伝えない</h3>
+      <p>音は<strong>気体・液体・固体のどれでも伝わります</strong>。伝えるもの(<span class="k">媒質</span>)が何もない<strong>真空だけは伝わりません</strong>。光は真空でも進むので、ここが対比のポイントになります。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 230" role="img" aria-label="真空鈴の実験。容器の空気を抜くとベルの音は聞こえなくなるが、ベルが振れている様子は見える">
+          <defs>
+            <marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+          </defs>
+          <!-- jar -->
+          <path class="sw" d="M60,40 L60,180 Q60,190 70,190 L230,190 Q240,190 240,180 L240,40 Q240,30 230,30 L70,30 Q60,30 60,40 Z"/>
+          <line class="s" x1="40" y1="196" x2="260" y2="196"/>
+          <!-- bell hung by threads -->
+          <line class="s thin dash" x1="130" y1="40" x2="140" y2="78"/>
+          <line class="s thin dash" x1="170" y1="40" x2="160" y2="78"/>
+          <path class="sf" d="M126,80 Q126,130 112,142 L188,142 Q174,130 174,80 Q150,70 126,80 Z"/>
+          <circle class="dot" cx="150" cy="150" r="6"/>
+          <path class="a" d="M104,96 Q96,112 104,128 M196,96 Q204,112 196,128"/>
+          <text class="lbl" x="150" y="24" text-anchor="middle">糸でつるす(台に触れさせない)</text>
+          <text class="lbl" x="150" y="214" text-anchor="middle">ガラス容器</text>
+          <!-- pump -->
+          <line class="s" x1="240" y1="120" x2="290" y2="120" marker-end="url(#m2)"/>
+          <text class="key" x="300" y="116" font-size="12">空気を抜く</text>
+          <text class="lbl" x="300" y="134">(真空ポンプ)</text>
+          <!-- results -->
+          <line class="s thin" x1="400" y1="40" x2="400" y2="190"/>
+          <text class="big" x="420" y="62">結果</text>
+          <text x="420" y="92">音 … <tspan class="key">だんだん小さくなる</tspan></text>
+          <text x="420" y="118">   → ついに聞こえない</text>
+          <text x="420" y="150">見え方 … <tspan class="keyb">ベルは振れて見える</tspan></text>
+          <text x="420" y="176">   → 光は真空でも伝わる</text>
+        </svg>
+        <figcaption>図2 ― 真空鈴(しんくうれい)の実験。ベルを糸でつるすのは、<strong>台を伝わる固体の音を防ぐ</strong>ため。ここを聞く設問が頻出。</figcaption>
+      </figure>
+
+      <p>もうひとつの定番が<strong>糸電話</strong>です。声で紙コップの底が振動し、その振動が糸を伝わって相手のコップを振動させます。</p>
+
+      <figure>
+        <svg viewBox="0 0 640 180" role="img" aria-label="糸電話。糸をピンと張ると伝わり、つまむ・たるませると伝わらない">
+          <!-- ok case -->
+          <path class="sw" d="M40,54 L64,42 L64,86 L40,74 Z"/>
+          <path class="sw" d="M300,42 L324,54 L324,74 L300,86 Z"/>
+          <line class="a" x1="64" y1="64" x2="300" y2="64"/>
+          <text class="key" x="182" y="52" text-anchor="middle" font-size="11.5">ピンと張る</text>
+          <text class="lbl" x="182" y="84" text-anchor="middle">糸が振動して伝わる → ◯ 聞こえる</text>
+          <text class="lbl" x="30" y="64" text-anchor="end">声</text>
+          <!-- ng case: pinch -->
+          <path class="sw" d="M40,134 L64,122 L64,166 L40,154 Z"/>
+          <path class="sw" d="M300,122 L324,134 L324,154 L300,166 Z"/>
+          <line class="s" x1="64" y1="144" x2="300" y2="144"/>
+          <path class="bf" d="M176,132 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0"/>
+          <text class="keyb" x="184" y="122" text-anchor="middle" font-size="11.5">つまむ</text>
+          <text class="lbl" x="184" y="164" text-anchor="middle">振動が止まる → × 聞こえない</text>
+          <!-- ng case: slack -->
+          <path class="sw" d="M380,54 L404,42 L404,86 L380,74 Z"/>
+          <path class="sw" d="M580,42 L604,54 L604,74 L580,86 Z"/>
+          <path class="s" d="M404,64 Q492,110 580,64"/>
+          <text class="keyb" x="492" y="52" text-anchor="middle" font-size="11.5">たるませる</text>
+          <text class="lbl" x="492" y="128" text-anchor="middle">× 聞こえない</text>
+          <!-- ng: bent -->
+          <path class="sw" d="M380,134 L404,122 L404,166 L380,154 Z"/>
+          <path class="sw" d="M580,122 L604,134 L604,154 L580,166 Z"/>
+          <path class="s" d="M404,144 L492,110 L580,144"/>
+          <circle class="dot" cx="492" cy="110" r="3"/>
+          <text class="lbl" x="492" y="164" text-anchor="middle">折れ曲がっている → × 聞こえない</text>
+        </svg>
+        <figcaption>図3 ― 糸電話が成立する条件は「張る・つままない・まっすぐ」。糸をはり金にすると<strong>よりよく聞こえる</strong>(固体は音をよく伝える)。</figcaption>
+      </figure>
+    </section>
+
+    <section id="s3">
+      <h3><span class="tag">3</span>音の速さ ― 数値をここで固定する</h3>
+      <p>入試で使う数値はほぼ決まっています。<strong>問題文に書いてあれば必ずそれを使う</strong>のが鉄則ですが、書かれていないときの標準値を覚えておきます。</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>伝えるもの</th><th class="n">音の速さ</th><th>覚え方・出題</th></tr></thead>
+          <tbody>
+            <tr><td>空気(15℃)</td><td class="n">約 340 m/s</td><td>基準。時速なら約 1224 km/h</td></tr>
+            <tr><td>水</td><td class="n">約 1500 m/s</td><td>魚群探知機・ソナー・イルカ</td></tr>
+            <tr><td>鉄・ガラス</td><td class="n">約 5000 m/s</td><td>レールに耳をあてると先に聞こえる</td></tr>
+            <tr><td>真空</td><td class="n">0(伝わらない)</td><td>宇宙空間では音がしない</td></tr>
+            <tr><td>光</td><td class="n">約 30 万 km/s</td><td>実質「一瞬」。時間差の問題の前提</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 620 170" role="img" aria-label="空気・水・鉄の中を音が1秒で進む距離の比較。空気340メートル、水1500メートル、鉄5000メートル">
+          <text class="lbl" x="0" y="16">1 秒間に音が進む距離</text>
+          <text x="0" y="48">空気</text><rect class="af" x="70" y="36" width="34" height="16" rx="3"/><text class="mono" x="112" y="49">340 m</text>
+          <text x="0" y="90">水</text><rect class="af" x="70" y="78" width="150" height="16" rx="3"/><text class="mono" x="228" y="91">1500 m</text>
+          <text x="0" y="132">鉄</text><rect class="af" x="70" y="120" width="500" height="16" rx="3"/><text class="mono" x="500" y="112" text-anchor="end">5000 m</text>
+          <text class="lbl" x="70" y="158">かたい物・つまっている物ほど、音は速く伝わる(固体 &gt; 液体 &gt; 気体)</text>
+        </svg>
+        <figcaption>図4 ― 速さの比。空気を1とすると水は約4.4倍、鉄は約15倍。「固 &gt; 液 &gt; 気」の順を図でつかむ。</figcaption>
+      </figure>
+
+      <div class="hard">
+        <span class="label">難関校ではここまで</span>
+        <p>空気中の音速は気温で変わります。<strong>気温 t ℃ のとき、音速 ＝ 331 ＋ 0.6 × t (m/s)</strong>。1℃ 上がるごとに約 0.6 m/s 速くなる、と覚えます。15℃ を入れると 331＋9＝340 で基準値になります。</p>
+      </div>
+    </section>
+
+    <section id="s4">
+      <h3><span class="tag">4</span>音の三要素 ― 何が何で決まるか</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>要素</th><th>決めるもの</th><th>波形での見え方</th><th>変え方</th></tr></thead>
+          <tbody>
+            <tr><td><strong>大きさ</strong></td><td><span class="k">振幅</span>(しんぷく)</td><td>波の<strong>高さ</strong>が大きい</td><td>強くはじく・強くたたく</td></tr>
+            <tr><td><strong>高さ</strong></td><td><span class="k">振動数</span>(単位 Hz)</td><td>波の<strong>数が多い</strong>(間隔がせまい)</td><td>弦・気柱の条件を変える</td></tr>
+            <tr><td><strong>音色</strong></td><td>波の<strong>形</strong></td><td>形そのものがちがう</td><td>楽器・音源の種類がちがう</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 640 250" role="img" aria-label="オシロスコープの4つの波形。基準、振幅が大きい音、振動数が多い高い音、波形の違う音色">
+          <g class="thin s">
+            <line x1="20" y1="60" x2="300" y2="60"/><line x1="340" y1="60" x2="620" y2="60"/>
+            <line x1="20" y1="180" x2="300" y2="180"/><line x1="340" y1="180" x2="620" y2="180"/>
+          </g>
+          <path class="a" d="M20,60 q17.5,-25 35,0 t35,0 t35,0 t35,0 t35,0 t35,0 t35,0 t35,0"/>
+          <text class="big" x="20" y="26">① 基準の音</text>
+          <text class="lbl" x="20" y="90">振幅・振動数ともに標準</text>
+
+          <path class="a" d="M340,60 q17.5,-42 35,0 t35,0 t35,0 t35,0 t35,0 t35,0 t35,0 t35,0"/>
+          <text class="big" x="340" y="26">② 大きい音</text>
+          <text class="lbl" x="340" y="90"><tspan class="key">振幅だけ大きい</tspan> ／ 高さは①と同じ</text>
+
+          <path class="a" d="M20,180 q8.75,-25 17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0 t17.5,0"/>
+          <text class="big" x="20" y="146">③ 高い音</text>
+          <text class="lbl" x="20" y="210"><tspan class="key">波の数が2倍</tspan> ＝ 振動数2倍 ／ 大きさは①と同じ</text>
+
+          <path class="a" d="M340,180 L352,150 L364,180 L376,196 L388,180 L400,150 L412,180 L424,196 L436,180 L448,150 L460,180 L472,196 L484,180 L496,150 L508,180 L520,196 L532,180 L544,150 L556,180 L568,196 L580,180 L592,150 L604,180 L616,196 L620,186"/>
+          <text class="big" x="340" y="146">④ 音色がちがう</text>
+          <text class="lbl" x="340" y="210">大きさ・高さは①と同じで<tspan class="key">形だけ</tspan>ちがう</text>
+          <text class="lbl" x="20" y="238">※ 横軸は時間。1回分の波(山と谷ひと組)にかかる時間を「周期」といい、1 ÷ 周期 ＝ 振動数(Hz)。</text>
+        </svg>
+        <figcaption>図5 ― 波形の 4 パターン比較。入試では「①に対して②はどこが違うか」と<strong>比較で問われる</strong>ので、必ず基準と見くらべる。</figcaption>
+      </figure>
+
+      <div class="trap">
+        <span class="label">最重要のひっかけ</span>
+        <p><strong>音の大きさや高さが変わっても、音の速さは変わりません。</strong>「大きい音のほうが速く伝わる」「高い音のほうが速い」は<strong>すべて誤り</strong>。空気中ならどんな音も同じ 340 m/s です。</p>
+      </div>
+
+      <p>人の耳が聞き取れるのは <span class="num">約 20 〜 20000 Hz</span>。これより高い音を<span class="k">超音波</span>といい、コウモリ・イルカ・魚群探知機・工業用の検査などに使われます。</p>
+    </section>
+
+    <section id="s5">
+      <h3><span class="tag">5</span>高さを決めるもの ― 弦と気柱</h3>
+
+      <h4>弦(モノコード)</h4>
+      <figure>
+        <svg viewBox="0 0 640 210" role="img" aria-label="モノコードの構造と、弦の長さ・太さ・張りの強さが音の高さに与える影響">
+          <defs><marker id="m5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <!-- box -->
+          <rect class="sf" x="30" y="60" width="440" height="52" rx="4"/>
+          <circle class="sw" cx="150" cy="86" r="16"/>
+          <!-- bridge -->
+          <path class="sw" d="M300,60 L308,36 L316,60 Z"/>
+          <path class="sw" d="M60,60 L68,36 L76,60 Z"/>
+          <line class="a" x1="40" y1="42" x2="470" y2="42"/>
+          <!-- weight -->
+          <line class="s" x1="470" y1="42" x2="500" y2="42"/>
+          <path class="s" d="M500,42 L500,120"/>
+          <rect class="sf" x="486" y="120" width="28" height="20" rx="2"/>
+          <rect class="sf" x="486" y="142" width="28" height="20" rx="2"/>
+          <text class="lbl" x="478" y="140" text-anchor="end">おもり(張りの強さ)</text>
+          <!-- length arrow -->
+          <line class="s thin" x1="68" y1="20" x2="308" y2="20" marker-start="url(#m5)" marker-end="url(#m5)"/>
+          <text class="key" x="188" y="14" text-anchor="middle" font-size="11.5">弦の長さ(ことじで変える)</text>
+          <text class="lbl" x="322" y="54">ことじ</text>
+          <text class="lbl" x="150" y="140" text-anchor="middle">共鳴箱</text>
+          <!-- rules -->
+          <line class="s thin" x1="30" y1="164" x2="610" y2="164"/>
+          <text class="big" x="30" y="192">高い音にするには … <tspan class="key">短く ・ 細く ・ 強く張る</tspan>　　低い音は その逆</text>
+        </svg>
+        <figcaption>図6 ― モノコード。変えられるのは「長さ・太さ・張りの強さ」の 3 つだけ。<strong>短・細・強 ＝ 高い</strong>で丸暗記する。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">計算に使う関係</span>
+        <ul>
+          <li>弦の<strong>長さ</strong>と振動数は<span class="k">反比例</span>。長さを <span class="num">1/2</span> にすると振動数は <span class="num">2 倍</span>。</li>
+          <li>弦の<strong>太さ</strong>が細いほど振動数は大きい(高い)。</li>
+          <li>おもりを<strong>増やす</strong>(強く張る)ほど振動数は大きい(高い)。</li>
+        </ul>
+      </div>
+
+      <h4>気柱(試験管・びん・ストロー)</h4>
+      <p>ここが音の単元で<strong>いちばん間違えるところ</strong>です。「吹く」と「たたく」で、振動しているものが入れかわります。</p>
+
+      <figure>
+        <svg viewBox="0 0 640 260" role="img" aria-label="水を入れた試験管を吹く場合と叩く場合で、音の高さの変わり方が逆になることを示す図">
+          <defs><marker id="m6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m6b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/></marker></defs>
+          <text class="big key" x="0" y="18">◆ 吹く → 中の「空気」が振動</text>
+          <g>
+            <path class="sw" d="M20,34 L20,120 Q20,132 32,132 Q44,132 44,120 L44,34"/>
+            <path fill="var(--surface2)" stroke="currentColor" stroke-width="1" d="M21,104 L43,104 L43,120 Q43,131 32,131 Q21,131 21,120 Z"/>
+            <path class="a" d="M22,36 L22,102 L42,102 L42,36" />
+            <text class="lbl" x="32" y="150" text-anchor="middle">水少</text>
+            <path class="sw" d="M90,34 L90,120 Q90,132 102,132 Q114,132 114,120 L114,34"/>
+            <path fill="var(--surface2)" stroke="currentColor" stroke-width="1" d="M91,80 L113,80 L113,120 Q113,131 102,131 Q91,131 91,120 Z"/>
+            <path class="a" d="M92,36 L92,78 L112,78 L112,36"/>
+            <path class="sw" d="M160,34 L160,120 Q160,132 172,132 Q184,132 184,120 L184,34"/>
+            <path fill="var(--surface2)" stroke="currentColor" stroke-width="1" d="M161,58 L183,58 L183,120 Q183,131 172,131 Q161,131 161,120 Z"/>
+            <path class="a" d="M162,36 L162,56 L182,56 L182,36"/>
+            <text class="lbl" x="172" y="150" text-anchor="middle">水多</text>
+            <line class="a" x1="20" y1="166" x2="196" y2="166" marker-end="url(#m6)"/>
+            <text class="key" x="20" y="186" font-size="12">空気の柱が短くなる → <tspan class="big">高くなる</tspan></text>
+            <text class="lbl" x="20" y="206">振動しているのは <tspan class="key">空気</tspan>。水は多いほど音は高い。</text>
+          </g>
+          <line class="s thin" x1="300" y1="0" x2="300" y2="240"/>
+          <text class="big keyb" x="330" y="18">◆ たたく → 「ガラスと水」が振動</text>
+          <g>
+            <path class="sw" d="M350,34 L350,120 Q350,132 362,132 Q374,132 374,120 L374,34"/>
+            <path class="bf" d="M351,104 L373,104 L373,120 Q373,131 362,131 Q351,131 351,120 Z" opacity=".45"/>
+            <text class="lbl" x="362" y="150" text-anchor="middle">水少</text>
+            <path class="sw" d="M420,34 L420,120 Q420,132 432,132 Q444,132 444,120 L444,34"/>
+            <path class="bf" d="M421,80 L443,80 L443,120 Q443,131 432,131 Q421,131 421,120 Z" opacity=".45"/>
+            <path class="sw" d="M490,34 L490,120 Q490,132 502,132 Q514,132 514,120 L514,34"/>
+            <path class="bf" d="M491,58 L513,58 L513,120 Q513,131 502,131 Q491,131 491,120 Z" opacity=".45"/>
+            <text class="lbl" x="502" y="150" text-anchor="middle">水多</text>
+            <line class="b" x1="350" y1="166" x2="526" y2="166" marker-end="url(#m6b)"/>
+            <text class="keyb" x="350" y="186" font-size="12">ゆれる物が重くなる → <tspan class="big">低くなる</tspan></text>
+            <text class="lbl" x="350" y="206">振動しているのは <tspan class="keyb">ガラス＋水</tspan>。水は多いほど音は低い。</text>
+          </g>
+          <text class="lbl" x="0" y="238">※ びんの口を吹く / スプーンでたたく、コップに水を入れて指でこする、なども同じ考え方。</text>
+        </svg>
+        <figcaption>図7 ― 同じ「水を入れた試験管」でも、<strong>吹くと水が多いほど高く、たたくと水が多いほど低い</strong>。逆になるのが最大の急所。</figcaption>
+      </figure>
+    </section>
+  </div>
+
+  <!-- ============ PART 2 ============ -->
+  <div class="part">
+    <div class="part-head"><span class="n">第 2 部</span><h2>出題パターン 14</h2></div>
+    <p class="part-note">入試の「音」は、状況設定がほぼこの 14 通りに収まります。各パターンは〈見抜き方 → 解き方の型 → 例題〉の順。★は頻出度。</p>
+
+    <!-- P1 -->
+    <div class="pat" id="p1">
+      <div class="pat-head"><span class="pid">P1</span><h3>音の伝わり方・真空の実験</h3><span class="freq">★★★</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「ガラス容器」「空気を抜く」「糸電話」「レールに耳をあてる」が出てきたら、計算ではなく<strong>言葉で答える知識問題</strong>。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 150" role="img" aria-label="レールをたたくと、レールを伝わる音が先に、空気を伝わる音が後から聞こえる">
+          <defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <line class="sf" x1="40" y1="96" x2="560" y2="96" stroke-width="7"/>
+          <g class="s"><line x1="80" y1="96" x2="80" y2="112"/><line x1="200" y1="96" x2="200" y2="112"/><line x1="320" y1="96" x2="320" y2="112"/><line x1="440" y1="96" x2="440" y2="112"/></g>
+          <circle class="dot" cx="60" cy="80" r="7"/>
+          <text class="lbl" x="60" y="134" text-anchor="middle">たたく</text>
+          <circle class="dot" cx="545" cy="80" r="7"/>
+          <text class="lbl" x="545" y="134" text-anchor="middle">耳をあてる</text>
+          <line class="a" x1="70" y1="96" x2="530" y2="96" marker-end="url(#m7)"/>
+          <text class="key" x="300" y="88" text-anchor="middle" font-size="11.5">レール(鉄)を伝わる音 … 約5000 m/s → 先に聞こえる</text>
+          <path class="s dash" d="M70,48 L530,48" marker-end="url(#m7b)"/>
+          <text class="lbl" x="300" y="40" text-anchor="middle">空気を伝わる音 … 約340 m/s → あとから聞こえる</text>
+          <text class="lbl" x="300" y="20" text-anchor="middle">同じ 1 回のたたきが、2 回に分かれて聞こえる</text>
+        </svg>
+        <figcaption>図8 ― 固体と気体で速さが違うため、離れた場所では<strong>音が二度聞こえる</strong>。P1 の代表的な題材。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">答えの型(そのまま書ける)</span>
+        <ul>
+          <li><strong>Q. 真空鈴でベルを糸でつるすのはなぜ?</strong> → 台(固体)を伝わって音が外に出るのを防ぐため。</li>
+          <li><strong>Q. 空気を抜くとどうなる?</strong> → 音はしだいに小さくなり、やがて聞こえなくなる。<strong>ただしベルが振動しているようすは見える</strong>(光は真空でも伝わるから)。</li>
+          <li><strong>Q. 糸電話で糸をつまむと?</strong> → 糸の振動が止まるので聞こえなくなる。</li>
+          <li><strong>Q. 宇宙空間で音は?</strong> → 空気(媒質)がないので伝わらない。</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P1</span><p>糸電話の糸を、同じ長さのはり金に取りかえると、聞こえ方はどう変わるか。理由もつけて答えなさい。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>音の速さと伝わりやすさは<strong>固体 &gt; 液体 &gt; 気体</strong>。はり金は糸よりかたく、振動をよく伝えます。</p>
+          <p class="final">答 … 前よりはっきり(大きく)聞こえる。はり金のほうが振動を伝えやすいから。</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="pat" id="p2">
+      <div class="pat-head"><span class="pid">P2</span><h3>光と音の時間差 ― 雷・花火・かけ声</h3><span class="freq">★★★</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「光ってから◯秒後に音が」という文。光の到達時間は<strong>0 とみなす</strong>ので、遅れた時間はまるごと音の飛行時間。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 180" role="img" aria-label="いなずまが光った瞬間に光は届き、5秒後に音が届く。距離は音速かける時間">
+          <defs><marker id="m8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m8b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/></marker></defs>
+          <path class="bf" d="M78,20 L58,72 L74,72 L54,120 L96,62 L78,62 L96,20 Z"/>
+          <text class="lbl" x="76" y="140" text-anchor="middle">落雷</text>
+          <circle class="dot" cx="540" cy="96" r="6"/>
+          <path class="s" d="M540,102 L540,124 M530,112 L550,112 M540,124 L532,142 M540,124 L548,142"/>
+          <text class="lbl" x="540" y="160" text-anchor="middle">自分</text>
+          <line class="b" x1="110" y1="50" x2="510" y2="50" marker-end="url(#m8b)"/>
+          <text class="keyb" x="310" y="42" text-anchor="middle" font-size="11.5">光 … 30万km/s ＝ ほぼ 0 秒で届く</text>
+          <line class="a" x1="110" y1="96" x2="510" y2="96" marker-end="url(#m8)"/>
+          <text class="key" x="310" y="88" text-anchor="middle" font-size="11.5">音 … 340 m/s ＝ 5 秒かかって届く</text>
+          <line class="s thin dash" x1="110" y1="110" x2="510" y2="110"/>
+          <text class="mono" x="310" y="130" text-anchor="middle">距離 ＝ 340 × 5 ＝ 1700 m</text>
+          <text class="lbl" x="310" y="152" text-anchor="middle">「遅れた秒数 × 340」で距離が出る ＝ 往復ではないので ÷2 しない</text>
+        </svg>
+        <figcaption>図9 ― 光は実質同時に届くので、<strong>遅れ時間がそのまま音の飛行時間</strong>。P3 の反射問題と違い、ここでは 2 で割らない。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">解き方の型</span>
+        <p><strong>距離 ＝ 音速 × 遅れた時間</strong>(片道)。「◯秒後に聞こえた」だけなら片道、「はね返って聞こえた」なら往復。ここの判断がすべて。</p>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P2</span><p>いなずまが光ってから 5 秒後に雷の音が聞こえた。音の速さを 340 m/s として、落雷した場所までの距離は何 m か。また何 km か。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>光は一瞬で届くので、5 秒はまるごと音が飛んだ時間。反射していないので 2 で割りません。</p>
+          <div class="calc">340 m/s × 5 s ＝ 1700 m ＝ 1.7 km</div>
+          <p class="final">答 … 1700 m(1.7 km)</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P3 -->
+    <div class="pat" id="p3">
+      <div class="pat-head"><span class="pid">P3</span><h3>やまびこ ― 反射の基本(÷2)</h3><span class="freq">★★★</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「がけ」「へい」「トンネル」「ビル」＋「はね返って聞こえた」。音は<strong>行って帰って</strong>いるので、必ず往復で考える。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 190" role="img" aria-label="がけに向かって叫ぶと音が往復して戻る。往復距離は音速かける時間、片道はその半分">
+          <defs><marker id="m9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m9s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <path class="sf" d="M470,20 L560,20 L560,160 L470,160 L488,120 L470,86 L490,52 Z"/>
+          <text class="lbl" x="516" y="176" text-anchor="middle">がけ</text>
+          <circle class="dot" cx="70" cy="82" r="6"/>
+          <path class="s" d="M70,88 L70,112 M60,98 L80,98 M70,112 L62,134 M70,112 L78,134"/>
+          <text class="lbl" x="70" y="176" text-anchor="middle">自分</text>
+          <line class="a" x1="92" y1="66" x2="460" y2="66" marker-end="url(#m9)"/>
+          <text class="key" x="270" y="56" text-anchor="middle" font-size="11.5">行き … 距離 d</text>
+          <line class="a" x1="460" y1="106" x2="92" y2="106" marker-end="url(#m9)"/>
+          <text class="key" x="270" y="126" text-anchor="middle" font-size="11.5">帰り … 距離 d</text>
+          <line class="s thin" x1="70" y1="150" x2="470" y2="150" marker-start="url(#m9s)" marker-end="url(#m9s)"/>
+          <text class="mono" x="270" y="166" text-anchor="middle">d ＝ (340 × 時間) ÷ 2</text>
+          <text class="lbl" x="270" y="20" text-anchor="middle">音が進んだ道のり ＝ 340 × 時間 ＝ 2d</text>
+        </svg>
+        <figcaption>図10 ― 反射問題の骨格。まず<strong>「音が進んだ道のり」を出し、それから 2 で割る</strong>という順番を崩さない。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">解き方の型</span>
+        <ol>
+          <li>音が進んだ道のり ＝ 音速 × 時間 を計算する。</li>
+          <li>それが「往復」なら ÷2 して片道の距離。</li>
+        </ol>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P3</span><p>がけに向かって大声を出したところ、4 秒後にやまびこが返ってきた。音の速さを 340 m/s とすると、がけまでの距離は何 m か。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <div class="calc">音が進んだ道のり ＝ 340 × 4 ＝ 1360 m　(これは往復)</div>
+          <div class="calc">がけまで ＝ 1360 ÷ 2 ＝ 680 m</div>
+          <p class="final">答 … 680 m</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P4 -->
+    <div class="pat" id="p4">
+      <div class="pat-head"><span class="pid">P4</span><h3>音速を測る実験</h3><span class="freq">★★☆</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「2 人が離れて立ち」「ピストル」「けむりが見えてから」。求めるのが<strong>距離ではなく速さ</strong>になっているのが目印。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 170" role="img" aria-label="850メートル離れた2地点でピストルの煙が見えてから2.5秒後に音が届く実験">
+          <defs><marker id="m10" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+          <marker id="m10a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+          <circle class="dot" cx="70" cy="60" r="6"/><path class="s" d="M70,66 L70,90 M60,76 L80,76 M70,90 L62,112 M70,90 L78,112"/>
+          <text class="lbl" x="70" y="132" text-anchor="middle">A ピストルを鳴らす</text>
+          <circle class="dot" cx="550" cy="60" r="6"/><path class="s" d="M550,66 L550,90 M540,76 L560,76 M550,90 L542,112 M550,90 L558,112"/>
+          <text class="lbl" x="550" y="132" text-anchor="middle">B ストップウォッチ係</text>
+          <path class="b" d="M88,50 q8,-10 16,-2 q10,-8 14,4 q10,2 4,10 q-14,6 -22,-2 q-12,2 -12,-10"/>
+          <text class="keyb" x="112" y="30" font-size="11">けむり(＝合図)</text>
+          <line class="a" x1="130" y1="76" x2="520" y2="76" marker-end="url(#m10a)"/>
+          <text class="key" x="325" y="68" text-anchor="middle" font-size="11.5">音が届くまで 2.5 秒</text>
+          <line class="s thin" x1="70" y1="150" x2="550" y2="150" marker-start="url(#m10)" marker-end="url(#m10)"/>
+          <text class="mono" x="325" y="166" text-anchor="middle">850 m(あらかじめ測っておく)</text>
+        </svg>
+        <figcaption>図11 ― 「けむりが見えた瞬間」を出発の合図にするのがポイント。音を合図にすると測れない。</figcaption>
+      </figure>
+
+      <div class="hard">
+        <span class="label">考察でよく問われること</span>
+        <ul>
+          <li><strong>なぜけむり(光)を合図にするのか</strong> → 光はほぼ一瞬で届き、鳴らした瞬間がそのまま分かるから。</li>
+          <li><strong>誤差を小さくする工夫</strong> → 何回も測って平均をとる／距離をできるだけ長くとる／人の反応の遅れが出にくい方法(音を往復させる)にする。</li>
+          <li><strong>風の向きに注意</strong> → 追い風・向かい風で結果がずれる(→ A2 参照)。</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P4</span><p>850 m 離れた 2 地点 A・B で実験した。A でピストルを鳴らし、B の人はけむりが見えてから 2.5 秒後に音を聞いた。音の速さは秒速何 m か。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <div class="calc">速さ ＝ 距離 ÷ 時間 ＝ 850 ÷ 2.5 ＝ 340 m/s</div>
+          <p class="final">答 … 秒速 340 m</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P5 -->
+    <div class="pat" id="p5">
+      <div class="pat-head"><span class="pid">P5</span><h3>動きながらの反射 ― 車・列車・船</h3><span class="freq">★★★</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「秒速◯ m で走る列車が」＋「汽笛を鳴らし、◯秒後に反射音を聞いた」。<strong>音を聞く人が動いている</strong>ので、単純な ÷2 は使えない。</p>
+
+      <figure>
+        <svg viewBox="0 0 640 230" role="img" aria-label="かべに向かって走る列車が汽笛を鳴らし、3秒後に反射音を聞くまでの位置関係">
+          <defs><marker id="m11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m11b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/></marker>
+          <marker id="m11s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <rect class="sf" x="560" y="16" width="26" height="180"/>
+          <text class="lbl" x="573" y="212" text-anchor="middle">かべ</text>
+          <!-- t=0 -->
+          <text class="mono lbl" x="10" y="46">0 秒</text>
+          <rect class="sw" x="60" y="30" width="62" height="24" rx="4"/><circle class="dot" cx="76" cy="58" r="4"/><circle class="dot" cx="106" cy="58" r="4"/>
+          <line class="a" x1="130" y1="42" x2="548" y2="42" marker-end="url(#m11)"/>
+          <text class="key" x="330" y="34" text-anchor="middle" font-size="11.5">汽笛の音が出発</text>
+          <line class="s thin" x1="90" y1="76" x2="560" y2="76" marker-start="url(#m11s)" marker-end="url(#m11s)"/>
+          <text class="mono" x="325" y="94" text-anchor="middle">求める距離 d</text>
+          <!-- t=3 -->
+          <text class="mono lbl" x="10" y="146">3 秒</text>
+          <rect class="sw" x="120" y="130" width="62" height="24" rx="4"/><circle class="dot" cx="136" cy="158" r="4"/><circle class="dot" cx="166" cy="158" r="4"/>
+          <line class="b" x1="120" y1="118" x2="60" y2="118" marker-end="url(#m11b)"/>
+          <text class="keyb" x="130" y="112" font-size="11">列車が進んだ 20×3＝60 m</text>
+          <line class="a" x1="548" y1="142" x2="192" y2="142" marker-end="url(#m11)"/>
+          <text class="key" x="370" y="134" text-anchor="middle" font-size="11.5">反射音がここで追いつく</text>
+          <line class="s thin dash" x1="120" y1="100" x2="120" y2="176"/>
+          <line class="s thin dash" x1="60" y1="20" x2="60" y2="100"/>
+          <line class="s thin" x1="150" y1="190" x2="560" y2="190" marker-start="url(#m11s)" marker-end="url(#m11s)"/>
+          <text class="mono" x="355" y="208" text-anchor="middle">d − 60</text>
+          <text class="key big" x="10" y="222">音が進んだ道のり 340×3 ＝ d ＋ (d − 60)</text>
+        </svg>
+        <figcaption>図12 ― 音の走った道のりを、<strong>行き d ＋ 帰り (d − 進んだ距離)</strong> に分けて式を立てる。これが動体反射問題の唯一の型。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">解き方の型(近づく場合)</span>
+        <div class="calc">音速 × 時間 ＝ 2 × 最初の距離 − 自分が進んだ距離</div>
+        <p>遠ざかりながら聞く場合は、最後がプラスになります。</p>
+        <div class="calc">音速 × 時間 ＝ 2 × 最初の距離 ＋ 自分が進んだ距離</div>
+        <p>「音が進んだ道のり」を一本の線で書き出してから式にすると、符号を間違えません。</p>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P5</span><p>秒速 20 m でまっすぐかべに向かって走る列車が汽笛を鳴らし、その 3 秒後に反射音を聞いた。音の速さを 340 m/s とすると、汽笛を鳴らしたときのかべまでの距離は何 m か。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>3 秒で、音は 340×3＝1020 m 進み、列車は 20×3＝60 m 進んでいます。音は「行き d ＋ 帰り (d−60)」を走ったので、</p>
+          <div class="calc">1020 ＝ d ＋ (d − 60) ＝ 2d − 60</div>
+          <div class="calc">2d ＝ 1080　→　d ＝ 540 m</div>
+          <p>検算 … 行き 540 m ＋ 帰り 480 m ＝ 1020 m ◯</p>
+          <p class="final">答 … 540 m</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P6 -->
+    <div class="pat" id="p6">
+      <div class="pat-head"><span class="pid">P6</span><h3>2 つのかべ ― 反射音が複数回</h3><span class="freq">★★☆</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「2 秒後と 3 秒後に聞こえた」のように<strong>反射音が 2 回</strong>。前後それぞれのかべを別々に計算して、最後に足す。</p>
+
+      <figure>
+        <svg viewBox="0 0 640 200" role="img" aria-label="2つのがけの間で手をたたくと、近いがけから2秒後、遠いがけから3秒後に反射音が返る">
+          <defs><marker id="m12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m12s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <path class="sf" d="M0,20 L46,20 L46,150 L28,120 L46,90 L26,56 L0,40 Z"/>
+          <path class="sf" d="M640,20 L594,20 L594,150 L612,120 L594,90 L614,56 L640,40 Z"/>
+          <text class="lbl" x="24" y="168" text-anchor="middle">がけ P</text>
+          <text class="lbl" x="616" y="168" text-anchor="middle">がけ Q</text>
+          <circle class="dot" cx="250" cy="60" r="6"/><path class="s" d="M250,66 L250,90 M240,76 L260,76 M250,90 L242,112 M250,90 L258,112"/>
+          <text class="lbl" x="250" y="132" text-anchor="middle">手をたたく</text>
+          <line class="a" x1="230" y1="50" x2="60" y2="50" marker-end="url(#m12)"/>
+          <text class="key" x="145" y="42" text-anchor="middle" font-size="11.5">2 秒後に返る</text>
+          <line class="a" x1="272" y1="50" x2="580" y2="50" marker-end="url(#m12)"/>
+          <text class="key" x="420" y="42" text-anchor="middle" font-size="11.5">3 秒後に返る</text>
+          <line class="s thin" x1="46" y1="152" x2="250" y2="152" marker-start="url(#m12s)" marker-end="url(#m12s)"/>
+          <text class="mono" x="148" y="168" text-anchor="middle">340×2÷2 ＝ 340 m</text>
+          <line class="s thin" x1="250" y1="152" x2="594" y2="152" marker-start="url(#m12s)" marker-end="url(#m12s)"/>
+          <text class="mono" x="422" y="168" text-anchor="middle">340×3÷2 ＝ 510 m</text>
+          <text class="key mono big" x="320" y="192" text-anchor="middle">がけの間隔 ＝ 340 ＋ 510 ＝ 850 m</text>
+        </svg>
+        <figcaption>図13 ― 反射音が 2 回なら、かべも 2 枚。<strong>それぞれ独立に ÷2 してから足す</strong>。</figcaption>
+      </figure>
+
+      <div class="hard">
+        <span class="label">難関校の追加設定</span>
+        <ul>
+          <li>同じかべで<strong>2 回目・3 回目の反射</strong>を聞く(音がかべの間を往復し続ける)→ 反射音は等間隔で聞こえ、間隔は「2×間隔距離 ÷ 音速」。</li>
+          <li>人が<strong>まん中にいない</strong>ため、聞こえる 2 音の間隔から片方の距離を逆算させる。</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P6</span><p>2 つのがけにはさまれた場所で手をたたくと、2 秒後と 3 秒後にそれぞれ反射音が聞こえた。音の速さを 340 m/s として、2 つのがけの間の距離を求めなさい。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <div class="calc">近いがけまで ＝ 340 × 2 ÷ 2 ＝ 340 m</div>
+          <div class="calc">遠いがけまで ＝ 340 × 3 ÷ 2 ＝ 510 m</div>
+          <div class="calc">間の距離 ＝ 340 ＋ 510 ＝ 850 m</div>
+          <p class="final">答 … 850 m</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P7 -->
+    <div class="pat" id="p7">
+      <div class="pat-head"><span class="pid">P7</span><h3>水中・地中 ― ソナー・魚群探知機</h3><span class="freq">★★☆</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「超音波」「魚群探知機」「深さを測る」。やることは P3 と同じで、<strong>使う音速だけが 1500 m/s に変わる</strong>。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 210" role="img" aria-label="船から出した超音波が海底で反射して戻る。深さは音速かける時間割る2">
+          <defs><marker id="m13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m13s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <path class="s" d="M0,46 q30,-8 60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0"/>
+          <path class="sw" d="M240,20 L360,20 L340,46 L260,46 Z"/>
+          <path class="s" d="M300,20 L300,0"/>
+          <text class="lbl" x="300" y="14" text-anchor="middle">船</text>
+          <path class="sf" d="M0,176 q60,-16 120,-2 q70,8 120,-10 q80,-18 150,6 q90,20 230,-4 L620,210 L0,210 Z"/>
+          <text class="lbl" x="500" y="200" text-anchor="middle">海底</text>
+          <line class="a" x1="284" y1="52" x2="284" y2="164" marker-end="url(#m13)"/>
+          <line class="a" x1="316" y1="164" x2="316" y2="52" marker-end="url(#m13)"/>
+          <text class="key" x="204" y="112" text-anchor="middle" font-size="11.5">超音波</text>
+          <text class="key" x="400" y="112" text-anchor="middle" font-size="11.5">反射波</text>
+          <line class="s thin" x1="420" y1="46" x2="420" y2="168" marker-start="url(#m13s)" marker-end="url(#m13s)"/>
+          <text class="mono" x="432" y="112">深さ ＝ 1500 × 時間 ÷ 2</text>
+          <text class="lbl" x="432" y="132">※ 水中の音速 約 1500 m/s</text>
+          <text class="lbl" x="0" y="66">海面</text>
+        </svg>
+        <figcaption>図14 ― 深さも往復。空気中の 340 と取りちがえないよう、<strong>問題文の音速を丸で囲んでから</strong>計算する。</figcaption>
+      </figure>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P7</span><p>船から真下に超音波を出したところ、0.08 秒後に海底からの反射波が返ってきた。水中の音速を 1500 m/s として、海の深さは何 m か。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <div class="calc">往復の距離 ＝ 1500 × 0.08 ＝ 120 m</div>
+          <div class="calc">深さ ＝ 120 ÷ 2 ＝ 60 m</div>
+          <p class="final">答 … 60 m</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P8 -->
+    <div class="pat" id="p8">
+      <div class="pat-head"><span class="pid">P8</span><h3>弦の計算 ― 長さと振動数の反比例</h3><span class="freq">★★★</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「長さ ◯ cm のとき ◯ Hz」という数値が与えられる。<strong>長さ × 振動数 が一定</strong>と気づけば即答。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 200" role="img" aria-label="弦の長さを半分にすると振動数が2倍になる反比例の関係">
+          <defs><marker id="m14" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <text class="lbl" x="0" y="16">同じ弦・同じ張り方で、長さだけを変える</text>
+          <line class="s thin" x1="60" y1="52" x2="540" y2="52" marker-start="url(#m14)" marker-end="url(#m14)"/>
+          <path class="a" d="M60,80 q120,-30 240,0 t240,0"/>
+          <path class="a dash" d="M60,80 q120,30 240,0 t240,0"/>
+          <text class="mono" x="300" y="44" text-anchor="middle">長さ 60 cm</text>
+          <text class="key mono big" x="560" y="86">440 Hz</text>
+          <line class="s thin" x1="60" y1="130" x2="300" y2="130" marker-start="url(#m14)" marker-end="url(#m14)"/>
+          <path class="a" d="M60,158 q60,-30 120,0 t120,0"/>
+          <path class="a dash" d="M60,158 q60,30 120,0 t120,0"/>
+          <text class="mono" x="180" y="122" text-anchor="middle">長さ 30 cm</text>
+          <text class="key mono big" x="320" y="164">880 Hz</text>
+          <text class="lbl" x="0" y="192">長さ 1/2 → 振動数 2 倍。<tspan class="key">長さ × 振動数 ＝ 一定</tspan>(60×440 ＝ 30×880 ＝ 26400)</text>
+        </svg>
+        <figcaption>図15 ― 弦の長さと振動数は反比例。<strong>「かけ算した値が同じ」</strong>で押すのが最短ルート。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">高さ(振動数)を上げる 3 つの手</span>
+        <ul>
+          <li>弦を<strong>短く</strong>する(ことじを動かす)</li>
+          <li>弦を<strong>細く</strong>する</li>
+          <li>おもりを増やして<strong>強く張る</strong></li>
+        </ul>
+        <p>細さ・張りは中学受験では「表で比べる」形で出ることがほとんどで、比例計算までは要求されません。<strong>比例計算が要るのは長さだけ</strong>と割り切ってよい。</p>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P8</span><p>ある弦をことじで 60 cm の長さにしてはじくと 440 Hz の音が出た。同じ弦・同じ張り方で長さを 40 cm にすると、振動数は何 Hz になるか。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>長さと振動数は反比例なので、長さ × 振動数 は一定です。</p>
+          <div class="calc">60 × 440 ＝ 26400　→　26400 ÷ 40 ＝ 660 Hz</div>
+          <p>(別解 … 長さが 60→40＝2/3 倍なので、振動数は 3/2 倍。440 × 3/2 ＝ 660)</p>
+          <p class="final">答 … 660 Hz</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P9 -->
+    <div class="pat" id="p9">
+      <div class="pat-head"><span class="pid">P9</span><h3>条件制御 ― 表から「比べる組」を選ぶ</h3><span class="freq">★★★</span></div>
+      <p class="tell"><b>見抜き方</b> ― 弦の長さ・太さ・おもりの数が並んだ表 ＋「◯◯の影響を調べるには、どれとどれを比べればよいか」。<strong>理科の実験問題の型</strong>そのもの。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 190" role="img" aria-label="調べたい条件だけを変え、他の条件をすべて同じにした2つの実験を選ぶという条件制御の考え方">
+          <text class="big" x="0" y="16">「弦の太さ」の影響を調べたい</text>
+          <rect class="sw" x="0" y="34" width="180" height="118" rx="8"/>
+          <text class="mono" x="90" y="58" text-anchor="middle">実験 ア</text>
+          <text x="16" y="84">長さ 40 cm</text><text x="16" y="106">太さ <tspan class="key">0.3 mm</tspan></text><text x="16" y="128">おもり 2 個</text>
+          <rect class="sw" x="220" y="34" width="180" height="118" rx="8"/>
+          <text class="mono" x="310" y="58" text-anchor="middle">実験 イ</text>
+          <text x="236" y="84">長さ 40 cm</text><text x="236" y="106">太さ <tspan class="key">0.5 mm</tspan></text><text x="236" y="128">おもり 2 個</text>
+          <rect class="sw" x="440" y="34" width="180" height="118" rx="8" stroke-dasharray="5 4"/>
+          <text class="mono" x="530" y="58" text-anchor="middle">実験 ウ</text>
+          <text x="456" y="84">長さ <tspan class="keyb">60 cm</tspan></text><text x="456" y="106">太さ <tspan class="key">0.5 mm</tspan></text><text x="456" y="128">おもり <tspan class="keyb">3 個</tspan></text>
+          <text class="key" x="200" y="96" text-anchor="middle" font-size="20">◯</text>
+          <text class="keyb" x="420" y="96" text-anchor="middle" font-size="20">×</text>
+          <text class="lbl" x="0" y="176">ア と イ … 太さだけがちがう → 比べられる　／　ウ … 2 つ以上ちがう → 原因が特定できない</text>
+        </svg>
+        <figcaption>図16 ― 条件制御の原則は<strong>「調べたい条件だけを変え、ほかは全部そろえる」</strong>。この 1 行を答案に書けると記述でも取れる。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">記述の型</span>
+        <p>「<strong>調べたい条件(◯◯)だけがちがい、それ以外の条件はすべて同じ</strong>ものを比べる必要があるから。」 ― この文をそのまま使えば、弦以外(ふりこ・植物・溶解など)の実験問題にも通用します。</p>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P9</span><p>上の表で、「おもりの数と音の高さの関係」を調べたい。ア〜ウのうち、新たに用意すべき実験の条件を答えなさい。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>おもりの数<strong>だけ</strong>を変え、長さと太さはそろえます。ア(40 cm・0.3 mm・2 個)を基準にするなら、</p>
+          <p class="final">答 … 長さ 40 cm・太さ 0.3 mm で、おもりの数だけを 2 個以外(例 3 個)にした実験</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P10 -->
+    <div class="pat" id="p10">
+      <div class="pat-head"><span class="pid">P10</span><h3>気柱 ― 試験管・びんの「吹く / たたく」</h3><span class="freq">★★★</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「水の量を変えた試験管が並んでいる」。設問が<strong>「吹いたとき」か「たたいたとき」か</strong>を必ず読み分ける。図7 がすべて。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 190" role="img" aria-label="振動しているものを見分けると音の高さの変化がわかるという判断手順">
+          <defs><marker id="m15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <rect class="sw" x="180" y="10" width="260" height="42" rx="8"/>
+          <text class="big" x="310" y="37" text-anchor="middle">何が振動しているか?</text>
+          <line class="s" x1="270" y1="52" x2="150" y2="86" marker-end="url(#m15)"/>
+          <line class="s" x1="350" y1="52" x2="470" y2="86" marker-end="url(#m15)"/>
+          <rect class="sw" x="10" y="90" width="270" height="88" rx="8"/>
+          <text class="key big" x="145" y="116" text-anchor="middle">空気(気柱)が振動</text>
+          <text class="lbl" x="145" y="138" text-anchor="middle">吹く・笛・ストロー・びんの口</text>
+          <text x="145" y="164" text-anchor="middle">空気の柱が<tspan class="key">短い</tspan>ほど<tspan class="key">高い</tspan></text>
+          <rect class="sw" x="340" y="90" width="270" height="88" rx="8"/>
+          <text class="keyb big" x="475" y="116" text-anchor="middle">物(ガラス＋水)が振動</text>
+          <text class="lbl" x="475" y="138" text-anchor="middle">たたく・木琴・鉄琴・コップ</text>
+          <text x="475" y="164" text-anchor="middle">ゆれる物が<tspan class="keyb">重い</tspan>ほど<tspan class="keyb">低い</tspan></text>
+        </svg>
+        <figcaption>図17 ― 判断の分かれ道はひとつだけ。<strong>「振動しているのは空気か、物か」</strong>を最初に決めれば、高低は自動で決まる。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">同じ考え方が使えるもの</span>
+        <ul>
+          <li><strong>ストロー笛</strong>を短く切る → 気柱が短い → 高い</li>
+          <li><strong>木琴・鉄琴</strong>の板が短い → 板が軽く速く振動 → 高い</li>
+          <li><strong>コップのふちを指でこする</strong> → コップと水が振動 → 水が多いほど低い</li>
+          <li><strong>おんさ</strong>は小さいものほど高い</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P10</span><p>同じ試験管 A・B があり、A には水を少し、B には水をたくさん入れた。(1) 管の口を吹いたとき高い音が出るのはどちらか。(2) 管の側面をたたいたとき高い音が出るのはどちらか。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>(1) 吹くと振動するのは<strong>中の空気</strong>。水が多い B のほうが空気の柱が短いので高い。</p>
+          <p>(2) たたくと振動するのは<strong>ガラスと水</strong>。水が少ない A のほうが軽くて速く振動するので高い。</p>
+          <p class="final">答 … (1) B　(2) A</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P11 -->
+    <div class="pat" id="p11">
+      <div class="pat-head"><span class="pid">P11</span><h3>波形の読み取り ― 目盛りから振動数を出す</h3><span class="freq">★★☆</span></div>
+      <p class="tell"><b>見抜き方</b> ― オシロスコープの画面＋「横軸 1 目盛りは ◯ 秒」。手順は<strong>①1 回分の波の目盛りを数える ②周期を出す ③1 ÷ 周期</strong>の 3 手だけ。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 220" role="img" aria-label="オシロスコープの波形から1回分の振動にかかる時間を読み取り、振動数を計算する手順">
+          <defs><marker id="m16" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+          <rect class="sw" x="20" y="20" width="480" height="140" rx="6"/>
+          <g class="s thin" opacity=".45">
+            <line x1="50" y1="20" x2="50" y2="160"/><line x1="80" y1="20" x2="80" y2="160"/><line x1="110" y1="20" x2="110" y2="160"/><line x1="140" y1="20" x2="140" y2="160"/><line x1="170" y1="20" x2="170" y2="160"/><line x1="200" y1="20" x2="200" y2="160"/><line x1="230" y1="20" x2="230" y2="160"/><line x1="260" y1="20" x2="260" y2="160"/><line x1="290" y1="20" x2="290" y2="160"/><line x1="320" y1="20" x2="320" y2="160"/><line x1="350" y1="20" x2="350" y2="160"/><line x1="380" y1="20" x2="380" y2="160"/><line x1="410" y1="20" x2="410" y2="160"/><line x1="440" y1="20" x2="440" y2="160"/><line x1="470" y1="20" x2="470" y2="160"/>
+            <line x1="20" y1="55" x2="500" y2="55"/><line x1="20" y1="125" x2="500" y2="125"/>
+          </g>
+          <line class="s" x1="20" y1="90" x2="500" y2="90"/>
+          <path class="a" d="M20,90 q30,-45 60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0 t60,0"/>
+          <line class="a" x1="20" y1="180" x2="140" y2="180" marker-start="url(#m16)" marker-end="url(#m16)"/>
+          <text class="key" x="80" y="200" text-anchor="middle" font-size="11.5">1 回分の振動 ＝ 4 目盛り</text>
+          <text class="lbl" x="260" y="180">横軸 1 目盛り ＝ 0.0005 秒</text>
+          <text class="mono" x="260" y="200">周期 ＝ 0.0005 × 4 ＝ 0.002 秒</text>
+          <rect class="sw" x="516" y="60" width="100" height="66" rx="8"/>
+          <text class="key mono big" x="566" y="88" text-anchor="middle">500</text>
+          <text class="lbl" x="566" y="110" text-anchor="middle">Hz</text>
+          <text class="lbl" x="566" y="146" text-anchor="middle">1 ÷ 0.002</text>
+        </svg>
+        <figcaption>図18 ― 1 回分の波は「山ひとつ＋谷ひとつ」。<strong>山だけを 1 回と数えない</strong>のが最大の注意点。</figcaption>
+      </figure>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P11</span><p>横軸の 1 目盛りが 0.0005 秒のオシロスコープで、1 回の振動が 4 目盛り分だった。この音の振動数は何 Hz か。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <div class="calc">周期 ＝ 0.0005 × 4 ＝ 0.002 秒</div>
+          <div class="calc">振動数 ＝ 1 ÷ 0.002 ＝ 500 Hz</div>
+          <p class="final">答 … 500 Hz</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P12 -->
+    <div class="pat" id="p12">
+      <div class="pat-head"><span class="pid">P12</span><h3>共鳴 ― 同じ振動数だけが響き合う</h3><span class="freq">★★☆</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「2 つのおんさを共鳴箱にのせて向かい合わせる」。答えの根拠はいつも<strong>「振動数が同じかどうか」</strong>ひとつ。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 210" role="img" aria-label="同じ振動数のおんさは共鳴するが、片方におもりをつけて振動数を変えると共鳴しない">
+          <defs><marker id="m17" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+          <!-- left pair -->
+          <g>
+            <rect class="sf" x="20" y="70" width="76" height="46" rx="3"/><circle class="sw" cx="90" cy="93" r="0"/>
+            <path class="s" d="M40,70 L40,40 M62,70 L62,40 M40,40 Q51,26 62,40 M51,30 L51,18"/>
+            <rect class="sf" x="180" y="70" width="76" height="46" rx="3"/>
+            <path class="s" d="M214,70 L214,40 M236,70 L236,40 M214,40 Q225,26 236,40 M225,30 L225,18"/>
+            <line class="a" x1="100" y1="93" x2="176" y2="93" marker-end="url(#m17)"/>
+            <path class="a" d="M34,44 Q28,58 34,72 M68,44 Q74,58 68,72"/>
+            <path class="a" d="M208,44 Q202,58 208,72 M242,44 Q248,58 242,72"/>
+            <text class="mono lbl" x="51" y="140" text-anchor="middle">440 Hz</text>
+            <text class="mono lbl" x="225" y="140" text-anchor="middle">440 Hz</text>
+            <text class="key big" x="138" y="170" text-anchor="middle">◯ 共鳴する</text>
+            <text class="lbl" x="138" y="192" text-anchor="middle">Aだけたたいたのに B も鳴りだす</text>
+          </g>
+          <line class="s thin" x1="310" y1="10" x2="310" y2="200"/>
+          <!-- right pair -->
+          <g>
+            <rect class="sf" x="350" y="70" width="76" height="46" rx="3"/>
+            <path class="s" d="M370,70 L370,40 M392,70 L392,40 M370,40 Q381,26 392,40 M381,30 L381,18"/>
+            <rect class="sf" x="510" y="70" width="76" height="46" rx="3"/>
+            <path class="s" d="M544,70 L544,40 M566,70 L566,40 M544,40 Q555,26 566,40 M555,30 L555,18"/>
+            <rect class="bf" x="539" y="52" width="10" height="10" rx="2"/>
+            <text class="keyb lbl" x="530" y="42" text-anchor="end">おもり</text>
+            <path class="a" d="M364,44 Q358,58 364,72 M398,44 Q404,58 398,72"/>
+            <line class="s dash" x1="430" y1="93" x2="506" y2="93"/>
+            <text class="mono lbl" x="381" y="140" text-anchor="middle">440 Hz</text>
+            <text class="mono lbl" x="555" y="140" text-anchor="middle">440 Hz ではなくなる</text>
+            <text class="keyb big" x="468" y="170" text-anchor="middle">× 共鳴しない</text>
+            <text class="lbl" x="468" y="192" text-anchor="middle">おもりで振動数が変わったから</text>
+          </g>
+        </svg>
+        <figcaption>図19 ― 共鳴の条件は<strong>振動数が一致すること</strong>。おもり・輪ゴム・ねん土を付ける設定は「振動数を変える」ための仕掛け。</figcaption>
+      </figure>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P12</span><p>同じ振動数のおんさ A・B を共鳴箱の口を向かい合わせて置き、A だけをたたくと B も鳴った。次に B の一方の枝におもりを付けて同じ実験をすると B は鳴らなかった。理由を答えなさい。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>共鳴は、送られてきた振動と<strong>自分の振動数が同じとき</strong>にだけ起こります。</p>
+          <p class="final">答 … おもりを付けたことで B の振動数が変わり、A の振動数と一致しなくなったから。</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P13 -->
+    <div class="pat" id="p13">
+      <div class="pat-head"><span class="pid">P13</span><h3>汽笛の長さが変わる ― 音源が動く</h3><span class="freq">★★☆ 難関頻出</span></div>
+      <p class="tell"><b>見抜き方</b> ― 「◯秒間鳴らし続けた」＋「音源が動いている」。聞こえる時間を問われたら、<strong>鳴り始めと鳴り終わりの"出発地点がずれている"</strong>と考える。</p>
+
+      <figure>
+        <svg viewBox="0 0 640 230" role="img" aria-label="近づく列車が10秒間汽笛を鳴らすと、鳴り終わりの音は340メートル短い距離を進むため、駅では9秒間しか聞こえない">
+          <defs><marker id="m18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m18b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/></marker></defs>
+          <rect class="sf" x="580" y="30" width="50" height="150" rx="4"/>
+          <text class="lbl" x="605" y="196" text-anchor="middle">駅</text>
+          <!-- start -->
+          <rect class="sw" x="40" y="34" width="70" height="26" rx="4"/><circle class="dot" cx="58" cy="64" r="4"/><circle class="dot" cx="92" cy="64" r="4"/>
+          <text class="lbl" x="75" y="24" text-anchor="middle">鳴らし始め</text>
+          <line class="a" x1="120" y1="47" x2="570" y2="47" marker-end="url(#m18)"/>
+          <!-- end -->
+          <rect class="sw" x="380" y="112" width="70" height="26" rx="4"/><circle class="dot" cx="398" cy="142" r="4"/><circle class="dot" cx="432" cy="142" r="4"/>
+          <text class="lbl" x="452" y="104" text-anchor="middle">10 秒後＝鳴らし終わり</text>
+          <line class="a" x1="460" y1="125" x2="570" y2="125" marker-end="url(#m18)"/>
+          <line class="b" x1="110" y1="86" x2="380" y2="86" marker-start="url(#m18b)" marker-end="url(#m18b)"/>
+          <text class="keyb mono" x="245" y="80" text-anchor="middle">34 m/s × 10 秒 ＝ 340 m だけ近づいた</text>
+          <text class="lbl" x="212" y="106" text-anchor="middle">→ 最後の音は 340 m 短い道のりで済む</text>
+          <line class="s thin" x1="40" y1="164" x2="580" y2="164"/>
+          <text class="mono" x="40" y="188">340 m ÷ 340 m/s ＝ 1 秒ぶんだけ早く着く</text>
+          <text class="key mono big" x="40" y="214">聞こえる時間 ＝ 10 − 1 ＝ 9 秒間 → 音は高く聞こえる</text>
+        </svg>
+        <figcaption>図20 ― 音源が近づくと、10 秒ぶんの振動が 9 秒に<strong>詰めこまれる</strong>。だから振動数が上がり、音が高く聞こえる(救急車のサイレンと同じ理屈)。</figcaption>
+      </figure>
+
+      <div class="rule">
+        <span class="label">解き方の型</span>
+        <ol>
+          <li>音源が鳴らしている間に進んだ距離を出す(速さ × 鳴らした時間)。</li>
+          <li>それを音速で割る → <strong>ずれる秒数</strong>。</li>
+          <li>近づくなら「鳴らした時間 − ずれ」、遠ざかるなら「＋ ずれ」。</li>
+          <li>振動数は <strong>元の振動数 × (鳴らした時間 ÷ 聞こえた時間)</strong>。</li>
+        </ol>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P13</span><p>秒速 34 m で駅に近づく列車が、汽笛を 10 秒間鳴らし続けた。音の速さを 340 m/s とする。(1) 駅にいる人には何秒間聞こえるか。(2) 汽笛のもとの振動数が 450 Hz のとき、駅の人には何 Hz に聞こえるか。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>(1) 10 秒間で列車は 34×10＝340 m 近づきます。鳴り終わりの音は 340 m 短い道のりを進むので、</p>
+          <div class="calc">早く着く時間 ＝ 340 ÷ 340 ＝ 1 秒　→　10 − 1 ＝ 9 秒間</div>
+          <p>(2) 10 秒ぶんの振動の回数が、そのまま 9 秒間に聞こえます。回数は変わらないので、1 秒あたりの回数(＝振動数)は 10/9 倍。</p>
+          <div class="calc">450 × 10 ÷ 9 ＝ 500 Hz</div>
+          <p class="final">答 … (1) 9 秒間　(2) 500 Hz</p>
+        </div></details>
+      </div>
+    </div>
+
+    <!-- P14 -->
+    <div class="pat" id="p14">
+      <div class="pat-head"><span class="pid">P14</span><h3>グラフの読解 ― 時間と距離</h3><span class="freq">★★☆</span></div>
+      <p class="tell"><b>見抜き方</b> ― 縦軸が「音の位置(距離)」、横軸が「時間」。<strong>折れ曲がった点＝かべ、横軸に戻った点＝耳に届いた瞬間</strong>と読む。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 250" role="img" aria-label="音の位置と時間のグラフ。2秒でかべに達し4秒で戻る折れ線から、かべまでの距離と音速を読み取る">
+          <defs><marker id="m19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <line class="s" x1="70" y1="200" x2="560" y2="200" marker-end="url(#m19)"/>
+          <line class="s" x1="70" y1="200" x2="70" y2="20" marker-end="url(#m19)"/>
+          <text class="lbl" x="556" y="222" text-anchor="end">時間(秒)</text>
+          <text class="lbl" x="62" y="30" text-anchor="end">距離(m)</text>
+          <g class="s thin dash" opacity=".6">
+            <line x1="180" y1="200" x2="180" y2="60"/><line x1="290" y1="200" x2="290" y2="60"/>
+            <line x1="70" y1="60" x2="290" y2="60"/>
+          </g>
+          <g class="s thin"><line x1="180" y1="200" x2="180" y2="206"/><line x1="290" y1="200" x2="290" y2="206"/><line x1="400" y1="200" x2="400" y2="206"/></g>
+          <text class="mono lbl" x="180" y="220" text-anchor="middle">2</text>
+          <text class="mono lbl" x="290" y="220" text-anchor="middle">4</text>
+          <text class="mono lbl" x="400" y="220" text-anchor="middle">6</text>
+          <text class="mono lbl" x="62" y="64" text-anchor="end">680</text>
+          <path class="a" d="M70,200 L180,60 L290,200"/>
+          <circle class="af" cx="180" cy="60" r="4.5"/>
+          <circle class="af" cx="290" cy="200" r="4.5"/>
+          <text class="key" x="192" y="52">かべに当たった</text>
+          <text class="key" x="302" y="196">耳に返ってきた</text>
+          <rect class="sw" x="330" y="70" width="230" height="96" rx="8"/>
+          <text class="big" x="346" y="96">グラフから読めること</text>
+          <text class="lbl" x="346" y="120">・かべまでの距離 … 680 m</text>
+          <text class="lbl" x="346" y="142">・音速 … 680 ÷ 2 ＝ 340 m/s</text>
+          <text class="lbl" x="346" y="160">・やまびこが返るまで … 4 秒</text>
+        </svg>
+        <figcaption>図21 ― 山の形は<strong>「行って・当たって・帰った」</strong>という一本道の記録。かべの位置は山の高さ、往復時間は山のはば。</figcaption>
+      </figure>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 P14</span><p>上のグラフについて、(1) かべまでの距離、(2) 音の速さ、(3) 声を出してからやまびこが聞こえるまでの時間 を答えなさい。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>山のてっぺんが「かべに届いた瞬間」で、そのときの縦軸の値がかべまでの距離。そこまでに 2 秒かかっています。</p>
+          <div class="calc">音速 ＝ 680 ÷ 2 ＝ 340 m/s</div>
+          <p class="final">答 … (1) 680 m　(2) 340 m/s　(3) 4 秒</p>
+        </div></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PART 3 ============ -->
+  <div class="part">
+    <div class="part-head"><span class="n">第 3 部</span><h2>難関校の発展テーマ</h2></div>
+    <p class="part-note">ここから先は、開成・麻布・武蔵・桜蔭・渋幕・灘などで実際に問われる処理。<strong>新しい知識はほとんど増えず、第 2 部の型に条件が 1 つ足されるだけ</strong>です。</p>
+
+    <section id="a1">
+      <h3><span class="tag">A1</span>気温で音速が変わる</h3>
+      <p>基本の 340 m/s は「気温 15℃ のとき」の値。問題文に気温が書いてあったら、<strong>それは必ず使う数値</strong>です。</p>
+      <div class="rule">
+        <span class="label">公式</span>
+        <div class="calc">音速(m/s) ＝ 331 ＋ 0.6 × 気温(℃)</div>
+        <p>1℃ 上がると約 0.6 m/s 速くなる。<strong>気温が高い日ほど音は速い</strong>。</p>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 620 238" role="img" aria-label="気温と音速の関係を示す直線グラフ。0度で331、15度で340、30度で349メートル毎秒">
+          <defs><marker id="m20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+          <line class="s" x1="80" y1="180" x2="520" y2="180" marker-end="url(#m20)"/>
+          <line class="s" x1="80" y1="180" x2="80" y2="26" marker-end="url(#m20)"/>
+          <text class="lbl" x="516" y="228" text-anchor="end">気温(℃)</text>
+          <text class="lbl" x="72" y="34" text-anchor="end">音速(m/s)</text>
+          <g class="s thin"><line x1="220" y1="180" x2="220" y2="186"/><line x1="360" y1="180" x2="360" y2="186"/><line x1="500" y1="180" x2="500" y2="186"/></g>
+          <text class="mono lbl" x="80" y="200" text-anchor="middle">0</text>
+          <text class="mono lbl" x="220" y="200" text-anchor="middle">10</text>
+          <text class="mono lbl" x="360" y="200" text-anchor="middle">20</text>
+          <text class="mono lbl" x="500" y="200" text-anchor="middle">30</text>
+          <g class="s thin dash" opacity=".6"><line x1="290" y1="180" x2="290" y2="106" /><line x1="80" y1="106" x2="290" y2="106"/></g>
+          <text class="mono lbl" x="72" y="110" text-anchor="end">340</text>
+          <text class="mono lbl" x="72" y="164" text-anchor="end">331</text>
+          <text class="mono lbl" x="72" y="56" text-anchor="end">349</text>
+          <line class="a" x1="80" y1="160" x2="500" y2="52"/>
+          <circle class="af" cx="80" cy="160" r="4"/><circle class="af" cx="290" cy="106" r="4"/><circle class="af" cx="500" cy="52" r="4"/>
+          <text class="key mono" x="300" y="98">15℃ で 340</text>
+          <text class="key mono" x="440" y="42" text-anchor="middle">30℃ で 349</text>
+          <text class="lbl" x="90" y="150">0℃ で 331</text>
+        </svg>
+        <figcaption>図22 ― 気温と音速はきれいな直線関係(一次式)。傾きが 0.6、切片が 331。</figcaption>
+      </figure>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 A1</span><p>気温 30℃ の日に、698 m 先のがけに向かって声を出した。やまびこは何秒後に聞こえるか。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <div class="calc">音速 ＝ 331 ＋ 0.6 × 30 ＝ 331 ＋ 18 ＝ 349 m/s</div>
+          <div class="calc">往復の距離 ＝ 698 × 2 ＝ 1396 m</div>
+          <div class="calc">時間 ＝ 1396 ÷ 349 ＝ 4 秒</div>
+          <p class="final">答 … 4 秒後</p>
+        </div></details>
+      </div>
+    </section>
+
+    <section id="a2">
+      <h3><span class="tag">A2</span>風があるときの音速</h3>
+      <p>音は空気の振動なので、<strong>空気そのものが動けば(風)、音も一緒に流されます</strong>。地面から見た音の速さは、音速に風速を足し引きした値になります。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 210" role="img" aria-label="追い風では音速に風速を足し、向かい風では引く。往復では行きと帰りで速さが変わる">
+          <defs><marker id="m21" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+          <marker id="m21b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/></marker></defs>
+          <g class="b" opacity=".7">
+            <path d="M40,26 L200,26" marker-end="url(#m21b)"/>
+            <path d="M40,44 L160,44" marker-end="url(#m21b)"/>
+          </g>
+          <text class="keyb" x="216" y="40" font-size="12">風 20 m/s(右向き)</text>
+          <rect class="sf" x="540" y="66" width="24" height="120"/>
+          <text class="lbl" x="552" y="200" text-anchor="middle">かべ</text>
+          <circle class="dot" cx="60" cy="100" r="6"/>
+          <text class="lbl" x="60" y="200" text-anchor="middle">自分</text>
+          <line class="a" x1="80" y1="88" x2="528" y2="88" marker-end="url(#m21)"/>
+          <text class="key mono" x="300" y="80" text-anchor="middle">行き(追い風) 340 ＋ 20 ＝ 360 m/s</text>
+          <line class="a" x1="528" y1="130" x2="80" y2="130" marker-end="url(#m21)"/>
+          <text class="key mono" x="300" y="150" text-anchor="middle">帰り(向かい風) 340 − 20 ＝ 320 m/s</text>
+          <line class="s thin dash" x1="60" y1="166" x2="540" y2="166"/>
+          <text class="mono" x="300" y="184" text-anchor="middle">かべまで 720 m</text>
+        </svg>
+        <figcaption>図23 ― 風は「音を運ぶ空気ごと動かす」。<strong>往復では行きと帰りで速さが変わるので、時間を別々に出して足す</strong>。</figcaption>
+      </figure>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 A2</span><p>無風のときの音速を 340 m/s とする。かべに向かって秒速 20 m の風がふいているとき、720 m 離れたかべに向かって声を出すと、やまびこは何秒後に聞こえるか。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <div class="calc">行き … 720 ÷ (340＋20) ＝ 720 ÷ 360 ＝ 2 秒</div>
+          <div class="calc">帰り … 720 ÷ (340−20) ＝ 720 ÷ 320 ＝ 2.25 秒</div>
+          <div class="calc">合計 ＝ 2 ＋ 2.25 ＝ 4.25 秒</div>
+          <p class="final">答 … 4.25 秒後</p>
+        </div></details>
+      </div>
+
+      <div class="trap">
+        <span class="label">ここで差がつく</span>
+        <p>「行きが速くなった分、帰りが遅くなるから、往復では無風と同じ」と考えると<strong>誤り</strong>です。上の例では無風なら 720×2÷340 ≒ 4.24 秒ですが、風があると 4.25 秒と<strong>わずかに長くなります</strong>。遅い区間にいる時間のほうが長くなるためです。</p>
+      </div>
+    </section>
+
+    <section id="a3">
+      <h3><span class="tag">A3</span>音源も観測者も動く ― 複合の反射</h3>
+      <p>P5 の型をそのまま使います。<strong>音が進んだ道のり ＝ (行き) ＋ (帰り)</strong> を線分図で書き出すこと。式を暗記するのではなく、毎回図に描くほうが速くて確実です。</p>
+
+      <div class="rule">
+        <span class="label">3 つの場合の式(d ＝ 最初の距離、v ＝ 自分の速さ、t ＝ 時間)</span>
+        <ul>
+          <li>かべに<strong>近づきながら</strong>聞く … <span class="num">340 t ＝ 2d − v t</span></li>
+          <li>かべから<strong>遠ざかりながら</strong>聞く … <span class="num">340 t ＝ 2d ＋ v t</span></li>
+          <li><strong>かべ自体が動く</strong>(近づくトラックなど) … かべの位置を「t 秒後の位置」に置きかえて同じ式を立てる</li>
+        </ul>
+      </div>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 A3</span><p>秒速 20 m でまっすぐかべに向かって走る自動車が、かべから 1080 m の地点でクラクションを鳴らした。音の速さを 340 m/s とすると、反射音を聞くのは鳴らしてから何秒後か。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>t 秒後に聞くとすると、音は「行き 1080 m ＋ 帰り (1080 − 20t) m」を進みます。</p>
+          <div class="calc">340 t ＝ 1080 ＋ (1080 − 20 t)</div>
+          <div class="calc">360 t ＝ 2160　→　t ＝ 6 秒</div>
+          <p>検算 … 音は 340×6＝2040 m、車は 120 m 進む。1080 ＋ (1080−120) ＝ 2040 ◯</p>
+          <p class="final">答 … 6 秒後</p>
+        </div></details>
+      </div>
+    </section>
+
+    <section id="a4">
+      <h3><span class="tag">A4</span>近づく音・遠ざかる音の高さ</h3>
+      <p>救急車が通りすぎる瞬間にサイレンが低く変わる現象です。中学受験では<strong>「波の間隔が詰まる / 広がる」</strong>という絵と、P13 の時間計算で説明させます。</p>
+
+      <figure>
+        <svg viewBox="0 0 640 270" role="img" aria-label="動く音源から出た音の波は、進む前方では間隔が詰まって高く、後方では広がって低く聞こえる">
+          <g class="s thin" opacity=".85">
+            <circle cx="260" cy="125" r="120" fill="none" stroke="currentColor"/>
+            <circle cx="280" cy="125" r="80" fill="none" stroke="currentColor"/>
+            <circle cx="300" cy="125" r="40" fill="none" stroke="currentColor"/>
+          </g>
+          <path class="af" d="M312,113 L336,113 L336,137 L312,137 Z"/>
+          <text class="key" x="324" y="106" text-anchor="middle" font-size="11.5">音源</text>
+          <path class="a" d="M348,125 L392,125" marker-end="url(#m22)"/>
+          <defs><marker id="m22" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+          <text class="key" x="370" y="116" text-anchor="middle" font-size="11">進む向き</text>
+          <circle class="dot" cx="470" cy="125" r="6"/>
+          <text class="key big" x="470" y="164" text-anchor="middle">高く聞こえる</text>
+          <text class="lbl" x="470" y="184" text-anchor="middle">波の間隔がせまい</text>
+          <text class="lbl" x="470" y="202" text-anchor="middle">＝ 振動数が大きい</text>
+          <circle class="dot" cx="100" cy="125" r="6"/>
+          <text class="keyb big" x="100" y="164" text-anchor="middle">低く聞こえる</text>
+          <text class="lbl" x="100" y="184" text-anchor="middle">波の間隔が広い</text>
+          <text class="lbl" x="100" y="202" text-anchor="middle">＝ 振動数が小さい</text>
+          <text class="lbl" x="320" y="24" text-anchor="middle">音源が動いても、出た音そのものの速さは 340 m/s のまま(円の広がる速さは同じ)</text>
+          <text class="lbl" x="320" y="248" text-anchor="middle">円は「同じ瞬間に出た音がどこまで広がったか」。前方でつまり、後方で広がる。</text>
+        </svg>
+        <figcaption>図24 ― 音源が動いても<strong>音の速さは変わりません</strong>。変わるのは波の間隔＝振動数＝高さだけ。ここを混同する答案が非常に多い。</figcaption>
+      </figure>
+
+      <div class="ex">
+        <div class="q"><span class="label">例題 A4</span><p>秒速 34 m で駅から遠ざかる列車が、汽笛を 10 秒間鳴らした。音速 340 m/s。(1) 駅では何秒間聞こえるか。(2) もとの振動数が 550 Hz のとき、何 Hz に聞こえるか。</p></div>
+        <details><summary>答えと考え方</summary><div class="ans">
+          <p>(1) 10 秒間で列車は 340 m 遠ざかるので、鳴り終わりの音は 340 m 余分に進みます。</p>
+          <div class="calc">遅れる時間 ＝ 340 ÷ 340 ＝ 1 秒　→　10 ＋ 1 ＝ 11 秒間</div>
+          <p>(2) 10 秒ぶんの振動が 11 秒に引きのばされるので、振動数は 10/11 倍。</p>
+          <div class="calc">550 × 10 ÷ 11 ＝ 500 Hz</div>
+          <p class="final">答 … (1) 11 秒間　(2) 500 Hz(低くなる)</p>
+        </div></details>
+      </div>
+    </section>
+
+    <section id="a5">
+      <h3><span class="tag">A5</span>弦の倍振動 ― 節と腹</h3>
+      <p>弦の振動のようすが図で示され、「腹の数」「節の数」「振動数は何倍か」を問う形式。難関校では気柱(閉管・開管)まで踏みこむこともあります。</p>
+
+      <figure>
+        <svg viewBox="0 0 620 240" role="img" aria-label="弦の基本振動は腹1つ節2つ、2倍振動は腹2つ節3つで振動数は2倍になる">
+          <text class="big" x="0" y="18">基本振動</text>
+          <line class="s thin dash" x1="60" y1="60" x2="560" y2="60"/>
+          <path class="a" d="M60,60 q125,-34 250,0 t250,0"/>
+          <path class="a dash" d="M60,60 q125,34 250,0 t250,0"/>
+          <circle class="dot" cx="60" cy="60" r="4.5"/><circle class="dot" cx="560" cy="60" r="4.5"/>
+          <text class="lbl" x="60" y="86" text-anchor="middle">節</text>
+          <text class="lbl" x="560" y="86" text-anchor="middle">節</text>
+          <text class="key" x="310" y="30" text-anchor="middle" font-size="11.5">腹</text>
+          <text class="mono" x="0" y="106">腹 1 ・ 節 2　→　振動数 ×1(基準)</text>
+
+          <text class="big" x="0" y="150">2 倍振動</text>
+          <line class="s thin dash" x1="60" y1="184" x2="560" y2="184"/>
+          <path class="a" d="M60,184 q62.5,-34 125,0 t125,0 t125,0 t125,0"/>
+          <path class="a dash" d="M60,184 q62.5,34 125,0 t125,0 t125,0 t125,0"/>
+          <circle class="dot" cx="60" cy="184" r="4.5"/><circle class="dot" cx="310" cy="184" r="4.5"/><circle class="dot" cx="560" cy="184" r="4.5"/>
+          <text class="lbl" x="60" y="210" text-anchor="middle">節</text>
+          <text class="lbl" x="310" y="210" text-anchor="middle">節</text>
+          <text class="lbl" x="560" y="210" text-anchor="middle">節</text>
+          <text class="key" x="185" y="154" text-anchor="middle" font-size="11.5">腹</text>
+          <text class="key" x="435" y="154" text-anchor="middle" font-size="11.5">腹</text>
+          <text class="mono" x="0" y="232">腹 2 ・ 節 3　→　振動数 ×2(1 オクターブ高い)</text>
+        </svg>
+        <figcaption>図25 ― 腹が n 個になれば振動数は n 倍、節の数は n＋1 個。<strong>弦の長さが 1/n になったのと同じ</strong>と考えれば計算できる。</figcaption>
+      </figure>
+
+      <div class="hard">
+        <span class="label">気柱の発展(最難関のみ)</span>
+        <ul>
+          <li><strong>両端が開いた管(開管)</strong> … 両端が腹。同じ長さの閉管より高い音が出る。</li>
+          <li><strong>片方が閉じた管(閉管)</strong> … 閉じた側が節、開いた側が腹。同じ長さなら開管の半分の振動数。</li>
+          <li>試験管に水を入れて吹くのは<strong>閉管</strong>。水面が節、口が腹。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="a6">
+      <h3><span class="tag">A6</span>実験の考察・誤差の議論</h3>
+      <p>難関校では計算より<strong>「なぜそうするのか」を書かせる</strong>設問が主役になります。答えの骨格は決まっています。</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>聞かれ方</th><th>答えの骨格</th></tr></thead>
+          <tbody>
+            <tr><td>なぜ光(けむり・発光)を合図にするか</td><td>光はほぼ一瞬で届くので、音が出た瞬間が正確に分かるから。</td></tr>
+            <tr><td>なぜ 2 地点をできるだけ離すか</td><td>測る時間が長くなり、反応の遅れによる誤差の割合が小さくなるから。</td></tr>
+            <tr><td>なぜ何回も測って平均するか</td><td>1 回ごとの偶然の誤差を打ち消すため。</td></tr>
+            <tr><td>結果が日によってちがう理由</td><td>気温が変わると音速が変わるから。風の向きの影響もある。</td></tr>
+            <tr><td>反射を使う方法の利点</td><td>1 人で測れ、ストップウォッチの押し始めと押し終わりを同じ人が行えるので誤差が小さい。</td></tr>
+            <tr><td>山で「やまびこ」がよく返る理由</td><td>音を反射する広く固い面(岩肌)が、じゅうぶん離れた所にあるから。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="a7">
+      <h3><span class="tag">A7</span>融合問題 ― 他単元とつながるところ</h3>
+
+      <figure>
+        <svg viewBox="0 0 620 200" role="img" aria-label="光・音・地震のP波とS波の速さの比較">
+          <text class="lbl" x="0" y="16">「速さのちがいで時間差が生まれる」現象は、単元をまたいで同じ考え方で解ける</text>
+          <g>
+            <rect class="sw" x="0" y="34" width="196" height="150" rx="8"/>
+            <text class="key big" x="98" y="62" text-anchor="middle">光 と 音</text>
+            <text class="lbl" x="98" y="88" text-anchor="middle">かみなり・花火</text>
+            <text class="mono lbl" x="98" y="112" text-anchor="middle">30万km/s ／ 340m/s</text>
+            <text x="98" y="146" text-anchor="middle" font-size="12.5">遅れ時間 × 340</text>
+            <text class="lbl" x="98" y="168" text-anchor="middle">＝ 距離</text>
+          </g>
+          <g>
+            <rect class="sw" x="212" y="34" width="196" height="150" rx="8"/>
+            <text class="key big" x="310" y="62" text-anchor="middle">P 波 と S 波</text>
+            <text class="lbl" x="310" y="88" text-anchor="middle">地震(大地の変化)</text>
+            <text class="mono lbl" x="310" y="112" text-anchor="middle">約8km/s ／ 約4km/s</text>
+            <text x="310" y="146" text-anchor="middle" font-size="12.5">初期微動継続時間</text>
+            <text class="lbl" x="310" y="168" text-anchor="middle">に比例して震源が遠い</text>
+          </g>
+          <g>
+            <rect class="sw" x="424" y="34" width="196" height="150" rx="8"/>
+            <text class="key big" x="522" y="62" text-anchor="middle">音 の 反射</text>
+            <text class="lbl" x="522" y="88" text-anchor="middle">ソナー・こだま</text>
+            <text class="mono lbl" x="522" y="112" text-anchor="middle">1500m/s ／ 340m/s</text>
+            <text x="522" y="146" text-anchor="middle" font-size="12.5">往復時間 ÷ 2</text>
+            <text class="lbl" x="522" y="168" text-anchor="middle">＝ 片道の距離</text>
+          </g>
+        </svg>
+        <figcaption>図26 ― 音の時間差問題は、地震の初期微動継続時間とまったく同じ構造。<strong>どちらかが解ければ、もう一方も解ける</strong>。</figcaption>
+      </figure>
+
+      <div class="hard">
+        <span class="label">出題される融合パターン</span>
+        <ul>
+          <li><strong>速さの単元との融合</strong> … 時速 ↔ 秒速の換算(秒速 340 m ＝ 時速 1224 km)。列車の長さを含む通過時間。</li>
+          <li><strong>地震との融合</strong> … 「速さのちがう 2 つの波の到着時刻の差から距離を求める」型。</li>
+          <li><strong>光との融合</strong> … 光の反射・屈折と対比させて「音も反射する」ことを確認させる。</li>
+          <li><strong>ばね・ふりことの融合</strong> … 振動数の意味(1 秒間の往復回数)をふりこの周期とそろえて聞く。</li>
+          <li><strong>生物との融合</strong> … コウモリの超音波、イルカのエコーロケーション、耳のつくり(こまく＝振動を受け取る膜)。</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ PART 4 ============ -->
+  <div class="part">
+    <div class="part-head"><span class="n">第 4 部</span><h2>総まとめ</h2></div>
+    <p class="part-note">試験直前はこの 2 つだけ見れば十分です。</p>
+
+    <section id="trap">
+      <h3><span class="tag">×</span>失点する 10 のひっかけ</h3>
+      <div class="card">
+        <ol>
+          <li><strong>÷2 を忘れる</strong> ― 「はね返って」とあれば往復。距離を答える前に必ず 2 で割ったか確認。</li>
+          <li><strong>÷2 してはいけないのに割る</strong> ― 雷・花火は片道。「反射」の語がなければ割らない。</li>
+          <li><strong>吹く と たたく を逆にする</strong> ― 吹く＝空気、たたく＝ガラスと水。水が多いほど、吹けば高く・たたけば低い。</li>
+          <li><strong>音の大きさや高さで速さが変わると考える</strong> ― 速さは同じ。変わるのは気温・風・媒質だけ。</li>
+          <li><strong>気温を無視する</strong> ― 問題文に気温があれば 331＋0.6×気温 を使う。書いてなければ 340。</li>
+          <li><strong>弦の太さを逆にする</strong> ― 太い＝低い、細い＝高い。「太い声＝低い声」で覚える。</li>
+          <li><strong>単位の取りちがえ</strong> ― km と m、分と秒。水中は 1500、空気は 340。答える単位も確認。</li>
+          <li><strong>波形で山だけを 1 回と数える</strong> ― 1 回の振動は「山＋谷」でひと組。</li>
+          <li><strong>真空鈴で「光も見えなくなる」と書く</strong> ― 光は真空でも伝わるので、ベルが振れるようすは見える。</li>
+          <li><strong>動く問題で自分の移動を足し引きしない</strong> ― 音の道のりは「行き ＋ 帰り」。線分図を必ず描く。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="chk">
+      <h3><span class="tag">✓</span>暗記チェックリスト</h3>
+      <div class="grid2">
+        <div class="card">
+          <h4>知識</h4>
+          <ul class="check">
+            <li>音は物の<strong>振動</strong>で生まれ、<strong>疎密波(縦波)</strong>として伝わる</li>
+            <li>気体・液体・固体は伝えるが、<strong>真空は伝えない</strong></li>
+            <li>伝わる速さは <strong>固体 &gt; 液体 &gt; 気体</strong></li>
+            <li>大きさ＝<strong>振幅</strong>／高さ＝<strong>振動数</strong>／音色＝<strong>波形</strong></li>
+            <li>振動数の単位は <strong>Hz(ヘルツ)</strong>、可聴域は 20〜20000 Hz</li>
+            <li>それより高い音が<strong>超音波</strong>(コウモリ・イルカ・魚群探知機)</li>
+            <li>弦は <strong>短い・細い・強く張る</strong> で高くなる</li>
+            <li>共鳴するのは<strong>振動数が同じとき</strong>だけ</li>
+            <li>音の大きさ・高さが変わっても<strong>速さは変わらない</strong></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>数値と式</h4>
+          <ul class="check">
+            <li>空気中の音速 <span class="num">340 m/s</span>(15℃)</li>
+            <li>水中 <span class="num">約 1500 m/s</span>／鉄 <span class="num">約 5000 m/s</span></li>
+            <li>光の速さ <span class="num">約 30 万 km/s</span>(実質 0 秒)</li>
+            <li>気温 t ℃ の音速 ＝ <span class="num">331 ＋ 0.6 × t</span></li>
+            <li>片道 ＝ 音速 × 時間　／　反射 ＝ 音速 × 時間 ÷ 2</li>
+            <li>動きながらの反射 ＝ <span class="num">340t ＝ 2d ∓ vt</span>(近づく −／遠ざかる ＋)</li>
+            <li>風 … 追い風は ＋風速、向かい風は −風速</li>
+            <li>振動数 ＝ <span class="num">1 ÷ 周期</span></li>
+            <li>弦の <span class="num">長さ × 振動数 ＝ 一定</span>(反比例)</li>
+            <li>汽笛 … ずれ秒数 ＝ 音源が進んだ距離 ÷ 音速</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="rule">
+        <span class="label">解き始めの 3 秒でやること</span>
+        <ol>
+          <li>問題文の<strong>音速の数値と気温</strong>に丸をつける。</li>
+          <li><strong>「反射しているか」</strong>を判定して、÷2 の要否を決める。</li>
+          <li><strong>動いている物があるか</strong>を確認し、あれば線分図を描く。</li>
+        </ol>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>中学受験理科「音」総復習マニュアル ― 第1部 基礎 5 項目／第2部 出題パターン 14／第3部 難関発展 7／第4部 総まとめ。図は 26 点。<br>数値は問題文に指定があればそちらを優先してください。標準値は空気中 340 m/s(15℃)、水中 1500 m/s、鉄 5000 m/s としています。</p>
+  </footer>
+  </main>
+</div>
+
+</body>
+</html>
