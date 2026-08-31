@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ミツバチが餌場の方向と距離を仲間に伝える8の字ダンスの仕組みを、図と例題で解説。">
+<meta name="color-scheme" content="light dark">
+<title>ミツバチの8の字ダンス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head>
+<body>
+<style>
+:root{
+  --bg:#F1EFE9;
+  --surface:#FBFAF6;
+  --ink:#221F1A;
+  --ink-soft:#5E574B;
+  --line:#DBD5C8;
+  --line-soft:#E8E3D8;
+  --amber:#A96C12;
+  --amber-fill:#F6EEDF;
+  --sun:#B8890B;
+  --slate:#4F657A;
+  --shadow:0 1px 2px rgba(60,48,28,.05), 0 8px 24px -16px rgba(60,48,28,.28);
+
+  --display:"Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --sans:"Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131110;
+    --surface:#1C1917;
+    --ink:#EDE7DC;
+    --ink-soft:#A2988A;
+    --line:#332E29;
+    --line-soft:#26221E;
+    --amber:#E9A83F;
+    --amber-fill:#241B0F;
+    --sun:#F2CE5C;
+    --slate:#8CA3B8;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131110;
+  --surface:#1C1917;
+  --ink:#EDE7DC;
+  --ink-soft:#A2988A;
+  --line:#332E29;
+  --line-soft:#26221E;
+  --amber:#E9A83F;
+  --amber-fill:#241B0F;
+  --sun:#F2CE5C;
+  --slate:#8CA3B8;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.9;
+  -webkit-font-smoothing:antialiased;
+  text-spacing-trim:trim-start;
+}
+
+.page{
+  max-width:62rem;
+  margin-inline:auto;
+  padding:clamp(2.5rem,6vw,5rem) clamp(1.1rem,4vw,2.5rem) 5rem;
+  display:flex;
+  flex-direction:column;
+  gap:clamp(2.75rem,5vw,4rem);
+}
+.measure{max-width:34rem;margin-inline:auto;width:100%}
+
+/* ---------- header ---------- */
+.masthead{display:flex;flex-direction:column;gap:1.1rem;align-items:flex-start}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.7rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--amber);
+  margin:0;
+}
+h1{
+  font-family:var(--display);
+  font-weight:700;
+  font-size:clamp(2.1rem,6.5vw,3.4rem);
+  line-height:1.28;
+  letter-spacing:.02em;
+  margin:0;
+  text-wrap:balance;
+}
+.standfirst{
+  font-size:1.02rem;
+  color:var(--ink-soft);
+  margin:0;
+  max-width:36rem;
+}
+.rule{
+  width:100%;height:1px;background:var(--line);border:0;margin:0;
+}
+
+/* ---------- sections ---------- */
+section{display:flex;flex-direction:column;gap:1.5rem}
+h2{
+  font-family:var(--display);
+  font-weight:700;
+  font-size:clamp(1.35rem,3.2vw,1.75rem);
+  line-height:1.5;
+  margin:0;
+  text-wrap:balance;
+}
+.sec-head{display:flex;flex-direction:column;gap:.6rem;max-width:34rem;margin-inline:auto;width:100%}
+.kicker{
+  display:flex;align-items:center;gap:.6rem;
+  font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.kicker svg{flex:none;color:var(--amber)}
+p{margin:0}
+.measure p + p{margin-top:1.1rem}
+strong{font-weight:700;color:var(--ink)}
+em{font-style:normal;color:var(--amber);font-weight:500}
+
+/* ---------- figures ---------- */
+figure{
+  margin:0;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:3px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.fig-body{padding:clamp(1rem,3vw,1.75rem);overflow-x:auto}
+figure svg{display:block;width:100%;min-width:520px;height:auto;color:var(--ink)}
+.fig-hero .fig-body svg{min-width:640px}
+figcaption{
+  border-top:1px solid var(--line-soft);
+  padding:.85rem clamp(1rem,3vw,1.75rem);
+  font-size:.86rem;
+  line-height:1.75;
+  color:var(--ink-soft);
+}
+figcaption b{color:var(--ink);font-weight:500}
+
+/* svg text roles */
+.d-label{font-family:var(--sans);font-size:12.5px;font-weight:500;fill:currentColor}
+.d-title{font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.08em;fill:currentColor}
+.d-num{font-family:"IBM Plex Mono","Zen Kaku Gothic New",ui-monospace,monospace;font-size:12px;font-weight:500;fill:currentColor}
+.d-soft{fill:var(--ink-soft)}
+.d-amber{fill:var(--amber)}
+.d-sun{fill:var(--sun)}
+.d-slate{fill:var(--slate)}
+.s-fg{stroke:currentColor;fill:none}
+.s-amber{stroke:var(--amber);fill:none}
+.s-sun{stroke:var(--sun);fill:none}
+.s-slate{stroke:var(--slate);fill:none}
+.s-soft{stroke:var(--line);fill:none}
+
+/* ---------- aside ---------- */
+.notes{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+  border-radius:3px;
+  overflow:hidden;
+}
+.note{background:var(--surface);padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:.5rem}
+.note h3{
+  font-family:var(--sans);font-size:.78rem;font-weight:700;
+  letter-spacing:.12em;margin:0;color:var(--amber);
+}
+.note p{font-size:.93rem;line-height:1.8;color:var(--ink-soft)}
+
+/* ---------- point box ---------- */
+.point{
+  border-top:1px solid var(--line-soft);
+  background:var(--amber-fill);
+  padding:1.25rem clamp(1rem,3vw,1.75rem) 1.4rem;
+  display:flex;flex-direction:column;gap:.85rem;
+}
+.point-label{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--amber);font-weight:500;
+}
+.point-row{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.15rem .6rem;
+  font-size:1rem;line-height:1.6;
+}
+.point-row .arw{color:var(--ink-soft);font-size:.9em}
+.point-row .t-slate{color:var(--slate);font-weight:700}
+.point-row .t-sun{color:var(--sun);font-weight:700}
+.point-row .t-amber{color:var(--amber);font-weight:700}
+.point-eq{
+  font-size:1rem;line-height:1.7;padding-top:.7rem;
+  border-top:1px dashed var(--line);
+}
+.point-eq b{font-weight:700}
+
+/* ---------- 例題 ---------- */
+.recipe{
+  max-width:34rem;margin-inline:auto;width:100%;
+  border:1px dashed var(--line);border-radius:3px;
+  padding:1.1rem 1.3rem;display:flex;flex-direction:column;gap:.5rem;
+}
+.recipe-label{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:.15rem;
+}
+.recipe-row{display:flex;align-items:baseline;gap:.7rem;font-size:.95rem;line-height:1.7}
+.recipe-row .n{
+  flex:none;font-family:var(--mono);font-size:.72rem;font-weight:500;
+  width:1.35rem;height:1.35rem;border:1px solid var(--line);border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  color:var(--ink-soft);transform:translateY(.15rem);
+}
+
+.quiz{
+  background:var(--surface);border:1px solid var(--line);border-radius:3px;
+  box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;
+}
+.quiz-head{
+  padding:1.35rem clamp(1rem,3vw,1.75rem) .35rem;
+  display:flex;flex-direction:column;gap:.65rem;
+}
+.quiz-no{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--amber);
+}
+.quiz-q{font-size:1rem;line-height:1.9;max-width:42rem}
+.quiz .fig-body{padding:.4rem clamp(1rem,3vw,1.75rem) 1.1rem}
+.quiz svg{display:block;width:100%;max-width:44rem;min-width:400px;height:auto;color:var(--ink)}
+details.quiz-a{border-top:1px solid var(--line-soft);background:var(--amber-fill)}
+details.quiz-a summary{
+  padding:.9rem clamp(1rem,3vw,1.75rem);
+  font-size:.9rem;font-weight:700;color:var(--amber);cursor:pointer;
+  list-style:none;display:flex;align-items:center;gap:.55rem;
+}
+details.quiz-a summary::-webkit-details-marker{display:none}
+details.quiz-a summary::before{content:"▸";font-size:.85em}
+details.quiz-a[open] summary::before{content:"▾"}
+.quiz-body{
+  padding:0 clamp(1rem,3vw,1.75rem) 1.4rem;
+  font-size:.95rem;line-height:1.9;display:flex;flex-direction:column;gap:.5rem;
+}
+.quiz-body b{font-weight:700;color:var(--ink)}
+.quiz-body .step{padding-left:1.15rem;position:relative}
+.quiz-body .step::before{
+  content:"";position:absolute;left:0;top:.9em;
+  width:.5rem;height:1px;background:var(--amber);
+}
+.quiz-body .ans{
+  margin-top:.45rem;padding:.6rem .9rem;
+  border:1px solid var(--amber);border-radius:3px;
+  font-weight:700;color:var(--amber);
+}
+.quiz-body .qnote{font-size:.88rem;color:var(--ink-soft);line-height:1.85;margin-top:.3rem}
+
+.colophon{
+  font-size:.84rem;
+  line-height:1.85;
+  color:var(--ink-soft);
+  max-width:34rem;
+  margin-inline:auto;
+  width:100%;
+  border-top:1px solid var(--line);
+  padding-top:1.4rem;
+}
+.colophon .name{font-family:var(--display);color:var(--ink)}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+    </marker>
+    <marker id="ar-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--amber)"/>
+    </marker>
+    <marker id="ar-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--slate)"/>
+    </marker>
+    <pattern id="comb" width="26" height="45" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="currentColor" stroke-opacity="0.14" stroke-width="1">
+        <polygon points="0,-15 13,-7.5 13,7.5 0,15 -13,7.5 -13,-7.5"/>
+        <polygon points="26,-15 39,-7.5 39,7.5 26,15 13,7.5 13,-7.5"/>
+        <polygon points="13,7.5 26,15 26,30 13,37.5 0,30 0,15"/>
+        <polygon points="-13,7.5 0,15 0,30 -13,37.5 -26,30 -26,15"/>
+        <polygon points="0,30 13,37.5 13,52.5 0,60 -13,52.5 -13,37.5"/>
+        <polygon points="26,30 39,37.5 39,52.5 26,60 13,52.5 13,37.5"/>
+      </g>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">Apis mellifera / Waggle dance</p>
+    <h1>ミツバチの8の字ダンス</h1>
+    <p class="standfirst">巣に戻った働きバチは、真っ暗な巣板の上で8の字を描き、腹を震わせる。その一回の動きに、餌場までの<em>方向</em>と<em>距離</em>が両方入っている。仕組みを図で追う。</p>
+  </header>
+
+  <hr class="rule">
+
+  <!-- ============ HERO FIGURE : 角度の読み替え ============ -->
+  <section>
+    <div class="sec-head">
+      <p class="kicker">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true"><path d="M2 12 L18 12 M2 12 L14 2" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 12 A 9.5 9.5 0 0 0 8.9 6.1" stroke="currentColor" stroke-width="1.4"/></svg>
+        方向の伝え方
+      </p>
+      <h2>「太陽」を「真上」に置きかえる</h2>
+      <p>巣板は垂直に吊り下がり、中は真っ暗で太陽は見えない。そこでハチは、<strong>鉛直方向（重力の反対、つまり真上）を太陽の方向とみなす</strong>という約束をつかう。外の地面の上で太陽と餌場がなす角を、そのまま巣板の上の角へ写し取るわけだ。8の字の中央をまっすぐ進む部分を<strong>直進ダンス</strong>（尻振り走行）と呼び、この向きが餌場の方向を表す。</p>
+    </div>
+
+    <figure class="fig-hero">
+      <div class="fig-body">
+        <svg viewBox="0 0 800 440" role="img" aria-label="外の世界では水平な地面の上で太陽の方向と餌場の方向が40度の角をなし、巣の中では垂直な巣板の上で鉛直方向と直進ダンスの方向が同じ40度の角をなすことを、並べて示した図">
+          <text class="d-title" x="14" y="22">外の世界（水平な地面）</text>
+          <text class="d-title" x="419" y="22">巣の中（垂直な巣板）</text>
+
+          <!-- =========== LEFT : ground plane, oblique view =========== -->
+          <g class="s-sun" stroke-width="1.6" stroke-linecap="round">
+            <line x1="167" y1="73" x2="167" y2="63"/>
+            <line x1="140" y1="100" x2="130" y2="100"/>
+            <line x1="194" y1="100" x2="204" y2="100"/>
+            <line x1="148" y1="81" x2="141" y2="74"/>
+            <line x1="186" y1="81" x2="193" y2="74"/>
+            <line x1="148" y1="119" x2="141" y2="126"/>
+            <line x1="186" y1="119" x2="193" y2="126"/>
+          </g>
+          <circle cx="167" cy="100" r="19" style="fill:var(--sun)"/>
+          <text class="d-label d-sun" x="167" y="46" text-anchor="middle">太陽</text>
+
+          <!-- ground plane -->
+          <path d="M 30 398 L 272 398 L 377 280 L 135 280 Z" fill="currentColor" fill-opacity=".05" class="s-soft"/>
+
+          <!-- vertical drop from the sun onto the plane -->
+          <line x1="167" y1="144" x2="167" y2="287" class="s-sun" stroke-width="1.4" stroke-dasharray="5 5" stroke-opacity=".6"/>
+          <path d="M 167 276 L 160 284 L 160 295" class="s-fg" stroke-width="1.2" stroke-opacity=".7"/>
+
+          <!-- the two directions, measured on the ground -->
+          <line x1="100" y1="363" x2="167" y2="287" class="s-sun" stroke-width="2.2" stroke-dasharray="8 4"/>
+          <line x1="100" y1="363" x2="265" y2="299" class="s-amber" stroke-width="2.4" marker-end="url(#ar-a)"/>
+          <path d="M 130 330 Q 150 331 166 337" class="s-fg" stroke-width="1.6"/>
+          <text class="d-num" x="178" y="312" text-anchor="middle">40°</text>
+
+          <!-- 巣箱 -->
+          <g class="s-fg" stroke-width="1.3" stroke-linejoin="round">
+            <polygon points="79,369 111,369 111,347 79,347" fill="currentColor" fill-opacity=".10"/>
+            <polygon points="111,369 121,357 121,335 111,347" fill="currentColor" fill-opacity=".04"/>
+            <polygon points="79,347 111,347 121,335 90,335" fill="currentColor" fill-opacity=".18"/>
+            <line x1="79" y1="358" x2="111" y2="358"/>
+          </g>
+          <rect x="87" y="362" width="16" height="4" fill="currentColor" fill-opacity=".5"/>
+          <text class="d-label d-soft" x="95" y="390" text-anchor="middle">巣箱</text>
+
+          <!-- 餌場 -->
+          <line x1="265" y1="299" x2="265" y2="287" class="s-amber" stroke-width="1.7"/>
+          <g style="fill:var(--amber)" fill-opacity=".5">
+            <circle cx="265" cy="272" r="5.5"/><circle cx="272" cy="278" r="5.5"/>
+            <circle cx="269" cy="286" r="5.5"/><circle cx="261" cy="286" r="5.5"/>
+            <circle cx="258" cy="278" r="5.5"/>
+          </g>
+          <circle cx="265" cy="280" r="3.7" style="fill:var(--amber)"/>
+          <text class="d-label d-amber" x="265" y="254" text-anchor="middle">餌場</text>
+
+          <text class="d-label d-sun" x="150" y="300" text-anchor="end">太陽の方向</text>
+          <text class="d-label d-amber" x="200" y="352">餌場の方向</text>
+
+          <line x1="400" y1="60" x2="400" y2="400" class="s-soft" stroke-width="1"/>
+
+          <!-- =========== RIGHT : vertical comb =========== -->
+          <rect x="440" y="62" width="328" height="338" fill="url(#comb)"/>
+          <rect x="440" y="62" width="328" height="338" class="s-fg" stroke-width="2.5" stroke-opacity=".35"/>
+
+          <line x1="578" y1="388" x2="578" y2="92" class="s-slate" stroke-width="2.6" marker-end="url(#ar-s)"/>
+          <text class="d-label d-slate" x="578" y="82" text-anchor="middle">鉛直方向</text>
+
+          <!-- return loops -->
+          <path d="M 700 175 C 762 244 657 369 578 320" class="s-fg" stroke-width="1.5" stroke-opacity=".45"/>
+          <path d="M 700 175 C 621 126 516 251 578 320" class="s-fg" stroke-width="1.5" stroke-opacity=".45"/>
+          <polygon points="687,297 700,291 692,284" fill="currentColor" fill-opacity=".5"/>
+          <polygon points="582,209 594,202 586,195" fill="currentColor" fill-opacity=".5"/>
+          <text class="d-label d-soft" x="670" y="345">戻りの周回</text>
+
+          <!-- 直進ダンス -->
+          <line x1="578" y1="320" x2="700" y2="175" class="s-amber" stroke-width="3.6" marker-end="url(#ar-a)"/>
+          <text class="d-label d-amber" x="700" y="152" text-anchor="middle">直進ダンス</text>
+
+          <path d="M 578 242 A 78 78 0 0 1 628 260" class="s-fg" stroke-width="1.6"/>
+          <text class="d-num" x="612" y="226" text-anchor="middle">40°</text>
+
+          <!-- bee -->
+          <g transform="translate(584 313) rotate(40) scale(1.1)">
+            <ellipse cx="-10" cy="-4" rx="9" ry="4.6" transform="rotate(-32 -10 -4)" fill="var(--ink)" fill-opacity=".13" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1"/>
+            <ellipse cx="10" cy="-4" rx="9" ry="4.6" transform="rotate(32 10 -4)" fill="var(--ink)" fill-opacity=".13" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1"/>
+            <ellipse cx="0" cy="1" rx="6.6" ry="11" style="fill:var(--amber)" stroke="var(--surface)" stroke-width="2.2"/>
+            <g stroke="var(--surface)" stroke-width="2" stroke-linecap="round">
+              <line x1="-5.6" y1="-3.4" x2="5.6" y2="-3.4"/>
+              <line x1="-6.5" y1="1.6" x2="6.5" y2="1.6"/>
+              <line x1="-5" y1="6.6" x2="5" y2="6.6"/>
+            </g>
+            <circle cx="0" cy="-13.5" r="4.5" fill="var(--ink)" fill-opacity=".85"/>
+            <g stroke="var(--ink)" stroke-opacity=".85" stroke-width="1.4" stroke-linecap="round">
+              <line x1="-1.7" y1="-17" x2="-4.6" y2="-22"/>
+              <line x1="1.7" y1="-17" x2="4.6" y2="-22"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="point">
+        <p class="point-label">Point</p>
+        <p class="point-row"><span class="t-slate">鉛直方向</span><span class="arw">⇒</span><span class="t-sun">太陽の方向</span></p>
+        <p class="point-row"><span class="t-amber">直進ダンスの方向</span><span class="arw">⇒</span><span class="t-amber">餌場の方向</span></p>
+        <p class="point-eq">太陽と餌場のなす角　<b>＝</b>　鉛直方向と直進ダンスのなす角</p>
+      </div>
+
+      <figcaption><b>符号化のしかた。</b>地面の上で「太陽から右へ40°」の方向にある餌場は、垂直な巣板の上では「鉛直方向から右へ40°」傾いた直進ダンスとして踊られる。踊りを追った仲間は、この角度を逆に読み替えて飛び出す。</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 二つのダンス ============ -->
+  <section>
+    <div class="sec-head">
+      <p class="kicker">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true"><path d="M2 12 L18 12 M2 12 L14 2" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 12 A 9.5 9.5 0 0 0 8.9 6.1" stroke="currentColor" stroke-width="1.4"/></svg>
+        ダンスの形
+      </p>
+      <h2>近ければ回るだけ、遠ければ8の字</h2>
+      <p>餌場がすぐ近くにあるときは、方向を伝える必要がない。飛び出して探せばすぐ見つかるからだ。そのため近距離では、ただ円を描いて向きを変えるだけの<strong>円ダンス</strong>になる。距離が伸びると、角度情報を積んだ<strong>8の字ダンス</strong>へ連続的に移り変わる。</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 720 300" role="img" aria-label="円ダンスは方向情報を持たない円運動、8の字ダンスは中央に尻振り走行を持つ8の字型であることを並べて比較した図">
+          <!-- ------- panel A : round dance ------- -->
+          <text class="d-title" x="180" y="34" text-anchor="middle">円ダンス</text>
+          <path d="M 127 131 A 56 56 0 1 1 125 160" class="s-fg" stroke-width="1.8" stroke-opacity=".8" marker-end="url(#ar)"/>
+          <path d="M 216 163 A 38 38 0 1 0 204 179" class="s-fg" stroke-width="1.8" stroke-opacity=".8" marker-end="url(#ar)"/>
+          <ellipse cx="180" cy="150" rx="7" ry="11" style="fill:var(--amber)"/>
+          <text class="d-label d-soft" x="180" y="238" text-anchor="middle">向きを反転しながら回るだけ</text>
+          <text class="d-label d-soft" x="180" y="260" text-anchor="middle">方向の情報は乗らない</text>
+          <text class="d-num d-amber" x="180" y="284" text-anchor="middle">〜 約100 m</text>
+
+          <line x1="360" y1="60" x2="360" y2="250" class="s-soft" stroke-width="1"/>
+
+          <!-- ------- panel B : waggle dance ------- -->
+          <text class="d-title" x="540" y="34" text-anchor="middle">8の字ダンス</text>
+          <path d="M 540 102 C 616 110 616 197 540 205" class="s-fg" stroke-width="1.8" stroke-opacity=".55"/>
+          <path d="M 540 102 C 464 110 464 197 540 205" class="s-fg" stroke-width="1.8" stroke-opacity=".55"/>
+          <polygon points="591,148 603,148 597,161" fill="currentColor" fill-opacity=".6"/>
+          <polygon points="477,148 489,148 483,161" fill="currentColor" fill-opacity=".6"/>
+          <polyline points="540,205 547,196 533,187 547,178 533,169 547,160 533,151 547,142 533,133 547,124 533,115 540,106"
+                    class="s-amber" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ar-a)"/>
+          <text class="d-label d-soft" x="540" y="238" text-anchor="middle">中央の直線で腹を振る</text>
+          <text class="d-label d-soft" x="540" y="260" text-anchor="middle">角度＝方向、長さ＝距離</text>
+          <text class="d-num d-amber" x="540" y="284" text-anchor="middle">約100 m 〜</text>
+        </svg>
+      </div>
+      <figcaption><b>2つの型。</b>円ダンスと8の字ダンスは別物というより、距離に応じた連続的な変化とみなされている。境界のおよその距離は亜種によって異なる。</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 距離 ============ -->
+  <section>
+    <div class="sec-head">
+      <p class="kicker">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true"><path d="M2 12 L18 12 M2 12 L14 2" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 12 A 9.5 9.5 0 0 0 8.9 6.1" stroke="currentColor" stroke-width="1.4"/></svg>
+        距離の伝え方
+      </p>
+      <h2>腹を振る時間が、そのまま遠さ</h2>
+      <p>尻振り走行が長いほど、餌場は遠い。ハチが測っているのは直線距離そのものではなく、飛行中に眼を流れていった景色の量（オプティックフロー）だと考えられている。向かい風の日や見通しのよい水面を越えたときに「距離」がずれるのは、そのためだ。</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 720 300" role="img" aria-label="尻振り走行の持続時間が0.5秒、1秒、2秒と長くなるにつれ、伝わる距離がおよそ400メートル、1キロ、2キロと伸びることを示す図">
+          <text class="d-title" x="20" y="30">尻振り走行の持続時間</text>
+
+          <text class="d-num d-soft" x="138" y="74" text-anchor="end">0.5 秒</text>
+          <polyline points="150,70 159,64 168,76 178,64 187,76 196,64 206,76 215,70" class="s-amber" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ar-a)"/>
+          <text class="d-num d-amber" x="238" y="74">約 400 m</text>
+
+          <text class="d-num d-soft" x="138" y="144" text-anchor="end">1 秒</text>
+          <polyline points="150,140 159,134 168,146 178,134 187,146 196,134 206,146 215,134 224,146 234,134 243,146 252,134 262,146 271,134 280,140" class="s-amber" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ar-a)"/>
+          <text class="d-num d-amber" x="303" y="144">約 1 km</text>
+
+          <text class="d-num d-soft" x="138" y="214" text-anchor="end">2 秒</text>
+          <polyline points="150,210 159,204 168,216 178,204 187,216 196,204 206,216 215,204 224,216 234,204 243,216 252,204 262,216 271,204 280,216 289,204 299,216 308,204 317,216 326,204 336,216 345,204 354,216 364,204 373,216 382,204 391,216 401,204 410,210" class="s-amber" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#ar-a)"/>
+          <text class="d-num d-amber" x="433" y="214">約 2 km</text>
+
+          <!-- axis -->
+          <line x1="150" y1="252" x2="410" y2="252" class="s-fg" stroke-width="1.2" stroke-opacity=".6"/>
+          <g class="s-fg" stroke-width="1.2" stroke-opacity=".6">
+            <line x1="150" y1="252" x2="150" y2="258"/>
+            <line x1="215" y1="252" x2="215" y2="258"/>
+            <line x1="280" y1="252" x2="280" y2="258"/>
+            <line x1="345" y1="252" x2="345" y2="258"/>
+            <line x1="410" y1="252" x2="410" y2="258"/>
+          </g>
+          <text class="d-num d-soft" x="150" y="276" text-anchor="middle">0</text>
+          <text class="d-num d-soft" x="215" y="276" text-anchor="middle">0.5</text>
+          <text class="d-num d-soft" x="280" y="276" text-anchor="middle">1.0</text>
+          <text class="d-num d-soft" x="345" y="276" text-anchor="middle">1.5</text>
+          <text class="d-num d-soft" x="410" y="276" text-anchor="middle">2.0</text>
+          <text class="d-num d-soft" x="432" y="276">秒</text>
+
+          <text class="d-label d-soft" x="480" y="70">目安として</text>
+          <text class="d-label d-soft" x="480" y="94">尻振り 1 秒 ≒ 1 km</text>
+          <text class="d-label d-soft" x="480" y="126">ただしこの換算は</text>
+          <text class="d-label d-soft" x="480" y="150">亜種・地域系統によって</text>
+          <text class="d-label d-soft" x="480" y="174">はっきり異なる。</text>
+        </svg>
+      </div>
+      <figcaption><b>距離の目盛り。</b>数値は西洋ミツバチでよく引かれる目安。同じ「1秒」でも、亜種が違えば示す距離が変わる——いわば方言がある。</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 太陽補正 ============ -->
+  <section>
+    <div class="sec-head">
+      <p class="kicker">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true"><path d="M2 12 L18 12 M2 12 L14 2" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 12 A 9.5 9.5 0 0 0 8.9 6.1" stroke="currentColor" stroke-width="1.4"/></svg>
+        時間の補正
+      </p>
+      <h2>基準の太陽が動いてしまう問題</h2>
+      <p>この方式には弱点がある。基準にしている太陽が、一日のうちに空を移動してしまうのだ。餌場は動いていないのに、正しいダンスの角度は刻々と変わる。ハチは<strong>体内時計で太陽の移動を補正</strong>し、角度をずらしながら踊る。巣の中に長くとどまっていた個体でも、出てきて踊れば、その間に進んだ太陽の分がちゃんと差し引かれている。</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 720 310" role="img" aria-label="餌場の方向が同じでも、朝・正午・夕方で太陽の位置が変わるためダンスの角度が80度、20度、マイナス40度と変化することを示す図">
+          <!-- ---- morning ---- -->
+          <text class="d-title" x="120" y="26" text-anchor="middle">朝</text>
+          <circle cx="120" cy="110" r="58" class="s-soft" stroke-width="1"/>
+          <line x1="120" y1="110" x2="70" y2="81" class="s-sun" stroke-width="1.6" stroke-dasharray="5 5"/>
+          <circle cx="70" cy="81" r="7" style="fill:var(--sun)"/>
+          <line x1="120" y1="110" x2="140" y2="56" class="s-amber" stroke-width="2"/>
+          <circle cx="140" cy="55" r="5" style="fill:var(--amber)"/>
+          <path d="M 96 96 A 28 28 0 0 1 130 84" class="s-fg" stroke-width="1.5"/>
+          <text class="d-num" x="103" y="70" text-anchor="middle">80°</text>
+
+          <rect x="78" y="185" width="84" height="70" rx="2" fill="url(#comb)"/>
+          <rect x="78" y="185" width="84" height="70" rx="2" class="s-soft" stroke-width="1"/>
+          <line x1="120" y1="248" x2="120" y2="196" class="s-slate" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="95" y1="224" x2="145" y2="216" class="s-amber" stroke-width="2.4" marker-end="url(#ar-a)"/>
+          <text class="d-label d-soft" x="120" y="284" text-anchor="middle">真上から 80°</text>
+
+          <line x1="240" y1="50" x2="240" y2="270" class="s-soft" stroke-width="1"/>
+
+          <!-- ---- noon ---- -->
+          <text class="d-title" x="360" y="26" text-anchor="middle">正午</text>
+          <circle cx="360" cy="110" r="58" class="s-soft" stroke-width="1"/>
+          <line x1="360" y1="110" x2="360" y2="59" class="s-sun" stroke-width="1.6" stroke-dasharray="5 5"/>
+          <circle cx="360" cy="52" r="7" style="fill:var(--sun)"/>
+          <line x1="360" y1="110" x2="380" y2="56" class="s-amber" stroke-width="2"/>
+          <circle cx="380" cy="55" r="5" style="fill:var(--amber)"/>
+          <path d="M 360 82 A 28 28 0 0 1 370 84" class="s-fg" stroke-width="1.5"/>
+          <text class="d-num" x="384" y="72">20°</text>
+
+          <rect x="318" y="185" width="84" height="70" rx="2" fill="url(#comb)"/>
+          <rect x="318" y="185" width="84" height="70" rx="2" class="s-soft" stroke-width="1"/>
+          <line x1="360" y1="248" x2="360" y2="196" class="s-slate" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="351" y1="243" x2="369" y2="197" class="s-amber" stroke-width="2.4" marker-end="url(#ar-a)"/>
+          <text class="d-label d-soft" x="360" y="284" text-anchor="middle">真上から 20°</text>
+
+          <line x1="480" y1="50" x2="480" y2="270" class="s-soft" stroke-width="1"/>
+
+          <!-- ---- evening ---- -->
+          <text class="d-title" x="600" y="26" text-anchor="middle">夕方</text>
+          <circle cx="600" cy="110" r="58" class="s-soft" stroke-width="1"/>
+          <line x1="600" y1="110" x2="650" y2="81" class="s-sun" stroke-width="1.6" stroke-dasharray="5 5"/>
+          <circle cx="650" cy="81" r="7" style="fill:var(--sun)"/>
+          <line x1="600" y1="110" x2="620" y2="56" class="s-amber" stroke-width="2"/>
+          <circle cx="620" cy="55" r="5" style="fill:var(--amber)"/>
+          <path d="M 610 84 A 28 28 0 0 1 624 96" class="s-fg" stroke-width="1.5"/>
+          <text class="d-num" x="630" y="72">40°</text>
+
+          <rect x="558" y="185" width="84" height="70" rx="2" fill="url(#comb)"/>
+          <rect x="558" y="185" width="84" height="70" rx="2" class="s-soft" stroke-width="1"/>
+          <line x1="600" y1="248" x2="600" y2="196" class="s-slate" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="616" y1="239" x2="584" y2="201" class="s-amber" stroke-width="2.4" marker-end="url(#ar-a)"/>
+          <text class="d-label d-soft" x="600" y="284" text-anchor="middle">真上から左へ 40°</text>
+        </svg>
+      </div>
+      <figcaption><b>同じ餌場、違う角度。</b>金色の破線が太陽の方向、実線が餌場の方向。餌場は一日じゅう動かないのに、太陽が動くぶんダンスの傾きは回っていく。曇っていても、青空のわずかな偏光から太陽の位置を割り出せる。</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 例題 ============ -->
+  <section>
+    <div class="sec-head">
+      <p class="kicker">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true"><path d="M2 12 L18 12 M2 12 L14 2" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 12 A 9.5 9.5 0 0 0 8.9 6.1" stroke="currentColor" stroke-width="1.4"/></svg>
+        例題
+      </p>
+      <h2>角度の足し引きだけで解ける</h2>
+      <p>この符号系は中学入試の理科でもよく出る。使う道具は「方位を角度に直す」ことと「太陽は1時間に15°動く」ことの二つだけだ。方位は<strong>北を0°として時計回り</strong>にとる（東90°・南180°・西270°）。</p>
+    </div>
+
+    <div class="recipe">
+      <p class="recipe-label">解き方の型</p>
+      <p class="recipe-row"><span class="n">1</span>太陽の方位を角度に直す</p>
+      <p class="recipe-row"><span class="n">2</span>ダンスの角度（鉛直から時計回り）を足す</p>
+      <p class="recipe-row"><span class="n">3</span>出た角度を方位に戻す（360°を超えたら引く）</p>
+    </div>
+
+    <!-- ---------- 例題1 ---------- -->
+    <div class="quiz">
+      <div class="quiz-head">
+        <p class="quiz-no">例題 1 ／ 方向を読む</p>
+        <p class="quiz-q">よく晴れた春の日の午後3時、太陽は南西の空にあった。このとき巣箱の中の一匹が、鉛直方向から<strong>時計回りに90°</strong>傾いた直進ダンスをくり返していた。この餌場はどの方位にあるか。</p>
+      </div>
+      <div class="fig-body">
+        <svg viewBox="0 0 470 225" role="img" aria-label="左に方位円、太陽が南西にあることを示す。右に垂直な巣板、鉛直方向から時計回りに90度傾いた直進ダンスを示す">
+          <circle cx="96" cy="112" r="64" class="s-soft" stroke-width="1.2"/>
+          <text class="d-label d-soft" x="96" y="70" text-anchor="middle">北</text>
+          <text class="d-label d-soft" x="140" y="117" text-anchor="middle">東</text>
+          <text class="d-label d-soft" x="96" y="158" text-anchor="middle">南</text>
+          <text class="d-label d-soft" x="52" y="117" text-anchor="middle">西</text>
+          <line x1="96" y1="112" x2="53" y2="155" class="s-sun" stroke-width="2" stroke-dasharray="6 4"/>
+          <circle cx="49" cy="159" r="8" style="fill:var(--sun)"/>
+          <text class="d-label d-sun" x="36" y="186" text-anchor="middle">太陽</text>
+          <text class="d-label d-amber" x="114" y="95" text-anchor="middle">餌場は？</text>
+
+          <rect x="262" y="48" width="186" height="144" fill="url(#comb)"/>
+          <rect x="262" y="48" width="186" height="144" class="s-fg" stroke-width="2" stroke-opacity=".3"/>
+          <line x1="312" y1="182" x2="312" y2="62" class="s-slate" stroke-width="2.4" marker-end="url(#ar-s)"/>
+          <text class="d-label d-slate" x="312" y="38" text-anchor="middle">鉛直方向</text>
+          <line x1="312" y1="140" x2="400" y2="140" class="s-amber" stroke-width="3.2" marker-end="url(#ar-a)"/>
+          <path d="M 312 100 A 40 40 0 0 1 352 140" class="s-fg" stroke-width="1.5"/>
+          <text class="d-num" x="352" y="102" text-anchor="middle">90°</text>
+          <text class="d-label d-amber" x="400" y="168" text-anchor="end">直進ダンス</text>
+        </svg>
+      </div>
+      <details class="quiz-a">
+        <summary>答えと考え方</summary>
+        <div class="quiz-body">
+          <p class="step">太陽は南西 → 北から時計回りに <b>225°</b></p>
+          <p class="step">ダンスが時計回り90° → 餌場は太陽から時計回りに <b>90°</b></p>
+          <p class="step">225° ＋ 90° ＝ 315°</p>
+          <p class="ans">答え：北西</p>
+          <p class="qnote">ハチが伝えているのは「北西」という方位ではなく、あくまで「太陽から右へ90°」という相対角度。だから時刻が変われば、同じ餌場でもダンスの角度は変わる。</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- ---------- 例題2 ---------- -->
+    <div class="quiz">
+      <div class="quiz-head">
+        <p class="quiz-no">例題 2 ／ 逆に組み立てる</p>
+        <p class="quiz-q">正午ちょうど、太陽は真南にある。真東にある餌場から戻ったハチは、巣板の上でどちら向きに直進ダンスをするか。鉛直方向からの傾きと回り方で答えよ。</p>
+      </div>
+      <div class="fig-body">
+        <svg viewBox="0 0 470 225" role="img" aria-label="左に方位円、太陽が南、餌場が東にあることを示す。右に垂直な巣板とダンスの向きを問う疑問符">
+          <circle cx="96" cy="112" r="64" class="s-soft" stroke-width="1.2"/>
+          <text class="d-label d-soft" x="96" y="70" text-anchor="middle">北</text>
+          <text class="d-label d-soft" x="130" y="100" text-anchor="middle">東</text>
+          <text class="d-label d-soft" x="96" y="152" text-anchor="middle">南</text>
+          <text class="d-label d-soft" x="52" y="117" text-anchor="middle">西</text>
+          <line x1="96" y1="112" x2="96" y2="168" class="s-sun" stroke-width="2" stroke-dasharray="6 4"/>
+          <circle cx="96" cy="177" r="8" style="fill:var(--sun)"/>
+          <text class="d-label d-sun" x="96" y="203" text-anchor="middle">太陽</text>
+          <line x1="96" y1="112" x2="152" y2="112" class="s-amber" stroke-width="2" marker-end="url(#ar-a)"/>
+          <circle cx="164" cy="112" r="6" style="fill:var(--amber)"/>
+          <text class="d-label d-amber" x="178" y="117">餌場</text>
+
+          <rect x="262" y="48" width="186" height="144" fill="url(#comb)"/>
+          <rect x="262" y="48" width="186" height="144" class="s-fg" stroke-width="2" stroke-opacity=".3"/>
+          <line x1="355" y1="182" x2="355" y2="62" class="s-slate" stroke-width="2.4" marker-end="url(#ar-s)"/>
+          <text class="d-label d-slate" x="355" y="38" text-anchor="middle">鉛直方向</text>
+          <circle cx="355" cy="130" r="46" class="s-amber" stroke-width="1.4" stroke-dasharray="5 6" stroke-opacity=".55"/>
+          <text class="d-amber" x="396" y="106" text-anchor="middle" style="font-size:26px;font-weight:700">?</text>
+        </svg>
+      </div>
+      <details class="quiz-a">
+        <summary>答えと考え方</summary>
+        <div class="quiz-body">
+          <p class="step">太陽は南 → <b>180°</b>、餌場は東 → <b>90°</b></p>
+          <p class="step">餌場 − 太陽 ＝ 90° − 180° ＝ <b>−90°</b></p>
+          <p class="step">マイナスは反時計回りの意味</p>
+          <p class="ans">答え：鉛直方向から反時計回りに90°（＝真上から左へ90°倒れた、水平で左向きの直進ダンス）</p>
+          <p class="qnote">この場合ハチは、巣板の上を真横に歩きながら腹を振ることになる。角度がさらに大きくなれば鉛直より下向きに踊るだけで、仕組みは何も変わらない。</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- ---------- 例題3 ---------- -->
+    <div class="quiz">
+      <div class="quiz-head">
+        <p class="quiz-no">例題 3 ／ 太陽の移動から時刻を出す</p>
+        <p class="quiz-q">例題1と同じ巣・同じ餌場を観察し続けた。午後3時には鉛直方向から時計回りに90°だった直進ダンスが、あるとき<strong>時計回りに135°</strong>になっていた。最初の観察から何時間後か。ただし太陽は1時間に15°動くものとし、餌場は変わらないものとする。</p>
+      </div>
+      <div class="fig-body">
+        <svg viewBox="0 0 470 220" role="img" aria-label="1回目の観察では直進ダンスが鉛直から時計回りに90度、2回目では135度になっていることを並べ、その間の経過時間を問う図">
+          <text class="d-title" x="20" y="40">1回目・午後3時</text>
+          <rect x="20" y="60" width="180" height="140" fill="url(#comb)"/>
+          <rect x="20" y="60" width="180" height="140" class="s-fg" stroke-width="2" stroke-opacity=".3"/>
+          <line x1="70" y1="190" x2="70" y2="78" class="s-slate" stroke-width="2.2" marker-end="url(#ar-s)"/>
+          <line x1="70" y1="150" x2="142" y2="150" class="s-amber" stroke-width="3" marker-end="url(#ar-a)"/>
+          <path d="M 70 114 A 36 36 0 0 1 106 150" class="s-fg" stroke-width="1.5"/>
+          <text class="d-num" x="105" y="116" text-anchor="middle">90°</text>
+
+          <line x1="208" y1="140" x2="262" y2="140" class="s-fg" stroke-width="1.5" marker-end="url(#ar)"/>
+          <text class="d-label d-soft" x="235" y="126" text-anchor="middle">？時間後</text>
+
+          <text class="d-title" x="270" y="40">2回目</text>
+          <rect x="270" y="60" width="180" height="140" fill="url(#comb)"/>
+          <rect x="270" y="60" width="180" height="140" class="s-fg" stroke-width="2" stroke-opacity=".3"/>
+          <line x1="310" y1="190" x2="310" y2="78" class="s-slate" stroke-width="2.2" marker-end="url(#ar-s)"/>
+          <line x1="310" y1="120" x2="364" y2="174" class="s-amber" stroke-width="3" marker-end="url(#ar-a)"/>
+          <path d="M 310 84 A 36 36 0 0 1 335 145" class="s-fg" stroke-width="1.5"/>
+          <text class="d-num" x="358" y="100" text-anchor="middle">135°</text>
+        </svg>
+      </div>
+      <details class="quiz-a">
+        <summary>答えと考え方</summary>
+        <div class="quiz-body">
+          <p class="step">餌場は動かない。角度が 90° → 135° と <b>45°増えた</b>のは、基準の太陽のほうが反時計回りに45°戻ったから</p>
+          <p class="step">太陽が反時計回りに戻る ＝ 時刻としては<b>より早い時刻</b>にあたる</p>
+          <p class="step">45° ÷ 15°/時 ＝ <b>3時間</b>ぶん早い</p>
+          <p class="step">「後」で答えるので、24時間 − 3時間 ＝ <b>21時間後</b>（翌日の正午）</p>
+          <p class="ans">答え：21時間後</p>
+          <p class="qnote">検算：正午の太陽は南（180°）。例題1で求めた餌場は北西（315°）。315° − 180° ＝ 135° で、たしかに合う。なお45時間後・69時間後…も式の上では成り立つので、最も早いものを答える。</p>
+        </div>
+      </details>
+    </div>
+
+    <p class="colophon" style="border:0;padding-top:0"><b>発展。</b>巣箱の側面に穴をあけて横から光を差し込むと、ハチは重力ではなく<em>その光</em>を「太陽」とみなして踊りはじめる。基準を人為的にすり替えられるという事実そのものが、ハチが方位ではなく相対角度を扱っていることの証拠になっている。フォン・フリッシュが実際に行った実験で、入試でもこの設定がよく問われる。</p>
+  </section>
+
+  <!-- ============ 補足 ============ -->
+  <section>
+    <div class="sec-head">
+      <p class="kicker">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true"><path d="M2 12 L18 12 M2 12 L14 2" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 12 A 9.5 9.5 0 0 0 8.9 6.1" stroke="currentColor" stroke-width="1.4"/></svg>
+        そのほか
+      </p>
+      <h2>暗闇でどう受け取り、何に使うか</h2>
+    </div>
+
+    <div class="notes">
+      <div class="note">
+        <h3>見ていない</h3>
+        <p>巣の中は真っ暗で、追随するハチはダンスを目で見ていない。触角で踊り手に触れ、体の振動と巣板を伝わる音を頼りに角度と時間を読み取っている。</p>
+      </div>
+      <div class="note">
+        <h3>引っ越し先も決める</h3>
+        <p>分蜂のとき、斥候バチはそれぞれ別の営巣候補地を踊る。良い場所ほど熱心に長く踊られ、支持が集まっていき、やがて一箇所に合意が収束する。</p>
+      </div>
+      <div class="note">
+        <h3>読む力は育つ</h3>
+        <p>ダンスの文法は生まれつき備わっているが、若いハチが年長の踊り手に随行して観察することで、伝達の精度が上がるという実験結果も報告されている。</p>
+      </div>
+    </div>
+
+    <p class="colophon">この符号系を解読したのは<span class="name">カール・フォン・フリッシュ</span>。動物の行動に「文法」があることを示した仕事として、1973年のノーベル生理学・医学賞にコンラート・ローレンツ、ニコ・ティンバーゲンとともに選ばれた。図中の角度と距離の数値は説明用の例で、実際の換算はミツバチの亜種や地域系統によって異なる。</p>
+  </section>
+
+</div>
+
+</body>
+</html>
