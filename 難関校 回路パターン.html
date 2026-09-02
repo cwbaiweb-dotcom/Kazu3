@@ -1,0 +1,1090 @@
+<title>難関校 回路パターン図鑑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Shippori+Mincho+B1:wght@700;800&family=Roboto+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --paper:#F1F4F8; --surface:#FFFFFF; --surface-2:#E9EEF4;
+  --ink:#16223A; --ink-soft:#4E5B73; --ink-faint:#7A879C;
+  --line:#CFD8E4; --line-strong:#A9B6C8;
+  --amber:#B87413; --amber-ink:#8A5409; --amber-wash:#FAEFDC;
+  --cur:#1B6C8C; --cur-wash:#DDEDF3;
+  --warn:#AE3722; --warn-wash:#FAE6E1;
+  --ok:#28684B; --ok-wash:#DFEDE5;
+  --shadow:0 1px 0 rgba(22,34,58,.05), 0 8px 24px -18px rgba(22,34,58,.5);
+  --grid:rgba(22,34,58,.055);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D131B; --surface:#151F2A; --surface-2:#1D2A38;
+    --ink:#E5EBF3; --ink-soft:#A2B0C4; --ink-faint:#7B8AA0;
+    --line:#2A3849; --line-strong:#3D5069;
+    --amber:#F0B24A; --amber-ink:#F6C877; --amber-wash:#33260F;
+    --cur:#63B8D6; --cur-wash:#12303C;
+    --warn:#EC8067; --warn-wash:#3A1D16;
+    --ok:#72C79C; --ok-wash:#12301F;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+    --grid:rgba(226,235,245,.05);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D131B; --surface:#151F2A; --surface-2:#1D2A38;
+  --ink:#E5EBF3; --ink-soft:#A2B0C4; --ink-faint:#7B8AA0;
+  --line:#2A3849; --line-strong:#3D5069;
+  --amber:#F0B24A; --amber-ink:#F6C877; --amber-wash:#33260F;
+  --cur:#63B8D6; --cur-wash:#12303C;
+  --warn:#EC8067; --warn-wash:#3A1D16;
+  --ok:#72C79C; --ok-wash:#12301F;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+  --grid:rgba(226,235,245,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",system-ui,sans-serif;font-size:15px;line-height:1.8}
+h1,h2{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-weight:800;text-wrap:balance;line-height:1.3;margin:0}
+.mono{font-family:"Roboto Mono",monospace}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px 90px}
+
+/* hero */
+.hero{position:relative;padding:56px 0 32px;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 92%);mask-image:linear-gradient(180deg,#000,transparent 92%)}
+.hero>*{position:relative}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:11px;letter-spacing:.22em;color:var(--cur);margin:0 0 12px}
+.hero h1{font-size:clamp(28px,5vw,44px)}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.lede{max-width:62ch;color:var(--ink-soft);margin:16px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;align-items:center}
+.tag{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.08em;padding:3px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
+.t-new{color:var(--amber-ink);border-color:color-mix(in srgb,var(--amber) 50%,transparent);background:var(--amber-wash)}
+.t-have{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:var(--ok-wash)}
+.t-star{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:var(--warn-wash)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:20;display:flex;gap:6px;flex-wrap:wrap;padding:10px 0;
+  background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav a{font-family:"Roboto Mono",monospace;font-size:11.5px;letter-spacing:.05em;text-decoration:none;
+  padding:5px 11px;border-radius:6px;border:1px solid var(--line-strong);color:var(--ink-soft)}
+.nav a:hover{border-color:var(--amber);color:var(--amber)}
+.nav a:focus-visible{outline:2px solid var(--cur);outline-offset:2px}
+
+/* section */
+section{padding-top:44px;scroll-margin-top:56px}
+.sh{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:4px}
+.sh .k{font-family:"Roboto Mono",monospace;font-size:13px;font-weight:700;color:var(--amber);flex:none}
+.sh h2{font-size:clamp(19px,3vw,24px)}
+.sd{color:var(--ink-soft);font-size:13.5px;margin:10px 0 18px;max-width:70ch}
+
+/* grid of plates */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:16px}
+.plate{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px 15px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;min-width:0}
+.plate.w2{grid-column:span 2}
+@media(max-width:640px){.plate.w2{grid-column:span 1}}
+.fig{background:var(--surface-2);border-radius:8px;padding:8px 6px;overflow-x:auto}
+.fig svg{display:block;width:100%;height:auto;color:var(--ink)}
+.ph{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.id{font-family:"Roboto Mono",monospace;font-size:11.5px;font-weight:700;color:var(--amber);flex:none}
+.nm{font-weight:700;font-size:14.5px;flex:1 1 auto;line-height:1.45}
+.plate p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.72}
+.plate p b{color:var(--ink)}
+.src{font-family:"Roboto Mono",monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.02em;
+  border-top:1px dashed var(--line-strong);padding-top:8px;margin-top:auto}
+.src.ok{color:var(--cur)}
+
+/* svg text */
+svg text{font-family:"Roboto Mono",monospace;font-size:11px;font-weight:500;fill:var(--ink-soft)}
+svg text.a{fill:var(--amber);font-weight:700}
+svg text.c{fill:var(--cur);font-weight:700}
+svg text.w{fill:var(--warn);font-weight:700}
+svg text.s{font-size:9.5px}
+.glow{fill:var(--amber);opacity:.22}
+
+footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:12.5px}
+@media print{
+  body{background:#fff;color:#000}
+  .nav,.hero::before{display:none!important}
+  .plate{page-break-inside:avoid;box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="bulb" viewBox="-16 -16 32 32">
+    <circle r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-7.8 -7.8 L7.8 7.8 M7.8 -7.8 L-7.8 7.8 M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="bulbon" viewBox="-16 -16 32 32">
+    <circle r="15" class="glow"/><circle r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-7.8 -7.8 L7.8 7.8 M7.8 -7.8 L-7.8 7.8 M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="bulbx" viewBox="-16 -16 32 32">
+    <circle r="11" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"/>
+    <path d="M-7.8 -7.8 L7.8 7.8 M7.8 -7.8 L-7.8 7.8 M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none" opacity=".45"/>
+  </symbol>
+  <symbol id="bat" viewBox="-18 -18 36 36">
+    <path d="M-18 0 H-4 M4 0 H18 M-4 -13 V13" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M4 -7 V7" stroke="currentColor" stroke-width="3.4" fill="none"/>
+  </symbol>
+  <symbol id="batr" viewBox="-18 -18 36 36">
+    <path d="M-18 0 H-4 M4 0 H18 M4 -13 V13" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M-4 -7 V7" stroke="currentColor" stroke-width="3.4" fill="none"/>
+  </symbol>
+  <symbol id="bat2" viewBox="-28 -18 56 36">
+    <path d="M-28 0 H-14 M-6 0 H6 M14 0 H28 M-14 -13 V13 M6 -13 V13" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M-6 -7 V7 M14 -7 V7" stroke="currentColor" stroke-width="3.4" fill="none"/>
+  </symbol>
+  <symbol id="bat3" viewBox="-40 -18 80 36">
+    <path d="M-40 0 H-26 M-18 0 H-6 M2 0 H14 M22 0 H40 M-26 -13 V13 M-6 -13 V13 M14 -13 V13" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M-18 -7 V7 M2 -7 V7 M22 -7 V7" stroke="currentColor" stroke-width="3.4" fill="none"/>
+  </symbol>
+  <symbol id="res" viewBox="-22 -12 44 24">
+    <rect x="-14" y="-7" width="28" height="14" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-22 0 H-14 M14 0 H22" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="sw" viewBox="-18 -14 36 28">
+    <path d="M-18 0 H-10 M10 0 H18 M-9 -1 L10 -10" stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="-10" r="2.4" fill="currentColor"/><circle cx="10" r="2.4" fill="currentColor"/>
+  </symbol>
+  <symbol id="swc" viewBox="-18 -14 36 28">
+    <path d="M-18 0 H18" stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="-10" r="2.4" fill="currentColor"/><circle cx="10" r="2.4" fill="currentColor"/>
+  </symbol>
+  <symbol id="amm" viewBox="-16 -16 32 32">
+    <circle r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text y="4.5" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">A</text>
+  </symbol>
+  <symbol id="vm" viewBox="-16 -16 32 32">
+    <circle r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text y="4.5" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">V</text>
+  </symbol>
+  <symbol id="gal" viewBox="-16 -16 32 32">
+    <circle r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text y="4.5" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">G</text>
+  </symbol>
+  <symbol id="led" viewBox="-18 -14 36 28">
+    <path d="M-18 0 H-6 M6 0 H18" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M-6 -8 L-6 8 L6 0 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M6 -8 V8" stroke="currentColor" stroke-width="2"/>
+    <path d="M2 -10 L7 -14 M6 -11 L4 -14 M6 -11 L7 -9" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  </symbol>
+  <symbol id="cap" viewBox="-16 -14 32 28">
+    <path d="M-16 0 H-3 M3 0 H16 M-3 -10 V10 M3 -10 V10" stroke="currentColor" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="gen" viewBox="-18 -18 36 36">
+    <circle r="12" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-18 0 H-12 M12 0 H18" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M0 -12 L6 -17 L11 -14" stroke="currentColor" stroke-width="1.8" fill="none"/>
+    <text y="4.5" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">G</text>
+  </symbol>
+  <symbol id="mot" viewBox="-16 -16 32 32">
+    <circle r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-16 0 H-11 M11 0 H16" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text y="4.5" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">M</text>
+  </symbol>
+  <symbol id="beak" viewBox="-22 -20 44 40">
+    <path d="M-16 -16 V12 Q-16 18 -10 18 H10 Q16 18 16 12 V-16" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M-16 -4 H16" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+    <path d="M-13 0 q4 -3 7 0 t7 0 t7 0" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".5"/>
+  </symbol>
+</svg>
+
+<div class="wrap">
+<header class="hero">
+  <p class="eyebrow">中学受験理科 / 電流回路 / 難関校リサーチ</p>
+  <h1>難関校 <em>回路パターン</em> 図鑑</h1>
+  <p class="lede">難関校で実際に出題された、あるいは「難関校型」として塾が挙げている電池回路のパターンを、回路図に描き起こしてまとめました。実装前の確認用カタログです。原問題の図そのものではなく、構成が伝わるように再構成した図です。</p>
+  <div class="legend">
+    <span class="tag t-star">◎ 最優先</span>
+    <span class="tag t-new">新規</span>
+    <span class="tag t-have">既存ノートに収録済</span>
+    <span class="tag" style="color:var(--cur);border-color:color-mix(in srgb,var(--cur) 45%,transparent);background:var(--cur-wash)">出典＝学校名が確認できたもの</span>
+  </div>
+</header>
+
+<nav class="nav">
+  <a href="#A">A 電池のつなぎ方</a>
+  <a href="#B">B ショート</a>
+  <a href="#C">C 複雑直並列</a>
+  <a href="#D">D 対称・立体</a>
+  <a href="#E">E スイッチ・装置</a>
+  <a href="#F">F グラフ・非線形</a>
+  <a href="#G">G 電熱線・発熱</a>
+  <a href="#H">H LED・発電機</a>
+</nav>
+
+<!-- ================= A ================= -->
+<section id="A">
+  <div class="sh"><span class="k">A</span><h2>電池のつなぎ方そのものが難所</h2></div>
+  <p class="sd">豆電球側ではなく<b>電池側</b>で差がつくパターン。「明るさ」と「電池のもち」を分けて問われる形が中心です。</p>
+  <div class="grid">
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 168" role="img" aria-label="電池1個と電池2個並列の比較">
+          <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbon" x="114" y="14" width="32" height="32"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <text x="130" y="9" text-anchor="middle" class="a">明るさ 1</text>
+          <text x="130" y="162" text-anchor="middle">ア　電池1個</text>
+          <g transform="translate(280,0)">
+            <path d="M34 30 H114 M146 30 H226 M34 30 V114 M226 30 V114
+                     M34 114 H100 M100 96 V132 M100 96 H112 M148 96 H160 M100 132 H112 M148 132 H160 M160 96 V132 M160 114 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulbon" x="114" y="14" width="32" height="32"/>
+            <use href="#bat" x="112" y="78" width="36" height="36"/>
+            <use href="#bat" x="112" y="114" width="36" height="36"/>
+            <text x="130" y="9" text-anchor="middle" class="a">明るさ 1（同じ）</text>
+            <text x="130" y="162" text-anchor="middle">イ　電池2個 並列</text>
+          </g>
+          <text x="270" y="66" text-anchor="middle" class="c">≠</text>
+          <text x="270" y="82" text-anchor="middle" class="c s">もちは2倍</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">A1</span><span class="nm">電池の並列は明るさを変えない</span><span class="tag t-have">既存</span></div>
+      <p>電池を並列に増やしても<b>電圧は1個分のまま</b>なので明るさは変わらない。変わるのは電池1個あたりの負担＝もちが2倍。「電池が2個あるから2倍明るい」が最頻出の誤答。</p>
+      <p class="src ok">駒場東邦 2022 小問集合(6)</p>
+    </div>
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 156" role="img" aria-label="電池の向きが逆の回路">
+          <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112 M34 112 H64 M100 112 H112 M148 112 H160 M196 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbon" x="114" y="14" width="32" height="32"/>
+          <use href="#bat" x="64" y="94" width="36" height="36"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <use href="#batr" x="160" y="94" width="36" height="36"/>
+          <text x="178" y="140" text-anchor="middle" class="w">逆</text>
+          <text x="130" y="9" text-anchor="middle" class="a">1.5V → 光る</text>
+          <text x="130" y="152" text-anchor="middle">ウ　1.5＋1.5−1.5＝1.5V</text>
+          <g transform="translate(280,0)">
+            <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112 M34 112 H88 M124 112 H136 M172 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulbx" x="114" y="14" width="32" height="32"/>
+            <use href="#bat" x="88" y="94" width="36" height="36"/>
+            <use href="#batr" x="136" y="94" width="36" height="36"/>
+            <text x="154" y="140" text-anchor="middle" class="w">逆</text>
+            <text x="130" y="9" text-anchor="middle" class="c">0V → 光らない</text>
+            <text x="130" y="152" text-anchor="middle">エ　1.5−1.5＝0V</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">A2</span><span class="nm">電池の向きが逆（電圧の引き算）</span><span class="tag t-new">新規</span></div>
+      <p>電池の向きは<b>足し算・引き算</b>。3個中1個逆なら電池1個分で光り、2個中1個逆なら完全に打ち消して消える。「1個でも逆なら消える」と即答する子が多い。実物では逆向きの電池が充電される形になり、液もれ・破裂の危険。</p>
+      <p class="src">※中学受験での出題例はウェブ上で未確認（原理としては頻出）</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 170" role="img" aria-label="電池を並列にするとき1個だけ逆向き">
+          <path d="M34 30 H114 M146 30 H226 M34 30 V114 M226 30 V114
+                   M34 114 H100 M100 96 V132 M100 96 H112 M148 96 H160 M100 132 H112 M148 132 H160 M160 96 V132 M160 114 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbx" x="114" y="14" width="32" height="32"/>
+          <use href="#bat" x="112" y="78" width="36" height="36"/>
+          <use href="#batr" x="112" y="114" width="36" height="36"/>
+          <text x="180" y="136" class="w">逆</text>
+          <text x="130" y="9" text-anchor="middle" class="c">つかない</text>
+          <text x="130" y="164" text-anchor="middle" class="w">電池どうしがショート・発熱</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">A3</span><span class="nm">並列で1個だけ逆＝電池どうしのショート</span><span class="tag t-new">新規</span></div>
+      <p>電池2個で閉じたループができ、互いにショートした状態に。豆電球はつかず、電池が発熱する。「危険なつなぎ方をすべて選べ」の選択肢に必ず混ざる形。</p>
+      <p class="src">Stupedia／知恵袋</p>
+    </div>
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 182" role="img" aria-label="最も明るい回路と最も長持ちする回路">
+          <path d="M34 30 H114 M146 30 H226 M34 66 H114 M146 66 H226 M34 30 V112 M226 30 V112 M34 112 H102 M158 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbon" x="114" y="14" width="32" height="32"/>
+          <use href="#bulbon" x="114" y="50" width="32" height="32"/>
+          <use href="#bat2" x="102" y="94" width="56" height="36"/>
+          <text x="130" y="9" text-anchor="middle" class="a">各 明るさ2</text>
+          <text x="130" y="164" text-anchor="middle" class="a">最も明るい</text>
+          <text x="130" y="177" text-anchor="middle" class="s">電池＝直列／豆電球＝並列</text>
+          <g transform="translate(280,0)">
+            <path d="M34 30 H74 M106 30 H154 M186 30 H226 M34 30 V114 M226 30 V114
+                     M34 114 H100 M100 96 V132 M100 96 H112 M148 96 H160 M100 132 H112 M148 132 H160 M160 96 V132 M160 114 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulb" x="74" y="14" width="32" height="32"/>
+            <use href="#bulb" x="154" y="14" width="32" height="32"/>
+            <use href="#bat" x="112" y="78" width="36" height="36"/>
+            <use href="#bat" x="112" y="114" width="36" height="36"/>
+            <text x="130" y="9" text-anchor="middle" class="c">各 明るさ ½</text>
+            <text x="130" y="164" text-anchor="middle" class="c">最も長持ち</text>
+            <text x="130" y="177" text-anchor="middle" class="s">電池＝並列／豆電球＝直列</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">A4</span><span class="nm">「最も明るい」と「最も長持ち」を同じ図の集合で問う</span><span class="tag t-star">◎</span></div>
+      <p>豆電球2個・乾電池2個の全組み合わせ（4〜6通り）を並べ、2つの問いを立てる。明るさは豆電球の電流、もちは<b>電池1個を流れる電流</b>で判断する。判断基準がまるごと入れ替わるのが要点。</p>
+      <p class="src">Stupedia「乾電池の持ち」／ゆずぱ</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 156" role="img" aria-label="枝に電池がある回路">
+          <path d="M34 30 H114 M146 30 H226 M34 66 H112 M148 66 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbx" x="114" y="14" width="32" height="32"/>
+          <use href="#bat" x="112" y="48" width="36" height="36"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <text x="130" y="9" text-anchor="middle" class="c">ア（電流が流れない）</text>
+          <text x="176" y="60" class="w">電池だけの枝</text>
+          <text x="130" y="152" text-anchor="middle" class="s">電池は抵抗0 → 導線と同じ扱い</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">A5</span><span class="nm">並列の枝に電池だけがある（二電源）</span><span class="tag t-new">新規・発展</span></div>
+      <p>電池は抵抗ゼロなので、枝に電池があると<b>その両端の電圧が固定</b>される＝実質ショート。厳密にはキルヒホッフの電圧則で、中学受験では「対称にして電流0を答えさせる」形に落とし込まれる。</p>
+      <p class="src">発展（中学受験での直接の出題例は未確認）</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= B ================= -->
+<section id="B">
+  <div class="sh"><span class="k">B</span><h2>ショート — 光らない豆電球を見ぬく</h2></div>
+  <p class="sd">「導線だけの道があるか」を最後まで指でなぞれるか。難関校ではスイッチと組み合わせて、状態ごとに答えが変わる形で出ます。</p>
+  <div class="grid">
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 150" role="img" aria-label="完全ショートの選択肢">
+          <path d="M34 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <text x="130" y="22" text-anchor="middle" class="w">導線だけ</text>
+          <text x="130" y="66" text-anchor="middle" class="w">危険</text>
+          <text x="130" y="146" text-anchor="middle">ア　両極を直結</text>
+          <g transform="translate(280,0)">
+            <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112
+                     M34 112 H88 M124 112 H136 M172 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulbx" x="114" y="14" width="32" height="32"/>
+            <use href="#bat" x="88" y="94" width="36" height="36"/>
+            <use href="#batr" x="136" y="94" width="36" height="36"/>
+            <text x="130" y="22" text-anchor="middle" class="c">つかない</text>
+            <text x="130" y="146" text-anchor="middle">イ　＋極どうしを接続</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">B1</span><span class="nm">完全ショート／危険なつなぎ方を全部選べ</span><span class="tag t-new">新規</span></div>
+      <p>十数個の回路から「豆電球がつかないもの」「危険なもの」を選ぶ形式。<b>理由の記述</b>（抵抗がほとんどないので極めて大きな電流が流れ、導線が熱くなる）まで求められることが多い。電流計を電池に直結する誤りも選択肢に入る。</p>
+      <p class="src">Stupedia「ショート回路」</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 150" role="img" aria-label="部分ショート">
+          <path d="M34 30 H74 M106 30 H154 M186 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226 M130 30 V58 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbon" x="74" y="14" width="32" height="32"/>
+          <use href="#bulbx" x="154" y="14" width="32" height="32"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <circle cx="130" cy="30" r="3" fill="currentColor"/><circle cx="226" cy="58" r="3" fill="currentColor"/>
+          <text x="90" y="9" text-anchor="middle" class="a">ア ＝ 1</text>
+          <text x="176" y="9" text-anchor="middle" class="c">イ ＝ 0</text>
+          <text x="130" y="146" text-anchor="middle" class="s">迂回路があると豆電球には流れない</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">B2</span><span class="nm">部分ショート（迂回路）</span><span class="tag t-have">既存</span></div>
+      <p>豆電球をまたぐ導線があると、その豆電球は光らず、<b>残った豆電球はむしろ明るくなる</b>。この「明るくなる」が抜けやすい。</p>
+      <p class="src">Stupedia「部分ショート」</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 150" role="img" aria-label="部分ショートに見えるだけのひっかけ">
+          <path d="M34 30 H74 M106 30 H154 M186 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226 M130 30 V58 M130 58 H154 M186 58 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbon" x="74" y="14" width="32" height="32"/>
+          <use href="#bulbon" x="154" y="14" width="32" height="32"/>
+          <use href="#bulbon" x="154" y="42" width="32" height="32"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <circle cx="130" cy="30" r="3" fill="currentColor"/><circle cx="226" cy="58" r="3" fill="currentColor"/>
+          <text x="130" y="146" text-anchor="middle" class="c s">迂回路の先にも豆電球 → ただの並列</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">B3</span><span class="nm">部分ショートに「見えるだけ」のひっかけ</span><span class="tag t-new">新規</span></div>
+      <p>迂回路の途中に豆電球がある場合はショートにならず、<b>ただの並列</b>。B2と並べて出題されると一気に正答率が落ちる。「導線だけで反対側まで届いているか」を確認する習慣づけ。</p>
+      <p class="src">知恵袋（中学受験理科の質問）</p>
+    </div>
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 260 182" role="img" aria-label="スイッチ2個と豆電球3個の回路">
+          <path d="M34 30 H74 M106 30 H154 M186 30 H226
+                   M34 30 V150 M226 30 V150
+                   M130 30 V68 M130 68 H160 M196 68 H226
+                   M34 106 H74 M106 106 H152 M188 106 H226
+                   M34 150 H112 M148 150 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulb" x="74" y="14" width="32" height="32"/>
+          <use href="#bulb" x="154" y="14" width="32" height="32"/>
+          <use href="#sw" x="160" y="54" width="36" height="28"/>
+          <use href="#bulb" x="74" y="90" width="32" height="32"/>
+          <use href="#sw" x="152" y="92" width="36" height="28"/>
+          <use href="#bat" x="112" y="132" width="36" height="36"/>
+          <circle cx="130" cy="30" r="3" fill="currentColor"/>
+          <text x="90" y="11" text-anchor="middle">ア</text>
+          <text x="170" y="11" text-anchor="middle">イ</text>
+          <text x="204" y="52" class="c">S₁</text>
+          <text x="90" y="87" text-anchor="middle">ウ</text>
+          <text x="196" y="90" class="c">S₂</text>
+          <text x="130" y="178" text-anchor="middle" class="s">S₁を閉じるとイがショートして消える</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">B4</span><span class="nm">スイッチの組合せで部分ショートが生まれる</span><span class="tag t-star">◎</span></div>
+      <p>S₁のみ／S₁+S₂／S₁+S₃／全部、の4状態で各豆電球の明るさを問う。<b>全部入れたときに急に1個が消える</b>（部分ショートが完成する）のが最大の落とし穴。手順は「入れたスイッチを線でつなぐ→通らない部分に×→部分ショートを確認→描き直す」。</p>
+      <p class="src">Stupedia「スイッチ回路」／海陽 2021 特別給費 大問2 も同型</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= C ================= -->
+<section id="C">
+  <div class="sh"><span class="k">C</span><h2>複雑な直並列・回路の書きかえ</h2></div>
+  <p class="sd">図の見た目に惑わされず、「両はしがどの点か」だけで判断できるか。難関校は<b>回路を並べて比較させる</b>形か、<b>導線を1本足す</b>形で聞いてきます。</p>
+  <div class="grid">
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 320" role="img" aria-label="回路一覧から明るさを判定する">
+          <g>
+            <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulbon" x="114" y="14" width="32" height="32"/><use href="#bat" x="112" y="94" width="36" height="36"/>
+            <text x="130" y="148" text-anchor="middle" class="a">ア（基準＝1）</text>
+          </g>
+          <g transform="translate(280,0)">
+            <path d="M34 30 H74 M106 30 H154 M186 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulb" x="74" y="14" width="32" height="32"/><use href="#bulb" x="154" y="14" width="32" height="32"/><use href="#bat" x="112" y="94" width="36" height="36"/>
+            <text x="130" y="148" text-anchor="middle">イ（各 ½）</text>
+          </g>
+          <g transform="translate(0,166)">
+            <path d="M34 30 H114 M146 30 H226 M34 66 H114 M146 66 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulbon" x="114" y="14" width="32" height="32"/><use href="#bulbon" x="114" y="50" width="32" height="32"/><use href="#bat" x="112" y="94" width="36" height="36"/>
+            <text x="130" y="148" text-anchor="middle">ウ（各 1）</text>
+          </g>
+          <g transform="translate(280,166)">
+            <path d="M34 30 H74 M106 30 H154 M186 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226 M130 30 V58 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulbon" x="74" y="14" width="32" height="32"/><use href="#bulbx" x="154" y="14" width="32" height="32"/><use href="#bat" x="112" y="94" width="36" height="36"/>
+            <circle cx="130" cy="30" r="3" fill="currentColor"/><circle cx="226" cy="58" r="3" fill="currentColor"/>
+            <text x="130" y="148" text-anchor="middle" class="c">エ（1／0）</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">C1</span><span class="nm">十数個の回路一覧から明るさを判定させる</span><span class="tag t-new">新規</span></div>
+      <p>ア〜セの十数通りを並べ、「明かりがついていないものを全部」「アより明るいものを全部」「アと同じ明るさのものは何個」と畳みかける。1問ごとの難度は低いが、<b>基準アを1として全部を相対値で埋める</b>作業量で差がつく。部分ショートが数個混ざるのが定番。</p>
+      <p class="src ok">城北 2014</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 156" role="img" aria-label="導線を1本足す位置を変える">
+          <path d="M34 30 H58 M90 30 H114 M146 30 H170 M202 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulb" x="58" y="14" width="32" height="32"/>
+          <use href="#bulb" x="114" y="14" width="32" height="32"/>
+          <use href="#bulb" x="170" y="14" width="32" height="32"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <path d="M102 30 V58 H226" stroke="var(--warn)" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+          <path d="M158 30 V76 H226" stroke="var(--cur)" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+          <circle cx="102" cy="30" r="3" fill="currentColor"/><circle cx="158" cy="30" r="3" fill="currentColor"/>
+          <text x="74" y="11" text-anchor="middle">F</text><text x="130" y="11" text-anchor="middle">G</text><text x="186" y="11" text-anchor="middle">H</text>
+          <text x="120" y="54" class="w s">あ</text><text x="176" y="72" class="c s">い</text>
+          <text x="130" y="152" text-anchor="middle" class="s">導線を足す位置で答えが総入れ替えになる</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">C2</span><span class="nm">導線を1本足す位置を3通り変える</span><span class="tag t-star">◎</span></div>
+      <p>同じ回路に導線を1本だけ追加し、その位置を「あ・い・う」と変えて<b>F・G・Hの明るさの関係がどう変わるか</b>を答えさせる。部分ショートの理解を、選択ではなく記述で問える形。上の図では「あ」でGとHが、「い」でHが消える。</p>
+      <p class="src ok">早稲田大学高等学院中学部 2016</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 218" role="img" aria-label="変な形に描かれた並列回路">
+          <path d="M130 26 L50 50 M50 50 V72 M50 104 V126 M50 126 L130 150
+                   M130 26 V72 M130 104 V150
+                   M130 26 L210 50 M210 50 V72 M210 104 V126 M210 126 L130 150
+                   M130 26 V10 H10 V176 H112 M148 176 H250 V150 H130" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulb" x="34" y="72" width="32" height="32" transform="rotate(90 50 88)"/>
+          <use href="#bulb" x="114" y="72" width="32" height="32" transform="rotate(90 130 88)"/>
+          <use href="#bulb" x="194" y="72" width="32" height="32" transform="rotate(90 210 88)"/>
+          <use href="#bat" x="112" y="158" width="36" height="36"/>
+          <circle cx="130" cy="26" r="3.5" fill="currentColor"/><circle cx="130" cy="150" r="3.5" fill="currentColor"/>
+          <text x="140" y="22" class="c">ア</text><text x="140" y="164" class="c">イ</text>
+          <text x="130" y="212" text-anchor="middle" class="s">＝ 豆電球3個の並列（3本ともア–イを結んでいる）</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">C3</span><span class="nm">見た目が違うだけの回路を見やぶる（等電位法）</span><span class="tag t-new">新規</span></div>
+      <p>導線だけでつながった点に同じ名前をつけ、各豆電球の<b>両はしの点名</b>を書く。同じ組を結ぶものは並列。この図は3本ともア–イを結んでいるので、ただの3個並列。トポロジー変形の練習として難関校の頻出。</p>
+      <p class="src">四谷大塚 合不合判定テスト 大問4 ほか</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 172" role="img" aria-label="電池2個直列と2経路の直並列混合">
+          <path d="M34 30 H58 M90 30 H162 M194 30 H226
+                   M130 30 V62 M130 62 H162 M194 62 H226
+                   M34 100 H74 M106 100 H154 M186 100 H226
+                   M34 30 V140 M226 30 V140 M34 140 H102 M158 140 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulb" x="58" y="14" width="32" height="32"/>
+          <use href="#bulb" x="162" y="14" width="32" height="32"/>
+          <use href="#bulb" x="162" y="46" width="32" height="32"/>
+          <use href="#bulb" x="74" y="84" width="32" height="32"/>
+          <use href="#bulb" x="154" y="84" width="32" height="32"/>
+          <use href="#bat2" x="102" y="122" width="56" height="36"/>
+          <circle cx="130" cy="30" r="3" fill="currentColor"/><circle cx="226" cy="62" r="3" fill="currentColor"/>
+          <text x="74" y="11" text-anchor="middle" class="a">イ 4/3</text>
+          <text x="204" y="24" class="a">ウ 2/3</text>
+          <text x="204" y="88" class="a">エ 2/3</text>
+          <text x="90" y="81" text-anchor="middle">オ 1</text>
+          <text x="170" y="81" text-anchor="middle">カ 1</text>
+          <text x="130" y="168" text-anchor="middle" class="s">経路ごとに抵抗を出し、最後に電池の直列数を掛ける</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">C4</span><span class="nm">電池2個直列＋2経路の直並列混合</span><span class="tag t-new">新規</span></div>
+      <p>経路1＝イ単独＋ウエ並列（抵抗 3/2）、経路2＝オカ直列（抵抗 2）。電池2個で電圧2なので、イ＝4/3、ウ＝エ＝2/3、オ＝カ＝1。<b>豆電球側だけで比を出し、最後に電池の直列個数を掛ける</b>二段構えにすると崩れない。</p>
+      <p class="src">Stupedia「複雑な直並列つなぎ」</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= D ================= -->
+<section id="D">
+  <div class="sh"><span class="k">D</span><h2>対称・立体回路</h2></div>
+  <p class="sd">「電流が流れない枝」を見ぬけるか。最難関の定番で、立方体・正四面体は<b>電池をつなぐ位置を変えて比較させる</b>のが本題です。</p>
+  <div class="grid">
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 178" role="img" aria-label="ブリッジ回路">
+          <path d="M34 76 L67.8 58.4 M96.2 43.6 L130 26 M130 26 L163.8 43.6 M192.2 58.4 L226 76
+                   M34 76 L67.8 93.6 M96.2 108.4 L130 126 M130 126 L163.8 108.4 M192.2 93.6 L226 76
+                   M130 42 V60 M130 92 V110
+                   M34 76 H14 V152 H112 M148 152 H246 V76 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulb" x="66" y="35" width="32" height="32" transform="rotate(-27.5 82 51)"/>
+          <use href="#bulb" x="162" y="35" width="32" height="32" transform="rotate(27.5 178 51)"/>
+          <use href="#bulb" x="66" y="85" width="32" height="32" transform="rotate(27.5 82 101)"/>
+          <use href="#bulb" x="162" y="85" width="32" height="32" transform="rotate(-27.5 178 101)"/>
+          <use href="#bulbx" x="114" y="60" width="32" height="32" transform="rotate(90 130 76)"/>
+          <use href="#bat" x="112" y="134" width="36" height="36"/>
+          <text x="130" y="18" text-anchor="middle">ア</text><text x="142" y="130">イ</text>
+          <text x="150" y="72" class="c">電流0</text>
+          <text x="48" y="40" class="a">½</text><text x="198" y="40" class="a">½</text>
+          <text x="48" y="122" class="a">½</text><text x="198" y="122" class="a">½</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">D1</span><span class="nm">ブリッジ回路（中央に電流が流れない）</span><span class="tag t-have">既存</span></div>
+      <p>左右対称なのでアとイが同電圧 → 中央は光らない。取り去ると「2個直列×2列の並列」。理由を<b>「抵抗が小さいから」ではなく「両端が同電位だから」</b>と書けるかが記述の分かれ目。</p>
+      <p class="src">ホイートストンブリッジ条件（R₁×R₄＝R₂×R₃）の小学生版</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 244" role="img" aria-label="立方体の3通りのつなぎ方">
+          <g stroke="currentColor" stroke-width="1.8" fill="none">
+            <path d="M45 175 H155 V65 H45 Z"/>
+            <path d="M105 135 H215 V25 H105 Z"/>
+            <path d="M45 175 L105 135 M155 175 L215 135 M155 65 L215 25 M45 65 L105 25"/>
+          </g>
+          <circle cx="45" cy="175" r="4.5" fill="var(--amber)"/>
+          <circle cx="215" cy="25" r="4.5" fill="var(--amber)"/>
+          <circle cx="155" cy="175" r="4.5" fill="var(--cur)"/>
+          <circle cx="105" cy="25" r="4.5" fill="var(--warn)"/>
+          <text x="24" y="182" class="a">A</text>
+          <text x="224" y="22" class="a">G</text>
+          <text x="162" y="192" class="c">B</text>
+          <text x="86" y="20" class="w">D′</text>
+          <text x="14" y="212" class="a s">A–G　体の対角　→ 合成抵抗 5/6</text>
+          <text x="14" y="226" class="c s">A–B　となり合う　→ 合成抵抗 7/12</text>
+          <text x="14" y="240" class="w s">A–D′　面の対角　→ 合成抵抗 3/4</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">D2</span><span class="nm">立方体の12辺 — つなぐ頂点を変える</span><span class="tag t-have">既存</span></div>
+      <p>同じ豆電球12個。合成抵抗は<b>体対角 5/6・面の対角 3/4・となり合う頂点 7/12</b>。面の対角では<b>電流が流れない辺が2本</b>でき、明るさが 3：2：1：0 の4段階に分かれる。</p>
+      <p class="src">既存ノート第8章 C1 に収録済</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 190" role="img" aria-label="正四面体の6辺に豆電球">
+          <g stroke="currentColor" stroke-width="1.8" fill="none">
+            <path d="M35 160 H215 M35 160 L150 118 M215 160 L150 118 M35 160 L118 35 M215 160 L118 35 M150 118 L118 35"/>
+          </g>
+          <circle cx="125" cy="160" r="7" fill="var(--amber)"/>
+          <circle cx="92.5" cy="139" r="7" fill="var(--cur)"/>
+          <circle cx="182.5" cy="139" r="7" fill="var(--cur)"/>
+          <circle cx="76.5" cy="97.5" r="7" fill="var(--cur)"/>
+          <circle cx="166.5" cy="97.5" r="7" fill="var(--cur)"/>
+          <circle cx="134" cy="76.5" r="7" fill="var(--warn)"/>
+          <circle cx="35" cy="160" r="4.5" fill="currentColor"/>
+          <circle cx="215" cy="160" r="4.5" fill="currentColor"/>
+          <text x="16" y="178" class="a">P（＋）</text>
+          <text x="196" y="178" class="a">Q（−）</text>
+          <text x="121" y="182" class="a s">A</text>
+          <text x="146" y="70" class="w s">F ＝ 電流0</text>
+          <text x="130" y="14" text-anchor="middle" class="s">頂点P・Q に電池をつなぐ</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">D3</span><span class="nm">正四面体の6辺に豆電球</span><span class="tag t-star">◎</span></div>
+      <p>PQを直接結ぶ辺A、遠回りの4辺、そして<b>残る1辺Fは両端が同電位で電流が流れない</b>。基準「豆1個＝60mA」を与えたうえで、「1個外すと明るさが2段階に分かれる組」「2個外して60mAのままになる組（3通り）」「3個外して電池が最も長持ちするつなぎ方」まで問う。明るさの比は <b>2：1：0</b>、合成抵抗は <b>1/2</b>。立方体より小さいのに設問が深く作れる。</p>
+      <p class="src ok">立教新座 2019 大問4</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= E ================= -->
+<section id="E">
+  <div class="sh"><span class="k">E</span><h2>スイッチ・実験器具の考察</h2></div>
+  <p class="sd">計算ではなく<b>装置のしくみ</b>を考えさせるタイプ。女子学院・海陽・開成が好んで出します。日常の道具（階段の照明・電球の口金）が題材になるのが特徴。</p>
+  <div class="grid">
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 168" role="img" aria-label="三路スイッチの回路">
+          <path d="M34 60 H56 M34 60 V140 M34 140 H112 M148 140 H226 M226 140 V116 M226 84 V60 M204 60 H226
+                   M90 44 H170 M90 76 H170" stroke="currentColor" stroke-width="2" fill="none"/>
+          <path d="M56 60 L89 45 M204 60 L171 75" stroke="currentColor" stroke-width="2.4" fill="none"/>
+          <use href="#bulbon" x="210" y="84" width="32" height="32" transform="rotate(90 226 100)"/>
+          <use href="#bat" x="112" y="122" width="36" height="36"/>
+          <circle cx="56" cy="60" r="3" fill="currentColor"/><circle cx="90" cy="44" r="3" fill="currentColor"/><circle cx="90" cy="76" r="3" fill="currentColor"/>
+          <circle cx="170" cy="44" r="3" fill="currentColor"/><circle cx="170" cy="76" r="3" fill="currentColor"/><circle cx="204" cy="60" r="3" fill="currentColor"/>
+          <text x="60" y="94" class="c">1階</text>
+          <text x="182" y="98" class="c">2階</text>
+          <text x="130" y="30" text-anchor="middle" class="s">上下2本の渡り線</text>
+          <text x="130" y="164" text-anchor="middle" class="s">どちらのスイッチでも点灯・消灯が反転する</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">E1</span><span class="nm">三路スイッチ・四路スイッチ（階段の照明）</span><span class="tag t-star">◎</span></div>
+      <p>1つの電球を2か所から入切する配線を選ばせる。発展形は中央に<b>四路スイッチ</b>（はじめ 1-2 と 3-4 がつながり、90°回すと 1-3 と 2-4 になる）を入れて3か所から操作。身のまわりの装置を回路図に翻訳させる、難関校らしい設問。</p>
+      <p class="src ok">海陽・特別給費 2021 大問2 ／ 女子学院 2018</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 160" role="img" aria-label="検流計と切り替えスイッチ">
+          <path d="M34 30 H64 M96 30 H160 M192 30 H226 M34 30 V120 M226 30 V120
+                   M130 30 V75 M130 75 H148 M184 75 H190 M222 75 H226
+                   M34 120 H112 M148 120 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#gal" x="64" y="14" width="32" height="32"/>
+          <use href="#bulb" x="160" y="14" width="32" height="32"/>
+          <use href="#sw" x="148" y="61" width="36" height="28"/>
+          <use href="#bulb" x="190" y="59" width="32" height="32"/>
+          <use href="#bat" x="112" y="102" width="36" height="36"/>
+          <circle cx="130" cy="30" r="3" fill="currentColor"/>
+          <text x="80" y="11" text-anchor="middle" class="c">検流計</text>
+          <text x="176" y="11" text-anchor="middle">A</text>
+          <text x="206" y="103" text-anchor="middle">B</text>
+          <text x="130" y="156" text-anchor="middle" class="s">針の向き・振れが最大／最小になるスイッチの組を答える</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">E2</span><span class="nm">検流計の振れの向きと大きさ</span><span class="tag t-new">新規</span></div>
+      <p>回路図の作図 → 針の振れる向きの判定 → <b>危険な回路（ショート）の判別</b> → 明るさの順位 → 振れが最大・最小になるスイッチの組合せ、と一続きで問う。最後に階段照明の設計につながる構成。</p>
+      <p class="src ok">女子学院 2018</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 176" role="img" aria-label="豆電球の口金の断面">
+          <path d="M78 96 Q76 40 130 32 Q184 40 182 96" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M112 96 V70 M148 96 V70 M112 70 q6 -8 12 0 t12 0 t12 0" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M80 96 H180 V126 H80 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M80 104 H180 M80 112 H180 M80 120 H180" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+          <path d="M96 126 H164 V138 H96 Z" fill="var(--line)" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M112 138 H148 V150 H112 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M20 111 H80 M20 156 H130 V150" stroke="var(--warn)" stroke-width="2" fill="none"/>
+          <text x="188" y="114" class="a s">a 金属（ねじ）</text>
+          <text x="188" y="136" class="a s">b 絶縁体</text>
+          <text x="188" y="150" class="a s">c 金属（底）</text>
+          <text x="130" y="24" text-anchor="middle" class="s">フィラメント</text>
+          <text x="16" y="172" class="w s">a と c の両方に触れないと点灯しない</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">E3</span><span class="nm">ソケットを使わない配線（豆電球の口金）</span><span class="tag t-new">新規</span></div>
+      <p>豆電球の断面を与え、導線をどこに当てれば点灯するかを問う。<b>側面のねじ部 a と底の金属 c の両方</b>に接続が必要で、b は絶縁体。「どのつなぎ方で点灯するか」を選択させる形が定番。</p>
+      <p class="src ok">海陽・特別給費 2021 大問2</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 156" role="img" aria-label="電池と導線を自分で配置する問題">
+          <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112 M34 112 H100 M160 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulb" x="114" y="14" width="32" height="32"/>
+          <rect x="100" y="96" width="60" height="32" rx="5" fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="5 4"/>
+          <path d="M130 66 V52" stroke="var(--cur)" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+          <rect x="106" y="60" width="48" height="24" rx="5" fill="none" stroke="var(--cur)" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="130" y="118" text-anchor="middle" class="w s">ここに電池を描く</text>
+          <text x="130" y="76" text-anchor="middle" class="c s">導線を描き足す</text>
+          <text x="130" y="152" text-anchor="middle" class="s">与えられた条件を満たす回路を自分で完成させる</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">E4</span><span class="nm">回路図を自分で描く／電池と導線を配置する</span><span class="tag t-new">新規</span></div>
+      <p>「この明るさになるように電池と導線を描き入れよ」「モーターが逆に回るようにつなぎかえよ」など、<b>作図で答えさせる</b>形式。読み取りではなく構成力を見る問題で、部分点の差が大きい。</p>
+      <p class="src ok">開成 2024 大問4</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 168" role="img" aria-label="電流計と電圧計のつなぎ方">
+          <path d="M34 40 H64 M96 40 H140 M172 40 H226 M34 40 V122 M226 40 V122 M34 122 H112 M148 122 H226
+                   M108 40 V80 M108 80 H120 M156 80 H168 M168 80 V40" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#amm" x="64" y="24" width="32" height="32"/>
+          <use href="#bulb" x="140" y="24" width="32" height="32"/>
+          <use href="#vm" x="120" y="64" width="32" height="32"/>
+          <use href="#bat" x="112" y="104" width="36" height="36"/>
+          <circle cx="108" cy="40" r="3" fill="currentColor"/><circle cx="168" cy="40" r="3" fill="currentColor"/>
+          <text x="80" y="20" text-anchor="middle" class="c">電流計＝直列</text>
+          <text x="196" y="86" text-anchor="middle" class="a">電圧計＝並列</text>
+          <text x="130" y="164" text-anchor="middle" class="s">たんしは必ず大きい方（5A・300V）から試す</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">E5</span><span class="nm">電流計・電圧計のつなぎ方と端子選択</span><span class="tag t-have">既存</span></div>
+      <p>電流計は内部抵抗が小さいので直列、電圧計は大きいので並列。<b>その理由</b>（回路の電流を変えてしまわない／電流を横取りしない）を書かせる学校がある。難関校では単独では出ず、実験考察の前振りとして組み込まれる。</p>
+      <p class="src">既存ノート第5章に収録済</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= F ================= -->
+<section id="F">
+  <div class="sh"><span class="k">F</span><h2>グラフ・非線形 — 最難関の主戦場</h2></div>
+  <p class="sd">「豆電球の抵抗は一定ではない」を実験データで突きつけるタイプ。ここが解けるかどうかで最難関の物理は決まります。</p>
+  <div class="grid">
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 172" role="img" aria-label="豆電球と電熱線の電流電圧グラフ">
+          <path d="M36 24 V140 H236" stroke="currentColor" stroke-width="1.8" fill="none"/>
+          <path d="M36 140 C80 96 140 74 220 60" stroke="var(--amber)" stroke-width="2.6" fill="none"/>
+          <path d="M36 140 L220 52" stroke="var(--cur)" stroke-width="2.6" fill="none" stroke-dasharray="6 4"/>
+          <text x="176" y="76" class="a">豆電球</text>
+          <text x="182" y="44" class="c">電熱線</text>
+          <text x="30" y="20" text-anchor="end" class="s">電流</text>
+          <text x="236" y="156" text-anchor="end" class="s">電圧</text>
+          <text x="130" y="168" text-anchor="middle" class="s">電熱線＝原点を通る直線／豆電球＝寝ていく曲線</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">F1</span><span class="nm">豆電球の非線形グラフを直並列に適用する</span><span class="tag t-have">既存</span></div>
+      <p>豆電球1個のV-Iグラフを与え、2個直列（各半分の電圧）→3個の直並列→<b>豆電球と電熱線の直列</b>まで発展させる。「電圧を仮定 → グラフで電流を読む → つじつまが合う点を探す」の反復。</p>
+      <p class="src ok">聖光学院 2015</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 172" role="img" aria-label="電球の特性曲線と電池の特性直線の交点">
+          <path d="M36 24 V140 H236" stroke="currentColor" stroke-width="1.8" fill="none"/>
+          <path d="M36 140 C80 96 140 74 220 60" stroke="var(--amber)" stroke-width="2.6" fill="none"/>
+          <path d="M36 50 L200 140" stroke="var(--cur)" stroke-width="2.6" fill="none"/>
+          <circle cx="106" cy="95" r="5" fill="var(--warn)"/>
+          <path d="M106 95 V140 M106 95 H36" stroke="var(--warn)" stroke-width="1.4" fill="none" stroke-dasharray="3 3"/>
+          <text x="172" y="72" class="a">電球</text>
+          <text x="150" y="118" class="c">電池</text>
+          <text x="112" y="88" class="w">動作点</text>
+          <text x="30" y="20" text-anchor="end" class="s">電流</text>
+          <text x="236" y="156" text-anchor="end" class="s">電圧</text>
+          <text x="130" y="168" text-anchor="middle" class="s">実際の電池は電流を流すほど電圧が下がる</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">F2</span><span class="nm">電球の特性曲線 × 電池の特性直線の交点</span><span class="tag t-star">◎◎</span></div>
+      <p>まず電源装置（電圧一定）で電球A〜Eを比較させ、後半で「<b>実際の電池を使うと電圧が下がる</b>」ことをグラフで与え、2本のグラフの交点から実際に流れる電流を求めさせる。事実上の内部抵抗で、「計算どおりにならない理由」の考察までセット。<b>このカタログ中で最も難度が高い</b>。</p>
+      <p class="src ok">海城 2023 一般① 大問1（学校公式PDFで確認）</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 172" role="img" aria-label="豆電球とLEDの電流電圧グラフ">
+          <path d="M36 24 V140 H236" stroke="currentColor" stroke-width="1.8" fill="none"/>
+          <path d="M36 140 C80 100 140 80 220 66" stroke="var(--amber)" stroke-width="2.6" fill="none"/>
+          <path d="M36 139 L136 137 C160 135, 168 100, 174 34" stroke="var(--cur)" stroke-width="2.6" fill="none"/>
+          <path d="M136 137 V148" stroke="var(--cur)" stroke-width="1.4" stroke-dasharray="3 3" fill="none"/>
+          <text x="182" y="86" class="a">豆電球</text>
+          <text x="182" y="44" class="c">LED</text>
+          <text x="112" y="160" class="c s">立ち上がり電圧</text>
+          <text x="30" y="20" text-anchor="end" class="s">電流</text>
+          <text x="236" y="156" text-anchor="end" class="s">電圧</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">F3</span><span class="nm">豆電球とLEDのV-I特性を比べる</span><span class="tag t-new">新規</span></div>
+      <p>LEDは<b>ある電圧を超えるまでまったく電流が流れず</b>、超えると急に増える。だから乾電池1個では光らず、2個直列でようやく点灯する。豆電球のなだらかな曲線との対比で「実験データからの現場思考」を問う。</p>
+      <p class="src ok">豊島岡女子学園 2021 大問1</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 172" role="img" aria-label="電熱線1本 2本直列 2本並列のグラフ">
+          <path d="M36 24 V140 H236" stroke="currentColor" stroke-width="1.8" fill="none"/>
+          <path d="M36 140 L123 36" stroke="var(--warn)" stroke-width="2.6" fill="none"/>
+          <path d="M36 140 L210 36" stroke="var(--amber)" stroke-width="2.6" fill="none"/>
+          <path d="M36 140 L210 88" stroke="var(--cur)" stroke-width="2.6" fill="none"/>
+          <text x="128" y="34" class="w s">2本 並列</text>
+          <text x="186" y="30" class="a s">1本</text>
+          <text x="186" y="84" class="c s">2本 直列</text>
+          <text x="30" y="20" text-anchor="end" class="s">電流</text>
+          <text x="236" y="156" text-anchor="end" class="s">電圧</text>
+          <text x="130" y="168" text-anchor="middle" class="s">傾きの比 4：2：1 ＝ 抵抗の逆比</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">F4</span><span class="nm">電熱線のグラフから抵抗を出し、端子を付けかえる</span><span class="tag t-new">新規</span></div>
+      <p>1本＝10Ω、2本直列＝20Ω、2本並列＝5Ω をグラフの傾きから読み取り、そのあと<b>接続端子を変えたときの電流</b>を追う。回路図の作図問題も含む長い一連の大問。</p>
+      <p class="src ok">海城 2025 第1回 大問1</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= G ================= -->
+<section id="G">
+  <div class="sh"><span class="k">G</span><h2>電熱線と発熱</h2></div>
+  <p class="sd">難関校では「電熱線を何本、どうつないで、どのビーカーに入れたか」を追わせます。<b>直列なら細い方が熱い／並列なら太い方が熱い</b>が全問の軸。</p>
+  <div class="grid">
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 176" role="img" aria-label="電熱線を直列にして別のビーカーに入れる実験とグラフ">
+          <path d="M34 30 H56 M100 30 H108 M152 30 H160 M204 30 H226 M34 30 V126 M226 30 V126 M34 126 H112 M148 126 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#res" x="56" y="18" width="44" height="24"/>
+          <use href="#res" x="108" y="18" width="44" height="24"/>
+          <use href="#res" x="160" y="18" width="44" height="24"/>
+          <use href="#beak" x="56" y="48" width="44" height="40"/>
+          <use href="#beak" x="108" y="48" width="44" height="40"/>
+          <use href="#beak" x="160" y="48" width="44" height="40"/>
+          <use href="#bat" x="112" y="108" width="36" height="36"/>
+          <text x="78" y="14" text-anchor="middle" class="a s">20cm</text>
+          <text x="130" y="14" text-anchor="middle" class="s">10cm</text>
+          <text x="182" y="14" text-anchor="middle" class="s">5cm</text>
+          <text x="78" y="102" text-anchor="middle" class="s">ビ1</text>
+          <text x="130" y="102" text-anchor="middle" class="s">ビ2</text>
+          <text x="182" y="102" text-anchor="middle" class="s">ビ3</text>
+          <text x="130" y="172" text-anchor="middle" class="s">直列 → 長い（抵抗大）ほど熱い</text>
+          <g>
+            <path d="M316 24 V126 H516" stroke="currentColor" stroke-width="1.8" fill="none"/>
+            <path d="M316 126 L500 36" stroke="var(--amber)" stroke-width="2.6" fill="none"/>
+            <path d="M316 126 L500 81" stroke="var(--cur)" stroke-width="2.6" fill="none"/>
+            <path d="M316 126 L500 103" stroke="currentColor" stroke-width="2.2" fill="none" opacity=".6"/>
+            <text x="504" y="36" class="a s">ビ1</text>
+            <text x="504" y="82" class="c s">ビ2</text>
+            <text x="504" y="104" class="s">ビ3</text>
+            <text x="310" y="20" text-anchor="end" class="s">水温</text>
+            <text x="516" y="142" text-anchor="end" class="s">時間</text>
+            <text x="416" y="172" text-anchor="middle" class="s">傾きの比 ＝ 発熱量の比 ＝ 抵抗の比</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">G1</span><span class="nm">直列／並列で別のビーカーに入れ、時間-水温グラフと対応づける</span><span class="tag t-star">◎</span></div>
+      <p>長さの違う電熱線を、まず1本ずつ → 次に直列で3つのビーカー → 次に並列で3つのビーカーに入れ、<b>5本の直線がどれに対応するか</b>を選ばせる。並列に組みかえると熱さの順が逆転するのが山場。</p>
+      <p class="src ok">国府台女子学院 2014 ／ 城北埼玉 2014</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 168" role="img" aria-label="電熱線の長さと断面積と抵抗">
+          <g stroke="currentColor" stroke-width="1.8" fill="none">
+            <rect x="40" y="28" width="80" height="14"/>
+            <rect x="40" y="66" width="160" height="14"/>
+            <rect x="40" y="102" width="80" height="26"/>
+            <rect x="40" y="144" width="160" height="26"/>
+          </g>
+          <text x="212" y="40" class="a">抵抗 1</text>
+          <text x="212" y="78" class="a">抵抗 2</text>
+          <text x="212" y="120" class="a">抵抗 ½</text>
+          <text x="212" y="162" class="a">抵抗 1</text>
+          <text x="80" y="24" text-anchor="middle" class="s">10cm・太さ1（基準）</text>
+          <text x="120" y="62" text-anchor="middle" class="s">20cm・太さ1</text>
+          <text x="80" y="98" text-anchor="middle" class="s">10cm・太さ2</text>
+          <text x="120" y="140" text-anchor="middle" class="s">20cm・太さ2</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">G2</span><span class="nm">長さ・断面積を「基準の何倍」に読みかえる</span><span class="tag t-new">新規</span></div>
+      <p>抵抗 ＝ 長さ ÷ 断面積。難関校は<b>合成抵抗を「長さ何cm相当か」に読みかえさせる</b>（例：10cmと20cmの並列は何cmの1本と同じか）。浅野型は同じ設定で8問連続、明の星型は4本の表を高速処理させる。</p>
+      <p class="src ok">浅野 2020 ／ 浦和明の星 2021</p>
+    </div>
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 156" role="img" aria-label="発熱量が最大になる回路を選ぶ">
+          <path d="M34 30 H68 M112 30 H226 M34 30 V112 M226 30 V112 M34 112 H102 M158 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <g transform="translate(0,0)"><rect x="76" y="22" width="28" height="16" fill="none" stroke="currentColor" stroke-width="2"/></g>
+          <path d="M68 30 H76 M104 30 H112" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bat2" x="102" y="94" width="56" height="36"/>
+          <text x="90" y="16" text-anchor="middle" class="a">太くて短い</text>
+          <text x="130" y="152" text-anchor="middle" class="a">発熱量 最大</text>
+          <g transform="translate(280,0)">
+            <path d="M34 30 H68 M112 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <rect x="76" y="26" width="28" height="8" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M68 30 H76 M104 30 H112" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bat" x="112" y="94" width="36" height="36"/>
+            <text x="90" y="16" text-anchor="middle" class="c">細くて長い</text>
+            <text x="130" y="152" text-anchor="middle" class="c">発熱量 最小</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">G3</span><span class="nm">6通りの回路から発熱量が最大のものを選ぶ</span><span class="tag t-new">新規</span></div>
+      <p>「太さはア・エ・カが同じ、長さはア・イ・オ・カが同じ」のように<b>条件を文章だけで与え、表は自分で作らせる</b>。電熱線を太くする／電池を直列に増やす／並列に組みかえる、それぞれの効き方を切り分けられるかを見る。</p>
+      <p class="src ok">ラ・サール 2020</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 150" role="img" aria-label="ワット数の違う電球の直列">
+          <path d="M34 30 H74 M106 30 H154 M186 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbon" x="74" y="14" width="32" height="32"/>
+          <use href="#bulb" x="154" y="14" width="32" height="32"/>
+          <use href="#bat" x="112" y="94" width="36" height="36"/>
+          <text x="90" y="11" text-anchor="middle" class="a">60W</text>
+          <text x="170" y="11" text-anchor="middle">100W</text>
+          <text x="90" y="60" text-anchor="middle" class="a s">こちらが明るい</text>
+          <text x="130" y="146" text-anchor="middle" class="s">直列＝電流が同じ → 抵抗の大きい60Wの方が明るい</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">G4</span><span class="nm">ワット数の違う電球を直列にする</span><span class="tag t-new">新規</span></div>
+      <p>60Wと100Wを直列にすると、<b>ワット数の小さい60Wの方が明るい</b>。ワット数の小さい電球ほど抵抗が大きく、直列では電流が同じなので分担する電圧が大きくなるため。直感と逆になる代表例。</p>
+      <p class="src">出典校の記載なし（塾ブログ）</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= H ================= -->
+<section id="H">
+  <div class="sh"><span class="k">H</span><h2>LED・コンデンサー・発電機</h2></div>
+  <p class="sd">近年もっとも出題が増えている領域。<b>電池と何がちがうか</b>を実測値つきで比べさせる形が主流です。</p>
+  <div class="grid">
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 810 156" role="img" aria-label="電池と手回し発電機とLEDの比較回路">
+          <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112 M34 112 H102 M158 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#bulbon" x="114" y="14" width="32" height="32"/><use href="#bat2" x="102" y="94" width="56" height="36"/>
+          <text x="130" y="9" text-anchor="middle" class="a">430mA</text>
+          <text x="130" y="150" text-anchor="middle">① 電池2個直列＋豆電球</text>
+          <g transform="translate(270,0)">
+            <path d="M34 30 H114 M146 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#bulbon" x="114" y="14" width="32" height="32"/><use href="#gen" x="112" y="94" width="36" height="36"/>
+            <text x="130" y="9" text-anchor="middle" class="a">250〜430mA</text>
+            <text x="130" y="150" text-anchor="middle">② 手回し発電機＋豆電球</text>
+          </g>
+          <g transform="translate(540,0)">
+            <path d="M34 30 H112 M148 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#led" x="112" y="16" width="36" height="28"/><use href="#gen" x="112" y="94" width="36" height="36"/>
+            <text x="130" y="9" text-anchor="middle" class="c">20mA</text>
+            <text x="130" y="150" text-anchor="middle">③ 手回し発電機＋LED</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">H1</span><span class="nm">電池・手回し発電機・LED を実測値で比べる</span><span class="tag t-star">◎</span></div>
+      <p>5つの回路を並べ、電流の実測値（250mA／430mA／20mA）を与えて比較させる。回転を落とすとLEDは消えるが豆電球は光る＝<b>LEDには点灯に必要な電圧がある</b>。最後に「電池が消耗していったとき、豆電球とLEDのどちらが先に消えるか」を問う。</p>
+      <p class="src ok">早稲田 2020 大問3</p>
+    </div>
+
+    <div class="plate w2">
+      <div class="fig">
+        <svg viewBox="0 0 540 150" role="img" aria-label="LEDの向きと点灯">
+          <path d="M34 30 H112 M148 30 H226 M34 30 V112 M226 30 V112 M34 112 H112 M148 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#led" x="112" y="16" width="36" height="28"/><use href="#bat2" x="102" y="94" width="56" height="36"/>
+          <path d="M34 112 H102 M158 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <text x="130" y="9" text-anchor="middle" class="a">光る</text>
+          <text x="130" y="146" text-anchor="middle">長い足を＋極側に</text>
+          <g transform="translate(280,0)">
+            <path d="M34 30 H112 M148 30 H226 M34 30 V112 M226 30 V112 M34 112 H102 M158 112 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+            <use href="#led" x="112" y="16" width="36" height="28" transform="rotate(180 130 30)"/>
+            <use href="#bat2" x="102" y="94" width="56" height="36"/>
+            <text x="130" y="9" text-anchor="middle" class="c">光らない</text>
+            <text x="130" y="146" text-anchor="middle">逆向きだと電流が流れない</text>
+          </g>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">H2</span><span class="nm">LEDの極性</span><span class="tag t-new">新規</span></div>
+      <p>LEDは<b>決まった向きにしか電流を流さない</b>。長い針金が＋側。豆電球との直並列に混ぜて「何個光るか」を問う形が定番。手回し発電機を逆に回すと消えることとセットで出る。</p>
+      <p class="src ok">慶應義塾中等部 2012 ／ 同志社香里 2022</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 168" role="img" aria-label="コンデンサーに充電して機器をつなぐ">
+          <path d="M34 30 H112 M148 30 H226 M34 30 V78 M226 30 V78 M34 78 H112 M148 78 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#gen" x="112" y="12" width="36" height="36"/>
+          <use href="#cap" x="114" y="64" width="32" height="28"/>
+          <path d="M34 78 V128 M226 78 V128 M34 128 H74 M106 128 H130 M130 128 H150 M186 128 H226" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+          <use href="#bulb" x="74" y="112" width="32" height="32"/>
+          <use href="#led" x="150" y="114" width="36" height="28"/>
+          <text x="72" y="26" text-anchor="middle" class="s">手回し発電機で充電</text>
+          <text x="90" y="160" text-anchor="middle" class="a s">豆電球＝短い</text>
+          <text x="176" y="160" text-anchor="middle" class="c s">LED＝長い</text>
+          <text x="152" y="72" class="c s">コンデンサー</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">H3</span><span class="nm">コンデンサーにためた電気で機器を動かす</span><span class="tag t-new">新規</span></div>
+      <p>同じだけ充電し、豆電球／ブザー／LED／モーターの<b>動く時間</b>を比べる。消費が少ないLEDが最も長く光る。「ハンドルから手を離したあと発電機はどう動くか」（＝逆回転せず、同じ向きに回り続けて止まる）も頻出の意外性設問。</p>
+      <p class="src ok">西大和学園 2019 大問4 ／ 日本女子大附属 2025（記述）</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 156" role="img" aria-label="分岐点の電流保存">
+          <path d="M30 40 H130 M130 40 V110 M130 40 H230 M30 110 H130 M130 110 H230" stroke="currentColor" stroke-width="2" fill="none"/>
+          <circle cx="130" cy="40" r="4" fill="currentColor"/><circle cx="130" cy="110" r="4" fill="currentColor"/>
+          <path d="M56 34 L74 34 M70 30 L76 34 L70 38" stroke="var(--amber)" stroke-width="2" fill="none"/>
+          <path d="M186 34 L204 34 M200 30 L206 34 L200 38" stroke="var(--cur)" stroke-width="2" fill="none"/>
+          <path d="M124 66 L124 84 M120 80 L124 86 L128 80" stroke="var(--cur)" stroke-width="2" fill="none"/>
+          <path d="M56 104 L74 104 M70 100 L76 104 L70 108" stroke="var(--cur)" stroke-width="2" fill="none"/>
+          <text x="66" y="26" class="a">3A</text>
+          <text x="196" y="26" class="c">1A</text>
+          <text x="136" y="80" class="c">？</text>
+          <text x="66" y="126" class="c">？</text>
+          <text x="130" y="150" text-anchor="middle" class="s">入る電流の合計 ＝ 出る電流の合計（各分岐点で）</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">H4</span><span class="nm">分岐点ごとに電流保存を立てて連立させる</span><span class="tag t-new">新規</span></div>
+      <p>豆電球も抵抗も出てこない、<b>金属線だけの回路図</b>を与え、「電気を持つ粒子は金属中で増減しない」という原理から各分岐点で式を立てさせる。実質キルヒホッフ第1法則。難関校が「原理から考えさせる」ときの典型の形。</p>
+      <p class="src ok">西大和学園 2019 大問4(7)</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 156" role="img" aria-label="モーターを発電機として使う">
+          <path d="M34 40 H112 M148 40 H226 M34 40 V110 M226 40 V110 M34 110 H112 M148 110 H226" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#mot" x="114" y="24" width="32" height="32"/>
+          <use href="#bulb" x="114" y="94" width="32" height="32"/>
+          <path d="M130 8 V24" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M60 56 V84" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <rect x="48" y="84" width="24" height="18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M60 108 V124 M55 118 L60 126 L65 118" stroke="var(--amber)" stroke-width="2" fill="none"/>
+          <text x="78" y="98" class="s">600g</text>
+          <text x="60" y="142" text-anchor="middle" class="a s">落ちる速さは？</text>
+          <text x="176" y="30" class="s">おもりで回す</text>
+          <text x="176" y="118" class="c s">つなぐ物で変わる</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">H5</span><span class="nm">モーターを発電機として使う</span><span class="tag t-new">新規</span></div>
+      <p>おもりを落としてモーターを回し、端子に<b>何もつながない／豆電球／導線で直結</b>と変えて、おもりの落下速度を順に並べさせる。取り出す電流が大きいほど回転が重く、落下が遅い。手回し発電機の「手ごたえ」と同じ原理をエネルギーで問う。</p>
+      <p class="src ok">桜蔭 2019 大問Ⅱ-8</p>
+    </div>
+
+    <div class="plate">
+      <div class="fig">
+        <svg viewBox="0 0 260 150" role="img" aria-label="光電池の実験">
+          <g stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="58" y="86" width="90" height="16" transform="rotate(-16 103 94)"/>
+            <path d="M150 16 L100 52 M100 52 L109.3 49.5 M100 52 L105.3 43.9" stroke="var(--amber)"/>
+            <path d="M168 30 L118 66 M118 66 L127.3 63.5 M118 66 L123.3 57.9" stroke="var(--amber)"/>
+            <path d="M186 46 L136 82 M136 82 L145.3 79.5 M136 82 L141.3 73.9" stroke="var(--amber)"/>
+          </g>
+          <path d="M64 104 V128 H120 M148 128 H196 V104" stroke="currentColor" stroke-width="2" fill="none"/>
+          <use href="#mot" x="120" y="112" width="32" height="32"/>
+          <text x="190" y="22" class="a">光</text>
+          <text x="130" y="146" text-anchor="middle" class="s">垂直に当たるとき電流が最大</text>
+        </svg>
+      </div>
+      <div class="ph"><span class="id">H6</span><span class="nm">光電池（太陽電池）</span><span class="tag t-new">新規</span></div>
+      <p>光が強いほど、また<b>光の向きに対して垂直に当たるほど</b>電流が大きい。電気をためることはできない（ためるならコンデンサーが必要）。LED・モーターと組み合わせて「電気の利用」の大問に組み込まれる。</p>
+      <p class="src">出典校の記載なし（単元解説より）</p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <p>回路図はすべて、収集した解説の記述をもとに構成を再現して描き起こしたものです（原問題の図の複製ではありません）。学校名・年度は塾／家庭教師サイトの分析記事に基づくもので、<b>海城2023のみ学校公式PDFで確認</b>しています。原問題の図表は各校の過去問集でご確認ください。</p>
+</footer>
+</div>
