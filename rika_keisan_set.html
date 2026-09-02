@@ -51,14 +51,16 @@
   .warn{font-size:13.5px;background:#fdf3ef;border:1px dashed #e0b6a6;
     border-radius:7px;padding:9px 14px;margin:9px 0}
   .warn b{color:var(--accent)}
-  .more{margin:11px 0 0}
+  .more{margin:11px 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
   .more a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;
     background:var(--mc,var(--phys));color:#fff;border:1px solid var(--mc,var(--phys));border-radius:8px;
     padding:8px 17px;font-size:13.5px;font-weight:700;transition:.12s}
   .more.m-chem{--mc:var(--chem)} .more.m-bio{--mc:var(--bio)} .more.m-earth{--mc:var(--earth)}
   .more a:hover{opacity:.85}
   .more a .ar{font-weight:400}
-  .more .sub{display:block;font-size:12px;color:var(--sub);margin-top:5px}
+  .more .sub{display:block;font-size:12px;color:var(--sub);margin-top:0}
+  .more a.alt{background:transparent;color:var(--mc,var(--phys))}
+  .more a.alt:hover{background:var(--soft);opacity:1}
   table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0}
   th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
   th{background:var(--soft);font-weight:700;white-space:nowrap}
@@ -147,7 +149,7 @@
 </ul>
 <div class="warn"><b>いちばん多いミス：</b>「ひもを何cm引くか」で、荷物の上がる距離をそのまま答えてしまう。<b>得した力のぶんだけ長さは損</b>。</div>
 <div class="more">
-<a href="2.滑車.html">滑車 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
+<a href="滑車.html">滑車 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
 <span class="sub">定滑車・動滑車の組み合わせ、輪軸、仕事の原理までくわしく解説。</span>
 </div>
 </div>
@@ -208,7 +210,8 @@
 <div class="warn"><b>いちばん多いミス：</b>電池の並列を「明るくなる」と答えてしまう。並列は<b>長もちするだけ</b>。また、導線だけの近道がある豆電球は<b>つかない</b>。</div>
 <div class="more">
 <a href="6.電流と豆電球.html">電流と豆電球 攻略ノート（詳細版）を開く <span class="ar">→</span></a>
-<span class="sub">直列・並列の組み合わせ、電流の比、ショート回路の見分け方までくわしく解説。</span>
+<a class="alt" href="難関校 回路パターン.html">難関校 回路パターンを開く <span class="ar">→</span></a>
+<span class="sub">直列・並列の組み合わせ、電流の比、ショート回路の見分け方までくわしく解説。難関校パターンは発展内容です。</span>
 </div>
 </div>
 
