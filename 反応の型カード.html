@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>反応の型カード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#F3F6F9; --card:#FFFFFF; --ink:#1A2330; --sub:#5A6675; --line:#D9E0E8;
+  --accent:#2F5DA8; --accent-soft:#E4ECF8;
+  --imp1:#D2412E; --imp1-bg:#FCE9E6;
+  --imp2:#C77A0A; --imp2-bg:#FBF0DC;
+  --imp3:#7B8794; --imp3-bg:#EDF0F3;
+  --h2:#1F7FC4; --h2-bg:#E1F0FB;
+  --co2:#4F6B63; --co2-bg:#E3ECE9;
+  --o2:#C23B5A; --o2-bg:#FBE6EB;
+  --nh3:#7A4FB5; --nh3-bg:#EFE7F9;
+  --h2s:#9A7A00; --h2s-bg:#FAF2CC;
+  --water:#2C8F9C; --water-bg:#DFF3F5;
+  --mark:#E8F0FF; --mark-ink:#2F5DA8;
+  --mask:#3A4655;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#11161D; --card:#1A212B; --ink:#E6EBF1; --sub:#9AA6B4; --line:#2C3643;
+    --accent:#7FA8EA; --accent-soft:#223149;
+    --imp1:#FF7B67; --imp1-bg:#3A1F1B; --imp2:#F2AE45; --imp2-bg:#3A2C15; --imp3:#A3AEBA; --imp3-bg:#252D37;
+    --h2:#6CB9F0; --h2-bg:#15304A; --co2:#9DC0B5; --co2-bg:#1F332D; --o2:#F28AA2; --o2-bg:#3A1C25;
+    --nh3:#BD9BEF; --nh3-bg:#2C2140; --h2s:#E5C94E; --h2s-bg:#352E10; --water:#6FD0DC; --water-bg:#15363A;
+    --mark:#223149; --mark-ink:#9FC0F4; --mask:#8C98A7;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#11161D; --card:#1A212B; --ink:#E6EBF1; --sub:#9AA6B4; --line:#2C3643;
+  --accent:#7FA8EA; --accent-soft:#223149;
+  --imp1:#FF7B67; --imp1-bg:#3A1F1B; --imp2:#F2AE45; --imp2-bg:#3A2C15; --imp3:#A3AEBA; --imp3-bg:#252D37;
+  --h2:#6CB9F0; --h2-bg:#15304A; --co2:#9DC0B5; --co2-bg:#1F332D; --o2:#F28AA2; --o2-bg:#3A1C25;
+  --nh3:#BD9BEF; --nh3-bg:#2C2140; --h2s:#E5C94E; --h2s-bg:#352E10; --water:#6FD0DC; --water-bg:#15363A;
+  --mark:#223149; --mark-ink:#9FC0F4; --mask:#8C98A7;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:16px;line-height:1.7;padding-inline:16px;padding-block:24px 64px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:"Zen Maru Gothic","BIZ UDPGothic",sans-serif;text-wrap:balance;margin:0}
+h1{font-size:30px;font-weight:900;letter-spacing:.02em}
+h2{font-size:21px;font-weight:900}
+.lead{color:var(--sub);margin:6px 0 0;max-width:40em}
+
+/* toolbar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;border-bottom:1px solid var(--line)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button,.btn{font:inherit;font-size:15px;font-weight:700;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.count{color:var(--sub);font-size:14px;font-variant-numeric:tabular-nums}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--sub)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+/* importance mark */
+.imp{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;font-size:20px;flex:none}
+.imp.i1{color:var(--imp1);background:var(--imp1-bg)}
+.imp.i2{color:var(--imp2);background:var(--imp2-bg)}
+.imp.i3{color:var(--imp3);background:var(--imp3-bg)}
+
+/* cards */
+.group{display:flex;flex-direction:column;gap:12px}
+.ghead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ghead small{color:var(--sub);font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,430px),1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.card[data-imp="1"]{border-left:5px solid var(--imp1)}
+.card[data-imp="2"]{border-left:5px solid var(--imp2)}
+.card[data-imp="3"]{border-left:5px solid var(--imp3)}
+.chead{display:flex;align-items:center;gap:10px}
+.chead h3{font-size:18px;font-weight:700}
+.eq{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:18px;font-weight:700}
+.op{color:var(--sub);font-weight:400}
+.arrow{color:var(--accent);font-weight:900;font-size:20px;padding-inline:2px}
+.t{padding:2px 9px;border-radius:7px;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.t em{font-style:normal;color:var(--mark-ink);background:var(--mark);border-radius:4px;padding:0 3px}
+.t.gas{border:2px solid currentColor}
+.g-h2{color:var(--h2);background:var(--h2-bg)}
+.g-co2{color:var(--co2);background:var(--co2-bg)}
+.g-o2{color:var(--o2);background:var(--o2-bg)}
+.g-nh3{color:var(--nh3);background:var(--nh3-bg)}
+.g-h2s{color:var(--h2s);background:var(--h2s-bg)}
+.t.w{color:var(--water);background:var(--water-bg);border-color:transparent}
+.t.none{color:var(--sub);font-weight:400;font-size:14px;background:none;border:1px dashed var(--line)}
+
+/* hide mode */
+.prod{cursor:default}
+body.quiz .prod{cursor:pointer}
+body.quiz .ex,body.quiz .note{display:none}
+body.quiz .prod:not(.open){color:transparent!important;background:var(--mask)!important;border-color:var(--mask)!important;user-select:none}
+body.quiz .prod:not(.open) em{color:transparent;background:transparent}
+.ex{display:flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:15px;background:var(--accent-soft);border-radius:8px;padding:10px 12px}
+.ex ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;width:100%}
+.ex li{display:flex;flex-wrap:wrap;column-gap:6px;align-items:baseline;line-height:1.5}
+.ex li+li{border-top:1px dashed var(--line);padding-top:6px}
+.exa{color:var(--accent);font-weight:900}
+.exr{font-weight:700}
+.ex b{font-size:13px;color:var(--accent);letter-spacing:.08em}
+.ex .next{font:inherit;font-size:13px;font-weight:700;border:1px solid var(--accent);color:var(--accent);background:transparent;border-radius:999px;padding:2px 10px;cursor:pointer}
+.ex .txt{flex:1 1 220px}
+.note{margin:0;font-size:14.5px;color:var(--sub)}
+.note strong{color:var(--ink)}
+
+/* rules */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.rule{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;padding:10px 12px;border-radius:8px;background:var(--bg)}
+.rule em{font-style:normal;color:var(--mark-ink);background:var(--mark);padding:0 4px;border-radius:4px}
+.why{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--sub);letter-spacing:.06em}
+.hide-empty[hidden]{display:none}
+@media print{
+  .bar{position:static}
+  .ex .next,.bar .seg,.bar .btn{display:none}
+  .card{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <h1>反応の型カード</h1>
+    <p class="lead">左の2つを見たら、右に何ができるか言えるようにしよう。「かくす」を押すと右側が隠れます。タップすると答えが出ます。</p>
+  </header>
+
+  <div class="bar">
+    <div class="seg" role="group" aria-label="重要度でしぼる">
+      <button type="button" id="f-all" data-f="all" aria-pressed="true">すべて</button>
+      <button type="button" id="f-1" data-f="1" aria-pressed="false">◎ だけ</button>
+      <button type="button" id="f-12" data-f="12" aria-pressed="false">◎〇</button>
+      <button type="button" id="f-3" data-f="3" aria-pressed="false">△ だけ</button>
+    </div>
+    <button type="button" class="btn" id="quiz" aria-pressed="false">かくす</button>
+    <button type="button" class="btn" id="openall" hidden>ぜんぶ見る</button>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="legend">
+    <span><i class="imp i1">◎</i>必ず出る</span>
+    <span><i class="imp i2">〇</i>よく出る</span>
+    <span><i class="imp i3">△</i>ときどき</span>
+    <span><span class="t gas g-h2">水素</span><span class="t gas g-co2">二酸化炭素</span><span class="t gas g-o2">酸素</span> 太わく＝気体</span>
+    <span><span class="t w">水</span> 水ができる</span>
+  </div>
+
+  <div id="groups"></div>
+
+  <section class="panel">
+    <h2>名前のルール</h2>
+    <div class="rules">
+      <div class="rule">塩酸 → <em>塩化</em>○○</div>
+      <div class="rule">硫酸 → <em>硫酸</em>○○</div>
+      <div class="rule">酸素 → <em>酸化</em>○○</div>
+      <div class="rule">硫黄 → <em>硫化</em>○○</div>
+      <div class="rule">二酸化炭素 → <em>炭酸</em>○○</div>
+    </div>
+    <p class="note">相手の名前が、できる物質の<strong>頭</strong>につきます。○○には金属などの名前が入ります。</p>
+  </section>
+
+  <section class="panel">
+    <h2>なぜそうなる？ 3つの見方</h2>
+    <ol class="why">
+      <li><strong>相手の名前が頭につく。</strong>塩酸と反応すれば「塩化」、酸素と結びつけば「酸化」。</li>
+      <li><strong>余った部分が気体や水になる。</strong>酸＋金属 → 水素。酸＋アルカリ → 水。「炭酸」がこわれる → 二酸化炭素＋水。</li>
+      <li><strong>原子の種類は増えも減りもしない。</strong>左に炭素がなければ二酸化炭素は出ない。左に水素がなければ水素も水もできない。</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <h2>できた気体の見分け方</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>気体</th><th>調べ方・性質</th><th>出る型</th></tr></thead>
+        <tbody>
+          <tr><td><span class="t gas g-h2">水素</span></td><td>火を近づけるとポンと音を立てて燃える。いちばん軽い。</td><td>金属＋酸、アルミニウム・亜鉛＋水酸化ナトリウム</td></tr>
+          <tr><td><span class="t gas g-co2">二酸化炭素</span></td><td>石灰水が白くにごる。水に少し溶けて酸性。</td><td>炭酸○○＋塩酸、炭酸水素○○の加熱、燃焼</td></tr>
+          <tr><td><span class="t gas g-o2">酸素</span></td><td>火のついた線香を入れると炎を上げて燃える。</td><td>過酸化水素水＋二酸化マンガン、酸化銀の加熱</td></tr>
+          <tr><td><span class="t gas g-nh3">アンモニア</span></td><td>鼻をさすにおい。水によく溶けてアルカリ性。上方置換で集める。</td><td>塩化アンモニウム＋水酸化カルシウム</td></tr>
+          <tr><td><span class="t gas g-h2s">硫化水素</span></td><td>くさった卵のにおい。</td><td>硫化○○＋塩酸</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+const G = {h2:['水素','g-h2'], co2:['二酸化炭素','g-co2'], o2:['酸素','g-o2'], nh3:['アンモニア','g-nh3'], h2s:['硫化水素','g-h2s']};
+// 右辺: 文字列＝物質, {g:'h2'}＝気体, 'W'＝水, null＝気体なし
+const DATA = [
+ {grp:'金属と酸・アルカリ', sub:'水素が出るなかま', items:[
+  {imp:1, name:'金属＋塩酸', L:['金属','塩酸'], R:['<em>塩化</em>○○',{g:'h2'}],
+   ex:['アルミニウム＋塩酸 → 塩化アルミニウム＋水素','亜鉛＋塩酸 → 塩化亜鉛＋水素','鉄＋塩酸 → 塩化鉄＋水素','マグネシウム＋塩酸 → 塩化マグネシウム＋水素'],
+   note:'<strong>銅・銀・金は溶けない。</strong>溶けた液を蒸発させると、もとの金属とは別の物質(塩化○○)が残る。'},
+  {imp:1, name:'金属＋水酸化ナトリウム', L:['金属','水酸化ナトリウム'], R:['○○<em>酸</em>ナトリウム',{g:'h2'}],
+   ex:['アルミニウム＋水酸化ナトリウム → アルミン酸ナトリウム＋水素','亜鉛＋水酸化ナトリウム → 亜鉛酸ナトリウム＋水素'],
+   note:'<strong>アルミニウムと亜鉛だけ。</strong>鉄・マグネシウム・銅は溶けない。同じ重さのアルミニウムなら、塩酸でも出る水素の量は同じ。'},
+  {imp:2, name:'金属＋硫酸', L:['金属','硫酸'], R:['<em>硫酸</em>○○',{g:'h2'}],
+   ex:['亜鉛＋硫酸 → 硫酸亜鉛＋水素','鉄＋硫酸 → 硫酸鉄＋水素'],
+   note:'塩酸のときと同じ考え方。名前の頭が「硫酸」になるだけ。'}
+ ]},
+ {grp:'酸素・硫黄と結びつく', sub:'気体は出ない。重くなる', items:[
+  {imp:1, name:'金属＋酸素', L:['金属','酸素'], R:['<em>酸化</em>○○',null],
+   ex:['銅＋酸素 → 酸化銅','マグネシウム＋酸素 → 酸化マグネシウム','鉄＋酸素 → 酸化鉄'],
+   note:'質量比 <strong>銅:酸素＝4:1</strong>、<strong>マグネシウム:酸素＝3:2</strong>。結びついた酸素の分だけ重くなる。'},
+  {imp:1, name:'有機物の燃焼', L:['有機物','酸素'], R:[{g:'co2'},'W'],
+   ex:['ろうそく＋酸素 → 二酸化炭素＋水','エタノール＋酸素 → 二酸化炭素＋水','メタン＋酸素 → 二酸化炭素＋水'],
+   note:'有機物には<strong>炭素と水素</strong>がふくまれるから、二酸化炭素と水ができる。石灰水が白くにごり、塩化コバルト紙が青→赤。'},
+  {imp:2, name:'金属＋硫黄', L:['金属','硫黄'], R:['<em>硫化</em>○○',null],
+   ex:['鉄＋硫黄 → 硫化鉄','銅＋硫黄 → 硫化銅'],
+   note:'質量比 <strong>鉄:硫黄＝7:4</strong>。反応が始まると、加熱をやめても続く(熱が出るから)。'}
+ ]},
+ {grp:'酸素をうばう(還元)', sub:'もとの金属にもどる', items:[
+  {imp:1, name:'酸化○○＋炭素', L:['<em>酸化</em>○○','炭素'], R:['○○',{g:'co2'}],
+   ex:['酸化銅＋炭素 → 銅＋二酸化炭素','酸化鉄＋炭素 → 鉄＋二酸化炭素'],
+   note:'黒い酸化銅が赤い銅にもどる。炭素のほうが酸素と結びつきやすいので、酸素をうばう。'},
+  {imp:2, name:'酸化○○＋水素', L:['<em>酸化</em>○○','水素'], R:['○○','W'],
+   ex:['酸化銅＋水素 → 銅＋水','酸化鉄＋水素 → 鉄＋水'],
+   note:'水素が酸素をうばって水になる。試験管に水滴がつく。'}
+ ]},
+ {grp:'「炭酸」がこわれる', sub:'二酸化炭素が出るなかま', items:[
+  {imp:1, name:'炭酸○○＋塩酸', L:['<em>炭酸</em>○○','塩酸'], R:['<em>塩化</em>○○','W',{g:'co2'}],
+   ex:['炭酸カルシウム(石灰石)＋塩酸 → 塩化カルシウム＋水＋二酸化炭素','炭酸ナトリウム＋塩酸 → 塩化ナトリウム＋水＋二酸化炭素'],
+   note:'石灰石のほか、<strong>貝がら・卵のから・大理石</strong>も炭酸カルシウム。'},
+  {imp:1, name:'炭酸水素○○の加熱', L:['<em>炭酸水素</em>○○','(熱)'], R:['<em>炭酸</em>○○','W',{g:'co2'}],
+   ex:['炭酸水素ナトリウム(重そう) → 炭酸ナトリウム＋水＋二酸化炭素','炭酸水素カルシウム → 炭酸カルシウム＋水＋二酸化炭素'],
+   note:'試験管の<strong>口を少し下げる</strong>(できた水が加熱部分に流れて割れるのを防ぐ)。'},
+  {imp:2, name:'炭酸水素○○＋塩酸', L:['<em>炭酸水素</em>○○','塩酸'], R:['<em>塩化</em>○○','W',{g:'co2'}],
+   ex:['炭酸水素ナトリウム＋塩酸 → 塩化ナトリウム＋水＋二酸化炭素','炭酸水素カリウム＋塩酸 → 塩化カリウム＋水＋二酸化炭素'],
+   note:'「炭酸○○＋塩酸」と右側はまったく同じ形。'},
+  {imp:3, name:'炭酸○○の加熱', L:['<em>炭酸</em>○○','(熱)'], R:['<em>酸化</em>○○',{g:'co2'}],
+   ex:['炭酸カルシウム → 酸化カルシウム＋二酸化炭素','炭酸マグネシウム → 酸化マグネシウム＋二酸化炭素'],
+   note:'水はできない(左に水素がないから)。酸化カルシウムは生石灰。'}
+ ]},
+ {grp:'酸とアルカリ(中和)', sub:'水ができるなかま', items:[
+  {imp:1, name:'塩酸＋水酸化○○', L:['塩酸','<em>水酸化</em>○○'], R:['<em>塩化</em>○○','W'],
+   ex:['塩酸＋水酸化ナトリウム → 塩化ナトリウム(食塩)＋水','塩酸＋水酸化カルシウム → 塩化カルシウム＋水'],
+   note:'中和の計算は<strong>「ちょうど反応する体積の比」</strong>を最初に出す。'},
+  {imp:1, name:'水酸化○○＋二酸化炭素', L:['<em>水酸化</em>○○','二酸化炭素'], R:['<em>炭酸</em>○○','W'],
+   ex:['水酸化カルシウム(石灰水)＋二酸化炭素 → 炭酸カルシウム＋水','水酸化ナトリウム＋二酸化炭素 → 炭酸ナトリウム＋水'],
+   note:'石灰水が<strong>白くにごる</strong>のは、水に溶けない炭酸カルシウムができるから。'},
+  {imp:2, name:'硫酸＋水酸化○○', L:['硫酸','<em>水酸化</em>○○'], R:['<em>硫酸</em>○○','W'],
+   ex:['硫酸＋水酸化バリウム → 硫酸バリウム＋水','硫酸＋水酸化ナトリウム → 硫酸ナトリウム＋水'],
+   note:'硫酸バリウムは水に溶けず<strong>白い沈殿</strong>になる。'}
+ ]},
+ {grp:'そのほか', sub:'', items:[
+  {imp:2, name:'塩化アンモニウム＋水酸化○○', L:['塩化アンモニウム','<em>水酸化</em>○○'], R:['<em>塩化</em>○○','W',{g:'nh3'}],
+   ex:['塩化アンモニウム＋水酸化カルシウム → 塩化カルシウム＋水＋アンモニア','塩化アンモニウム＋水酸化ナトリウム → 塩化ナトリウム＋水＋アンモニア'],
+   note:'アンモニアは水によく溶けて空気より軽いので<strong>上方置換</strong>。'},
+  {imp:2, name:'金属A＋水溶液(入れかわり)', L:['金属A','○○酸B'], R:['○○酸A','金属B'],
+   ex:['鉄＋硫酸銅 → 硫酸鉄＋銅','亜鉛＋硫酸銅 → 硫酸亜鉛＋銅','銅＋硝酸銀 → 硝酸銅＋銀'],
+   note:'溶けやすい金属が、溶けにくい金属と入れかわる。<strong>Mg＞Al＞Zn＞Fe＞Cu＞Ag</strong>'},
+  {imp:2, name:'酸化銀の加熱', L:['<em>酸化</em>銀','(熱)'], R:['銀',{g:'o2'}],
+   ex:['酸化銀 → 銀＋酸素','酸化水銀 → 水銀＋酸素'],
+   note:'黒い粉が白っぽい銀になる。加熱だけで酸素が分かれるのは、銀や水銀のような酸素と結びつきにくい金属。'},
+  {imp:3, name:'硫化○○＋塩酸', L:['<em>硫化</em>○○','塩酸'], R:['<em>塩化</em>○○',{g:'h2s'}],
+   ex:['硫化鉄＋塩酸 → 塩化鉄＋硫化水素','硫化亜鉛＋塩酸 → 塩化亜鉛＋硫化水素'],
+   note:'反応<strong>前</strong>の鉄と硫黄の混合物に塩酸を入れると、鉄が溶けて水素が出る。'}
+ ]}
+];
+const IMP = {1:'◎',2:'〇',3:'△'};
+function term(x, prod){
+  const p = prod ? ' prod' : '';
+  if (x === null) return `<span class="t none${p}">気体なし</span>`;
+  if (x === 'W') return `<span class="t w${p}">水</span>`;
+  if (typeof x === 'object'){ const [n,c]=G[x.g]; return `<span class="t gas ${c}${p}">${n}</span>`; }
+  return `<span class="t${p}">${x}</span>`;
+}
+function eq(it){
+  const L = it.L.map(x=>term(x,false)).join('<span class="op">＋</span>');
+  const R = it.R.map(x=>term(x,true)).join('<span class="op">＋</span>');
+  return `${L}<span class="arrow">→</span>${R}`;
+}
+function exFmt(x){
+  const [l,r]=x.split(' → ');
+  return `<span class="exl">${l}</span><span class="exa">→</span><span class="exr">${r}</span>`;
+}
+let uid=0;
+const root = document.getElementById('groups');
+root.innerHTML = DATA.map(g=>`
+  <section class="group">
+    <div class="ghead"><h2>${g.grp}</h2>${g.sub?`<small>${g.sub}</small>`:''}</div>
+    <div class="cards">${g.items.map(it=>{const id='c'+(uid++);return `
+      <article class="card" data-imp="${it.imp}">
+        <div class="chead"><span class="imp i${it.imp}" aria-label="重要度">${IMP[it.imp]}</span><h3>${it.name}</h3></div>
+        <div class="eq">${eq(it)}</div>
+        <div class="ex"><b>れい</b><ul>${it.ex.map((x,i)=>`<li${i>1?' class="more" hidden':''}>${exFmt(x)}</li>`).join('')}</ul>${it.ex.length>2?`<button type="button" class="next" id="${id}-n">ほかのれい ＋${it.ex.length-2}</button>`:''}</div>
+        <p class="note">${it.note}</p>
+      </article>`}).join('')}</div>
+  </section>`).join('');
+
+// 例の切りかえ
+root.addEventListener('click', e=>{
+  const b = e.target.closest('.next');
+  if (b){
+    const more=[...b.parentNode.querySelectorAll('.more')];
+    const open=more[0].hidden;
+    more.forEach(m=>m.hidden=!open);
+    b.textContent = open ? 'とじる' : `ほかのれい ＋${more.length}`;
+    return;
+  }
+  const p = e.target.closest('.prod');
+  if (p && document.body.classList.contains('quiz')) p.classList.toggle('open');
+});
+
+// 重要度フィルター
+const filters = [...document.querySelectorAll('.seg button')];
+const countEl = document.getElementById('count');
+function applyFilter(f){
+  filters.forEach(b=>b.setAttribute('aria-pressed', b.dataset.f===f));
+  let n=0;
+  document.querySelectorAll('.card').forEach(c=>{
+    const show = f==='all' || f.includes(c.dataset.imp);
+    c.hidden = !show; if (show) n++;
+  });
+  document.querySelectorAll('.group').forEach(g=>{
+    g.hidden = !g.querySelector('.card:not([hidden])');
+  });
+  countEl.textContent = `${n}こ`;
+  try{ localStorage.setItem('hannou-f', f); }catch(_){}
+}
+filters.forEach(b=>b.addEventListener('click',()=>applyFilter(b.dataset.f)));
+let saved='all'; try{ saved = localStorage.getItem('hannou-f') || 'all'; }catch(_){}
+applyFilter(filters.some(b=>b.dataset.f===saved) ? saved : 'all');
+
+// かくすモード
+const qb = document.getElementById('quiz'), oa = document.getElementById('openall');
+qb.addEventListener('click',()=>{
+  const on = !document.body.classList.contains('quiz');
+  document.body.classList.toggle('quiz', on);
+  qb.setAttribute('aria-pressed', on);
+  qb.textContent = on ? 'かくす中' : 'かくす';
+  oa.hidden = !on;
+  document.querySelectorAll('.prod.open').forEach(p=>p.classList.remove('open'));
+});
+oa.addEventListener('click',()=>{
+  const all = [...document.querySelectorAll('.card:not([hidden]) .prod')];
+  const allOpen = all.every(p=>p.classList.contains('open'));
+  all.forEach(p=>p.classList.toggle('open', !allOpen));
+  oa.textContent = allOpen ? 'ぜんぶ見る' : 'ぜんぶかくす';
+});
+</script>
+
+</body>
+</html>

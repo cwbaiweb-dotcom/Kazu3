@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<title>食塩水の濃さ・やりとり 出題パターン集</title>
+<style>
+@page { size: A4; margin: 14mm 15mm 14mm 15mm;
+  @bottom-center { content: counter(page); font-size: 9pt; color:#888; } }
+body { font-family: "Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP","Noto Sans JP",sans-serif; font-size: 10pt; line-height: 1.5; color:#222; }
+h1 { font-size: 19pt; margin: 0 0 2mm; border-bottom: 3px solid #1f5f99; padding-bottom: 2mm; }
+h2 { font-size: 13pt; color:#fff; background:#1f5f99; padding: 1.2mm 3mm; margin: 4mm 0 2mm; }
+h2.lv2 { background:#2e8b57; } h2.lv3 { background:#b03a2e; }
+h3 { font-size: 11pt; margin: 3.5mm 0 1mm; border-left: 5px solid #1f5f99; padding-left: 2mm; }
+.lv2s h3 { border-color:#2e8b57; } .lv3s h3 { border-color:#b03a2e; }
+.box { border:1px solid #bbb; border-radius:2mm; padding:2mm 3mm; margin:2mm 0; }
+.key { background:#fff7d6; border:1px solid #e0c060; border-radius:2mm; padding:2mm 3mm; margin:2mm 0; }
+.q { background:#f2f6fa; border-radius:2mm; padding:2mm 3mm; margin:2mm 0; }
+.a { padding:1mm 3mm; }
+.ans { font-weight:bold; color:#b03a2e; }
+table { border-collapse: collapse; margin: 2mm 0; }
+td, th { border:1px solid #999; padding: 1mm 3mm; text-align:center; }
+th { background:#eef2f6; }
+.small { font-size: 9.5pt; color:#555; }
+.pb { page-break-before: always; }
+.nobreak { page-break-inside: avoid; }
+.formula { font-size: 12pt; font-weight: bold; text-align:center; margin: 2mm 0; }
+.pr { margin: 1.5mm 0; padding-bottom: 1.5mm; border-bottom: 1px dashed #ccc; page-break-inside: avoid; }
+.space { height: 19mm; }
+.tag { display:inline-block; font-size:8.5pt; padding:0 2mm; border-radius:1mm; color:#fff; margin-right:1.5mm; }
+.t1{background:#1f5f99}.t2{background:#2e8b57}.t3{background:#b03a2e}
+@media screen { body { max-width: 190mm; margin: 0 auto; padding: 16px; background:#fff; }
+  .pb { margin-top: 12mm; border-top: 1px dashed #ccc; padding-top: 4mm; } svg { max-width:100%; height:auto; } }
+@media print { body { max-width:none; } }
+</style></head><body>
+
+<h1>中学受験算数　食塩水（濃さ・やりとり）出題パターン集</h1>
+<p class="small">基礎 → 標準 → 難関の順。各パターン「考え方（なぜそうなるか）」→「例題」→「解答」。最後に練習問題と解答。</p>
+
+<h2>0. まず押さえる3つの道具</h2>
+
+<div class="key nobreak">
+<div class="formula">食塩の重さ ＝ 食塩水の重さ × 濃さ</div>
+<div style="text-align:center">濃さ ＝ 食塩 ÷ 食塩水　／　食塩水 ＝ 食塩 ÷ 濃さ</div>
+<p style="margin:1mm 0 0">なぜ：「8%」は「食塩水100gあたり食塩8g」という意味。だから食塩水の重さに0.08をかけると食塩の重さになる。</p>
+</div>
+
+<div class="box nobreak">
+<b>道具①　変わらないものを見つける</b><br>
+・水を加える／蒸発させる → <b>食塩の重さは変わらない</b><br>
+・食塩を加える → <b>水の重さは変わらない</b><br>
+・混ぜる・やりとりする → <b>食塩の合計は変わらない</b>（どこかに移っただけ）
+</div>
+
+<div class="box nobreak">
+<b>道具②　てんびん図（混ぜる問題の主役）</b><br>
+濃さを横軸にとり、両はしに混ぜる食塩水、支点に混ぜたあとの濃さを置く。<br>
+<b>重さの比 と 支点からの距離の比 は 逆比</b>になる。<br>
+なぜ：うすい方は混ぜたあとの濃さに「足りない食塩」、濃い方は「余る食塩」をもつ。<br>
+足りない分＝重さ×距離、余る分＝重さ×距離。この2つが<b>ぴったり等しい</b>から、てこのつり合いと同じ式になる。<br>
+・水 ＝ 濃さ0%の食塩水　・食塩 ＝ 濃さ100%の食塩水　としててんびんに乗せられる。
+</div>
+
+<div class="box nobreak">
+<b>道具③　やりとりは表で追う</b><br>
+容器ごとに「食塩水の重さ」「食塩の重さ」を1行ずつ書き、操作のたびに更新する。濃さは最後に割るだけ。
+</div>
+
+<h3>パターン一覧</h3>
+<table style="width:100%;font-size:9pt" class="nobreak">
+<tr><th>レベル</th><th>番号</th><th>パターン</th><th>決め手</th></tr>
+<tr><td rowspan="4">基礎</td><td>A1</td><td>濃さの3公式</td><td>100gあたり</td></tr>
+<tr><td>A2</td><td>水を加える・蒸発させる</td><td>食塩が不変</td></tr>
+<tr><td>A3</td><td>食塩を加える</td><td>水が不変／100%のてんびん</td></tr>
+<tr><td>A4</td><td>2つの食塩水を混ぜる</td><td>食塩の合計 or てんびん</td></tr>
+<tr><td rowspan="4">標準</td><td>B1</td><td>混ぜる量を求める</td><td>てんびんの逆比</td></tr>
+<tr><td>B2</td><td>合計量がわかっている混合</td><td>てんびん／つるかめ算</td></tr>
+<tr><td>B3</td><td>くみ出して水を入れる</td><td>残る割合をかける</td></tr>
+<tr><td>B4</td><td>2つの容器のやりとり</td><td>表で追う</td></tr>
+<tr><td rowspan="5">難関</td><td>C1</td><td>量のとりちがえ</td><td>比を入れかえる</td></tr>
+<tr><td>C2</td><td>同じ量を入れかえて同じ濃さ</td><td>積÷和</td></tr>
+<tr><td>C3</td><td>2つの条件から濃さを求める</td><td>和と差</td></tr>
+<tr><td>C4</td><td>やりとりの逆算</td><td>□で食塩を表す</td></tr>
+<tr><td>C5</td><td>くり返し操作の逆算</td><td>同じ数を2回かける</td></tr>
+</table>
+
+<!-- ===================== 基礎 ===================== -->
+<h2 class="pb">基礎レベル</h2>
+<div class="lv1s">
+
+<h3>A1　濃さの3公式</h3>
+<div class="q nobreak"><b>例題</b>　(1) 8%の食塩水250gにふくまれる食塩は何g？<br>
+(2) 食塩30gを水にとかして200gの食塩水をつくった。濃さは何%？<br>
+(3) 12%の食塩水に食塩が36gふくまれている。食塩水は何g？</div>
+<div class="a">(1) 250×0.08＝20　<span class="ans">20g</span><br>
+(2) 30÷200＝0.15　<span class="ans">15%</span><br>
+(3) 36÷0.12＝300　<span class="ans">300g</span><br>
+<span class="small">注意：(2)の「200g」は食塩水の重さ（水＋食塩）。水が200gなら食塩水は230gになる。ここがよく出るひっかけ。</span></div>
+
+<h3>A2　水を加える・蒸発させる</h3>
+<div class="q nobreak"><b>例題</b>　(1) 10%の食塩水300gに水を何g加えると6%になる？<br>
+(2) 4%の食塩水500gから水を何g蒸発させると10%になる？</div>
+<div class="a">(1) 食塩 300×0.1＝30g（変わらない）。6%で食塩30gになる食塩水は 30÷0.06＝500g。500−300＝<span class="ans">200g</span><br>
+(2) 食塩 500×0.04＝20g。10%で20gなら 20÷0.1＝200g。500−200＝<span class="ans">300g</span><br>
+<span class="small">なぜ：水は食塩をふやしも減らしもしない。「食塩の重さを固定して、食塩水の重さだけ変える」と考える。</span></div>
+
+<h3>A3　食塩を加える</h3>
+<div class="q nobreak"><b>例題</b>　10%の食塩水180gに食塩を何g加えると25%になる？</div>
+<div class="a"><b>解き方1（水が不変）</b>　水は 180×0.9＝162g。25%の食塩水では水が75%だから、全体は 162÷0.75＝216g。216−180＝<span class="ans">36g</span><br>
+<b>解き方2（てんびん）</b>　食塩を「100%の食塩水」と見る。距離は 25−10＝15、100−25＝75 で 15：75＝1：5。重さはその逆比 5：1。180gが⑤なので①＝36g。<br>
+<span class="small">よくある間違い：「食塩が不変」と考えてしまう。食塩を加える問題では食塩がふえるので、<b>水</b>に注目する。</span></div>
+
+<h3>A4　2つの食塩水を混ぜる</h3>
+<div class="q nobreak"><b>例題</b>　6%の食塩水200gと11%の食塩水300gを混ぜると何%？</div>
+<div class="a"><b>解き方1（食塩の合計）</b>　200×0.06＋300×0.11＝12＋33＝45g。45÷500＝0.09　<span class="ans">9%</span><br>
+<b>解き方2（てんびん）</b>　重さの比 200：300＝2：3 → 距離の比は逆比 3：2。6%と11%の差5%を 3：2 に分けると、6＋3＝9%。</div>
+
+<div class="nobreak" style="text-align:center">
+<svg width="340" height="105" viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans CJK JP" font-size="13">
+ <line x1="60" y1="60" x2="360" y2="60" stroke="#222" stroke-width="3"/>
+ <polygon points="240,62 228,85 252,85" fill="#1f5f99"/>
+ <line x1="60" y1="60" x2="60" y2="30" stroke="#222"/><rect x="30" y="8" width="60" height="22" fill="#dce8f4" stroke="#222"/>
+ <text x="60" y="24" text-anchor="middle">200g</text>
+ <line x1="360" y1="60" x2="360" y2="30" stroke="#222"/><rect x="330" y="8" width="60" height="22" fill="#dce8f4" stroke="#222"/>
+ <text x="360" y="24" text-anchor="middle">300g</text>
+ <text x="60" y="80" text-anchor="middle">6%</text><text x="360" y="80" text-anchor="middle">11%</text>
+ <text x="240" y="102" text-anchor="middle" fill="#1f5f99" font-weight="bold">9%</text>
+ <line x1="60" y1="112" x2="240" y2="112" stroke="#b03a2e"/><text x="150" y="126" text-anchor="middle" fill="#b03a2e">3</text>
+ <line x1="240" y1="112" x2="360" y2="112" stroke="#b03a2e"/><text x="300" y="126" text-anchor="middle" fill="#b03a2e">2</text>
+</svg><div class="small">重い方（300g）に支点が近づく。重さ2：3 ↔ 距離3：2</div></div>
+</div>
+
+<!-- ===================== 標準 ===================== -->
+<h2 class="lv2 pb">標準レベル</h2>
+<div class="lv2s">
+
+<h3>B1　混ぜる量を求める</h3>
+<div class="q nobreak"><b>例題</b>　4%の食塩水300gに、10%の食塩水を何g混ぜると8%になる？</div>
+<div class="a">てんびんで 距離は 8−4＝4、10−8＝2 → 4：2＝2：1。重さは逆比 1：2。<br>
+4%が300g＝① なので 10%は ②＝<span class="ans">600g</span><br>
+<span class="small">確かめ：12＋60＝72g、72÷900＝0.08 ✓</span></div>
+
+<h3>B2　合計量がわかっている混合</h3>
+<div class="q nobreak"><b>例題</b>　3%の食塩水と8%の食塩水を混ぜて、6%の食塩水を500gつくる。それぞれ何g？</div>
+<div class="a"><b>解き方1（てんびん）</b>　距離 3、2 → 重さは逆比 2：3。500gを2：3に分けて <span class="ans">3%が200g、8%が300g</span><br>
+<b>解き方2（つるかめ算）</b>　食塩は 500×0.06＝30g 必要。全部3%なら 15g で 15g足りない。3%を8%に1gかえると食塩が0.05gふえる。15÷0.05＝300g が8%。<br>
+<span class="small">なぜ2つとも同じ答え：てんびん図は、つるかめ算の「足りない分と余る分」を図にしたものだから。</span></div>
+
+<h3>B3　くみ出して水を入れる</h3>
+<div class="q nobreak"><b>例題</b>　12%の食塩水400gから100gをくみ出し、かわりに水100gを入れる。これを2回くり返すと何%？</div>
+<div class="a">1回の操作で食塩は 400gのうち300g分だけ残る → 食塩は 3/4 倍。食塩水の重さは400gのまま → 濃さも 3/4 倍。<br>
+12×3/4＝9%（1回目）、9×3/4＝<span class="ans">6.75%</span><br>
+<span class="small">なぜ：くみ出しても残った食塩水の濃さは変わらない。水を入れて重さを元にもどすので、「食塩が何倍になったか」＝「濃さが何倍になったか」。</span></div>
+
+<h3>B4　2つの容器のやりとり</h3>
+<div class="q nobreak"><b>例題</b>　容器Aに10%の食塩水300g、容器Bに4%の食塩水200gがある。AからBへ100g移してよく混ぜ、次にBからAへ200g移す。A、Bの濃さはそれぞれ何%？</div>
+<div class="a nobreak">
+<table>
+<tr><th rowspan="2">操作</th><th colspan="2">A</th><th colspan="2">B</th></tr>
+<tr><th>食塩水</th><th>食塩</th><th>食塩水</th><th>食塩</th></tr>
+<tr><td>はじめ</td><td>300g</td><td>30g</td><td>200g</td><td>8g</td></tr>
+<tr><td>A→B 100g（10%）</td><td>200g</td><td>20g</td><td>300g</td><td>18g（6%）</td></tr>
+<tr><td>B→A 200g（6%）</td><td>400g</td><td>32g</td><td>100g</td><td>6g</td></tr>
+</table>
+<span class="ans">A：32÷400＝8%、B：6%</span><br>
+<span class="small">ポイント：移す食塩水の濃さは「移す元の容器の、その時点の濃さ」。確かめ：食塩の合計 38g → 32＋6＝38g ✓</span></div>
+</div>
+
+<!-- ===================== 難関 ===================== -->
+<h2 class="lv3 pb">難関レベル</h2>
+<div class="lv3s">
+
+<h3>C1　量のとりちがえ</h3>
+<div class="q nobreak"><b>例題</b>　6%と15%の食塩水を混ぜて12%にする予定だったが、2つの量を逆にして混ぜてしまった。何%になった？</div>
+<div class="a">予定：距離 12−6＝6、15−12＝3 → 6：3＝2：1 → 重さは 6%：15%＝1：2。<br>
+逆にすると 重さ 2：1 → 距離 1：2。差9%を1：2に分けて 6＋3＝<span class="ans">9%</span><br>
+<span class="small">なぜ：重さの比がわかれば支点の位置が決まる。量がわからなくても「比」だけで解ける。</span></div>
+
+<h3>C2　同じ量を入れかえて同じ濃さ</h3>
+<div class="q nobreak"><b>例題</b>　Aに12%の食塩水300g、Bに4%の食塩水200gがある。A、Bから同じ重さずつくみ出して入れかえたところ、AとBの濃さが同じになった。何gずつ入れかえた？</div>
+<div class="a">濃さが同じになった → <b>全部混ぜたのと同じ状態</b>。全体500gのうち、もとBの食塩水は 200/500＝2/5。<br>
+Aの300gの中にも「もとB」が 2/5 だけ入っていればよい → 300×2/5＝<span class="ans">120g</span><br>
+<b>公式：A×B÷(A＋B)</b>＝300×200÷500＝120g（容器の重さの積÷和）<br>
+<span class="small">なぜ積÷和：300×(200÷500) の形を並べかえただけ。公式を暗記するより「全部混ぜたのと同じ」から導けるようにする。濃さ（12%、4%）は答えに関係しない。</span></div>
+
+<h3>C3　2つの条件から濃さを求める</h3>
+<div class="q nobreak"><b>例題</b>　濃さのわからない食塩水A、Bがある。Aを200g、Bを300g混ぜると8%、Aを300g、Bを200g混ぜると7%になる。A、Bの濃さは？</div>
+<div class="a">Aの100gにふくまれる食塩を ア g、Bの100gを イ g とする（ア、イがそのまま濃さ%）。<br>
+条件1：ア×2＋イ×3＝500×0.08＝40<br>
+条件2：ア×3＋イ×2＝500×0.07＝35<br>
+たす → ア×5＋イ×5＝75 → ア＋イ＝15<br>
+ひく → イ−ア＝5 → 和差算で <span class="ans">A 5%、B 10%</span><br>
+<span class="small">なぜ：2つの条件を「たす」と同じ量ずつの組が、「ひく」と差が出る。式をたて直す連立方程式の代わりに、和と差で解ける。</span></div>
+
+<h3>C4　やりとりの逆算</h3>
+<div class="q nobreak"><b>例題</b>　Aに濃さのわからない食塩水200g、Bに2%の食塩水300gがある。AからBへ100g移してよく混ぜ、BからAへ100g戻したら、Aは7%になった。はじめのAは何%？</div>
+<div class="a">はじめのAの食塩を □g とする。<br>
+① A→B 100g：Aの半分が移るので、移る食塩 □÷2。Aに残る食塩 □÷2。<br>
+　Bは 400g、食塩 6＋□÷2<br>
+② B→A 100g：Bの 1/4 が戻る → 戻る食塩 (6＋□÷2)÷4<br>
+③ 最後のAは 200gで7% → 食塩14g<br>
+　□÷2 ＋ (6＋□÷2)÷4 ＝ 14<br>
+　4倍して 2×□ ＋ 6 ＋ □÷2 ＝ 56 → □×2.5＝50 → □＝20<br>
+20÷200＝<span class="ans">10%</span><br>
+<span class="small">確かめ：Bは 400gで食塩16g（4%）→ 戻る食塩4g → A 10＋4＝14g、14÷200＝7% ✓<br>
+なぜ□を食塩に置く：「移す量÷容器の量」で、移る食塩の割合が決まる。濃さより食塩で追うほうが式がシンプル。</span></div>
+
+<h3>C5　くり返し操作の逆算</h3>
+<div class="q nobreak"><b>例題</b>　10%の食塩水500gから□gくみ出し、同じ重さの水を入れる。これを2回くり返すと6.4%になった。□は？</div>
+<div class="a">1回ごとに濃さが同じ割合（○倍）になる。2回で 6.4÷10＝0.64倍。<br>
+○×○＝0.64 → ○＝0.8（8×8＝64）。1回で食塩が0.8倍 → 残す量は 500×0.8＝400g。<br>
+□＝500−400＝<span class="ans">100g</span><br>
+<span class="small">なぜ：B3の「残る割合をかける」を逆にたどるだけ。2回なら「同じ数を2回かけて0.64」になる数を探す。</span></div>
+</div>
+
+<!-- ===================== 練習 ===================== -->
+<h2 class="pb">練習問題</h2>
+<p class="small">名前（　　　　　　）　日付（　　／　　）　［　　／11］</p>
+
+<div class="pr"><span class="tag t1">A2</span>(1) 15%の食塩水240gに水を60g加えると何%になりますか。<div class="space"></div></div>
+<div class="pr"><span class="tag t1">A2</span>(2) 5%の食塩水400gから水を何g蒸発させると8%になりますか。<div class="space"></div></div>
+<div class="pr"><span class="tag t1">A3</span>(3) 8%の食塩水300gに食塩を何g加えると20%になりますか。<div class="space"></div></div>
+<div class="pr"><span class="tag t1">A4</span>(4) 7%の食塩水200gと13%の食塩水100gを混ぜると何%になりますか。<div class="space"></div></div>
+<div class="pr"><span class="tag t2">B2</span>(5) 9%の食塩水と4%の食塩水を混ぜて、6%の食塩水を500gつくります。9%の食塩水は何g使いますか。<div class="space"></div></div>
+<div class="pr"><span class="tag t2">B4</span>(6) Aに6%の食塩水300g、Bに12%の食塩水200gがあります。AからBへ100g移してよく混ぜ、次にBからAへ200g移します。A、Bの濃さはそれぞれ何%ですか。<div class="space"></div></div>
+<div class="pr"><span class="tag t3">C1</span>(7) 4%と10%の食塩水を混ぜて6%にする予定でしたが、量を逆にして混ぜてしまいました。何%になりましたか。<div class="space"></div></div>
+<div class="pr"><span class="tag t3">C2</span>(8) Aに10%の食塩水400g、Bに5%の食塩水100gがあります。同じ重さずつくみ出して入れかえたら、同じ濃さになりました。何gずつ入れかえましたか。また、何%になりましたか。<div class="space"></div></div>
+<div class="pr"><span class="tag t3">C3</span>(9) 食塩水A、Bがあります。Aを100g、Bを200g混ぜると9%、Aを200g、Bを100g混ぜると7%になります。A、Bの濃さは何%ですか。<div class="space"></div></div>
+<div class="pr"><span class="tag t3">C4</span>(10) Aに濃さのわからない食塩水200g、Bに3%の食塩水300gがあります。AからBへ100g移してよく混ぜ、BからAへ100g戻したら、Aは8%になりました。はじめのAは何%でしたか。<div class="space"></div></div>
+<div class="pr"><span class="tag t3">C5</span>(11) 20%の食塩水400gから□gくみ出し、同じ重さの水を入れる操作を2回くり返したら11.25%になりました。□にあてはまる数は？<div class="space"></div></div>
+
+<!-- ===================== 解答 ===================== -->
+<h2 class="pb">練習問題　解答・解説</h2>
+<div class="pr">(1) 食塩 240×0.15＝36g。36÷300＝0.12　<span class="ans">12%</span></div>
+<div class="pr">(2) 食塩 400×0.05＝20g。20÷0.08＝250g。400−250＝<span class="ans">150g</span></div>
+<div class="pr">(3) てんびん 8%・20%・100%：距離 12：80＝3：20 → 重さ 20：3。300gが⑳なので③＝<span class="ans">45g</span><br>
+<span class="small">別解：水 300×0.92＝276g、276÷0.8＝345g、345−300＝45g。確かめ 24＋45＝69、69÷345＝0.2 ✓</span></div>
+<div class="pr">(4) 14＋13＝27g、27÷300＝0.09　<span class="ans">9%</span></div>
+<div class="pr">(5) 距離 9−6＝3、6−4＝2 → 重さ 9%：4%＝2：3。500×2/5＝<span class="ans">200g</span><br>
+<span class="small">確かめ 18＋12＝30、30÷500＝0.06 ✓</span></div>
+<div class="pr">(6)
+<table><tr><th>操作</th><th>A 食塩水</th><th>A 食塩</th><th>B 食塩水</th><th>B 食塩</th></tr>
+<tr><td>はじめ</td><td>300g</td><td>18g</td><td>200g</td><td>24g</td></tr>
+<tr><td>A→B 100g（6%）</td><td>200g</td><td>12g</td><td>300g</td><td>30g（10%）</td></tr>
+<tr><td>B→A 200g（10%）</td><td>400g</td><td>32g</td><td>100g</td><td>10g</td></tr></table>
+<span class="ans">A 8%、B 10%</span></div>
+<div class="pr">(7) 予定：距離 2：4＝1：2 → 重さ 4%：10%＝2：1。逆 → 重さ 1：2 → 距離 2：1。差6%を2：1に分けて 4＋4＝<span class="ans">8%</span></div>
+<div class="pr">(8) 400×100÷500＝<span class="ans">80g</span>。濃さは全部混ぜたのと同じ：(40＋5)÷500＝<span class="ans">9%</span><br>
+<span class="small">確かめ A：320gの10%＝32g ＋ 80gの5%＝4g → 36÷400＝9% ✓</span></div>
+<div class="pr">(9) ア×1＋イ×2＝27、ア×2＋イ×1＝21。たす→ア＋イ＝16、ひく→イ−ア＝6。<span class="ans">A 5%、B 11%</span></div>
+<div class="pr">(10) はじめのAの食塩を□g。Aに残る □÷2、Bは400gで食塩 9＋□÷2、戻る食塩 (9＋□÷2)÷4。<br>
+□÷2 ＋ (9＋□÷2)÷4 ＝ 16　→ 4倍：2×□＋9＋□÷2＝64 → □×2.5＝55 → □＝22。22÷200＝<span class="ans">11%</span><br>
+<span class="small">確かめ：B 400gで食塩20g（5%）→ 戻る5g → A 11＋5＝16、16÷200＝8% ✓</span></div>
+<div class="pr">(11) 11.25÷20＝0.5625＝0.75×0.75 → 1回で3/4が残る。400×1/4＝<span class="ans">100</span></div>
+
+</body></html>
