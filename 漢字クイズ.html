@@ -71,6 +71,10 @@ select{font-size:15px;padding:8px;border-radius:8px;border:1.5px solid var(--lin
 .choices .btn.hit{background:#e8f5e9;border-color:var(--ok);color:var(--ok)}
 .choices .btn.miss{background:#ffebee;border-color:var(--ng);color:var(--ng)}
 .choices .btn.dim{opacity:.55}
+.kinput{display:flex;gap:8px;margin:12px 0}
+.kinput input{flex:1;min-width:0;font-size:24px;padding:12px 10px;border:2px solid var(--pri2);border-radius:10px;text-align:center}
+.kinput .btn{flex:none}
+.inputfb{font-size:17px;margin:4px 0}
 .fb{border-radius:12px;padding:12px;margin-top:12px}
 .fb.ok{background:#e8f5e9}
 .fb.ng{background:#ffebee}
@@ -4273,7 +4277,7 @@ function priSort(list){
     return Math.random()-0.5;
   });
 }
-function startSession(mode,seedId){
+function startSession(mode,seedId,opt){
   if(!loggedIn()){ view='gate'; render(); return; }
   var label,kps,queue=[],note='';
   if(mode==='10'||mode==='20'){
@@ -4303,9 +4307,18 @@ function startSession(mode,seedId){
     var a2=shuffle(kps),b2=shuffle(kps);
     a2.forEach(function(k){queue.push({kpId:k.id,fmt:'A'});});
     b2.forEach(function(k){queue.push({kpId:k.id,fmt:'B'});});
+  }else if(mode==='yomi'){
+    var am=(opt&&opt.answerMode==='input')?'input':'choice';
+    label='よみかな'+(am==='input'?'(入)':'(選)');
+    var pool=KPS.filter(function(k){return k.cat==='chu';});
+    if(!pool.length){ toastModal('出題できる語がありません','「6年下 配当以上（読み）」のデータが入っていません。'); return; }
+    var un=priSort(pool.filter(function(k){return !itemRO(k.id).mastered;}));
+    var dn=shuffle(pool.filter(function(k){return itemRO(k.id).mastered;}));
+    kps=shuffle(un.concat(dn).slice(0,10));
+    kps.forEach(function(k){ queue.push({kpId:k.id,fmt:'B'}); });
   }else return;
   S={mode:mode,label:label,queue:queue,pos:0,log:[],reCount:{},work:{},startedAt:nowISO(),
-     startMastered:{},over:{},note:note};
+     startMastered:{},over:{},note:note,answerMode:(opt&&opt.answerMode)||'choice'};
   KPS.forEach(function(k){ if(itemRO(k.id).mastered) S.startMastered[k.id]=1; });
   browse=null; view='quiz'; render();
   if(note) setTimeout(function(){ toastModal('お知らせ',note); },50);
@@ -4344,7 +4357,7 @@ function answer(ci){
       if(it.mastered) it.postMasterWrong++;
     }
   }
-  if(S.mode!=='all'){
+  if(S.mode!=='all'&&S.mode!=='yomi'){
     if(!okAns) reinsert(S.pos,kp.id,q.fmt,3);
     else if(!it.mastered&&S.mode!=='recheck'){
       /* 同じKPの出題がまだキューに残っていれば追加投入しない（§19-11） */
@@ -4353,6 +4366,41 @@ function answer(ci){
     }
   }
   q.answered=true; q.sel=ci; q.ok=okAns;
+  S.log.push(entry);
+  renderQuiz();
+}
+function normKana(s){
+  s=String(s==null?'':s).replace(/[\s\u3000]/g,'');
+  s=s.replace(/[\u30a1-\u30f6]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0x60);});
+  return s;
+}
+function readingOK(kp,text){
+  var want=[kp.yomiFull].concat((kp.alt||[]).map(function(a){return a+kp.o;}));
+  var t=normKana(text);
+  if(!t) return false;
+  return want.some(function(w){return normKana(w)===t;});
+}
+function answerInput(text){
+  var q=curQ(); if(!q||q.answered) return;
+  var kp=KPIX[q.kpId];
+  var okAns=readingOK(kp,text);
+  var it=witem(kp.id);
+  var entry={pos:S.pos,kpId:kp.id,fmt:q.fmt,typed:text,ok:okAns,
+    preItem:JSON.stringify(it),preTail:S.queue.slice(S.pos+1),preRe:JSON.parse(JSON.stringify(S.reCount)),preOver:JSON.parse(JSON.stringify(S.over))};
+  var prevFmt=it.lastFormat;
+  it.lastSeenAt=nowISO(); it.lastFormat=q.fmt;
+  if(okAns){
+    it.totalCorrect++; it.byFormat[q.fmt].correct++;
+    if(!it.mastered){
+      if(!(it.streak>0&&prevFmt===q.fmt)) it.streak++;
+      if(it.streak>=reqStreak(it)){ it.mastered=true; it.masteredAt=nowISO(); }
+    }
+  }else{
+    it.totalWrong++; it.byFormat[q.fmt].wrong++; it.streak=0;
+    it.wrongLog=it.wrongLog.concat([{at:nowISO(),format:q.fmt,answered:text||'（無回答）'}]).slice(-5);
+    if(it.mastered) it.postMasterWrong++;
+  }
+  q.answered=true; q.typed=text; q.ok=okAns;
   S.log.push(entry);
   renderQuiz();
 }
@@ -4381,7 +4429,7 @@ function reanswer(){
   S.work[entry.kpId]=normItem(JSON.parse(entry.preItem));
   S.queue=S.queue.slice(0,idx+1).concat(entry.preTail);
   S.reCount=entry.preRe; S.over=entry.preOver;
-  var q=S.queue[idx]; q.answered=false; delete q.sel; delete q.ok;
+  var q=S.queue[idx]; q.answered=false; delete q.sel; delete q.ok; delete q.typed;
   S.log.pop();
   S.pos=idx; browse=null; renderQuiz(); window.scrollTo(0,0);
 }
@@ -4407,6 +4455,15 @@ function finishSession(){
   S.result={sess:sess,newly:newly,wrongIds:wrongIds};
   view='result'; render(); window.scrollTo(0,0);
   pushCloud(true);
+}
+
+function chooseYomiMode(){
+  if(!KPS.some(function(k){return k.cat==='chu';})){ toastModal('データがありません','「6年下 配当以上（読み）」のデータが入っていません。'); return; }
+  toastModal('よみかなテスト（配当以上の読み）','漢字の読みを答えるテストです（10問）。答え方をえらんでください。',[
+    {label:'選んで答える',pri:true,fn:function(){ startSession('yomi',null,{answerMode:'choice'}); }},
+    {label:'入力して答える',fn:function(){ startSession('yomi',null,{answerMode:'input'}); }},
+    {label:'やめる'}
+  ]);
 }
 
 /* ============ 画面：ゲート（指示書 §I） ============ */
@@ -4532,6 +4589,10 @@ function renderHome(){
   mbtn('全問','範囲の実力チェック',false,function(){ startSession('all'); });
   mbtn('再確認','要注意 '+caution.length+'語',false,function(){ startSession('recheck'); });
   c2.appendChild(grid);
+  var yomiB=el('button','btn wide','✍️ よみかなテスト（配当以上の読み）');
+  yomiB.style.marginTop='10px';
+  yomiB.onclick=chooseYomiMode;
+  c2.appendChild(yomiB);
   var learnB=el('button','btn wide','📖 覚えるモード（記録に残らない練習）');
   learnB.style.marginTop='10px';
   learnB.onclick=function(){ view='learn'; render(); };
@@ -4684,7 +4745,8 @@ function renderQuiz(){
   var idx=(browse==null)?S.pos:browse;
   if(idx>=S.queue.length){ finishSession(); return; }
   var q=S.queue[idx], kp=KPIX[q.kpId];
-  ensureChoices(q);
+  var isInput=(S.mode==='yomi'&&S.answerMode==='input');
+  if(!isInput) ensureChoices(q);
   var answered=q.answered;
   var head=el('div','qhead');
   var bar=el('div','bar'); var bi=el('i');
@@ -4706,32 +4768,52 @@ function renderQuiz(){
   app.appendChild(head);
 
   var c=el('div','card');
-  var modeName=q.fmt==='A'?'【書き】正しい漢字はどれ？':'【読み】正しい読みはどれ？';
+  var modeName=(S.mode==='yomi')?'【よみかな】この言葉の読みは？':(q.fmt==='A'?'【書き】正しい漢字はどれ？':'【読み】正しい読みはどれ？');
   c.appendChild(el('div','muted',S.label+'モード　'+modeName+'　'+catLabel(kp.cat)+' '+CATS[kp.cat].unitLabel(kp.unit)+'-'+kp.n));
   var sent=el('div','qsent'); sent.innerHTML=sentHTML(kp,q.fmt,false); c.appendChild(sent);
-  var cs=el('div','choices');
-  q.choices.forEach(function(ch,ci){
-    var b=el('button','btn',ch.t);
-    if(answered){
-      if(ch.ok) b.classList.add('hit');
-      else if(ci===q.sel) b.classList.add('miss');
-      else b.classList.add('dim');
-      b.disabled=true;
-    }else if(browse!=null&&!answered){
-      /* 見直し中の未解答は無い想定 */
-    }else{
-      b.onclick=function(){ answer(ci); };
+  if(isInput){
+    if(!answered){
+      var kin=el('div','kinput');
+      var inp=document.createElement('input');
+      inp.type='text'; inp.setAttribute('inputmode','kana'); inp.autocomplete='off';
+      inp.setAttribute('autocapitalize','off'); inp.setAttribute('autocorrect','off'); inp.spellcheck=false;
+      inp.placeholder='ひらがなで入力';
+      inp.value=q.typedDraft||'';
+      inp.oninput=function(){ q.typedDraft=inp.value; };
+      inp.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); answerInput(inp.value); } };
+      var sb=el('button','btn pri','答え合わせ'); sb.onclick=function(){ answerInput(inp.value); };
+      kin.appendChild(inp); kin.appendChild(sb); c.appendChild(kin);
+      setTimeout(function(){ try{inp.focus();}catch(e){} },40);
     }
-    cs.appendChild(b);
-  });
-  c.appendChild(cs);
+  }else{
+    var cs=el('div','choices');
+    q.choices.forEach(function(ch,ci){
+      var b=el('button','btn',ch.t);
+      if(answered){
+        if(ch.ok) b.classList.add('hit');
+        else if(ci===q.sel) b.classList.add('miss');
+        else b.classList.add('dim');
+        b.disabled=true;
+      }else if(browse!=null&&!answered){
+        /* 見直し中の未解答は無い想定 */
+      }else{
+        b.onclick=function(){ answer(ci); };
+      }
+      cs.appendChild(b);
+    });
+    c.appendChild(cs);
+  }
   if(answered){
     var fb=el('div','fb '+(q.ok?'ok':'ng'));
     fb.appendChild(el('div','big',q.ok?'○ 正解！':'× ざんねん'));
     var full=el('div',null); full.innerHTML=sentHTML(kp,q.fmt,true); full.style.fontSize='16px'; fb.appendChild(full);
+    if(isInput){
+      var yourA=el('div','inputfb'); yourA.innerHTML='あなたの答え：'+(q.typed?('<b>'+esc(q.typed)+'</b>'):'（無回答）'); fb.appendChild(yourA);
+      var corrA=el('div','inputfb'); corrA.innerHTML='正しい読み：<b>'+esc(kp.yomiFull)+'</b>'+(kp.alt?'（'+kp.alt.map(function(a){return esc(a+kp.o);}).join('・')+' も可）':''); fb.appendChild(corrA);
+    }
     fb.appendChild(defBox(kp));
     if(kp.ka){ fb.appendChild(el('div','tiny','別の書き方：'+kp.ka.map(function(x){return esc(x+kp.o);}).join('・'))); }
-    fb.appendChild(explainChoices(kp,q));
+    if(!isInput) fb.appendChild(explainChoices(kp,q));
     var favLine=el('div'); favLine.style.marginTop='8px';
     favLine.appendChild(el('span','tiny','あとで見直したいときは → '));
     favLine.appendChild(favBtnWork(kp.id));
@@ -4794,7 +4876,9 @@ function renderResult(){
       var t=el('b',null,kp.ans+'（'+kp.yomiFull+'）'); t.style.flex='1'; head.appendChild(t);
       head.appendChild(favBtn(id)); box.appendChild(head);
       wrongs.forEach(function(e){
-        var q=el('div','tiny','形式'+e.fmt+'：あなたの答え「'+ (S.queue.filter(function(x){return x.kpId===id&&x.answered&&!x.ok;}).map(function(x){return x.choices[x.sel].t;})[0]||'—') +'」');
+        var av=S.queue.filter(function(x){return x.kpId===id&&x.answered&&!x.ok;}).map(function(x){ return (x.typed!=null)?x.typed:(x.choices&&x.choices[x.sel]?x.choices[x.sel].t:''); })[0]||'—';
+        var lbl=(S.mode==='yomi')?'よみかな':('形式'+e.fmt);
+        var q=el('div','tiny',lbl+'：あなたの答え「'+av+'」');
         box.appendChild(q);
       });
       var full=el('div'); full.innerHTML=sentHTML(kp,'B',true); box.appendChild(full);
